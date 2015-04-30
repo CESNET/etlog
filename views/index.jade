@@ -1,0 +1,29 @@
+extends layout
+
+block content
+  div
+    p
+      | Uživatelské jméno 
+      input(id = "username", type = "text", name = "username")
+    p
+      | Mac adresa 
+      input(id = "mac_address", type = "text", name = "mac_address")
+    p
+      | Výsledek autentizace 
+      select(id = "auth_result")
+        each res in ["OK", "FAIL", "TIMEOUT"]
+          option(value = res) #{res}
+
+    button(class = "btn", id = "search") Hledej
+    
+    
+    // TODO - asi dat jako vlastni stranku a pouze odkazovat
+    p
+      button(class = "btn", id = "roaming") Největší roaming
+
+  div
+    h2(id = "results_h")
+    p(id = "results")
+  
+
+
