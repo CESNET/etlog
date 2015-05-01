@@ -65,10 +65,12 @@ $(document).ready(function(){
             for(i = 0; i < res_size; i++) {
               row = body.insertRow(0);
 
-              for(j = 0; j < size; j++) {
-                cell = row.insertCell(0);
-                cell.innerHTML = response[i][field[j]];
+              for(j = size; j > 0; j--) {
+                cell = row.insertCell(-1);
+                cell.innerHTML = response[i][field[j - 1]];
               }
+
+              cell.className = cell.innerHTML;  // set class for last column - for coloring
             }
           }
         }

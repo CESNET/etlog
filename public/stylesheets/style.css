@@ -14,3 +14,16 @@ table, th, td {
 th, td {
   padding: 5px;
 }
+
+.OK {
+  background-color:#00FF00
+}
+
+.FAIL {
+  background-color:#FF0000
+}
+
+.TIMEOUT {
+  background-color:#FFFF00
+}
+
