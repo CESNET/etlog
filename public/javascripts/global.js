@@ -2,53 +2,53 @@ $(document).ready(function(){
  
 // ----------------------------------------------
  
+  $("#results")[0].style.visibility = "hidden";
+
+// ----------------------------------------------
+
+  $("#search").click(function(){
+    // TODO - validace spravnych hodnot
+    // TODO - oznamit nevalidni zadanou mac adresu
+
+    var input = {
+      "username": $("#username").val(),
+      "mac": parseMac(),
+      "result": $("#auth_result").val()
+    };
+
+    $("#results_h")[0].innerHTML = "";
+    $("#results")[0].innerHTML = "";
     $("#results")[0].style.visibility = "hidden";
-
+    
 // ----------------------------------------------
 
-    $("#search").click(function(){
-      // TODO - validace spravnych hodnot
-      // TODO - vstup mac adresy v ruznych formatech
- 
-      var input = {
-        "username": $("#username").val(),
-        "mac": $("#mac_address").val(),
-        "result": $("#auth_result").val()
-      };
- 
-      $("#results_h")[0].innerHTML = "";
-      $("#results")[0].innerHTML = "";
-      $("#results")[0].style.visibility = "hidden";
-      
-// ----------------------------------------------
-
-      $.ajax({
-        type: 'post',
-        url: "/search",
-        dataType: "json",
-        data: input,
-        success: function(json){
-        },
-        complete: function(json){
-          if(json.responseText == "[]") {
-            $("#results_h")[0].innerHTML = "Zadaným parametrům vyhledávání neodpovídají žádné záznamy";
-          }
-          else {
-            $("#results_h")[0].innerHTML = "Nalezené záznamy";
-            document.getElementById("results").style.visibility = "visible";
-            
-            // table setup
-            // reversed order
-            var head = ["výsledek autentizace", "uživatelské jméno", "mac adresa", "navštívená instituce", "navštívená země", "realm", "timestamp"];
-            var attributes = ["result", "pn", "csi", "visinst", "viscountry", "realm", "timestamp"];
-            var size = attributes.length;
-            
-            createTableHeader(size, head);
-            createTableBody(json, attributes, size);
-          }
+    $.ajax({
+      type: 'post',
+      url: "/search",
+      dataType: "json",
+      data: input,
+      success: function(json){
+      },
+      complete: function(json){
+        if(json.responseText == "[]") {
+          $("#results_h")[0].innerHTML = "Zadaným parametrům vyhledávání neodpovídají žádné záznamy";
         }
-      });
+        else {
+          $("#results_h")[0].innerHTML = "Nalezené záznamy";
+          document.getElementById("results").style.visibility = "visible";
+          
+          // table setup
+          // reversed order
+          var head = ["výsledek autentizace", "uživatelské jméno", "mac adresa", "navštívená instituce", "navštívená země", "realm", "timestamp"];
+          var attributes = ["result", "pn", "csi", "visinst", "viscountry", "realm", "timestamp"];
+          var size = attributes.length;
+          
+          createTableHeader(size, head);
+          createTableBody(json, attributes, size);
+        }
+      }
     });
+  });
 // --------------------------------------------------------------------------------------
 function createTableHeader(size, head)
 {
@@ -81,6 +81,31 @@ function createTableBody(json, attributes, size)
   }
 }
 // --------------------------------------------------------------------------------------
+function parseMac()
+{
+  console.log("parseMac");
+
+  var mac = $("#mac_address").val();
+  var matcher = new RegExp("^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$", "i");
+  var found = matcher.test(mac);
+
+  if(found)
+    return mac.replace(/:/g, '');
+  
+  matcher = new RegExp("^([0-9A-F]{4}[-]){2}([0-9A-F]{4})$", "i");
+  found = matcher.test(mac);
+
+  if(found)
+    return mac.replace(/-/g, '');
+
+  matcher = new RegExp("^[0-9A-F]{12}$", "i");
+  found = matcher.test(mac);
+
+  if(found)
+    return mac;
+ 
+  return "";        // unspecified
+}
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
