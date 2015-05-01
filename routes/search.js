@@ -28,7 +28,7 @@ function search(req, res) {
   if(req.body.mac != "")
     dict["csi"] = req.body.mac;
   
-  if(req.body.result != "")
+  if(req.body.result != "NEZADÁNO")
     dict["result"] = req.body.result;
  
   
