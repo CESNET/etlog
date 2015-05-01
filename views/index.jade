@@ -11,7 +11,7 @@ block content
     p
       | Výsledek autentizace 
       select(id = "auth_result")
-        each res in ["OK", "FAIL", "TIMEOUT"]
+        each res in ["NEZADÁNO", "OK", "FAIL", "TIMEOUT"]
           option(value = res) #{res}
 
     button(class = "btn", id = "search") Hledej
