@@ -43,7 +43,7 @@ function search(req, res) {
   // debug
   console.log(dict);
 
-  req.db.record.find(dict, function (err, items) {
+  req.db.record.find(dict, { _id: 0 }, function (err, items) {      // do not display object id in result
     respond(err, items, res)
   });
 }

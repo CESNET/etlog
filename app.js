@@ -13,6 +13,7 @@ var users = require('./routes/users');
 var mac = require('./routes/mac');
 var results = require('./routes/results');
 var roaming = require('./routes/roaming');
+var search = require('./routes/search');
 // -----------------------------------------------------------
 
 var app = express();
@@ -41,6 +42,12 @@ app.use('/users', users);
 app.use('/mac', mac);
 app.use('/results', results);
 app.use('/roaming', roaming);
+app.use('/search', search);
+// -----------------------------------------------------------
+
+// debug routovani
+//console.log(app._router.stack);
+
 // -----------------------------------------------------------
 
 // catch 404 and forward to error handler
