@@ -3,12 +3,16 @@ $(document).ready(function(){
 // ----------------------------------------------
  
   $("#results")[0].style.visibility = "hidden";
-
+// ----------------------------------------------
+  $("#mac_address")[0].oninput = function(){
+    validateMac();
+  }
 // ----------------------------------------------
 
   $("#search").click(function(){
     // TODO - validace spravnych hodnot
     // TODO - oznamit nevalidni zadanou mac adresu
+    // TODO - nastavit cudlik na hledani jako default -> hledani enterem
 
     var input = {
       "username": $("#username").val(),
@@ -83,8 +87,6 @@ function createTableBody(json, attributes, size)
 // --------------------------------------------------------------------------------------
 function parseMac()
 {
-  console.log("parseMac");
-
   var mac = $("#mac_address").val();
   var matcher = new RegExp("^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$", "i");
   var found = matcher.test(mac);
@@ -107,6 +109,15 @@ function parseMac()
   return "";        // unspecified
 }
 // --------------------------------------------------------------------------------------
+function validateMac()
+{
+  if($("#mac_address").val() == "")
+    $("#mac_address")[0].style.backgroundColor = "yellow";
+  else if(parseMac() != "")
+    $("#mac_address")[0].style.backgroundColor = "green";
+  else
+    $("#mac_address")[0].style.backgroundColor = "red";
+}
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
  
