@@ -7,13 +7,9 @@ $(document).ready(function(){
   $("#mac_address")[0].oninput = function(){
     validateMac();
   }
+
 // ----------------------------------------------
-
   $("#search").click(function(){
-    // TODO - validace spravnych hodnot
-    // TODO - oznamit nevalidni zadanou mac adresu
-    // TODO - nastavit cudlik na hledani jako default -> hledani enterem
-
     var input = {
       "username": $("#username").val(),
       "mac": parseMac(),
