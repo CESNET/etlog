@@ -1,7 +1,14 @@
 extends layout
 
 block content
-  div(id = content)
+  
+  .overlay.overlay-hugeinc
+    #loader
+      .diamond
+      .diamond
+      .diamond
+
+  div(id = "content")
     p
       | Uživatelské jméno 
       input(id = "username", type = "text", name = "username")
@@ -15,7 +22,7 @@ block content
           option(value = res) #{res}
 
     button(class = "btn", id = "search") Hledej
-    
+ 
     
     // TODO - asi dat jako vlastni stranku a pouze odkazovat
     //p
