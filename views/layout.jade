@@ -2,9 +2,15 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    script(src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js')
-    script(src='/javascripts/global.js')
-    script(src='/javascripts/modernizr.custom.js')
+    
+    link(rel='stylesheet', href='/stylesheets/bootstrap-3.3.4/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-datetimepicker.css')
+    //link(rel='stylesheet', href='/stylesheets/style.css')
+    
+    script(src='/javascripts/jquery.min.js')
+    script(src='/javascripts/bootstrap.min.js')
+    script(src='/javascripts/moment-with-locales.js')
+    script(src='/javascripts/bootstrap-datetimepicker.js')
+
   body
     block content

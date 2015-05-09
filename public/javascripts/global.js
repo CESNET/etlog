@@ -1,6 +1,14 @@
 $(document).ready(function(){
  
 // ----------------------------------------------
+
+    $(function() {
+      $('#datetimepicker1').datetimepicker({
+        language: 'pt-BR'
+      });
+    });
+
+// ----------------------------------------------
  
   $("#results")[0].style.visibility = "hidden";
 // ----------------------------------------------
@@ -10,6 +18,9 @@ $(document).ready(function(){
 
 // ----------------------------------------------
   $("#search").click(function(){
+    // TODO - pridat signalizaci spravne vyplnenych hodnot
+
+
     overlay();
     
     var input = {

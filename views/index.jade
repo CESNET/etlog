@@ -21,6 +21,26 @@ block content
         each res in ["NEZADÁNO", "OK", "FAIL", "TIMEOUT"]
           option(value = res) #{res}
 
+
+    .container
+      .row
+        .col-sm-6
+          .form-group
+            #datetimepicker1.input-group.date
+              input.form-control(type='text')
+              span.input-group-addon
+                span.glyphicon.glyphicon-calendar
+        script(type='text/javascript').
+          $(function () {
+          $('#datetimepicker1').datetimepicker();
+          });
+
+    br
+    br
+    br
+    br
+    
+
     button(class = "btn", id = "search") Hledej
  
     
@@ -32,5 +52,4 @@ block content
     h2(id = "results_h")
     table(id = "results")
   
-
 
