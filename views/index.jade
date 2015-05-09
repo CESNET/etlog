@@ -2,54 +2,103 @@ extends layout
 
 block content
   
+  //- animace pri vyhledavani
+  
   .overlay.overlay-hugeinc
     #loader
       .diamond
       .diamond
       .diamond
 
-  div(id = "content")
-    p
-      | Uživatelské jméno 
-      input(id = "username", type = "text", name = "username")
-    p
-      | Mac adresa 
-      input(id = "mac_address", type = "text", name = "mac_address")
-    p
-      | Výsledek autentizace 
-      select(id = "auth_result")
-        each res in ["NEZADÁNO", "OK", "FAIL", "TIMEOUT"]
-          option(value = res) #{res}
 
+  //- vstup - parametry vyhledavani
 
-    .container
-      .row
-        .col-sm-6
-          .form-group
-            #datetimepicker1.input-group.date
-              input.form-control(type='text')
-              span.input-group-addon
-                span.glyphicon.glyphicon-calendar
-        script(type='text/javascript').
-          $(function () {
-          $('#datetimepicker1').datetimepicker();
-          });
-
-    br
-    br
-    br
-    br
+  form.form-horizontal
     
-
-    button(class = "btn", id = "search") Hledej
- 
+    .form-group
+      label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
+      .col-xs-3
+        input.form-control(type = 'text', placeholder = 'user@example.com', id = "username", class = "form-control")
     
-    // TODO - asi dat jako vlastni stranku a pouze odkazovat
-    //p
-    //  button(class = "btn", id = "roaming") Největší roaming
+    .form-group
+      label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
+      .col-xs-2
+        input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', id = "mac_address", class = "form-control")
+
+    .form-group
+      label.col-sm-2.control-label(for = 'auth_result') Výsledek autentizace:
+      .col-xs-2
+        select.form-control(id = "auth_result")
+          each res in ["nezadáno", "OK", "FAIL", "TIMEOUT"]
+            option(value = res) #{res}
+
+    .form-group
+      label.col-sm-2.control-label(for = 'date_from') Od:
+      .col-xs-2
+        .datetimepicker1.input-group.date
+          input.form-control(type = 'text', id = "date_from")
+          span.input-group-addon
+            span.glyphicon.glyphicon-calendar
+
+    .form-group
+      label.col-sm-2.control-label(for = 'date_to') Do:
+      .col-xs-2
+        .datetimepicker1.input-group.date
+          input.form-control(type = 'text', id = "date_to")
+          span.input-group-addon
+            span.glyphicon.glyphicon-calendar
+
+    //.form-group
+    //  .col-sm-offset-2.col-sm-10
+    //    button.btn.btn-default(type = 'submit', id = "search") Hledej
+
+  button.btn.btn-default(type = 'submit', id = "search") Hledej
+
+  //- TODO - asi dat jako vlastni stranku a pouze odkazovat
+  //-p
+  //-  button(class = "btn", id = "roaming") Největší roaming
 
   div
     h2(id = "results_h")
     table(id = "results")
   
+
+   // .form-group.has-success.has-feedback
+   //   label.control-label(for='inputSuccess2') Input with success
+   //   input#inputSuccess2.form-control(type='text', aria-describedby='inputSuccess2Status')
+   //   span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
+   //   span#inputSuccess2Status.sr-only (success)
+   // .form-group.has-warning.has-feedback
+   //   label.control-label(for='inputWarning2') Input with warning
+   //   input#inputWarning2.form-control(type='text', aria-describedby='inputWarning2Status')
+   //   span.glyphicon.glyphicon-warning-sign.form-control-feedback(aria-hidden='true')
+   //   span#inputWarning2Status.sr-only (warning)
+   // .form-group.has-error.has-feedback
+   //   label.control-label(for='inputError2') Input with error
+   //   input#inputError2.form-control(type='text', aria-describedby='inputError2Status')
+   //   span.glyphicon.glyphicon-remove.form-control-feedback(aria-hidden='true')
+   //   span#inputError2Status.sr-only (error)
+   // .form-group.has-success.has-feedback
+   //   label.control-label(for='inputGroupSuccess1') Input group with success
+   //   .input-group
+   //     span.input-group-addon @
+   //     input#inputGroupSuccess1.form-control(type='text', aria-describedby='inputGroupSuccess1Status')
+   //   span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
+   //   span#inputGroupSuccess1Status.sr-only (success)
+
+   // form.form-inline
+   //   .form-group.has-success.has-feedback
+   //     label.control-label(for='inputSuccess4') Input with success
+   //     input#inputSuccess4.form-control(type='text', aria-describedby='inputSuccess4Status')
+   //     span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
+   //     span#inputSuccess4Status.sr-only (success)
+   // form.form-inline
+   //   .form-group.has-success.has-feedback
+   //     label.control-label(for='inputGroupSuccess3') Input group with success
+   //     .input-group
+   //       span.input-group-addon @
+   //       input#inputGroupSuccess3.form-control(type='text', aria-describedby='inputGroupSuccess3Status')
+   //     span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
+   //     span#inputGroupSuccess3Status.sr-only (success)
+
 

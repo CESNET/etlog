@@ -1,20 +1,18 @@
 $(document).ready(function(){
  
 // ----------------------------------------------
-
-    $(function() {
-      $('#datetimepicker1').datetimepicker({
-        language: 'pt-BR'
-      });
-    });
+    // TODO - locale
+    $('.datetimepicker1').datetimepicker();
 
 // ----------------------------------------------
  
   $("#results")[0].style.visibility = "hidden";
 // ----------------------------------------------
+  /*
   $("#mac_address")[0].oninput = function(){
     validateMac();
   }
+  */
 
 // ----------------------------------------------
   $("#search").click(function(){
@@ -122,12 +120,24 @@ function parseMac()
 // --------------------------------------------------------------------------------------
 function validateMac()
 {
-  // <label for="company_shipping" class="error valid">OK!</label>
-  
-  if($("#mac_address").val() == "")
+  if($("#mac_address").val() == "") {
+    // TODO ?
     $("#mac_address")[0].style.backgroundColor = "yellow";
-  else if(parseMac() != "")
+  }
+  else if(parseMac() != "") {
     $("#mac_address")[0].style.backgroundColor = "green";
+    // TODO
+
+    //var div = document.createElement("div");
+    //div.className = "alert alert-success";
+    //div.setAttribute("role", "alert");
+    //div.innerHTML = "OK";
+    //div.id = 
+
+    //<div class="alert alert-success" role="alert">...</div>
+    //$("#mac_address")[0].parentNode.insertBefore(div, $("#mac_address")[0].childNodes[0]);
+
+  }
   else
     $("#mac_address")[0].style.backgroundColor = "red";
 }
@@ -266,10 +276,4 @@ function validateMac()
     //});
 
 });
-
-
-
-
-
-
 
