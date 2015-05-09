@@ -3,14 +3,19 @@ html
   head
     title= title
     
-    link(rel='stylesheet', href='/stylesheets/bootstrap-3.3.4/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-datetimepicker.css')
     //link(rel='stylesheet', href='/stylesheets/style.css')
+ 
+    // TODO - spravit animaci
+    // TODO - nejak normalne nastylovat
     
     script(src='/javascripts/jquery.min.js')
     script(src='/javascripts/bootstrap.min.js')
     script(src='/javascripts/moment-with-locales.js')
     script(src='/javascripts/bootstrap-datetimepicker.js')
+    script(src='/javascripts/modernizr.custom.js')
+    script(src='/javascripts/global.js')
 
   body
     block content
