@@ -4,11 +4,14 @@ block content
   
   //- animace pri vyhledavani
   
-  .overlay.overlay-hugeinc
-    #loader
-      .diamond
-      .diamond
-      .diamond
+  #myModal.modal.fade.modal-white
+    .modal-dialog
+      .modal-content
+        .modal-body
+          #loader
+            .diamond
+            .diamond
+            .diamond
 
 
   //- vstup - parametry vyhledavani
@@ -34,7 +37,7 @@ block content
 
     .form-group
       label.col-sm-2.control-label(for = 'date_from') Od:
-      .col-xs-2
+      .col-xs-3
         .datetimepicker1.input-group.date
           input.form-control(type = 'text', id = "date_from")
           span.input-group-addon
@@ -42,15 +45,15 @@ block content
 
     .form-group
       label.col-sm-2.control-label(for = 'date_to') Do:
-      .col-xs-2
+      .col-xs-3
         .datetimepicker1.input-group.date
           input.form-control(type = 'text', id = "date_to")
           span.input-group-addon
             span.glyphicon.glyphicon-calendar
 
-    //.form-group
-    //  .col-sm-offset-2.col-sm-10
-    //    button.btn.btn-default(type = 'submit', id = "search") Hledej
+    //-.form-group
+    //-  .col-sm-offset-2.col-sm-10
+    //-    button.btn.btn-default(type = 'submit', id = "search") Hledej
 
   button.btn.btn-default(type = 'submit', id = "search") Hledej
 
@@ -60,7 +63,7 @@ block content
 
   div
     h2(id = "results_h")
-    table(id = "results")
+    table(id = "results", class = "table table-bordered")
   
 
    // .form-group.has-success.has-feedback
@@ -100,5 +103,6 @@ block content
    //       input#inputGroupSuccess3.form-control(type='text', aria-describedby='inputGroupSuccess3Status')
    //     span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
    //     span#inputGroupSuccess3Status.sr-only (success)
+
 
 
