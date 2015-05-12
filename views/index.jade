@@ -21,12 +21,14 @@ block content
     .form-group
       label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
       .col-xs-3
-        input.form-control(type = 'text', placeholder = 'user@example.com', id = "username", class = "form-control")
+        input.form-control(type = 'text', placeholder = 'user@example.com', id = "username")
     
-    .form-group
+    .form-group(id = "mac_address_form")
       label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
       .col-xs-2
-        input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', id = "mac_address", class = "form-control")
+        input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', id = "mac_address", aria-describedby = 'mac_address')
+        //span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
+        //span#mac_address_validation.sr-only (success)
 
     .form-group
       label.col-sm-2.control-label(for = 'auth_result') Výsledek autentizace:

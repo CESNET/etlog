@@ -1,30 +1,43 @@
 $(document).ready(function(){
  
 // ----------------------------------------------
-    // TODO - locale
-    $('.datetimepicker1').datetimepicker();
+    $('.datetimepicker1').datetimepicker({
+      locale: 'cs'
+    });
 
 // ----------------------------------------------
  
   $("#results")[0].style.visibility = "hidden";
 // ----------------------------------------------
-  /*
+/*
   $("#mac_address")[0].oninput = function(){
     validateMac();
   }
-  */
+  */  
+
+  /* search by enter key */
+  $(document).keypress(function(e) {
+    if(e.which == 13)    /* enter */
+      $("#search").click();
+  });
+
+
 
 // ----------------------------------------------
   $("#search").click(function(){
     // TODO - pridat signalizaci spravne vyplnenych hodnot
+    // TODO - automaticke otevreni kalendare pri kliku na vstup date_from, date_to
+    // TODO - zakaz manualniho vstupu pro date_from, date_to
 
-
-    overlay();
+    //overlay();
+    $("#myModal").modal('show');
     
     var input = {
       "username": $("#username").val(),
       "mac": parseMac(),
-      "result": $("#auth_result").val()
+      "result": $("#auth_result").val(),
+      "from": $("#date_from").val(),
+      "to": $("#date_to").val()
     };
 
     $("#results_h")[0].innerHTML = "";
@@ -41,7 +54,8 @@ $(document).ready(function(){
       success: function(json){
       },
       complete: function(json){
-        overlay();
+        $("#myModal").modal('hide');
+        //overlay();
         
         if(json.responseText == "[]") {
           $("#results_h")[0].innerHTML = "Zadaným parametrům vyhledávání neodpovídají žádné záznamy";
@@ -120,138 +134,13 @@ function parseMac()
 // --------------------------------------------------------------------------------------
 function validateMac()
 {
-  if($("#mac_address").val() == "") {
-    // TODO ?
-    $("#mac_address")[0].style.backgroundColor = "yellow";
-  }
-  else if(parseMac() != "") {
-    $("#mac_address")[0].style.backgroundColor = "green";
-    // TODO
-
-    //var div = document.createElement("div");
-    //div.className = "alert alert-success";
-    //div.setAttribute("role", "alert");
-    //div.innerHTML = "OK";
-    //div.id = 
-
-    //<div class="alert alert-success" role="alert">...</div>
-    //$("#mac_address")[0].parentNode.insertBefore(div, $("#mac_address")[0].childNodes[0]);
-
-  }
+  if($("#mac_address").val() == "")
+    $("#mac_address_form")[0].className = "";
+  else if(parseMac() != "")
+    $("#mac_address_form")[0].className = ".has-success.has-feedback";
   else
-    $("#mac_address")[0].style.backgroundColor = "red";
+    $("#mac_address_form")[0].className = ".has-error.has-feedback";
 }
-// --------------------------------------------------------------------------------------
-// OVERLAY
-// taken from http://tympanus.net/codrops/2014/02/06/fullscreen-overlay-effects/
-  ( function( window ) {
-
-  'use strict';
-
-  // class helper functions from bonzo https://github.com/ded/bonzo
-
-  function classReg( className ) {
-    return new RegExp("(^|\\s+)" + className + "(\\s+|$)");
-  }
-
-  // classList support for class management
-  // altho to be fair, the api sucks because it won't accept multiple classes at once
-  var hasClass, addClass, removeClass;
-
-  if ( 'classList' in document.documentElement ) {
-    hasClass = function( elem, c ) {
-      return elem.classList.contains( c );
-    };
-    addClass = function( elem, c ) {
-      elem.classList.add( c );
-    };
-    removeClass = function( elem, c ) {
-      elem.classList.remove( c );
-    };
-  }
-  else {
-    hasClass = function( elem, c ) {
-      return classReg( c ).test( elem.className );
-    };
-    addClass = function( elem, c ) {
-      if ( !hasClass( elem, c ) ) {
-        elem.className = elem.className + ' ' + c;
-      }
-    };
-    removeClass = function( elem, c ) {
-      elem.className = elem.className.replace( classReg( c ), ' ' );
-    };
-  }
-
-  function toggleClass( elem, c ) {
-    var fn = hasClass( elem, c ) ? removeClass : addClass;
-    fn( elem, c );
-  }
-
-  var classie = {
-    // full names
-    hasClass: hasClass,
-    addClass: addClass,
-    removeClass: removeClass,
-    toggleClass: toggleClass,
-    // short names
-    has: hasClass,
-    add: addClass,
-    remove: removeClass,
-    toggle: toggleClass
-  };
-
-  // transport
-  if ( typeof define === 'function' && define.amd ) {
-    // AMD
-    define( classie );
-  } else {
-    // browser global
-    window.classie = classie;
-  }
-  })( window );
-// --------------------------------------------------------------------------------------
-  function overlay() 
-  {
-    var overlay = document.querySelector( 'div.overlay' ),
-    transEndEventNames = {
-        'WebkitTransition': 'webkitTransitionEnd',
-        'MozTransition': 'transitionend',
-        'OTransition': 'oTransitionEnd',
-        'msTransition': 'MSTransitionEnd',
-        'transition': 'transitionend'
-    },
-    transEndEventName = transEndEventNames[ Modernizr.prefixed( 'transition' ) ],
-    support = { transitions : Modernizr.csstransitions };
-
-    function toggleOverlay() {
-        if( classie.has( overlay, 'open' ) ) {
-            classie.remove( overlay, 'open' );
-            classie.add( overlay, 'close' );
-            var onEndTransitionFn = function( ev ) {
-                if( support.transitions ) {
-                    if( ev.propertyName !== 'visibility' ) return;
-                    this.removeEventListener( transEndEventName, onEndTransitionFn );
-                }
-                classie.remove( overlay, 'close' );
-            };
-            if( support.transitions ) {
-                overlay.addEventListener( transEndEventName, onEndTransitionFn );
-            }
-            else {
-                onEndTransitionFn();
-            }
-        }
-        else if( !classie.has( overlay, 'close' ) ) {
-            classie.add( overlay, 'open' );
-        }
-    }
-      
-    toggleOverlay();
-  }
-// END OVERLAY
-// --------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
     // TODO - rozdelit na search.js a roaming.js ?
 

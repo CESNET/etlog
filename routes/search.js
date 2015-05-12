@@ -14,6 +14,8 @@ router.post('/', function(req, res) {
 function search(req, res) {
   var dict = {};
 
+  console.log(req.body);
+
   if(req.body.username != "")
     dict["pn"] = req.body.username;
   
