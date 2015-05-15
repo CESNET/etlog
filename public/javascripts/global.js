@@ -9,11 +9,9 @@ $(document).ready(function(){
  
   $("#results")[0].style.visibility = "hidden";
 // ----------------------------------------------
-/*
-  $("#mac_address")[0].oninput = function(){
-    validateMac();
-  }
-  */  
+  //$("#mac_address")[0].oninput = function(){
+  //  validateMac();
+  //}
 
   /* search by enter key */
   $(document).keypress(function(e) {
@@ -117,11 +115,17 @@ function parseMac()
   if(found)
     return mac.replace(/:/g, '');
   
-  matcher = new RegExp("^([0-9A-F]{4}[-]){2}([0-9A-F]{4})$", "i");
+  matcher = new RegExp("^([0-9A-F]{2}[-]){5}([0-9A-F]{2})$", "i");
   found = matcher.test(mac);
 
   if(found)
     return mac.replace(/-/g, '');
+  
+  matcher = new RegExp("^([0-9A-F]{4}[\\.]){2}([0-9A-F]{4})$", "i");
+  found = matcher.test(mac);
+  
+  if(found)
+    return mac.replace(/\./g, '');
 
   matcher = new RegExp("^[0-9A-F]{12}$", "i");
   found = matcher.test(mac);
@@ -135,7 +139,8 @@ function parseMac()
 function validateMac()
 {
   if($("#mac_address").val() == "")
-    $("#mac_address_form")[0].className = "";
+    $("#mac_address_form")[0].removeAttribute("class");
+    //$("#mac_address_form")[0].className = "";
   else if(parseMac() != "")
     $("#mac_address_form")[0].className = ".has-success.has-feedback";
   else
@@ -163,6 +168,94 @@ function validateMac()
     //    }
     //  });
     //});
+
+
+// --------------------------------------------------------------------------------------
+  // form validation
+  // taken from http://formvalidation.io/examples/adding-dynamic-field/
+
+    // The maximum number of options
+    var MAX_OPTIONS = 5;
+
+    $('#surveyForm')
+        .formValidation({
+            framework: 'bootstrap',
+            icon: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                question: {
+                    validators: {
+                        notEmpty: {
+                            message: 'The question required and cannot be empty'
+                        }
+                    }
+                },
+                'option[]': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The option required and cannot be empty'
+                        },
+                        stringLength: {
+                            max: 100,
+                            message: 'The option must be less than 100 characters long'
+                        }
+                    }
+                }
+            }
+        })
+
+        /*
+        // Add button click handler
+        .on('click', '.addButton', function() {
+            var $template = $('#optionTemplate'),
+                $clone    = $template
+                                .clone()
+                                .removeClass('hide')
+                                .removeAttr('id')
+                                .insertBefore($template),
+                $option   = $clone.find('[name="option[]"]');
+
+            // Add new field
+            $('#surveyForm').formValidation('addField', $option);
+        })
+
+        // Remove button click handler
+        .on('click', '.removeButton', function() {
+            var $row    = $(this).parents('.form-group'),
+                $option = $row.find('[name="option[]"]');
+
+            // Remove element containing the option
+            $row.remove();
+
+            // Remove field
+            $('#surveyForm').formValidation('removeField', $option);
+        })
+
+        // Called after adding new field
+        .on('added.field.fv', function(e, data) {
+            // data.field   --> The field name
+            // data.element --> The new field element
+            // data.options --> The new field options
+
+            if (data.field === 'option[]') {
+                if ($('#surveyForm').find(':visible[name="option[]"]').length >= MAX_OPTIONS) {
+                    $('#surveyForm').find('.addButton').attr('disabled', 'disabled');
+                }
+            }
+        })
+
+        // Called after removing the field
+        .on('removed.field.fv', function(e, data) {
+           if (data.field === 'option[]') {
+                if ($('#surveyForm').find(':visible[name="option[]"]').length < MAX_OPTIONS) {
+                    $('#surveyForm').find('.addButton').removeAttr('disabled');
+                }
+            }
+        });
+        */
 
 });
 
