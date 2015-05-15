@@ -2,19 +2,17 @@ var express = require('express');
 var router = express.Router();
 // --------------------------------------------------------------------------------------
 router.post('/', function(req, res) {
-  // debug
-  //console.log(req.body);
-  //console.log(req.body.username);
-  //console.log(req.body.mac);
-  //console.log(req.body.result);
-
   search(req, res, respond);
 });
 // --------------------------------------------------------------------------------------
 function search(req, res) {
   var dict = {};
 
+  // debug
   console.log(req.body);
+
+  if(req.body.username == "" && req.body.mac == "")   /* no main search key was entered */
+    return res.json([]);     // do not search database 
 
   if(req.body.username != "")
     dict["pn"] = req.body.username;
@@ -46,6 +44,9 @@ function respond(err, items, res) {
   if(err)
     res.send(err);
   
+  // debug
+  console.log(items);
+
   res.json(items);
 }
 // --------------------------------------------------------------------------------------
