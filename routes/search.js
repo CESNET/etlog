@@ -45,7 +45,7 @@ function respond(err, items, res) {
     res.send(err);
   
   // debug
-  console.log(items);
+  //console.log(items);
 
   res.json(items);
 }

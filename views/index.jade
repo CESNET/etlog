@@ -3,7 +3,6 @@ extends layout
 block content
   
   //- animace pri vyhledavani
-  
   #myModal.modal.fade.modal-white
     .modal-dialog
       .modal-content
@@ -13,10 +12,9 @@ block content
             .diamond
             .diamond
 
-
   //- vstup - parametry vyhledavani
-
-  form.form-horizontal
+  //- "prazdna" akce pro zabraneni presmerovani
+  form.form-horizontal(method = 'get' action="javascript:void(0);") 
     
     .form-group
       label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
@@ -53,11 +51,9 @@ block content
           span.input-group-addon
             span.glyphicon.glyphicon-calendar
 
-    //-.form-group
-    //-  .col-sm-offset-2.col-sm-10
-    //-    button.btn.btn-default(type = 'submit', id = "search") Hledej
-
-  button.btn.btn-default(type = 'submit', id = "search") Hledej
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        button.btn.btn-default(type = 'submit', id = "search") Hledej
 
   //- TODO - asi dat jako vlastni stranku a pouze odkazovat
   //-p
@@ -68,43 +64,102 @@ block content
     table(id = "results", class = "table table-bordered")
   
 
-   // .form-group.has-success.has-feedback
-   //   label.control-label(for='inputSuccess2') Input with success
-   //   input#inputSuccess2.form-control(type='text', aria-describedby='inputSuccess2Status')
-   //   span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
-   //   span#inputSuccess2Status.sr-only (success)
-   // .form-group.has-warning.has-feedback
-   //   label.control-label(for='inputWarning2') Input with warning
-   //   input#inputWarning2.form-control(type='text', aria-describedby='inputWarning2Status')
-   //   span.glyphicon.glyphicon-warning-sign.form-control-feedback(aria-hidden='true')
-   //   span#inputWarning2Status.sr-only (warning)
-   // .form-group.has-error.has-feedback
-   //   label.control-label(for='inputError2') Input with error
-   //   input#inputError2.form-control(type='text', aria-describedby='inputError2Status')
-   //   span.glyphicon.glyphicon-remove.form-control-feedback(aria-hidden='true')
-   //   span#inputError2Status.sr-only (error)
-   // .form-group.has-success.has-feedback
-   //   label.control-label(for='inputGroupSuccess1') Input group with success
-   //   .input-group
-   //     span.input-group-addon @
-   //     input#inputGroupSuccess1.form-control(type='text', aria-describedby='inputGroupSuccess1Status')
-   //   span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
-   //   span#inputGroupSuccess1Status.sr-only (success)
-
-   // form.form-inline
-   //   .form-group.has-success.has-feedback
-   //     label.control-label(for='inputSuccess4') Input with success
-   //     input#inputSuccess4.form-control(type='text', aria-describedby='inputSuccess4Status')
-   //     span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
-   //     span#inputSuccess4Status.sr-only (success)
-   // form.form-inline
-   //   .form-group.has-success.has-feedback
-   //     label.control-label(for='inputGroupSuccess3') Input group with success
-   //     .input-group
-   //       span.input-group-addon @
-   //       input#inputGroupSuccess3.form-control(type='text', aria-describedby='inputGroupSuccess3Status')
-   //     span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
-   //     span#inputGroupSuccess3Status.sr-only (success)
-
-
+  form#surveyForm.form-horizontal(method='post')
+    .form-group
+      label.col-xs-3.control-label Question
+      .col-xs-5
+        input.form-control(type='text', name='question')
+    .form-group
+      label.col-xs-3.control-label Options
+      .col-xs-5
+        input.form-control(type='text', name='option[]')
+      .col-xs-4
+        button.btn.btn-default.addButton(type='button')
+          i.fa.fa-plus
+    // The option field template containing an option field and a Remove button
+    #optionTemplate.form-group.hide
+      .col-xs-offset-3.col-xs-5
+        input.form-control(type='text', name='option[]')
+      .col-xs-4
+        button.btn.btn-default.removeButton(type='button')
+          i.fa.fa-minus
+    .form-group
+      .col-xs-5.col-xs-offset-3
+        button.btn.btn-default(type='submit') Validate
+ 
+ 
+ 
+ // script.
+ //   $(document).ready(function() {
+ //   // The maximum number of options
+ //   var MAX_OPTIONS = 5;
+ //   $('#surveyForm').formValidation({
+ //   framework: 'bootstrap',
+ //   icon: {
+ //   valid: 'glyphicon glyphicon-ok',
+ //   invalid: 'glyphicon glyphicon-remove',
+ //   validating: 'glyphicon glyphicon-refresh'
+ //   },
+ //   fields: {
+ //   question: {
+ //   validators: {
+ //   notEmpty: {
+ //   message: 'The question required and cannot be empty'
+ //   }
+ //   }
+ //   },
+ //   'option[]': {
+ //   validators: {
+ //   notEmpty: {
+ //   message: 'The option required and cannot be empty'
+ //   },
+ //   stringLength: {
+ //   max: 100,
+ //   message: 'The option must be less than 100 characters long'
+ //   }
+ //   }
+ //   }
+ //   }
+ //   })
+ //   // Add button click handler
+ //   .on('click', '.addButton', function() {
+ //   var $template = $('#optionTemplate'),
+ //   $clone    = $template
+ //   .clone()
+ //   .removeClass('hide')
+ //   .removeAttr('id')
+ //   .insertBefore($template),
+ //   $option   = $clone.find('[name="option[]"]');
+ //   // Add new field
+ //   $('#surveyForm').formValidation('addField', $option);
+ //   })
+ //   // Remove button click handler
+ //   .on('click', '.removeButton', function() {
+ //   var $row    = $(this).parents('.form-group'),
+ //   $option = $row.find('[name="option[]"]');
+ //   // Remove element containing the option
+ //   $row.remove();
+ //   // Remove field
+ //   $('#surveyForm').formValidation('removeField', $option);
+ //   })
+ //   // Called after adding new field
+ //   .on('added.field.fv', function(e, data) {
+ //   // data.field   --> The field name
+ //   // data.element --> The new field element
+ //   // data.options --> The new field options
+ //   if (data.field === 'option[]') {
+ //   if ($('#surveyForm').find(':visible[name="option[]"]').length >= MAX_OPTIONS) {
+ //   $('#surveyForm').find('.addButton').attr('disabled', 'disabled');
+ //   }
+ //   }
+ //   })
+ //   // Called after removing the field
+ //   .on('removed.field.fv', function(e, data) {
+ //   if (data.field === 'option[]') {
+ //   if ($('#surveyForm').find(':visible[name="option[]"]').length < MAX_OPTIONS) {
+ //   $('#surveyForm').find('.addButton').removeAttr('disabled');
+ //   }
+ //   }
+ //   });
+ //   });
 
