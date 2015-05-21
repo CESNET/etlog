@@ -14,19 +14,17 @@ block content
 
   //- vstup - parametry vyhledavani
   //- "prazdna" akce pro zabraneni presmerovani
-  form.form-horizontal(method = 'get' action="javascript:void(0);") 
+  form.form-horizontal(method = 'get' action="javascript:void(0);", id = "main_form")
     
     .form-group
       label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
       .col-xs-3
-        input.form-control(type = 'text', placeholder = 'user@example.com', id = "username")
+        input.form-control(type = 'text', placeholder = 'user@example.com', id = "username", name = "username")
     
     .form-group(id = "mac_address_form")
       label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
       .col-xs-2
-        input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', id = "mac_address", aria-describedby = 'mac_address')
-        //span.glyphicon.glyphicon-ok.form-control-feedback(aria-hidden='true')
-        //span#mac_address_validation.sr-only (success)
+        input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', id = "mac_address", name = "mac_address")
 
     .form-group
       label.col-sm-2.control-label(for = 'auth_result') Výsledek autentizace:
@@ -64,28 +62,28 @@ block content
     table(id = "results", class = "table table-bordered")
   
 
-  form#surveyForm.form-horizontal(method='post')
-    .form-group
-      label.col-xs-3.control-label Question
-      .col-xs-5
-        input.form-control(type='text', name='question')
-    .form-group
-      label.col-xs-3.control-label Options
-      .col-xs-5
-        input.form-control(type='text', name='option[]')
-      .col-xs-4
-        button.btn.btn-default.addButton(type='button')
-          i.fa.fa-plus
-    // The option field template containing an option field and a Remove button
-    #optionTemplate.form-group.hide
-      .col-xs-offset-3.col-xs-5
-        input.form-control(type='text', name='option[]')
-      .col-xs-4
-        button.btn.btn-default.removeButton(type='button')
-          i.fa.fa-minus
-    .form-group
-      .col-xs-5.col-xs-offset-3
-        button.btn.btn-default(type='submit') Validate
+  //form#surveyForm.form-horizontal(method='post')
+  //  .form-group
+  //    label.col-xs-3.control-label Question
+  //    .col-xs-5
+  //      input.form-control(type='text', name='question')
+  //  .form-group
+  //    label.col-xs-3.control-label Options
+  //    .col-xs-5
+  //      input.form-control(type='text', name='option[]')
+  //    .col-xs-4
+  //      button.btn.btn-default.addButton(type='button')
+  //        i.fa.fa-plus
+  //  // The option field template containing an option field and a Remove button
+  //  #optionTemplate.form-group.hide
+  //    .col-xs-offset-3.col-xs-5
+  //      input.form-control(type='text', name='option[]')
+  //    .col-xs-4
+  //      button.btn.btn-default.removeButton(type='button')
+  //        i.fa.fa-minus
+  //  .form-group
+  //    .col-xs-5.col-xs-offset-3
+  //      button.btn.btn-default(type='submit') Validate
  
  
  
