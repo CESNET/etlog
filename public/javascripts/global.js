@@ -106,9 +106,8 @@ function createTableBody(json, attributes, size)
   }
 }
 // --------------------------------------------------------------------------------------
-function parseMac()
+function parseMac(mac)
 {
-  var mac = $("#mac_address").val();
   var matcher = new RegExp("^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$", "i");
   var found = matcher.test(mac);
 
@@ -198,6 +197,25 @@ function validateMac()
     };
 // --------------------------------------------------------------------------------------
 
+ FormValidation.Validator.mac = {
+        validate: function(validator, $field, options) {
+            var value = $field.val();
+ 
+            if(parseMac(value) == "")
+              return {
+                  valid: false,
+                  message: 'Není platná mac adresa.'
+              }
+
+            return true;
+        }
+    };
+// --------------------------------------------------------------------------------------
+
+    // TODO - pridat nejakou logiku, ktera neumozni vyhledavat kdyz nebude zadan zadny klicovy vstup - mac/username ?
+    // na urovni vyhledavani uz je vyreseno -> prazdne parametry hledani nevraceji nic
+    // pripadne jeste zakazat vyhledavani, pokud je nejaky parametr neplatny?
+
     $('#main_form').formValidation({
         framework: 'bootstrap',
         feedbackIcons: {
@@ -209,6 +227,12 @@ function validateMac()
             username: {
                 validators: {
                     username: {
+                    }
+                }
+            },
+            mac_address: {
+                validators: {
+                    mac: {
                     }
                 }
             }
