@@ -25,12 +25,18 @@ function search(req, res) {
  
   
   // TODO
-  //if(req.body.username != "")
-  //  dict["pn"] = req.body.username;
-  //
-  //if(req.body.username != "")
-  //  dict["pn"] = req.body.username;
+  if(req.body.from != undefined) {
+    dict["timestamp"] = {};
+    dict["timestamp"]["$gte"] = req.body.from;
+  }
   
+  if(req.body.to != undefined) {
+    if(dict["timestamp"] == undefined)
+      dict["timestamp"] = {};
+    dict["timestamp"]["$lt"] = req.body.to;
+  }
+  
+  // TODO - pridat razeni dle data od nejstarsiho po nejnovejsi ?
 
   // debug
   console.log(dict);
@@ -41,8 +47,11 @@ function search(req, res) {
 }
 // --------------------------------------------------------------------------------------
 function respond(err, items, res) {
-  if(err)
+  if(err) {
+    console.log(err);
     res.send(err);
+    return;
+  }
   
   // debug
   //console.log(items);

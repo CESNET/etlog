@@ -2,7 +2,10 @@ $(document).ready(function(){
  
 // ----------------------------------------------
     $('.datetimepicker1').datetimepicker({
-      locale: 'cs'
+      locale: 'cs',
+      //format: moment().format()
+      //dayViewHeaderFormat: 'MMMM YYYY'
+      keepInvalid: true
     });
 
 // ----------------------------------------------
@@ -19,6 +22,7 @@ $(document).ready(function(){
       $("#search").click();
   });
 
+// ----------------------------------------------
 
 
 // ----------------------------------------------
@@ -26,16 +30,17 @@ $(document).ready(function(){
     // TODO - pridat signalizaci spravne vyplnenych hodnot
     // TODO - automaticke otevreni kalendare pri kliku na vstup date_from, date_to
     // TODO - zakaz manualniho vstupu pro date_from, date_to
+    // TODO - po jednom vyhledani je vyhledavaci tlacitko ve stavu disabled - proc ?
+    // TODO - po odeslani formulare jsou prazdna pole vyhodnocena jako true, proc jsou vyhodnovacovana?
 
-    //overlay();
     $("#myModal").modal('show');
     
     var input = {
       "username": $("#username").val(),
-      "mac": parseMac(),
+      "mac": parseMac($("#mac_address").val()),
       "result": $("#auth_result").val(),
-      "from": $("#date_from").val(),
-      "to": $("#date_to").val()
+      "from": convertDate($("#date_from").val()),
+      "to": convertDate($("#date_to").val())
     };
 
     $("#results_h")[0].innerHTML = "";
@@ -53,7 +58,6 @@ $(document).ready(function(){
       },
       complete: function(json){
         $("#myModal").modal('hide');
-        //overlay();
         
         if(json.responseText == "[]") {
           $("#results_h")[0].innerHTML = "Zadaným parametrům vyhledávání neodpovídají žádné záznamy";
@@ -89,7 +93,6 @@ function createTableHeader(size, head)
 function createTableBody(json, attributes, size)
 {
   var body = $("#results")[0].createTBody();
-  //var j = 0;
   
   var response = JSON.parse(json.responseText);
   var res_size = response.length;
@@ -135,16 +138,23 @@ function parseMac(mac)
   return "";        // unspecified
 }
 // --------------------------------------------------------------------------------------
-function validateMac()
+function convertDate(date)
 {
-  if($("#mac_address").val() == "")
-    $("#mac_address_form")[0].removeAttribute("class");
-    //$("#mac_address_form")[0].className = "";
-  else if(parseMac() != "")
-    $("#mac_address_form")[0].className = ".has-success.has-feedback";
-  else
-    $("#mac_address_form")[0].className = ".has-error.has-feedback";
+  // output - 2015-05-22T19:45:27+02:00
+  // input - 22.05.2015 19:46
+
+  if(date == "")    // debug
+    return;
+
+  var parts = date.split("\.");
+  var iso_date = parts[2].substring(0,4) + "-" + parts[1] + "-" + parts[0] + "T" + date.split(" ")[1] + ":00+02:00"; // iso 8601 format
+
+  //console.log(Date.parse(iso_date));
+  //console.log(iso_date);
+
+  return Date.parse(iso_date);
 }
+// --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
     // TODO - rozdelit na search.js a roaming.js ?
 
@@ -201,6 +211,7 @@ function validateMac()
         validate: function(validator, $field, options) {
             var value = $field.val();
  
+            // TODO - prazdny input vraci chybu
             if(parseMac(value) == "")
               return {
                   valid: false,
