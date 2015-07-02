@@ -34,6 +34,8 @@ $(document).ready(function(){
     // TODO - zakaz manualniho vstupu pro date_from, date_to ?
     // TODO - posun obrazku spravne vyplnene hodnoty pro data na spravnou pozici ?
     // TODO - spravna validace pri pridani retezce k datumu a kliknuti mimo -> zjistit, ktery event to je
+    // TODO - razeni vyslednych dat podle vysledku autentizace
+    // TODO - spravit efekt animace
 
     $("#myModal").modal('show');
     removeValidation();
