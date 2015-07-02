@@ -1,14 +1,6 @@
 $(document).ready(function(){
  
 // ----------------------------------------------
-    $('.datetimepicker1').datetimepicker({
-      locale: 'cs',
-      format:'DD.MM.YYYY HH:mm'
-    }).on('changeDate  show', function(e) {
-      $('#main_form').formValidation('revalidateField', 'date_from');
-      $('#main_form').formValidation('revalidateField', 'date_to');
-    });
-
 // ----------------------------------------------
  
   $("#results")[0].style.visibility = "hidden";
@@ -21,12 +13,27 @@ $(document).ready(function(){
 
 // ----------------------------------------------
 
+  // display datetimepicker on click on date_from
+  $("#date_from").datetimepicker({
+      locale: 'cs',
+      format: 'DD.MM.YYYY HH:mm'
+    }).on('changeDate show update click', function(e) {
+      $('#main_form').formValidation('revalidateField', 'date_from');
+    });
+
+  // display datetimepicker on click on date_to
+  $("#date_to").datetimepicker({
+      locale: 'cs',
+      format: 'DD.MM.YYYY HH:mm'
+    }).on('changeDate show update click', function(e) {
+      $('#main_form').formValidation('revalidateField', 'date_to');
+    });
 
 // ----------------------------------------------
   $("#search").click(function(){
-    // TODO - pridat signalizaci spravne vyplnenych hodnot
-    // TODO - automaticke otevreni kalendare pri kliku na vstup date_from, date_to
-    // TODO - zakaz manualniho vstupu pro date_from, date_to
+    // TODO - zakaz manualniho vstupu pro date_from, date_to ?
+    // TODO - posun obrazku spravne vyplnene hodnoty pro data na spravnou pozici ?
+    // TODO - spravna validace pri pridani retezce k datumu a kliknuti mimo -> zjistit, ktery event to je
 
     $("#myModal").modal('show');
     removeValidation();
