@@ -35,7 +35,8 @@ $(document).ready(function(){
     // TODO - posun obrazku spravne vyplnene hodnoty pro data na spravnou pozici ?
     // TODO - spravna validace pri pridani retezce k datumu a kliknuti mimo -> zjistit, ktery event to je
     // TODO - razeni vyslednych dat podle vysledku autentizace
-    // TODO - spravit efekt animace
+    // TODO - nastavit maximalni a minimalni data
+    // TODO - nastavit implicitni zacatek a konec dne pro vyber datumu
 
     $("#myModal").modal('show');
     removeValidation();
