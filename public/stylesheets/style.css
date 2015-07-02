@@ -33,6 +33,7 @@ a {
 /* animace pro vyhledavani */
 
 #loader {
+  margin-top: 25%;  /* spravna pocize vuci modalu */
   position: fixed;
   top: 50%;
   left: 50%;
@@ -111,18 +112,22 @@ a {
 
 #myModal {
   opacity: 1;
-  /* TODO - doprostred teto entity hodit animaci */
-  /*
-  opacity: 0.5;
-  width: 80%;
-  height: 80%;
-  padding: 0;
-  border-radius: 0;
-  background: #9E9E9D;
-  */
-  margin-left: 50px;
-  margin-right: 50px;
-  margin-top: 50px;
-  background: #000000;
-  /* background-color: #000000; */
+  position: fixed;
+  top: 25%;
+  left: 25%;
+  right: 25%;
+  bottom: 25%;
+  background-color: #000000;
+  border-radius: 15px;
 }
+
+/*
+.modal-body {
+  position: fixed;
+  top: 45%;
+  left: 45%;
+  right: 45%;
+  bottom: 45%;
+  background-color: #00FF00;
+}
+*/
