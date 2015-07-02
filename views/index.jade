@@ -37,7 +37,7 @@ block content
       label.col-sm-2.control-label(for = 'date_from') Od:
       .col-xs-3
         .datetimepicker1.input-group.date
-          input.form-control(type = 'text', id = "date_from")
+          input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_from", name = "date_from")
           span.input-group-addon
             span.glyphicon.glyphicon-calendar
 
@@ -45,7 +45,7 @@ block content
       label.col-sm-2.control-label(for = 'date_to') Do:
       .col-xs-3
         .datetimepicker1.input-group.date
-          input.form-control(type = 'text', id = "date_to")
+          input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_to", name = "date_to")
           span.input-group-addon
             span.glyphicon.glyphicon-calendar
 
@@ -61,103 +61,3 @@ block content
     h2(id = "results_h")
     table(id = "results", class = "table table-bordered")
   
-
-  //form#surveyForm.form-horizontal(method='post')
-  //  .form-group
-  //    label.col-xs-3.control-label Question
-  //    .col-xs-5
-  //      input.form-control(type='text', name='question')
-  //  .form-group
-  //    label.col-xs-3.control-label Options
-  //    .col-xs-5
-  //      input.form-control(type='text', name='option[]')
-  //    .col-xs-4
-  //      button.btn.btn-default.addButton(type='button')
-  //        i.fa.fa-plus
-  //  // The option field template containing an option field and a Remove button
-  //  #optionTemplate.form-group.hide
-  //    .col-xs-offset-3.col-xs-5
-  //      input.form-control(type='text', name='option[]')
-  //    .col-xs-4
-  //      button.btn.btn-default.removeButton(type='button')
-  //        i.fa.fa-minus
-  //  .form-group
-  //    .col-xs-5.col-xs-offset-3
-  //      button.btn.btn-default(type='submit') Validate
- 
- 
- 
- // script.
- //   $(document).ready(function() {
- //   // The maximum number of options
- //   var MAX_OPTIONS = 5;
- //   $('#surveyForm').formValidation({
- //   framework: 'bootstrap',
- //   icon: {
- //   valid: 'glyphicon glyphicon-ok',
- //   invalid: 'glyphicon glyphicon-remove',
- //   validating: 'glyphicon glyphicon-refresh'
- //   },
- //   fields: {
- //   question: {
- //   validators: {
- //   notEmpty: {
- //   message: 'The question required and cannot be empty'
- //   }
- //   }
- //   },
- //   'option[]': {
- //   validators: {
- //   notEmpty: {
- //   message: 'The option required and cannot be empty'
- //   },
- //   stringLength: {
- //   max: 100,
- //   message: 'The option must be less than 100 characters long'
- //   }
- //   }
- //   }
- //   }
- //   })
- //   // Add button click handler
- //   .on('click', '.addButton', function() {
- //   var $template = $('#optionTemplate'),
- //   $clone    = $template
- //   .clone()
- //   .removeClass('hide')
- //   .removeAttr('id')
- //   .insertBefore($template),
- //   $option   = $clone.find('[name="option[]"]');
- //   // Add new field
- //   $('#surveyForm').formValidation('addField', $option);
- //   })
- //   // Remove button click handler
- //   .on('click', '.removeButton', function() {
- //   var $row    = $(this).parents('.form-group'),
- //   $option = $row.find('[name="option[]"]');
- //   // Remove element containing the option
- //   $row.remove();
- //   // Remove field
- //   $('#surveyForm').formValidation('removeField', $option);
- //   })
- //   // Called after adding new field
- //   .on('added.field.fv', function(e, data) {
- //   // data.field   --> The field name
- //   // data.element --> The new field element
- //   // data.options --> The new field options
- //   if (data.field === 'option[]') {
- //   if ($('#surveyForm').find(':visible[name="option[]"]').length >= MAX_OPTIONS) {
- //   $('#surveyForm').find('.addButton').attr('disabled', 'disabled');
- //   }
- //   }
- //   })
- //   // Called after removing the field
- //   .on('removed.field.fv', function(e, data) {
- //   if (data.field === 'option[]') {
- //   if ($('#surveyForm').find(':visible[name="option[]"]').length < MAX_OPTIONS) {
- //   $('#surveyForm').find('.addButton').removeAttr('disabled');
- //   }
- //   }
- //   });
- //   });
-
