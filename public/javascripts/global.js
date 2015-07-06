@@ -32,11 +32,11 @@ $(document).ready(function(){
 // ----------------------------------------------
   $("#search").click(function(){
     // TODO - zakaz manualniho vstupu pro date_from, date_to ?
-    // TODO - posun obrazku spravne vyplnene hodnoty pro data na spravnou pozici ?
     // TODO - spravna validace pri pridani retezce k datumu a kliknuti mimo -> zjistit, ktery event to je
     // TODO - razeni vyslednych dat podle vysledku autentizace
     // TODO - nastavit maximalni a minimalni data
     // TODO - nastavit implicitni zacatek a konec dne pro vyber datumu
+    // TODO - u datumu neni videt cely placeholder
 
     $("#myModal").modal('show');
     removeValidation();
