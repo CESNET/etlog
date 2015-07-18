@@ -12,8 +12,8 @@ var log_schema = mongoose.Schema({
 });
 exports.log_schema = log_schema;
 
-mongoose.connect('mongodb://localhost/fticks');
-var record = mongoose.model('logy', log_schema, 'logy');
+mongoose.connect('mongodb://localhost/live');
+var record = mongoose.model('logs', log_schema, 'logs');
 exports.record = record;
 
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
