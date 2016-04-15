@@ -4,7 +4,7 @@
 # 
 # This script transforms given file in fticks format to json format.
 # script arguments:
-#   1) log file to process, file name must be in format "fticks-2015-11-30", which represent current date
+#   1) log file to process, file name must be in format "fticks-2015-11-30", which represents current date
 # errors processing log file are written to stderr
 #
 # =================================================================
