@@ -67,7 +67,7 @@
       replacement["\\x07"] = "<7>"
       replacement["\\x08"] = "<8>"
       replacement["\\x09"] = "<9>"
-      replacement["\\x0a"] = "<10>"
+      #replacement["\\x0a"] = "<10>"    # this doesnt make sense
       replacement["\\x0b"] = "<11>"
       replacement["\\x0c"] = "<12>"
       replacement["\\x0d"] = "<13>"
@@ -89,9 +89,6 @@
       replacement["\\x1d"] = "<29>"
       replacement["\\x1e"] = "<30>"
       replacement["\\x1f"] = "<31>"
-
-      # hack to be able to replace newlines
-      RS = ""
     }
     { 
       # ============================================================================
