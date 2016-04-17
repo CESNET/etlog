@@ -5,6 +5,7 @@
 # This script transforms given file in fticks format to json format.
 # script arguments:
 #   1) log file to process, file name must be in format "fticks-2015-11-30", which represents current date
+#   log file is read by logtail, which only reads the part, which hasnt been read by previous previous runs of logtail
 # errors processing log file are written to stderr
 #
 # =================================================================
@@ -41,7 +42,7 @@
     exit 1
   fi
 
-  gawk -v year=$year '
+  logtail -f $1 | gawk -v year=$year '
     BEGIN {
       months["Jan"] = 1
       months["Feb"] = 2
