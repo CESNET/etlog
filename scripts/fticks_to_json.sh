@@ -42,7 +42,7 @@
     exit 1
   fi
 
-  logtail -f $1 | gawk -v year=$year '
+  logtail -o $1.offset -f $1 | gawk -v year=$year '
     BEGIN {
       months["Jan"] = 1
       months["Feb"] = 2
@@ -93,6 +93,8 @@
     { 
       # ============================================================================
       # ============================================================================
+      # replace special characters
+      # TODO
       
       # replace non printable characters
       # this is slow but works fine
