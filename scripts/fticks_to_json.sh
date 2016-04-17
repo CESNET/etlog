@@ -89,12 +89,15 @@
       replacement["\\x1d"] = "<29>"
       replacement["\\x1e"] = "<30>"
       replacement["\\x1f"] = "<31>"
+
+      # hack to be able to replace newlines
+      RS = ""
     }
     { 
       # ============================================================================
       # ============================================================================
       # replace special characters
-      # TODO
+      gsub(/\\/, "\\\\", $0);   # backslash
       
       # replace non printable characters
       # this is slow but works fine
