@@ -31,7 +31,7 @@ function createTableBody(json, attributes, size)
 // --------------------------------------------------------------------------------------
 function removeValidation()
 {
- var username =  {
+  var username =  {
       validators: {
           username: {
           }
@@ -48,8 +48,8 @@ function removeValidation()
   var date =  {
       validators: {
           date: {
-            format: 'MM\.DD\.YYYY hh:mm',
-            message: 'Není platné datum.'
+            //format: 'MM\.DD\.YYYY hh:mm',
+            //message: 'Není platné datum.'
           }
       }
   };
@@ -63,7 +63,7 @@ function removeValidation()
 // --------------------------------------------------------------------------------------
 function addValidation()
 {
- var username =  {
+  var username =  {
       validators: {
           username: {
           }
@@ -136,6 +136,55 @@ function convertDate(date)
   return Date.parse(iso_date);
 }
 // --------------------------------------------------------------------------------------
+function search()
+{
+  $("#myModal").modal('show');
+  //removeValidation();
+  
+  var input = {
+    "username": $("#username").val(),
+    "mac": parseMac($("#mac_address").val()),
+    "result": $("#auth_result").val(),
+    "from": convertDate($("#date_from").val()),
+    "to": convertDate($("#date_to").val())
+  };
+
+  $("#results_h")[0].innerHTML = "";
+  $("#results")[0].innerHTML = "";
+  $("#results")[0].style.visibility = "hidden";
+  
+  $.ajax({
+    type: 'post',
+    url: "/search",
+    dataType: "json",
+    data: input,
+    success: function(json){
+    },
+    complete: function(json){
+      $("#myModal").modal('hide');
+      //$("#search")[0].disabled = false;
+      //addValidation();
+      
+      if(json.responseText == "[]") {
+        $("#results_h")[0].innerHTML = "Zadaným parametrům vyhledávání neodpovídají žádné záznamy";
+      }
+      else {
+        $("#results_h")[0].innerHTML = "Nalezené záznamy";
+        document.getElementById("results").style.visibility = "visible";
+        
+        // table setup
+        // reversed order
+        var head = ["výsledek autentizace", "uživatelské jméno", "mac adresa", "navštívená instituce", "navštívená země", "realm", "timestamp"];
+        var attributes = ["result", "pn", "csi", "visinst", "viscountry", "realm", "timestamp"];
+        var size = attributes.length;
+        
+        createTableHeader(size, head);
+        createTableBody(json, attributes, size);
+      }
+    }
+  });
+}
+// --------------------------------------------------------------------------------------
 $(document).ready(function(){
  
 // --------------------------------------------------------------------------------------
@@ -174,55 +223,9 @@ $(document).ready(function(){
     // TODO - nastavit maximalni a minimalni data
     // TODO - nastavit implicitni zacatek a konec dne pro vyber datumu
     // TODO - u datumu neni videt cely placeholder
-
-    $("#myModal").modal('show');
-    removeValidation();
-    
-    var input = {
-      "username": $("#username").val(),
-      "mac": parseMac($("#mac_address").val()),
-      "result": $("#auth_result").val(),
-      "from": convertDate($("#date_from").val()),
-      "to": convertDate($("#date_to").val())
-    };
-
-    $("#results_h")[0].innerHTML = "";
-    $("#results")[0].innerHTML = "";
-    $("#results")[0].style.visibility = "hidden";
-    
-// --------------------------------------------------------------------------------------
-
-    $.ajax({
-      type: 'post',
-      url: "/search",
-      dataType: "json",
-      data: input,
-      success: function(json){
-      },
-      complete: function(json){
-        $("#myModal").modal('hide');
-        //$("#search")[0].disabled = false;
-        addValidation();
-        
-        if(json.responseText == "[]") {
-          $("#results_h")[0].innerHTML = "Zadaným parametrům vyhledávání neodpovídají žádné záznamy";
-        }
-        else {
-          $("#results_h")[0].innerHTML = "Nalezené záznamy";
-          document.getElementById("results").style.visibility = "visible";
-          
-          // table setup
-          // reversed order
-          var head = ["výsledek autentizace", "uživatelské jméno", "mac adresa", "navštívená instituce", "navštívená země", "realm", "timestamp"];
-          var attributes = ["result", "pn", "csi", "visinst", "viscountry", "realm", "timestamp"];
-          var size = attributes.length;
-          
-          createTableHeader(size, head);
-          createTableBody(json, attributes, size);
-        }
-      }
-    });
+    search();
   });
+
 // --------------------------------------------------------------------------------------
     // TODO - rozdelit na search.js a roaming.js ?
 
