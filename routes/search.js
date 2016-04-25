@@ -9,6 +9,7 @@ function search(req, res) {
   var dict = {};
 
   // debug
+  console.log("req.body:");
   console.log(req.body);
 
   if(req.body.username == "" && req.body.mac == "")   /* no main search key was entered */
@@ -39,6 +40,7 @@ function search(req, res) {
   // TODO - pridat razeni dle data od nejstarsiho po nejnovejsi ?
 
   // debug
+  console.log("dict:");
   console.log(dict);
 
   req.db.record.find(dict, { _id: 0 }, function (err, items) {      // do not display object id in result
