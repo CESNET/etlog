@@ -1,91 +1,3 @@
-$(document).ready(function(){
- 
-// ----------------------------------------------
-// ----------------------------------------------
- 
-  $("#results")[0].style.visibility = "hidden";
-// ----------------------------------------------
-  /* search by enter key */
-  $(document).keypress(function(e) {
-    if(e.which == 13)    /* enter */
-      $("#search").click();
-  });
-
-// ----------------------------------------------
-
-  // display datetimepicker on click on date_from
-  $("#date_from").datetimepicker({
-      locale: 'cs',
-      format: 'DD.MM.YYYY HH:mm'
-    }).on('changeDate show update click', function(e) {
-      $('#main_form').formValidation('revalidateField', 'date_from');
-    });
-
-  // display datetimepicker on click on date_to
-  $("#date_to").datetimepicker({
-      locale: 'cs',
-      format: 'DD.MM.YYYY HH:mm'
-    }).on('changeDate show update click', function(e) {
-      $('#main_form').formValidation('revalidateField', 'date_to');
-    });
-
-// ----------------------------------------------
-  $("#search").click(function(){
-    // TODO - zakaz manualniho vstupu pro date_from, date_to ?
-    // TODO - spravna validace pri pridani retezce k datumu a kliknuti mimo -> zjistit, ktery event to je
-    // TODO - razeni vyslednych dat podle vysledku autentizace
-    // TODO - nastavit maximalni a minimalni data
-    // TODO - nastavit implicitni zacatek a konec dne pro vyber datumu
-    // TODO - u datumu neni videt cely placeholder
-
-    $("#myModal").modal('show');
-    removeValidation();
-    
-    var input = {
-      "username": $("#username").val(),
-      "mac": parseMac($("#mac_address").val()),
-      "result": $("#auth_result").val(),
-      "from": convertDate($("#date_from").val()),
-      "to": convertDate($("#date_to").val())
-    };
-
-    $("#results_h")[0].innerHTML = "";
-    $("#results")[0].innerHTML = "";
-    $("#results")[0].style.visibility = "hidden";
-    
-// ----------------------------------------------
-
-    $.ajax({
-      type: 'post',
-      url: "/search",
-      dataType: "json",
-      data: input,
-      success: function(json){
-      },
-      complete: function(json){
-        $("#myModal").modal('hide');
-        //$("#search")[0].disabled = false;
-        addValidation();
-        
-        if(json.responseText == "[]") {
-          $("#results_h")[0].innerHTML = "Zadaným parametrům vyhledávání neodpovídají žádné záznamy";
-        }
-        else {
-          $("#results_h")[0].innerHTML = "Nalezené záznamy";
-          document.getElementById("results").style.visibility = "visible";
-          
-          // table setup
-          // reversed order
-          var head = ["výsledek autentizace", "uživatelské jméno", "mac adresa", "navštívená instituce", "navštívená země", "realm", "timestamp"];
-          var attributes = ["result", "pn", "csi", "visinst", "viscountry", "realm", "timestamp"];
-          var size = attributes.length;
-          
-          createTableHeader(size, head);
-          createTableBody(json, attributes, size);
-        }
-      }
-    });
-  });
 // --------------------------------------------------------------------------------------
 function createTableHeader(size, head)
 {
@@ -224,6 +136,93 @@ function convertDate(date)
   return Date.parse(iso_date);
 }
 // --------------------------------------------------------------------------------------
+$(document).ready(function(){
+ 
+// --------------------------------------------------------------------------------------
+ 
+  $("#results")[0].style.visibility = "hidden";
+// --------------------------------------------------------------------------------------
+  /* search by enter key */
+  $(document).keypress(function(e) {
+    if(e.which == 13)    /* enter */
+      $("#search").click();
+  });
+
+// --------------------------------------------------------------------------------------
+
+  // display datetimepicker on click on date_from
+  $("#date_from").datetimepicker({
+      locale: 'cs',
+      format: 'DD.MM.YYYY HH:mm'
+    }).on('changeDate show update click', function(e) {
+      $('#main_form').formValidation('revalidateField', 'date_from');
+    });
+
+  // display datetimepicker on click on date_to
+  $("#date_to").datetimepicker({
+      locale: 'cs',
+      format: 'DD.MM.YYYY HH:mm'
+    }).on('changeDate show update click', function(e) {
+      $('#main_form').formValidation('revalidateField', 'date_to');
+    });
+
+// --------------------------------------------------------------------------------------
+  $("#search").click(function(){
+    // TODO - zakaz manualniho vstupu pro date_from, date_to ?
+    // TODO - spravna validace pri pridani retezce k datumu a kliknuti mimo -> zjistit, ktery event to je
+    // TODO - razeni vyslednych dat podle vysledku autentizace
+    // TODO - nastavit maximalni a minimalni data
+    // TODO - nastavit implicitni zacatek a konec dne pro vyber datumu
+    // TODO - u datumu neni videt cely placeholder
+
+    $("#myModal").modal('show');
+    removeValidation();
+    
+    var input = {
+      "username": $("#username").val(),
+      "mac": parseMac($("#mac_address").val()),
+      "result": $("#auth_result").val(),
+      "from": convertDate($("#date_from").val()),
+      "to": convertDate($("#date_to").val())
+    };
+
+    $("#results_h")[0].innerHTML = "";
+    $("#results")[0].innerHTML = "";
+    $("#results")[0].style.visibility = "hidden";
+    
+// --------------------------------------------------------------------------------------
+
+    $.ajax({
+      type: 'post',
+      url: "/search",
+      dataType: "json",
+      data: input,
+      success: function(json){
+      },
+      complete: function(json){
+        $("#myModal").modal('hide');
+        //$("#search")[0].disabled = false;
+        addValidation();
+        
+        if(json.responseText == "[]") {
+          $("#results_h")[0].innerHTML = "Zadaným parametrům vyhledávání neodpovídají žádné záznamy";
+        }
+        else {
+          $("#results_h")[0].innerHTML = "Nalezené záznamy";
+          document.getElementById("results").style.visibility = "visible";
+          
+          // table setup
+          // reversed order
+          var head = ["výsledek autentizace", "uživatelské jméno", "mac adresa", "navštívená instituce", "navštívená země", "realm", "timestamp"];
+          var attributes = ["result", "pn", "csi", "visinst", "viscountry", "realm", "timestamp"];
+          var size = attributes.length;
+          
+          createTableHeader(size, head);
+          createTableBody(json, attributes, size);
+        }
+      }
+    });
+  });
 // --------------------------------------------------------------------------------------
     // TODO - rozdelit na search.js a roaming.js ?
 
@@ -343,7 +342,5 @@ function convertDate(date)
         }
     });
 });
-
-
 
 
