@@ -253,7 +253,7 @@ function convertDate(date)
 // --------------------------------------------------------------------------------------
 // custom validation
 
- FormValidation.Validator.username = {
+    FormValidation.Validator.username = {
         validate: function(validator, $field, options) {
             var value = $field.val();
  
@@ -276,7 +276,7 @@ function convertDate(date)
     };
 // --------------------------------------------------------------------------------------
 
- FormValidation.Validator.mac = {
+    FormValidation.Validator.mac = {
         validate: function(validator, $field, options) {
             var value = $field.val();
             
