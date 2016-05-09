@@ -104,16 +104,16 @@
       
       # ============================================================================
 
-      # datum a cas
+      # date and time
       month=$1
       day=$2
-      time=$3   # ve formatu "hodiny:minuty:sekundy"
+      time=$3   # in format "hours:minutes:seconds"
       
       # uvodni rozdeleni pomoci #
       split($0, fields, "#") 
       
-      # dalsi rozdeleni podle =
-      # na prvnim indexu je cas, adresa serveru a uvodni informace logu
+      # next split by =
+      # first index constains time, server address and opening log information
       split(fields[2], realm, "=")
       split(fields[3], viscountry, "=")
       split(fields[4], visinst, "=")
@@ -121,25 +121,25 @@
       split(fields[6], pn, "=")
       split(fields[7], result, "=")
 
-      # rozdeleni casu na hodiny, minuty, sekundy
+      # split time to hours, minutes, seconds
       split(time, hms, ":");
       
       # ============================================================================
 
-      # uprava mac adresy
+      # mac address adjustment
       gsub(":", "", csi[2])
       gsub("-", "", csi[2])
       gsub("\\.", "", csi[2])
       
       # ============================================================================
-      # TODO - vylepsit err handling
+      # TODO - improve error handling
 
       if(length(csi[2]) != 12 && length(csi[2]) != 0) {
         printf("%s:%d: skipped, invalid mac address\n", FILENAME, FNR) > "/dev/stderr"
         next
       }
 
-      # zrejme doslo k nejakemu problemu s parsovanim celeho zaznamu
+      # probably problem with parsing of whole record occured
       if(realm[2] == "" || result[2] == "") {
         printf("%s:%d: skipped, general error in parsing current record\n", FILENAME, FNR) > "/dev/stderr"
         next
