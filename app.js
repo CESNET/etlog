@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var database = require( './db' );
 var fs = require( 'fs' );
 
+// -----------------------------------------------------------
 // routes
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -15,6 +16,7 @@ var mac = require('./routes/mac');
 var results = require('./routes/results');
 var roaming = require('./routes/roaming');
 var search = require('./routes/search');
+
 // -----------------------------------------------------------
 // passport
 var passport = require('passport');
@@ -28,10 +30,8 @@ var saml_test = require('./routes/saml_test');
 // callback
 var callback = require('./routes/callback');
 
-// sso
-//var sso = require('./routes/sso');
-
 var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -65,13 +65,6 @@ app.use('/test', saml_test);
 app.use('/login/callback', callback);
 
 
-
-//app.get('/SSOLogin',
-//passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
-//function(req, res) {
-//  res.redirect('/');
-//}
-//);
 
 app.post('/login/callback',
   //passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
@@ -144,13 +137,11 @@ var str = new SamlStrategy(
     //callbackUrl: 'http:radlog.cesnet.cz:3000/login/callback',
     //entryPoint: 'https://idp2.civ.cvut.cz/idp/profile/SAML2/Redirect/SSO',
     //issuer: 'https://idp2.civ.cvut.cz/idp/shibboleth',
+
     callbackUrl: 'http://radlog.cesnet.cz:3000/login/callback',
-    //path: '/login/callback',
     entryPoint: 'https://whoami-dev.cesnet.cz/idp/profile/SAML2/Redirect/SSO',
     issuer: 'https://radlog.cesnet.cz/',
     protocol: 'https://',
-    //generateServiceProviderMetadata: '/test',
-    //cert: 'MIIFSDCCBDCgAwIBAgIQBXyYdVS7UxZI1dayu2ZXbDANBgkqhkiG9w0BAQsFADBkMQswCQYDVQQGEwJOTDEWMBQGA1UECBMNTm9vcmQtSG9sbGFuZDESMBAGA1UEBxMJQW1zdGVyZGFtMQ8wDQYDVQQKEwZURVJFTkExGDAWBgNVBAMTD1RFUkVOQSBTU0wgQ0EgMzAeFw0xNTExMTMwMDAwMDBaFw0xODExMjExMjAwMDBaMIGOMQswCQYDVQQGEwJDWjEdMBsGA1UECAwUSGxhdm7DrSBtxJtzdG8gUHJhaGExEDAOBgNVBAcTB1ByYWhhIDYxMzAxBgNVBAoMKsSMZXNrw6kgdnlzb2vDqSB1xI1lbsOtIHRlY2huaWNrw6kgdiBQcmF6ZTEZMBcGA1UEAxMQaWRwMi5jaXYuY3Z1dC5jejCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKFi5O/MIGOQ7k41iOHwDzkOIJL/0F5TZyR6sTBSLWTOlTo5JIeaWj4vcL6Vww6kbnV9uQci/8eEOSrnI9DHrfA59vjgcH67PE1EzEhgCaCfrcNT1RnLBsb0OgyXay9sfr/Ylq0UORDTyPNSp8zDOPpwzvcz5dmfQ4uOOP1R6H5h1BPJ0MlRaTtnuIaNQ71nUHmy0UWQc2dJTqf0xEXUSzbr28LD9TlaJjm9oPdnwPxPGUvc5YjxAe5ElH179C/rIkxaz0313LwOrYWEdNn0KNJ6mRkD4Xcj0MiJVD201Gjw6nSWnXLvfqOPxpv+vfKpnGnAUzBaMySV0spSVkU/iUECAwEAAaOCAckwggHFMB8GA1UdIwQYMBaAFGf9iCAUJ5jHCdIlGbvpURFjdVBiMB0GA1UdDgQWBBQ5zJX+DRBUzFYzzJTV7wxCcFZTOTAbBgNVHREEFDASghBpZHAyLmNpdi5jdnV0LmN6MA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwawYDVR0fBGQwYjAvoC2gK4YpaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL1RFUkVOQVNTTENBMy5jcmwwL6AtoCuGKWh0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9URVJFTkFTU0xDQTMuY3JsMEwGA1UdIARFMEMwNwYJYIZIAYb9bAEBMCowKAYIKwYBBQUHAgEWHGh0dHBzOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwCAYGZ4EMAQICMG4GCCsGAQUFBwEBBGIwYDAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQuY29tMDgGCCsGAQUFBzAChixodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20vVEVSRU5BU1NMQ0EzLmNydDAMBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBCwUAA4IBAQAEdk6PHL6Vy1eHvc76Rvsdf1eeZYgQhC83Mu3Jl7YdJ3Gn0e9/Ae2uFUI3ojr0OUEqyLNyQyeDENJQ0bmn8N10sXxSSx4kTXe+FXjpCk/voBuAwIkm1e00/xmgfWLq40FVmZTeA4+h8NYs+ZVSDvLlBnsSj9urq61ARMT3jGlNeTzC0V+6CE9SizLKMJ1c5/jNzGM0V9zEp+fa293vqzGiIWE+Jk982d31nGCZR1WdrPcjGd2s3oEPc09v+pn5TTdHEeo+ANYmEJCunBeqEsRfmPxWNVpqZB+YKKqbDRGVQpSJUN8ck7lFolqJBnncLaNXBJP3EL3PvAXtdbMpcuHB',       // certifikat idp2.civ.cvut.cz
     
     // zatim nechat byt
     decryptionPvk: pvk,

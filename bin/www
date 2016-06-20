@@ -6,7 +6,8 @@
 
 var app = require('../app');
 var debug = require('debug')('radlog:server');
-var http = require('http');
+var https = require('https');
+var fs = require( 'fs' );
 
 /**
  * Get port from environment and store in Express.
@@ -15,11 +16,21 @@ var http = require('http');
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
+
 /**
- * Create HTTP server.
+ * Set up HTTPS.
  */
 
-var server = http.createServer(app);
+var https_options = {
+  key:  fs.readFileSync('/etc/ssl/private/radlog.cesnet.cz.key.pem', 'utf-8'),
+  cert: fs.readFileSync('/etc/ssl/certs/radlog.cesnet.cz.crt.pem', 'utf-8')
+};
+
+/**
+ * Create HTTPS server instead of default HTTP server.
+ */
+
+var server = https.createServer(https_options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
