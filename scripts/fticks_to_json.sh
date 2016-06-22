@@ -44,6 +44,14 @@
 
   logtail -o $1.offset -f $1 | gawk -v year=$year '
     BEGIN {
+      # monitoring mac address which does not have to be stored in database
+      # only 4 bytes are defined, the rest is generated
+      monit_addr=706f6c69
+      monit_regex="^"monit_addr".*$"
+
+      # ============================================================================
+      # define month numbers
+
       months["Jan"] = 1
       months["Feb"] = 2
       months["Mar"] = 3
@@ -56,6 +64,9 @@
       months["Oct"] = 10
       months["Nov"] = 11
       months["Dec"] = 12
+
+      # ============================================================================
+      # define replacement for special characters
 
       replacement["\\x00"] = "<0>"
       replacement["\\x01"] = "<1>"
@@ -132,6 +143,7 @@
       gsub("\\.", "", csi[2])
       
       # ============================================================================
+      # error detection
       # TODO - improve error handling
 
       if(length(csi[2]) != 12 && length(csi[2]) != 0) {
@@ -142,6 +154,13 @@
       # probably problem with parsing of whole record occured
       if(realm[2] == "" || result[2] == "") {
         printf("%s:%d: skipped, general error in parsing current record\n", FILENAME, FNR) > "/dev/stderr"
+        next
+      }
+
+      # ============================================================================
+      # monitoring address detection
+
+      if(tolower(csi[2]) ~ monit_regex) {
         next
       }
 
