@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var database = require( './db' );
 var fs = require( 'fs' );
+var http = require('http');
 
 // -----------------------------------------------------------
 // routes
@@ -31,6 +32,18 @@ var saml_test = require('./routes/saml_test');
 var callback = require('./routes/callback');
 
 var app = express();
+
+
+// TODO ??
+//http.createServer(app, 
+//  function (req, res) {
+//    //return res.redirect("https://" + req.headers["host"] + req.url);
+//    res.writeHead(200);
+//    res.end("hello world\n");
+//  }
+//).listen(80);
+
+
 
 
 // view engine setup
@@ -187,5 +200,13 @@ console.log("metadata");
 
 
 // -----------------------------------------------------------
+
+module.exports = {
+     create: function (settings, app, cb) {
+             var options = setup(settings.ssl);
+                   return start(app, options).listen(settings.port, cb);
+                      }
+};
+
 
 module.exports = app;
