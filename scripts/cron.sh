@@ -2,7 +2,7 @@
 #
 # Author: Václav Mach
 # 
-# This script runs fticks_to_json.sh and is intended to me run by cron at regular intervals.
+# This script runs fticks_to_json.sh and is intended to be run by cron at regular intervals.
 # Script takes no arguments.
 
 # current date in format YYYY-MM-DD
