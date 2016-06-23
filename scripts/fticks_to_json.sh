@@ -42,7 +42,7 @@
     exit 1
   fi
 
-  logtail -o $1.offset -f $1 | gawk -v year=$year '
+  /usr/sbin/logtail -o $1.offset -f $1 | gawk -v year=$year '
     BEGIN {
       # monitoring mac address which does not have to be stored in database
       # only 4 bytes are defined, the rest is generated
