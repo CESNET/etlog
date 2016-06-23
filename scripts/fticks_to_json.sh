@@ -24,13 +24,13 @@
 
   if [[ $# -ne 1 ]]
   then
-    echo "no log file given"
+    (>&2 echo "no log file given")
     exit 1
   fi
 
   if [[ ! -f "$1" ]]
   then
-    echo "provided log file $1 does not exist"
+    (>&2 echo "provided log file $1 does not exist")
     exit 1
   fi
      
@@ -38,7 +38,7 @@
 
   if [[ ! $year =~ [0-9]{4} ]]
   then
-    echo "bad log file name. Cannot determine current year from its name."
+    (>&2 echo "bad log file name. Cannot determine current year from its name.")
     exit 1
   fi
 
