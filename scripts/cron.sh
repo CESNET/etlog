@@ -21,6 +21,6 @@ logfile="/var/log/fticks-$date"
 errlog="/var/log/fticks_err-$date.log"
 
 # convert to json and import to database
-./fticks_to_json.sh $logfile 2>$errlog | mongoimport -d $database -c $collection
+/var/www/radlog/fticks_to_json.sh $logfile 2>$errlog | mongoimport -d $database -c $collection
 
 exit 0
