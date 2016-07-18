@@ -1,7 +1,6 @@
 extends layout
 
 block content
-  
   //- animace pri vyhledavani
   #myModal.modal.fade.modal-white
     .modal-dialog
@@ -53,4 +52,17 @@ block content
     h2(id = "results_h")
     table(id = "results", class = "table table-bordered")
   
+block includes
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-datetimepicker.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/formValidation.min.css')
+ 
+    script(src='/javascripts/jquery.min.js')
+    script(src='/javascripts/bootstrap.min.js')
+    script(src='/javascripts/formValidation.min.js')
+    script(src='/javascripts/formvalidation_bootstrap.min.js')
+    script(src='/javascripts/moment-with-locales.js')
+    script(src='/javascripts/bootstrap-datetimepicker.js')
+    script(src='/javascripts/global.js')
 
