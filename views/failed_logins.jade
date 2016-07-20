@@ -2,8 +2,8 @@ extends layout
 
 block content
   
-  //- vstup - parametry vyhledavani
-  //- "prazdna" akce pro zabraneni presmerovani
+  //- input - search parameters
+  //- "empty" action to prevent redirection
   form.form-horizontal(method = 'get' action="javascript:void(0);", id = "main_form")
     
     .form-group
@@ -13,7 +13,7 @@ block content
     
     .form-group
       .col-sm-offset-2.col-sm-10
-        button.btn.btn-default(type = 'submit', id = "fail_search") Hledej
+        button.btn.btn-default(type = 'submit', id = "failed_logins_search") Hledej
 
 
   div
@@ -23,3 +23,5 @@ block content
 
 block includes
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    script(src='/javascripts/jquery.min.js')
+    script(src='/javascripts/failed_logins_search.js')
