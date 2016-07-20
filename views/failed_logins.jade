@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  
+  //- vstup - parametry vyhledavani
+  //- "prazdna" akce pro zabraneni presmerovani
+  form.form-horizontal(method = 'get' action="javascript:void(0);", id = "main_form")
+    
+    .form-group
+      label.col-sm-2.control-label(for = 'percent') Minimální procento neúspěšných přihlášení:
+      .col-xs-3
+        input.form-control(type = 'text', placeholder = '10', id = "percent", name = "percent")
+    
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        button.btn.btn-default(type = 'submit', id = "fail_search") Hledej
+
+
+  div
+    h2(id = "results_h")
+    table(id = "results", class = "table table-bordered")
+  
+
