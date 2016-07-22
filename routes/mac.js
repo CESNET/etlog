@@ -1,29 +1,93 @@
 var express = require('express');
 var router = express.Router();
-
-/*
-* GET mac address
-*/
-router.get('/:mac_addr', function(req, res) {
-  req.db.record.find({"csi" : req.params.mac_addr}, function (err, items) {
-    if(err)
-      res.send(err);
-
-    res.json(items);
-  });
+// --------------------------------------------------------------------------------------
+router.get('/', function(req, res) {
+  search(req, res, respond);
 });
+// --------------------------------------------------------------------------------------
+function search(req, res) {
+  req.db.record.aggregate(  // search db
+  [ 
+  { 
+    $match : 
+      { 
+        pn : 
+          { 
+            $ne : ""        // no empty usernames
+          } 
+      } 
+  },  
+  { 
+    $group :                // group by pair [ username, mac_address ]
+      { 
+        _id : 
+          { 
+            pn : "$pn", csi : "$csi" 
+          } 
+      } 
+  },  
+  { 
+    $group :                // group again by username
+      { 
+        _id : 
+          { 
+            pn : "$_id.pn" 
+          }, 
+        count : 
+          { 
+            $sum :  1       // count number of occurences
+          } 
+      } 
+  }, 
+  { 
+    $match :                // match
+      { 
+        count : 
+          { 
+            $gt : 2         // more than 2 mac addresses
+          } 
+      } 
+  } , 
+  { 
+    $sort :                 // sort from highest to lowest
+    { 
+      count : -1  
+    }
+  } 
+  ],
+    function(err, items) {
+      if(err == null)
+        items = filter(items);
 
-/*
-* GET mac + result
-*/
-router.get('/:mac_addr/results/:result', function(req, res) {
-  req.db.record.find({"csi" : req.params.mac_addr, "result" : req.params.result}, function (err, items) {
-    if(err)
-      res.send(err);
+      //console.log(items);
 
-    res.json(items);
+      respond(err, items, res);
   });
-});
+}
+// --------------------------------------------------------------------------------------
+function respond(err, items, res) {
+  if(err) {
+    console.log(err);
+    res.send(err);
+    return;
+  }
+  
+  // debug
+  //console.log(items);
 
+  res.json(items);
+}
+// --------------------------------------------------------------------------------------
+function filter(items)
+{
+  dict = {};
 
+  for(var item in items) {
+    var key = items[item];
+    dict[key._id.pn] = key.count    // save count on username
+  }
+
+  return dict;
+}
+// --------------------------------------------------------------------------------------
 module.exports = router;
