@@ -89,6 +89,8 @@ $(document).ready(function(){
     search();
   });
 
+  //  TODO - pridat nejake moznosti razeni
+
 });
 
 
