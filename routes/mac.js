@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res) {
+  res.render('mac', { title: 'Ukazkove rozhrani pro vyhledavani nad radius logy' });
+});
+// --------------------------------------------------------------------------------------
+router.post('/search', function(req, res) {
   search(req, res, respond);
 });
 // --------------------------------------------------------------------------------------
