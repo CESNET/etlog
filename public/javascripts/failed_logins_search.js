@@ -20,31 +20,14 @@ function create_table_body(json, size)
   for(var key in response) {
     var row = body.insertRow(0);
 
-    // username, successful logins, failed logins, ratio, 
+    // username, ratio
     // username
     cell = row.insertCell(-1);
     cell.innerHTML = key;
 
-    // successful logins
-    cell = row.insertCell(-1);
-    var ok = response[key]["OK"];
-    if(ok == undefined)
-      ok = 0;
-    cell.innerHTML = ok;
-
-    // failed logins
-    cell = row.insertCell(-1);
-    var fail = response[key]["FAIL"];
-    cell.innerHTML = fail;
-
     // ratio
     cell = row.insertCell(-1);
-    var ratio = (fail / ok) * 100;
-
-    if (ratio == Number.POSITIVE_INFINITY)    // no successful logins
-      ratio = 100;  // 100 %
-    
-    cell.innerHTML = ratio;
+    cell.innerHTML = response[key];
   }
 }
 // --------------------------------------------------------------------------------------
@@ -81,7 +64,7 @@ function search()
         
         // table setup
         // reversed order
-        var head = ["procentuální poměr přihlášení", "neúspěšná přihlášení", "úspěšná přihlášení", "uživatelské jméno"];
+        var head = ["procentuální poměr přihlášení", "uživatelské jméno"];
         var size = head.length;
         
         create_table_header(size, head);
