@@ -14,7 +14,7 @@ var http = require('http');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var mac = require('./routes/mac');
-//var results = require('./routes/results');
+var roaming = require('./routes/roaming');
 var failed_logins = require('./routes/failed_logins');
 var search = require('./routes/search');
 var failed_logins_search = require('./routes/failed_logins_search');
@@ -72,6 +72,7 @@ app.use('/', index);
 //app.use('/results', results);
 app.use('/search', search);
 app.use('/mac', mac);
+app.use('/roaming', roaming);
 app.use('/failed_logins', failed_logins);
 app.use('/failed_logins_search', failed_logins_search);
 
