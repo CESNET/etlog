@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------
-function createTableHeader(size, head)
+function create_table_header(size, head)
 {
   var header = $("#results")[0].createTHead();
   var row = header.insertRow(0);
@@ -10,22 +10,41 @@ function createTableHeader(size, head)
   }
 }
 // --------------------------------------------------------------------------------------
-function createTableBody(json, attributes, size)
+function create_table_body(json, size)
 {
   var body = $("#results")[0].createTBody();
   
   var response = JSON.parse(json.responseText);
-  var res_size = response.length;
+  var res_size = Object.keys(response).length;      // dict
 
-  for(i = 0; i < res_size; i++) {
+  for(var key in response) {
     var row = body.insertRow(0);
 
-    for(j = size; j > 0; j--) {
-      cell = row.insertCell(-1);
-      cell.innerHTML = response[i][attributes[j - 1]];
-    }
+    // username, successful logins, failed logins, ratio, 
+    // username
+    cell = row.insertCell(-1);
+    cell.innerHTML = key;
 
-    cell.className = cell.innerHTML;  // set class for last column - for coloring
+    // successful logins
+    cell = row.insertCell(-1);
+    var ok = response[key]["OK"];
+    if(ok == undefined)
+      ok = 0;
+    cell.innerHTML = ok;
+
+    // failed logins
+    cell = row.insertCell(-1);
+    var fail = response[key]["FAIL"];
+    cell.innerHTML = fail;
+
+    // ratio
+    cell = row.insertCell(-1);
+    var ratio = (fail / ok) * 100;
+
+    if (ratio == Number.POSITIVE_INFINITY)    // no successful logins
+      ratio = 100;  // 100 %
+    
+    cell.innerHTML = ratio;
   }
 }
 // --------------------------------------------------------------------------------------
@@ -62,21 +81,18 @@ function search()
         
         // table setup
         // reversed order
-        var head = ["výsledek autentizace", "uživatelské jméno", "mac adresa", "navštívená instituce", "navštívená země", "realm", "timestamp"];
-        var attributes = ["result", "pn", "csi", "visinst", "viscountry", "realm", "timestamp"];
-        var size = attributes.length;
+        var head = ["procentuální poměr přihlášení", "neúspěšná přihlášení", "úspěšná přihlášení", "uživatelské jméno"];
+        var size = head.length;
         
-        createTableHeader(size, head);
-        createTableBody(json, attributes, size);
+        create_table_header(size, head);
+        create_table_body(json, size);
       }
     }
   });
 }
 // --------------------------------------------------------------------------------------
 $(document).ready(function(){
- 
 // --------------------------------------------------------------------------------------
- 
   $("#results")[0].style.visibility = "hidden";
 // --------------------------------------------------------------------------------------
   /* search by enter key */
@@ -89,7 +105,6 @@ $(document).ready(function(){
   $("#failed_logins_search").click(function(){
     search();
   });
-
 
 });
 
