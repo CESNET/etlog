@@ -27,7 +27,8 @@ var https_options = {
   key:  fs.readFileSync('/etc/ssl/private/radlog.cesnet.cz.key.pem', 'utf-8'),
   cert: fs.readFileSync('/etc/ssl/certs/radlog.cesnet.cz.crt.pem', 'utf-8'),
   ca: [
-    fs.readFileSync('/etc/ssl/certs/TERENA_SSL_CA_2.pem', 'utf8')
+    fs.readFileSync('/etc/ssl/certs/TERENA_SSL_CA_2.pem', 'utf8'),
+    fs.readFileSync('/etc/ssl/certs/USERTrust_RSA_Certification_Authority.pem', 'utf8')
   ]
 };
 
