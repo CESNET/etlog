@@ -15,8 +15,10 @@ var fs = require( 'fs' );
  */
 
 //var port = normalizePort(process.env.PORT || '3000');
-var port = 443
-app.set('port', port);
+var https_port = 443;
+var http_port = 80;
+app.set('https_port', https_port);
+app.set('http_port', http_port);
 
 
 /**
@@ -33,16 +35,27 @@ var https_options = {
 };
 
 /**
- * Create HTTPS server instead of default HTTP server.
+ * Create HTTPS server.
  */
 
 var server = https.createServer(https_options, app);
+
+
+/**
+ * Create HTTP server.
+ */
+// Redirect from http port 80 to https
+http.createServer(function (req, res) {
+  res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });   // does not work for http 1.0 - no host http header
+  res.end();
+}).listen(app.get('http_port'));
+
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(app.get('port'));
+server.listen(app.get('https_port'));
 server.on('error', onError);
 server.on('listening', onListening);
 
