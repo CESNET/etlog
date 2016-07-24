@@ -42,9 +42,9 @@ function search(req, res) {
       } 
   }, 
   { 
-    $sort :                    // sort from highest to lowest
+    $sort :                    // sort from lowest to highest
     { 
-      count : -1 
+      count : 1
     } 
   }   
   ],

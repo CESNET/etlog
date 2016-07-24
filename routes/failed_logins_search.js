@@ -204,7 +204,7 @@ function sort_by_ratio(dict) {
     sorted[sorted.length] = key;
   }
   
-  sorted.sort(function(a,b) { return b - a; }); // sort array by ratio
+  sorted.sort(function(a,b) { return a - b; }); // sort array by ratio
   
   var temp = {};
   for(var i = 0; i < sorted.length; i++) {
