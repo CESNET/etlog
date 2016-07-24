@@ -99,9 +99,6 @@ function respond(err, items, res) {
     return;
   }
  
-  // debug
-  //console.log(items);
-  
   res.json(items);
 }
 // --------------------------------------------------------------------------------------
@@ -176,8 +173,6 @@ function filter(items, percent)
     if(parseFloat(items[item]) >= percent)
       temp[item] = items[item];
   }
-
-  console.log(temp);
 
   return temp;
 }
