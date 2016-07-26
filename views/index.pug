@@ -1,0 +1,73 @@
+extends layout
+
+block content
+  //- navbar selected item
+  -var selected = 'Obecné Vyhledávání';
+
+  //- animace pri vyhledavani
+  #myModal.modal.fade.modal-white
+    .modal-dialog
+      #loader
+        .diamond
+        .diamond
+        .diamond
+
+  //- input - search parameters
+  //- "empty" action to prevent redirection
+  form.form-horizontal(method = 'get' action="javascript:void(0);", id = "main_form")
+    
+    .form-group
+      label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
+      .col-xs-3
+        input.form-control(type = 'text', placeholder = 'user@example.com', id = "username", name = "username")
+    
+    .form-group(id = "mac_address_form")
+      label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
+      .col-xs-2
+        input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', id = "mac_address", name = "mac_address")
+
+    .form-group
+      label.col-sm-2.control-label(for = 'auth_result') Výsledek autentizace:
+      .col-xs-2
+        select.form-control(id = "auth_result")
+          each res in ["nezadáno", "OK", "FAIL", "TIMEOUT"]
+            option(value = res) #{res}
+
+    .form-group
+      label.col-sm-2.control-label(for = 'date_from') Datum od:
+      .col-xs-2
+        input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_from", name = "date_from" onkeydown="return false")
+
+    .form-group
+      label.col-sm-2.control-label(for = 'date_to') Datum do:
+      .col-xs-2
+        input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_to", name = "date_to" onkeydown="return false")
+
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        button.btn.btn-default(type = 'submit', id = "search") Hledej
+
+  //- TODO - asi dat jako vlastni stranku a pouze odkazovat
+  //-p
+  //-  button(class = "btn", id = "roaming") Největší roaming
+
+  div
+    h2(id = "results_h")
+    table(id = "results", class = "table table-bordered")
+  
+block includes
+    link(rel='stylesheet', href='/stylesheets/bootstrap-datetimepicker.css')
+    link(rel='stylesheet', href='/stylesheets/search.css')
+    link(rel='stylesheet', href='/stylesheets/formValidation.min.css')
+ 
+    script(src='/javascripts/formValidation.min.js')
+    script(src='/javascripts/formvalidation_bootstrap.min.js')
+    script(src='/javascripts/moment-with-locales.js')
+    script(src='/javascripts/bootstrap-datetimepicker.js')
+    script(src='/javascripts/search.js')
+    
+    
+    //script(src='/javascripts/datatables.js')
+    ////link(rel='stylesheet', href='/stylesheets/databables.css')
+    //link(rel='stylesheet', href='/stylesheets/datatables.css')
+
