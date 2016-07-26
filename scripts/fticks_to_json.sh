@@ -169,4 +169,9 @@
       
 
       print "{ timestamp : { \"$date\" : "mktime(year " " months[month] " " day " "hms[1] " " hms[2] " " hms[3])"000 }, realm : \""realm[2]"\", viscountry : \""viscountry[2]"\", visinst : \""visinst[2]"\", csi : \""tolower(csi[2])"\", pn : \""pn[2]"\", result : \""result[2]"\" } "
-    }'
+    }
+
+    END {
+      exit 0;
+    }
+    '
