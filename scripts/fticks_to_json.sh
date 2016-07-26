@@ -43,7 +43,7 @@
     exit 1
   fi
 
-  /usr/sbin/logtail -o $1.offset -f $1 | gawk -v year=$year '
+  /usr/sbin/logtail -o $1.offset -f $1 | gawk -v year=$year -v filename=$1 '
     BEGIN {
       # monitoring mac address which does not have to be stored in database
       # only 4 bytes are defined, the rest is generated
@@ -148,13 +148,13 @@
       # TODO - improve error handling
 
       if(length(csi[2]) != 12 && length(csi[2]) != 0) {
-        printf("%s:%d: skipped, invalid mac address\n", FILENAME, FNR) > "/dev/stderr"
+        printf("%s:%d: skipped, invalid mac address\n", filename, FNR) > "/dev/stderr"
         next
       }
 
       # probably problem with parsing of whole record occured
       if(realm[2] == "" || result[2] == "") {
-        printf("%s:%d: skipped, general error in parsing current record\n", FILENAME, FNR) > "/dev/stderr"
+        printf("%s:%d: skipped, general error in parsing current record\n", filename, FNR) > "/dev/stderr"
         next
       }
 
