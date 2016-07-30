@@ -31,6 +31,21 @@ function create_table_body(json, size)
   }
 }
 // --------------------------------------------------------------------------------------
+function navbar()
+{
+  var roaming = { 
+    'Organizace nejvíce poskytující roaming' : '/roaming', 
+    'Organizace nejvíce využívající roaming' : '/inst_roaming'
+  };
+
+  for(var key in roaming) {
+    if(key == selected) {
+      document.getElementById("roaming").className = "active";
+      break;
+    }
+  }
+}
+// --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
 function search()
@@ -73,6 +88,7 @@ function search()
 $(document).ready(function(){
 // --------------------------------------------------------------------------------------
   $("#results")[0].style.visibility = "hidden";
+  navbar();
 // --------------------------------------------------------------------------------------
     search();
 

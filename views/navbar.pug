@@ -11,7 +11,6 @@ mixin inactive(val, key)
   li
     a(href=val)= key
 
-
 .navbar.navbar-default.navbar-fixed-top(role='navigation')
   .container
     .navbar-header
@@ -24,31 +23,17 @@ mixin inactive(val, key)
             +active(val, key)
           else
             +inactive(val, key)
-
-        li
+        li#roaming
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             | Roaming
             span.caret
           ul.dropdown-menu(role='menu')
-
-            // TODO
-            //each val, key in roaming
-            //  if selected === key
-            //    li.active
-            //      a(href=val)= key
-            //  else
-            //    li
-            //      a(href=val)= key
-
             li
               a(href='/roaming') Organizace nejvíce poskytující roaming
             li
               a(href='/inst_roaming') Organizace nejvíce využívající roaming
-
-
       ul.nav.navbar-nav.navbar-right
         li.active
           a(href='./') prihlaseny uzivatel
       .nav-collapse
-
 
