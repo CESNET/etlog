@@ -1,10 +1,7 @@
 //- taken from https://github.com/ALT-F1/bootstrap3-jade-node-express-grunt/blob/master/app/views/bootstrap3-templates/navbar-fixed-top.jade
 
--var selected = 'Obecné Vyhledávání';
-
-//-var menu = { 'home': '/', 'Mac adresy': '/mac', 'Přihlášení': '/failed_logins', 'dropdown' : '#' };
-//-var menu = { 'Obecné Vyhledávání': '/', 'Mac adresy': '/mac', 'Přihlášení': '/failed_logins', 'dropdown' : '#' };
 -var menu = {'Obecné Vyhledávání': '/', 'Mac adresy': '/mac', 'Přihlášení': '/failed_logins'};
+-var roaming = { 'Organizace nejvíce poskytující roaming' : '/roaming', 'Organizace nejvíce využívající roaming' : '/inst_roaming'  };
 
 .navbar.navbar-default.navbar-fixed-top(role='navigation')
   .container
@@ -13,42 +10,38 @@
         span.sr-only Toggle navigation
     .navbar-collapse.collapse
       ul.nav.navbar-nav
-        //li
-        //  a(href='/') Obecné Vyhledávání
-        //li
-        //  a(href='/mac') Mac adresy
-        //li
-        //  a(href='/failed_logins') Přihlášení
         each val, key in menu
-                  li
-                    if selected === key
-                      a.selected(href=val)= key
-                    else
-                      a(href=val)= key
-        
+          if (selected === key)
+            li.active
+              a(href=val)= key
+          else
+            li
+              a(href=val)= key
+
         li
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             | Roaming
             span.caret
           ul.dropdown-menu(role='menu')
+
+            // TODO
+            //each val, key in roaming
+            //  if selected === key
+            //    li.active
+            //      a(href=val)= key
+            //  else
+            //    li
+            //      a(href=val)= key
+
             li
               a(href='/roaming') Organizace nejvíce poskytující roaming
             li
               a(href='/inst_roaming') Organizace nejvíce využívající roaming
+
+
       ul.nav.navbar-nav.navbar-right
         li.active
           a(href='./') prihlaseny uzivatel
       .nav-collapse
-
-
-//each val, key in menu
-//  h1= "val: '" + val + "'"
-//  h1= "klic: '" + key + "'"
-//  h1= "vybrano: '" + selected + "'"
-//  h1= "= " + (selected = key)
-//  h1= "=== " + selected === key
-//  h1= "== " + selected == key
-//  h1= "typeof sel: " + typeof(selected)
-//  h1= "typeof key: " + typeof(key)
 
 
