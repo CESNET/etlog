@@ -133,3 +133,8 @@ a {
   background-color: #00FF00;
 }
 */
+
+.form-horizontal .form-group {
+  margin-right: 0px;
+  margin-left: 0px;
+}
