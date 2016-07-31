@@ -134,6 +134,10 @@ a {
 }
 */
 
+.table {
+  width: 0%;
+}
+
 .form-horizontal .form-group {
   margin-right: 0px;
   margin-left: 0px;
