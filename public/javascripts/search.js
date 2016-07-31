@@ -22,6 +22,10 @@ function createTableBody(json, attributes, size)
 
     for(j = size; j > 0; j--) {
       cell = row.insertCell(-1);
+
+      if(response[i][attributes[j - 1]] == "e899c453f295")
+        console.log("'" + response[i][attributes[j - 1]] + "'");
+
       cell.innerHTML = response[i][attributes[j - 1]];
     }
 
@@ -180,6 +184,7 @@ function search()
         
         createTableHeader(size, head);
         createTableBody(json, attributes, size);
+        $('#results').dataTable();
       }
     }
   });
@@ -188,7 +193,6 @@ function search()
 $(document).ready(function(){
  
 // --------------------------------------------------------------------------------------
- 
   $("#results")[0].style.visibility = "hidden";
 // --------------------------------------------------------------------------------------
   /* search by enter key */
