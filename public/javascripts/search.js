@@ -22,10 +22,6 @@ function createTableBody(json, attributes, size)
 
     for(j = size; j > 0; j--) {
       cell = row.insertCell(-1);
-
-      if(response[i][attributes[j - 1]] == "e899c453f295")
-        console.log("'" + response[i][attributes[j - 1]] + "'");
-
       cell.innerHTML = response[i][attributes[j - 1]];
     }
 
