@@ -231,29 +231,6 @@ $(document).ready(function(){
   });
 
 // --------------------------------------------------------------------------------------
-    // TODO - rozdelit na search.js a roaming.js ?
-
-
-    //$("#roaming").click(function(){
-    //  $.ajax({
-    //    url: "/roaming/",
-    //    success: function(json){
-    //    },
-    //    complete: function(json){
-    //      //console.log(json);
-    //      
-    //      if(json.responseText == "[]") {
-    //        $("#results_h")[0].innerHTML = "Zadaným parametrům vyhledávání neodpovídají žádné záznamy";
-    //      }
-    //      else {
-    //        $("#results_h")[0].innerHTML = "Nalezené záznamy";
-    //        $("#results")[0].innerHTML = json.responseText;
-    //      }
-    //    }
-    //  });
-    //});
-
-
 // --------------------------------------------------------------------------------------
 // taken from http://formvalidation.io
 // --------------------------------------------------------------------------------------
