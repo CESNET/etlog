@@ -141,7 +141,7 @@ function to_dict(items)
 // 'rahemanf@cuni.cz': { OK: 402, FAIL: 1 }
 //
 // output :
-// 'rahemanf@cuni.cz': 0.248756219
+// 'rahemanf@cuni.cz': { OK: 402, FAIL: 1, RATIO: 0.002487562 }
 // --------------------------------------------------------------------------------------
 function count_ratio(items)
 {
@@ -154,13 +154,15 @@ function count_ratio(items)
 
     var ratio = (fail / ok) * 100;
 
-    if (ratio == Number.POSITIVE_INFINITY)    // no successful logins
+    if (ratio == Number.POSITIVE_INFINITY) {    // no successful logins
       ratio = 100;  // 100 %
+      items[key]["OK"] = 0;
+    }
 
-    items[key] = ratio;
+    items[key]["RATIO"] = ratio;
   }
 
-  return sort_by_ratio(swap(items));    // sort by ratio from highest to lowest
+  return items;    // leave complex sorting for frontend
 }
 // --------------------------------------------------------------------------------------
 // filter out values by user input
@@ -170,7 +172,7 @@ function filter(items, percent)
   temp = {};
 
   for(var item in items) {
-    if(parseFloat(items[item]) >= percent)
+    if(parseFloat(items[item]["RATIO"]) >= percent)
       temp[item] = items[item];
   }
 
@@ -179,35 +181,35 @@ function filter(items, percent)
 // --------------------------------------------------------------------------------------
 // swap json notation keys and values
 // --------------------------------------------------------------------------------------
-function swap(json)
-{
-  var ret = {};
-  
-  for(var key in json) {
-    ret[json[key]] = key;
-  }
-  
-  return ret;
-}
-// --------------------------------------------------------------------------------------
-// sort dict by ratio
-// --------------------------------------------------------------------------------------
-function sort_by_ratio(dict) {
-
-  var sorted = [];
-  for(var key in dict) {
-    sorted[sorted.length] = key;
-  }
-  
-  sorted.sort(function(a,b) { return a - b; }); // sort array by ratio
-  
-  var temp = {};
-  for(var i = 0; i < sorted.length; i++) {
-    temp[dict[sorted[i]]] = sorted[i];      // save sorted value and save in original key
-  }
-
-  return temp;
-}
+//function swap(json)
+//{
+//  var ret = {};
+//  
+//  for(var key in json) {
+//    ret[json[key]] = key;
+//  }
+//  
+//  return ret;
+//}
+//// --------------------------------------------------------------------------------------
+//// sort dict by ratio
+//// --------------------------------------------------------------------------------------
+//function sort_by_ratio(dict) {
+//
+//  var sorted = [];
+//  for(var key in dict) {
+//    sorted[sorted.length] = key;
+//  }
+//  
+//  sorted.sort(function(a,b) { return a - b; }); // sort array by ratio
+//  
+//  var temp = {};
+//  for(var i = 0; i < sorted.length; i++) {
+//    temp[dict[sorted[i]]] = sorted[i];      // save sorted value and save in original key
+//  }
+//
+//  return temp;
+//}
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------

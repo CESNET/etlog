@@ -20,14 +20,21 @@ function create_table_body(json, size)
   for(var key in response) {
     var row = body.insertRow(0);
 
-    // username, ratio
     // username
     cell = row.insertCell(-1);
     cell.innerHTML = key;
 
+    // OK
+    cell = row.insertCell(-1);
+    cell.innerHTML = response[key]["OK"];
+    
+    // FAIL
+    cell = row.insertCell(-1);
+    cell.innerHTML = response[key]["FAIL"];
+    
     // ratio
     cell = row.insertCell(-1);
-    cell.innerHTML = response[key];
+    cell.innerHTML = response[key]["RATIO"];
   }
 }
 // --------------------------------------------------------------------------------------
@@ -64,7 +71,7 @@ function search()
         
         // table setup
         // reversed order
-        var head = ["procentuální poměr přihlášení", "uživatelské jméno"];
+        var head = ["procentuální poměr přihlášení", "neúspěšná přihlášení", "úspěšná přihlášení", "uživatelské jméno"];
         var size = head.length;
         
         create_table_header(size, head);
@@ -79,6 +86,7 @@ $(document).ready(function(){
   $("#results")[0].style.visibility = "hidden";
 // --------------------------------------------------------------------------------------
   /* search by enter key */
+  // TODO - pri enteru je hledano dvakrat !!!!
   $(document).keypress(function(e) {
     if(e.which == 13)    /* enter */
       $("#failed_logins_search").click();
