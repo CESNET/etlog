@@ -1,0 +1,60 @@
+//-doctype html
+//-html
+//-  head
+//-    meta(charset='utf-8')
+//-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+//-    meta(name='viewport', content='width=device-width, initial-scale=1')
+//-    title= title
+//-  
+//-  body(ng-app="radlog")
+//-    script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js')
+//-    script.
+//-      angular.module('radlog', []).
+//-      controller('index_controller', ['$scope', function($scope) {
+//-        $scope.test = "neco";
+//-      }]);
+//-      console.log("javascript");
+//-    div(ng-contoller="index_controller")
+//-    |  {{test}}
+
+
+//- funguje OK
+//-doctype html
+//-html(data-ng-app='')
+//-  head
+//-    meta(charset='utf-8')
+//-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+//-    meta(name='viewport', content='width=device-width, initial-scale=1')
+//-    title= title
+//-  body
+//-    | Name:
+//-    br 
+//-    input(type='text', data-ng-model='name')
+//-    | {{name}}
+//-
+//-    script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js', type='text/javascript')
+
+
+doctype html
+html(data-ng-app='')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    title= title
+  body
+
+  script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js')
+  script.
+    var app = angular.module('myApp', []);
+    app.controller('formCtrl', function($scope) {
+          $scope.firstname = "John";
+    });
+
+    console.log("javascript");
+
+  div(ng-app="myApp" ng-controller="formCtrl")
+    form
+    | First Name: 
+    input(type="text" ng-model="firstname")
+

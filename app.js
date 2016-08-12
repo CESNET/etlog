@@ -11,6 +11,7 @@ var fs = require( 'fs' );
 // -----------------------------------------------------------
 // routes
 var index = require('./routes/index');
+var angular_test = require('./routes/angular_test');
 var users = require('./routes/users');
 var mac = require('./routes/mac');
 var roaming = require('./routes/roaming');
@@ -55,6 +56,7 @@ app.use(function(req, res, next){
 
 // set up routes
 app.use('/', index);
+app.use('/angular_test', angular_test);
 //app.use('/users', users);
 //app.use('/mac', mac);
 //app.use('/results', results);
