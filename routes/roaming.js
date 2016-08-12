@@ -10,27 +10,46 @@ router.post('/search', function(req, res) {
 });
 // --------------------------------------------------------------------------------------
 function search(req, res) {
+  // TODO - timestamp
+  
+  min_date = new Date("2015-04-23T00:00:00Z");
+  max_date = new Date(min_date.getTime() + 86400000);
 
   req.db.record.aggregate(
   [ 
   { 
     $match : 
-    { 
-      result : "OK"         // only successfully authenticated users
-    } 
+      { 
+        timestamp : 
+          {
+            $gte : min_date, 
+            $lt : max_date 
+          }, 
+        result : "OK"         // only successfully authenticated users
+      } 
   },  
+  {
+    $group :                  // group by pair [realm, csi] - normalization by mac address
+    { 
+      _id : 
+        { 
+          realm : "$realm", 
+          csi : "$csi" 
+        } 
+    } 
+  },
   { 
     $project : 
-    { 
-      realm : 1             // we need only realm
-    } 
+      { 
+        "_id.realm" : 1             // we need only realm
+      } 
   }, 
   { 
     $group :                // group by realm
       { 
         _id : 
           { 
-            realm : "$realm" 
+            realm : "$_id.realm" 
           }, 
         count : 
           { 
@@ -66,8 +85,6 @@ function respond(err, items, res) {
 function filter(items)
 {
   dict = {};
-
-  console.log(items);
 
   for(var item in items) {
     var key = items[item];

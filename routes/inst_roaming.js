@@ -10,22 +10,43 @@ router.post('/search', function(req, res) {
 });
 // --------------------------------------------------------------------------------------
 function search(req, res) {
+  
+  // TODO - timestamp
+  
+  min_date = new Date("2015-04-23T00:00:00Z");
+  max_date = new Date(min_date.getTime() + 86400000);
+
   req.db.record.aggregate(
   [ 
   { 
     $match : 
       { 
-        result : "OK",         // match only successful logins
-        visinst :              // no unknown institutions
+        timestamp : 
           { 
-            $ne : "UNKNOWN" 
-          } 
+            $gte : min_date,         // TODO
+            $lt : max_date 
+          }, 
+        result : "OK",          // match only successful logins
+        visinst : 
+          { 
+            $ne : "UNKNOWN"       // no unknown institutions
+          }
       } 
   },  
   { 
+    $group :                    // group by pair [visinst, csi ] - normalization by mac address
+      {
+        _id : 
+          { 
+            visinst : "$visinst", 
+            csi : "$csi" 
+          } 
+      } 
+  },
+  { 
     $project : 
     { 
-      visinst : 1              // we want only visinst
+      "_id.visinst" : 1              // we want only visinst
     } 
   }, 
   { 
@@ -33,7 +54,7 @@ function search(req, res) {
       { 
         _id : 
           { 
-            visinst : "$visinst" 
+            visinst : "$_id.visinst" 
           }, 
         count : 
           { 
