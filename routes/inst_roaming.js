@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
 // --------------------------------------------------------------------------------------
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
   res.render('inst_roaming', { title: 'Ukazkove rozhrani pro vyhledavani nad radius logy' });
 });
 // --------------------------------------------------------------------------------------
-router.post('/search', function(req, res) {
+router.post('/search', function(req, res, next) {
   search(req, res, respond);
 });
 // --------------------------------------------------------------------------------------

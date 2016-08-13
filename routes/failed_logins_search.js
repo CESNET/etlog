@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
 // --------------------------------------------------------------------------------------
-router.post('/', function(req, res) {
+router.post('/', function(req, res, next) {
   search(req, res, respond);
 });
 // --------------------------------------------------------------------------------------
-function search(req, res) {
+function search(req, res, next) {
   // debug
   console.log("req.body:");
   console.log(req.body);
