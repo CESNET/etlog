@@ -12,37 +12,18 @@ var fs = require( 'fs' );
 // call express
 var app = express();
 
-
-//// routes
-//var index = require('./routes/index');
-//var angular_test = require('./routes/angular_test');
-//var users = require('./routes/users');
-//var mac = require('./routes/mac');
-//var roaming = require('./routes/roaming');
-//var inst_roaming= require('./routes/inst_roaming');
-//var failed_logins = require('./routes/failed_logins');
-//var search = require('./routes/search');
-//var failed_logins_search = require('./routes/failed_logins_search');
-
 // -----------------------------------------------------------
 // passport
 var passport = require('passport');
 // passport-saml
 var SamlStrategy = require('passport-saml').Strategy;
 
-//// saml_test
-//var saml_test = require('./routes/saml_test');
-//
-//
-//// callback
-//var callback = require('./routes/callback');
-
-
-
+// -----------------------------------------------------------
 // view engine setup
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
 
+// -----------------------------------------------------------
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
@@ -51,36 +32,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// -----------------------------------------------------------
 // Make our db accessible to our router
 app.use(function(req, res, next){
   req.db = database;
   next();
 });
 
+// -----------------------------------------------------------
 
-//// set up routes
-// routes
+// set up routes
 require('./routes')(app);
 
-//app.use('/', index);
-//app.use('/angular_test', angular_test);
-////app.use('/users', users);
-////app.use('/mac', mac);
-////app.use('/results', results);
-//app.use('/search', search);
-//app.use('/mac', mac);
-//app.use('/roaming', roaming);
-//app.use('/inst_roaming', inst_roaming);
-//app.use('/failed_logins', failed_logins);
-//app.use('/failed_logins_search', failed_logins_search);
-//
-//// saml test
-////app.use('/login/callback', saml_test);
-//app.use('/test', saml_test);
-//app.use('/login/callback', callback);
 
-
-
+// -----------------------------------------------------------
 app.post('/login/callback',
   //passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
   passport.authenticate('saml', { failureRedirect: '/test', failureFlash: true }),       // TODO
