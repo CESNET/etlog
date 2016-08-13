@@ -18,6 +18,9 @@ module.exports = function(app) {
   // callback
   var callback = require('./routes/callback');
 
+  // TODO
+  // app.use('/', require('./routes/index'); 
+
   // set up routes
   app.use('/', index);
   app.use('/angular_test', angular_test);
