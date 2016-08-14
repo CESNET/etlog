@@ -13,7 +13,7 @@ var logs_schema = mongoose.Schema({
 // --------------------------------------------------------------------------------------
 exports.logs_schema = logs_schema;
 var logs = mongoose.model('logs', logs_schema, 'logs');
-exports.record = logs;
+exports.logs = logs;
 // --------------------------------------------------------------------------------------
 var users_mac_schema = mongoose.Schema({
   username : String,
@@ -22,7 +22,7 @@ var users_mac_schema = mongoose.Schema({
 // --------------------------------------------------------------------------------------
 exports.users_mac_schema = users_mac_schema;
 var users_mac = mongoose.model('users_mac', users_mac_schema, 'users_mac');
-exports.record = users_mac;
+exports.users_mac = users_mac;
 // --------------------------------------------------------------------------------------
 mongoose.connect('mongodb://localhost/live');
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
