@@ -16,16 +16,14 @@ exp.process_old_data = function (database) {
 // map usernames to mac addresses
 // --------------------------------------------------------------------------------------
 exp.process_current_data = function (database) {
-    // TODO - timestamp
-    
-  min_date = new Date("2015-04-24T00:00:00Z");
-  max_date = new Date(min_date.getTime() + 86400000);
+  min_date = new Date();        // current day
+  max_date = new Date(min_date.getTime() + 86400000);   // the next day
 
   database.logs.aggregate([ 
     { 
       $match : 
         {
-          timestamp :             // TODO
+          timestamp :             // get only data for current day
             {
               $gte : min_date, 
               $lt : max_date 
