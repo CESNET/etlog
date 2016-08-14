@@ -21,9 +21,6 @@ exp.process_current_data = function (database) {
   min_date = new Date("2015-04-24T00:00:00Z");
   max_date = new Date(min_date.getTime() + 86400000);
 
-  console.log("dotaz");
-  //console.log(database.record);
-
   database.logs.aggregate([ 
     { 
       $match : 
