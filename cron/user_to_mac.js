@@ -5,6 +5,8 @@ var exp = {}
 // process old data through days, until current day 
 exp.process_old_data = function (database) {
     console.log("process_old_data");
+    
+    
     // TODO
 };
 // --------------------------------------------------------------------------------------
@@ -19,6 +21,11 @@ exp.process_current_data = function (database) {
   min_date = new Date();        // current day
   max_date = new Date(min_date.getTime() + 86400000);   // the next day
 
+  process_data(database, min_date, max_date);
+};
+// --------------------------------------------------------------------------------------
+function process_data(database, min_date, max_date)
+{
   database.logs.aggregate([ 
     { 
       $match : 
@@ -77,7 +84,7 @@ exp.process_current_data = function (database) {
     function(err, items) {
       transform(items, database);
     });
-};
+}
 // --------------------------------------------------------------------------------------
 // transform data and update database
 // --------------------------------------------------------------------------------------
