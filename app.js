@@ -46,6 +46,10 @@ require('./routes')(app);
 
 
 // -----------------------------------------------------------
+// set up cron tasks
+require('./cron')(database);
+
+// -----------------------------------------------------------
 app.post('/login/callback',
   //passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
   passport.authenticate('saml', { failureRedirect: '/test', failureFlash: true }),       // TODO
