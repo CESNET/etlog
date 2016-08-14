@@ -15,7 +15,7 @@ function search(req, res) {
   min_date = new Date("2015-04-23T00:00:00Z");
   max_date = new Date(min_date.getTime() + 86400000);
 
-  req.db.record.aggregate(
+  req.db.logs.aggregate(
   [ 
   { 
     $match : 

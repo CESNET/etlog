@@ -10,7 +10,7 @@ router.post('/search', function(req, res, next) {
 });
 // --------------------------------------------------------------------------------------
 function search(req, res) {
-  req.db.record.aggregate(  // search db
+  req.db.logs.aggregate(  // search db
   [ 
   { 
     $match : 

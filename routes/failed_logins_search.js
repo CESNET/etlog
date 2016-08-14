@@ -20,7 +20,7 @@ function search(req, res, next) {
   //console.log(dict);
 
   // search db
-  req.db.record.aggregate(
+  req.db.logs.aggregate(
   [ 
   { 
     $match : 
