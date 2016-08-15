@@ -28,10 +28,9 @@ mixin inactive(val, key)
             | Roaming
             span.caret
           ul.dropdown-menu(role='menu')
-            li
-              a(href='/roaming') Organizace nejvíce poskytující roaming
-            li
-              a(href='/inst_roaming') Organizace nejvíce využívající roaming
+            each val, key in roaming
+              li
+                a(href=val)= key
       ul.nav.navbar-nav.navbar-right
         li.active
           a(href='./') prihlaseny uzivatel
