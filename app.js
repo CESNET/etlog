@@ -47,7 +47,7 @@ require('./routes')(app);
 
 // -----------------------------------------------------------
 // set up cron tasks
-require('./cron')(database);
+//require('./cron')(database);  // TODO
 
 // -----------------------------------------------------------
 app.post('/login/callback',
@@ -123,7 +123,7 @@ var str = new SamlStrategy(
     //entryPoint: 'https://idp2.civ.cvut.cz/idp/profile/SAML2/Redirect/SSO',
     //issuer: 'https://idp2.civ.cvut.cz/idp/shibboleth',
 
-    callbackUrl: 'http://radlog.cesnet.cz:3000/login/callback',
+    callbackUrl: 'https://radlog.cesnet.cz:3000/login/callback',
     entryPoint: 'https://whoami-dev.cesnet.cz/idp/profile/SAML2/Redirect/SSO',
     issuer: 'https://radlog.cesnet.cz/',
     protocol: 'https://',
