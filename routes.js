@@ -7,7 +7,7 @@ module.exports = function(app) {
   app.use('/search/roaming', require('./routes/roaming'));             // roaming 1 // TODO
   app.use('/inst_roaming', require('./routes/inst_roaming'));   // roaming 2 // TODO
   app.use('/search/failed_logins', require('./routes/failed_logins')); // TODO
-  app.use('/searach/failed_logins_search', require('./routes/failed_logins_search'));   // TODO
+  app.use('/search/failed_logins_search', require('./routes/failed_logins_search'));   // TODO
 
   // TODO
   // app.use('/stats', require('./routes/stats'));   // TODO
