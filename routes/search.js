@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 // --------------------------------------------------------------------------------------
+router.get('/', function(req, res, next) {
+  res.render('search', { title: 'Ukazkove rozhrani pro vyhledavani nad radius logy' });
+});
+// --------------------------------------------------------------------------------------
 router.post('/', function(req, res, next) {
   search(req, res, respond);
 });
@@ -11,6 +15,8 @@ function search(req, res, next) {
   // debug
   console.log("req.body:");
   console.log(req.body);
+
+  res.json("done");
 
   if(req.body.username == "" && req.body.mac == "")   /* no main search key was entered */
     return res.json([]);     // do not search database 
@@ -43,7 +49,7 @@ function search(req, res, next) {
   console.log("dict:");
   console.log(dict);
 
-  req.db.record.find(dict, { _id: 0 }, function (err, items) {      // do not display object id in result
+  req.db.logs.find(dict, { _id: 0 }, function (err, items) {      // do not display object id in result
     respond(err, items, res)
   });
 }
