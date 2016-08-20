@@ -11,6 +11,7 @@
     "cron": "^1.1.0",
     "debug": "~2.1.1",
     "express": "~4.12.2",
+    "express-restify-mongoose": "^4.1.1",
     "https": "^1.0.0",
     "mongoose": "~4.0.1",
     "morgan": "~1.5.1",
