@@ -1,3 +1,14 @@
+## Radlog
+
+   TODO
+	
+
+## Basic info
+
+this web application consists of javascript framework express and mongodb.
+It uses many auxiliary javascript modules.
+All the necesarry modules including their specific version can be found in file **package.json**.
+
 ======================================================================================
 uvodni info k mongodb:
 
