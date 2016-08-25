@@ -15,8 +15,8 @@ var fs = require( 'fs' );
  */
 
 //var port = normalizePort(process.env.PORT || '3000');
-var https_port = 443;
-var http_port = 80;
+var https_port = 8443;
+var http_port = 8080;
 app.set('https_port', https_port);
 app.set('http_port', http_port);
 
