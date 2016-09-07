@@ -4,7 +4,7 @@ $(document).ready(function(){
   //$("#results")[0].style.visibility = "hidden"; // TODO
 
   // define angular module/app
-  var app = angular.module('radlog', []);
+  var app = angular.module('etlog', []);
   app.controller('search_contoller', ['$scope', '$http', function ($scope, $http) {
       // create a blank object to hold our form information
       // $scope will allow this to pass between controller and view
