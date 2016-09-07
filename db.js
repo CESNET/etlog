@@ -24,7 +24,7 @@ exports.users_mac_schema = users_mac_schema;
 var users_mac = mongoose.model('users_mac', users_mac_schema, 'users_mac');
 exports.users_mac = users_mac;
 // --------------------------------------------------------------------------------------
-mongoose.connect('mongodb://localhost/live');
+mongoose.connect('mongodb://localhost/etlog');
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
   console.log("sucesfully connected do mongodb database on localhost");
