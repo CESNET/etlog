@@ -30,6 +30,7 @@ var https_options = {
   cert: fs.readFileSync('cert/etlog.cesnet.cz.crt.pem', 'utf-8'),
   ca: [
     fs.readFileSync('/etc/ssl/certs/TERENA_SSL_CA_2.pem', 'utf8'),
+    fs.readFileSync('/etc/ssl/certs/TERENA_SSL_CA_3.pem', 'utf8'),
     fs.readFileSync('/etc/ssl/certs/USERTrust_RSA_Certification_Authority.pem', 'utf8')
   ]
 };
