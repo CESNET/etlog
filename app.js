@@ -110,9 +110,10 @@ app.use(function(err, req, res, next) {
 
 // -----------------------------------------------------------
 
-var pvk = fs.readFileSync('/etc/shibboleth/sp-key.pem', 'utf-8');
-var cert = fs.readFileSync('/etc/shibboleth/sp-cert.pem', 'utf-8');
-var idpcert = fs.readFileSync('/etc/shibboleth/idp-cert.pem', 'utf-8');
+
+var pvk = fs.readFileSync('cert/etlog.cesnet.cz.key.pem', 'utf-8');
+var cert = fs.readFileSync('cert/etlog.cesnet.cz.crt.pem', 'utf-8');
+var idpcert = fs.readFileSync('cert/idp-cert.pem', 'utf-8');
 
 console.log("debug");
 console.log(cert);
@@ -123,9 +124,9 @@ var str = new SamlStrategy(
     //entryPoint: 'https://idp2.civ.cvut.cz/idp/profile/SAML2/Redirect/SSO',
     //issuer: 'https://idp2.civ.cvut.cz/idp/shibboleth',
 
-    callbackUrl: 'https://radlog.cesnet.cz/login/callback',
+    callbackUrl: 'https://etlog.cesnet.cz/login/callback',
     entryPoint: 'https://whoami-dev.cesnet.cz/idp/profile/SAML2/Redirect/SSO',
-    issuer: 'https://radlog.cesnet.cz/',
+    issuer: 'https://etlog.cesnet.cz/',
     protocol: 'https://',
     
     // zatim nechat byt
