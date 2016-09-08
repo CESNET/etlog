@@ -97,6 +97,7 @@ apt-get install nodejs
 ### Database
 
 Application uses database etlog.
+Database is separeted into several collections.
 
 #### Collections
 
@@ -105,21 +106,19 @@ Application uses database etlog.
 Collection represents raw radius log records transformed to json format. 
 For details on data transformation see scripts/fticks\_to\_json.sh
 
-TODO - popis
-
 TODO - popis vstupniho formatu ?
 
 TODO - popis samotnych poli ?
 
 | field name | data type |
 |------------|-----------|
-| timestamp  |   Date    |
-| realm      |   String  |
-| viscountry |   String  |
-| visinst    |   String  |
-| csi        |   String  |
-| pn         |   String  |
-| result     |   String  |
+| timestamp  |   Date    |      timestamp of authentication
+| realm      |   String  |      domain part of username
+| viscountry |   String  |      visited country
+| visinst    |   String  |      visited institution
+| csi        |   String  |      mac address
+| pn         |   String  |      username 
+| result     |   String  |      result of authentication
 
 ##### users\_mac
 
@@ -128,8 +127,8 @@ Collection defines binding between user and all mac addresses, which he used for
 
 | field name | data type |
 |------------|-----------|
-| username   |   String  |
-| addrs      |   Array   |
+| username   |   String  |      username
+| addrs      |   Array   |      array of user's mac addresses
 
 
 ##### privileged\_ips
@@ -137,6 +136,7 @@ Collection defines binding between user and all mac addresses, which he used for
 Collection containing privileged ip addresses, which will bypass
 saml authentication. Address authentication is done using module passport-ip.
 Addresses must be in special format used by [range\_check](https://www.npmjs.com/package/range_check).
+
 ipv4 addresses format:
 
 ```
@@ -153,7 +153,7 @@ ipv6 addresses format:
 
 | field name | data type |
 |------------|-----------|
-| ip         |   String  |
+| ip         |   String  |  string representing ip address
 
 
 ###### data insertion/update
