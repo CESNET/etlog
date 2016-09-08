@@ -13,12 +13,6 @@ var fs = require( 'fs' );
 var app = express();
 
 // -----------------------------------------------------------
-// passport
-var passport = require('passport');
-// passport-saml
-var SamlStrategy = require('passport-saml').Strategy;
-
-// -----------------------------------------------------------
 // view engine setup
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
@@ -31,6 +25,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+var saml = require('./auth')(app);          // SAML + IP based auth
 
 // -----------------------------------------------------------
 // Make our db accessible to our router
@@ -49,26 +45,6 @@ require('./routes')(app);
 // set up cron tasks
 //require('./cron')(database);  // TODO
 
-// -----------------------------------------------------------
-app.post('/login/callback',
-  //passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
-  passport.authenticate('saml', { failureRedirect: '/test', failureFlash: true }),       // TODO
-  function(req, res) {
-    res.redirect('/');
-  }
-);
-
-
-app.get('/login',
-  passport.authenticate('saml', { failureRedirect: '/test', failureFlash: true }),      // TODO
-  function(req, res) {
-    res.redirect('/');
-  }
-);
-
-//
-//app.use('/SSOLogin', sso);
-// -----------------------------------------------------------
 
 // debug routovani
 //console.log(app._router.stack);
@@ -106,71 +82,6 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
-
-// -----------------------------------------------------------
-
-
-var pvk = fs.readFileSync('cert/etlog.cesnet.cz.key.pem', 'utf-8');
-var cert = fs.readFileSync('cert/etlog.cesnet.cz.crt.pem', 'utf-8');
-var idpcert = fs.readFileSync('cert/idp-cert.pem', 'utf-8');
-
-console.log("debug");
-console.log(cert);
-
-var str = new SamlStrategy(
-  {
-    //callbackUrl: 'http:radlog.cesnet.cz:3000/login/callback',
-    //entryPoint: 'https://idp2.civ.cvut.cz/idp/profile/SAML2/Redirect/SSO',
-    //issuer: 'https://idp2.civ.cvut.cz/idp/shibboleth',
-
-    callbackUrl: 'https://etlog.cesnet.cz/login/callback',
-    entryPoint: 'https://whoami-dev.cesnet.cz/idp/profile/SAML2/Redirect/SSO',
-    issuer: 'https://etlog.cesnet.cz/',
-    protocol: 'https://',
-    
-    // zatim nechat byt
-    decryptionPvk: pvk,
-    //privateCert: cert,
-    
-    identifierFormat : 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
-    
-    cert: idpcert
-    //privateCert: ''
-
-
-    //additionalParams:{'RelayState': '/'}        // ?
-
-  },
-  function(profile, done) {         // TODO
-    console.log("autentizace OK");
-
-    // tady je treba se dostat k obsahu assertion - informace o prihlasenem uzivateli
-    console.log(profile);
-    console.log(profile.getAssertionXml());
-    console.log("");
-    console.log("");
-    console.log("");
-    console.log("");
-    console.log(done());
-
-    //render("OK")
-    //findByEmail(profile.email, function(err, user) {
-    //  if (err) {
-    //    return done(err);
-    //  }
-    //  return done(null, user);
-    });
-  //})
-
-
-passport.use(str);
-console.log(str.generateServiceProviderMetadata(cert));
-
-console.log("metadata");
-//console.log(passport.generateServiceProviderMetadata);
-//passport.generateServiceProviderMetadata();
-
 
 // -----------------------------------------------------------
 
