@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var saml = require('./auth')(app);          // SAML + IP based auth
+var saml = require('./auth')(app, database);          // SAML + IP based auth
 
 // -----------------------------------------------------------
 // Make our db accessible to our router

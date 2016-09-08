@@ -1,4 +1,4 @@
-module.exports = function(app) {
+module.exports = function(app, database) {
 // -----------------------------------------------------------
   var fs = require( 'fs' );
   // passport
@@ -78,24 +78,33 @@ module.exports = function(app) {
 
 // -----------------------------------------------------------
 
-  var IpStrategy = require('passport-ip').Strategy;
+  var db_ips = database.privileged_ips.find({}, { _id: 0 },     // search db for privileged ip addresses
+    function(err, items) {
+      var allowed_ips = [];
 
-  passport.use(new IpStrategy({
-    //range: '10.0.0.0/8'
-    //range: '147.32.120.111/32'
-    range: '::ffff:147.32.120.111/32'
-    //range: '2001:718:2:1::146/128'
-    //range: '::ffff:147.32.120.111/32'
-  }, function(profile, done){
-    console.log("profile");
-    console.log(profile);
-    console.log("done");
-    console.log(done);
-    done(null, profile);
-    //profile.id is the ip address.
-  }));
+      for(var ip in items) {
+        allowed_ips.push(items[ip]["ip"]);      // add to array
+      }
 
+// -----------------------------------------------------------
 
+      var IpStrategy = require('passport-ip').Strategy;
+
+      passport.use(new IpStrategy({
+        range: allowed_ips          // use data from db
+      }, function(profile, done){
+        console.log("profile");
+        console.log(profile);
+        console.log("done");
+        console.log(done);
+        done(null, profile);
+        //profile.id is the ip address.
+      }));
+    }
+  );
+  
+
+// -----------------------------------------------------------
 
   //http://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
 

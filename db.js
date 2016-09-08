@@ -24,6 +24,14 @@ exports.users_mac_schema = users_mac_schema;
 var users_mac = mongoose.model('users_mac', users_mac_schema, 'users_mac');
 exports.users_mac = users_mac;
 // --------------------------------------------------------------------------------------
+var privileged_ips_schema = mongoose.Schema({
+  ip : String
+});
+// --------------------------------------------------------------------------------------
+exports.privileged_ips = privileged_ips;
+var privileged_ips = mongoose.model('privileged_ips', privileged_ips_schema, 'privileged_ips');
+exports.privileged_ips = privileged_ips;
+// --------------------------------------------------------------------------------------
 mongoose.connect('mongodb://localhost/etlog');
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
