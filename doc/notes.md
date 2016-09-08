@@ -1,21 +1,203 @@
-## Radlog
-
-   TODO
-	
+# etlog - eduroam trafic log analysis
 
 ## Basic info
 
-this web application consists of javascript framework express and mongodb.
+   TODO
+   basic information what the app does, what is it for ... 
+
+
+
+
+This web application consists of Node.js, Express web application framework and MongoDB.
 It uses many auxiliary javascript modules.
 All the necesarry modules including their specific version can be found in file **package.json**.
 
-======================================================================================
-uvodni info k mongodb:
 
-  apt-get install mongodb
-  pristup k databazovemu stroji pomoci prikazu "mongo" (tzv mongo shell)
-  data jsou clenena do jednotlivych databazi - stejne jako v sql svete (show databases)
-  data v jedne databazi jsou clenena do kolekci - obdoba sql tabulek
+## Server setup
+
+The application is setup on Debian jessie. It is running as user etlog and it's root is in /home/etlog/etlog/.
+It is listening for incoming connections on port 8080 for http connections and 
+on port 8443 for https connections. Http Connection are automatically redirected to https.
+Successful redicretion requires HTTP 1.1 host header.
+
+### Network setup
+
+Automatic port redirection to ports 8080 and 8443 is provided through iptables:
+Persistence of rules is ensured by iptables-persistent debian package:
+```
+apt-get install iptables-persistent
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80  -j REDIRECT --to-port 8080
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8443
+iptables-save > /etc/iptables/rules.v4
+ip6tables -t nat -A PREROUTING -i eth0 -p tcp -d 2001:718:1:1f:50:56ff:feee:150/64 --dport 80  -j REDIRECT --to-port 8080
+ip6tables -t nat -A PREROUTING -i eth0 -p tcp -d 2001:718:1:1f:50:56ff:feee:150/64 --dport 443 -j REDIRECT --to-port 8443
+ip6tables-save > /etc/iptables/rules.v6
+```
+
+### Syslog setup
+
+TODO
+
+
+  
+  
+### MongoDB
+
+#### installation
+
+At the time of writing this guide, no official documentation for installation on Debian jessie
+is available.
+
+```
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+apt-get install mongodb-org
+systemctl enable mongod
+service mongod start
+```
+
+#### Configuration
+
+Disable THP by following guide from official [docs](https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/).
+No further configuration should be needed.
+
+#### Usage
+
+Database can be accessed by command `mongo`. MongoDB is document oriented database. 
+Data are divided into databases, same as in the sql dabases. Each database consists of collections,
+which is equivalent of sql tables. Collections consist of documents, which use the BSON notation, which is basen on JSON.
+
+Basic commands:
+`show databases` lists all databases which are available.
+`use my_database` swich current database to my\_database
+`show collections` lists collection for current database.
+`db.my_collection.find({})` display all documents in my\_collection
+`db.my_collection.find({}).limit(5)` display 5 document from my\_collection
+`db.my_collection.find({})limit(5).pretty()` display 5 nicely formatted documents
+
+
+### Node.js
+
+Node.js is server-side JavaScript.
+Because the version of Node.js available in Debian jessie is very old (0.10.29~dfsg-2),
+installation of newer version is needed. 
+At the time of writing this guide current version of Node.js is 6.5.
+
+### installation
+
+```
+apt-get install curl
+curl -sL https://deb.nodesource.com/setup_6.x | bash -
+apt-get install nodejs
+```
+
+
+## Application internals
+
+### Database
+
+Application uses database etlog.
+
+#### Collections
+
+##### logs
+
+Collection represents raw radius log records transformed to json format. 
+For details on data transformation see scripts/fticks\_to\_json.sh
+
+TODO - popis
+
+TODO - popis vstupniho formatu ?
+
+TODO - popis samotnych poli ?
+
+| field name | data type |
+|------------|-----------|
+| timestamp  |   Date    |
+| realm      |   String  |
+| viscountry |   String  |
+| visinst    |   String  |
+| csi        |   String  |
+| pn         |   String  |
+| result     |   String  |
+
+##### users\_mac
+
+Collection defines binding between user and all mac addresses, which he used for successfull authentication to eduroam.
+
+
+| field name | data type |
+|------------|-----------|
+| username   |   String  |
+| addrs      |   Array   |
+
+
+##### privileged\_ips
+
+Collection containing privileged ip addresses, which will bypass
+saml authentication. Address authentication is done using module passport-ip.
+Addresses must be in special format used by [range\_check](https://www.npmjs.com/package/range_check).
+ipv4 addresses format:
+
+```
+'::ffff:192.168.1.1/32'
+'::ffff:10.0.0.0/8'
+```
+
+ipv6 addresses format:
+
+```
+'2001:718:2:1::1/128'
+'2001:718:2:1::/64'
+```
+
+| field name | data type |
+|------------|-----------|
+| ip         |   String  |
+
+
+###### data insertion/update
+
+After data update, the application must be restarted.
+Privileged ip addresses are loaded only on application startup.
+Data can be inserted by accesing mongo shell and using commands:
+
+```
+use etlog
+db.privileged_ips.insert({ip : '::ffff:192.168.1.1/32'})
+```
+
+
+##### ... 
+
+TODO
+
+TODO
+
+### Application structure
+
+  /home/etlog/etlog         - application root
+  |-- app.js                - main application file, constains appliation configuration
+  |-- auth.js               - authentication configuration
+  |-- bin                   
+      `-- www               - script to start the application
+  |-- cert                  - certificate related files
+  |-- cron                  - cron tasks
+      `-- users_to_mac.js   - cron task for mapping users and mac addresses
+  |-- db.js                 - database and schema configuration
+  |-- cron.js               - cron tasks definiton
+  |-- doc                   - documentation
+  |-- node\_modules         - application dependency files
+  |-- package.json          - definition of application dependencies and properties
+  |-- public                - directory for refering public files
+  |-- routes                - application routes
+  |-- routes.js             - mapping of routes to application
+  |-- scripts               - various scripts
+      TODO
+  |-- views                 - templates of displayed pages
+
+
+
 
 
 ======================================================================================
@@ -28,22 +210,6 @@ transformace dat:
   > use fticks
   > db.logy.find({}).forEach(function(el){ el.timestamp = new Date(el.timestamp + " 2014"); db.logy.save(el); });
   trvani pro jeden mesic dat zhruba 4 hodiny, 28 minut
-
-
-======================================================================================
-pro propojeni weboveho rohzrani a databaze pouzijeme javascript na serveru - nodejs
-
-instalace nodejs:
-  curl -sL https://deb.nodesource.com/setup_4.x | bash -
-  apt-get install -y nodejs
-  node -v (test spravne probehnute instalace)
-
-dale je treba instalovat balickovaci system - npm:
-  cd
-  wget https://npmjs.org/install.sh
-  chmod +x install.sh
-  ./install.sh
-  nmp -v (test spravne probehnute instalace)
 
 
 ======================================================================================
@@ -78,22 +244,6 @@ instalaci vseach potrebnych modulu aplikaci provedene pomoci:
 aplikaci spustime pomoci:
   - DEBUG=nodetest2:* ./bin/www
   - cd /var/www/radlog && npm start
-
-
-======================================================================================
-struktura aplikace:
-
-  /var/www/radlog 
-  |-- app.js            - hlavni soubor cele aplikace
-  |-- bin               
-      `-- www           - skript pro spusteni aplikace
-  |-- db.js             - definice databazoveho spojeni
-  |-- node_modules      - adresar pro moduly nodejs
-  |-- npm-debug.log     - debug log aplikace
-  |-- package.json      - zavislosti aplikace
-  |-- public            - adresar pro odkazovani verejnych referenci na webu
-  |-- routes            - adresar obsahujici definice smerovani pozadavku na konkretni entity
-  |-- views             - adresar obsahujici sablony zobrazovanych stranek v sablonovacim systemu jade
 
 
 ======================================================================================
