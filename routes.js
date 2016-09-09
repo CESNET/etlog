@@ -16,6 +16,9 @@ module.exports = function(app) {
   // TODO
   // app.use('/stats', require('./routes/stats'));   // TODO
 
+  // TODO
+  // invalid data api
+
   // saml test
   app.use('/auth_fail', require('./routes/auth_fail'));
   app.use('/login/callback', require('./routes/callback'));

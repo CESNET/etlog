@@ -43,7 +43,7 @@ require('./routes')(app);
 
 // -----------------------------------------------------------
 // set up cron tasks
-//require('./cron')(database);  // TODO
+require('./cron')(database);  // TODO
 
 
 // debug routovani

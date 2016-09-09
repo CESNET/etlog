@@ -32,6 +32,15 @@ exports.privileged_ips = privileged_ips;
 var privileged_ips = mongoose.model('privileged_ips', privileged_ips_schema, 'privileged_ips');
 exports.privileged_ips = privileged_ips;
 // --------------------------------------------------------------------------------------
+var invalid_records_schema = mongoose.Schema({
+  date : string
+  records : Array
+});
+// --------------------------------------------------------------------------------------
+exports.invalid_records = invalid_records;
+var invalid_records = mongoose.model('invalid_records', invalid_records_schema, 'invalid_records');
+exports.invalid_records = invalid_records;
+// --------------------------------------------------------------------------------------
 mongoose.connect('mongodb://localhost/etlog');
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
