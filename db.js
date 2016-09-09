@@ -33,7 +33,7 @@ var privileged_ips = mongoose.model('privileged_ips', privileged_ips_schema, 'pr
 exports.privileged_ips = privileged_ips;
 // --------------------------------------------------------------------------------------
 var invalid_records_schema = mongoose.Schema({
-  date : string,
+  date : String,
   records : Array
 });
 // --------------------------------------------------------------------------------------
