@@ -39,6 +39,48 @@ ip6tables-save > /etc/iptables/rules.v6
 TODO
 
 
+```
+apt-get install syslog-ng
+cat > /etc/syslog-ng/conf.d/etlog-fticks.conf
+source net {
+  tcp(
+    port(1999)
+    tls( ca_dir("/etc/ssl/certs")
+    key-file("/home/etlog/etlog/cert/etlog.cesnet.cz.key.pem")
+    cert-file("/home/etlog/etlog/cert/etlog.cesnet.cz.crt.pem"))
+  );
+};
+
+destination fticks { file("/home/etlog/logs/fticks/fticks-$YEAR-$MONTH-$DAY" owner("etlog") group("etlog") perm(0600)); };
+
+log { source(net); destination(fticks); };
+^D
+
+mkdir /var/log/fticks/
+chown root:adm /var/log/fticks/
+service syslog-ng restart
+```
+
+create and edit `/etc/syslog-ng/conf.d/etlog-fticks.conf`
+
+
+### Packages
+
+These packages are necessary for etlog to run:
+
+openssl
+git
+tmux
+htop
+iptables-persistent
+curl
+tmux
+make
+syslog-ng
+gawk
+logtail
+
+Other special packages along with installation are listed below.
   
   
 ### MongoDB
@@ -101,34 +143,32 @@ Database is separeted into several collections.
 
 #### Collections
 
+In the tables below the column note is just an explanatory, it is not really present in the database.
+
 ##### logs
 
 Collection represents raw radius log records transformed to json format. 
 For details on data transformation see scripts/fticks\_to\_json.sh
 
-TODO - popis vstupniho formatu ?
-
-TODO - popis samotnych poli ?
-
-| field name | data type |
-|------------|-----------|
-| timestamp  |   Date    |      timestamp of authentication
-| realm      |   String  |      domain part of username
-| viscountry |   String  |      visited country
-| visinst    |   String  |      visited institution
-| csi        |   String  |      mac address
-| pn         |   String  |      username 
-| result     |   String  |      result of authentication
+| field name | data type |               note               |
+|------------|-----------|----------------------------------|
+| timestamp  |   Date    |      timestamp of authentication |
+| realm      |   String  |      domain part of username     |
+| viscountry |   String  |      visited country             |
+| visinst    |   String  |      visited institution         |
+| csi        |   String  |      mac address                 |
+| pn         |   String  |      username                    |
+| result     |   String  |      result of authentication    |
 
 ##### users\_mac
 
 Collection defines binding between user and all mac addresses, which he used for successfull authentication to eduroam.
 
 
-| field name | data type |
-|------------|-----------|
-| username   |   String  |      username
-| addrs      |   Array   |      array of user's mac addresses
+| field name | data type |               note                  |
+|------------|-----------|-------------------------------------|
+| username   |   String  |      username                       |
+| addrs      |   Array   |      array of user's mac addresses  |
 
 
 ##### privileged\_ips
@@ -151,9 +191,9 @@ ipv6 addresses format:
 '2001:718:2:1::/64'
 ```
 
-| field name | data type |
-|------------|-----------|
-| ip         |   String  |  string representing ip address
+| field name | data type |               note               |
+|------------|-----------|----------------------------------|
+| ip         |   String  |  string representing ip address  |
 
 
 ###### data insertion/update
@@ -166,6 +206,16 @@ Data can be inserted by accesing mongo shell and using commands:
 use etlog
 db.privileged_ips.insert({ip : '::ffff:192.168.1.1/32'})
 ```
+
+
+##### invalid\_records
+
+| field name | data type |               note                  |
+|------------|-----------|-------------------------------------|
+| date       |   String  |         date specification          |
+| records    |   Array   |         array of invalid records    |
+
+
 
 
 ##### ... 
@@ -193,12 +243,16 @@ TODO
   |-- routes                - application routes
   |-- routes.js             - mapping of routes to application
   |-- scripts               - various scripts
-      TODO
+      `-- read_err.sh       - TODO
+      `-- fticks_to_json.sh - TODO
+      `-- cron.sh           - cron script to import live data delivered by syslog
   |-- views                 - templates of displayed pages
 
 
 
+### Log files 
 
+TODO
 
 ======================================================================================
 transformace dat:
