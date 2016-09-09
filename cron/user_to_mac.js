@@ -4,10 +4,14 @@ var exp = {}
 // function for old data
 // process old data through days, until current day 
 exp.process_old_data = function (database) {
-    console.log("process_old_data");
-    
-    
-    // TODO
+  // find the lowest date in database and go from that date to present
+  var date;
+  
+  db.logs.find({}, { timestamp : 1, _id : 0 }, { limit : 1 }).sort({tistamp : 1 }, function(err, item) {
+     date = item;
+     console.log(item);
+  });
+  
 };
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
