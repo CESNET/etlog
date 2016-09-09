@@ -18,16 +18,16 @@ database="etlog"
 collection="logs"
 
 # log file to process
-logfile="/var/log/fticks/fticks-$date"
+logfile="/home/etlog/logs/fticks/fticks-$date"
 
 # etlog log root
-etlog_log_root="/var/log/etlog/"
+etlog_log_root="/home/etlog/logs/"
 
 # fticks to json conversion error log
-errlog="$etlog_log_root/fticks_err-$date.log"
+errlog="$etlog_log_root/transform/err-$date.log"
 
 # mongo error log
-mongo_errlog="$etlog_log_root/mongo_err-$date.log"
+mongo_errlog="$etlog_log_root/mongo/err-$date.log"
 
 # convert to json and import to database
 $etlog_root/scripts/fticks_to_json.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection 2>>$mongo_errlog
