@@ -239,8 +239,7 @@ TODO
   |-- routes                - application routes
   |-- routes.js             - mapping of routes to application
   |-- scripts               - various scripts
-      `-- read_err.sh       - TODO
-      `-- fticks_to_json.sh - TODO
+      `-- fticks_to_json.sh - transformation script from fticks to json
       `-- cron.sh           - cron script to import live data delivered by syslog
   |-- views                 - templates of displayed pages
 
