@@ -36,8 +36,7 @@ ip6tables-save > /etc/iptables/rules.v6
 
 ### Syslog setup
 
-TODO
-
+Radius data are acquired through syslog. Installation and configuration:
 
 ```
 apt-get install syslog-ng
@@ -55,14 +54,11 @@ destination fticks { file("/home/etlog/logs/fticks/fticks-$YEAR-$MONTH-$DAY" own
 
 log { source(net); destination(fticks); };
 ^D
-
-mkdir /var/log/fticks/
-chown root:adm /var/log/fticks/
 service syslog-ng restart
+
+su - etlog
+mkdir -p logs/fticks
 ```
-
-create and edit `/etc/syslog-ng/conf.d/etlog-fticks.conf`
-
 
 ### Packages
 
