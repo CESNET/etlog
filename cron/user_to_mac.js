@@ -1,17 +1,45 @@
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
-// function for old data
-// process old data through days, until current day 
+// process old data through days until current day 
+// --------------------------------------------------------------------------------------
 exp.process_old_data = function (database) {
   // find the lowest date in database and go from that date to present
   var date;
-  
-  db.logs.find({}, { timestamp : 1, _id : 0 }, { limit : 1 }).sort({tistamp : 1 }, function(err, item) {
-     date = item;
-     console.log(item);
+
+  // find all, sort by timestamp, display only timestamp, display one document only
+  database.logs.find({ query : {}, $orderby : { timestamp : 1 } } , { timestamp : 1, _id : 0 }, { limit : 1 },
+  function(err, doc) {
+    var date = doc;
+
+    date = String(date[0]["timestamp"]);    // get only string representation of date
+
+    var fields = date.split(" ");
+    var months = {      // months dict for date constructor
+      "Jan" : 0,
+      "Feb" : 1,
+      "Mar" : 2,
+      "Apr" : 3,
+      "May" : 4,
+      "Jun" : 5,
+      "Jul" : 6,
+      "Aug" : 7,
+      "Sep" : 8,
+      "Oct" : 9,
+      "Nov" : 10,
+      "Dec" : 11
+    }
+
+    date = new Date(fields[3], months[fields[1]], fields[2]);   // hh:mm:ss set to 0
+    var next_date = new Date(date.getTime() + 86400000);        // next day
+
+    while(date < current) {
+      process_data(database, date, next_date);
+      date = next_date;                         // continue
+      next_date = new Date(date.getTime() + 86400000);  // next day
+    }
+    console.log("cron task users_to_mac finished processing old data");
   });
-  
 };
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
