@@ -322,25 +322,5 @@ nasledne vytvoreni kostry aplikace provedeme pomoci:
 
 
 ======================================================================================
-koren webove aplikace je ve /var/www , testovaci aplikace je v /var/www/radlog
-
-instalaci vseach potrebnych modulu aplikaci provedene pomoci:
-  cd /var/www/radlog && npm install
-
-aplikaci spustime pomoci:
-  - DEBUG=nodetest2:* ./bin/www
-  - cd /var/www/radlog && npm start
-
-
-======================================================================================
-
-TODO:
-
-plneni databaze realnymi daty:
-
-  pro plneni databaze pouzijeme transformacni skript a mongoimport
-  transformacni skript je umisten v /root/scripts/fticks_to_json_new.sh
-  skript je dosdatecne komentovan a melo by byt zrejme, jak pracuje
-  pomoci cronu budeme databazi plnit kazdych 5 minut
 
 
