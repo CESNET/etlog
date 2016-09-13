@@ -2,16 +2,16 @@
 
 ## Basic info
 
-   TODO
-   basic information what the app does, what is it for ... 
+etlog can be accessed on etlog.cesnet.cz. It gathers and analyzes national radius log files and presents them to the users.
+etlog is intended for both users and administrators.
 
+some of the main reasons to create etlog were:
+- create generic interface for processing, analysis and searching of the radius log files
+- create a system for generating statistics and reports
+- create a system for trend analysis, which can signal service problems
+- create a system for anomaly detection (authnetication errors, device or identity theft, .. )
 
-
-
-This web application consists of Node.js, Express web application framework and MongoDB.
-It uses many auxiliary javascript modules.
-All the necesarry modules including their specific version can be found in file **package.json**.
-
+etlog consists of Node.js, Express web application framework and MongoDB.
 
 ## Server setup
 
@@ -142,6 +142,10 @@ apt-get install nodejs
 
 
 ## Application internals
+
+etlog consists of Node.js, Express web application framework and MongoDB.
+It uses many auxiliary javascript modules.
+All the necesarry modules including their specific version can be found in file **package.json**.
 
 ### Database
 
