@@ -208,17 +208,42 @@ db.privileged_ips.insert({ip : '::ffff:192.168.1.1/32'})
 
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
-| date       |   String  |         date specification          |
+| date       |   Date    |         date specification          |
 | records    |   Array   |         array of invalid records    |
 
 
+##### mac\_count
+
+| field name | data type |               note                  |
+|------------|-----------|-------------------------------------|
+| username   |   String  |         username                    |
+| count      |   Number  |         mac addresses count         |
 
 
-##### ... 
+##### roaming
+
+| field name       | data type |               note                          |
+|------------------|-----------|---------------------------------------------|
+| inst\_name       |   String  | name of the institution                     |
+| used\_count      |   Number  | count of institution's users authenticated  |
+| provided\_count  |   Number  | count of authentications provided           |
+| date             |   Date    | date specification                          |
+
+##### failed\_logins
 
 TODO
 
+| field name | data type |               note                  |
+|------------|-----------|-------------------------------------|
+| username   |   String  |         username                    |
+
+##### stats
+
 TODO
+
+| field name | data type |               note                  |
+|------------|-----------|-------------------------------------|
+
 
 ### Application structure
 
@@ -235,7 +260,7 @@ TODO
   |-- doc                   - documentation
   |-- node\_modules         - application dependency files
   |-- package.json          - definition of application dependencies and properties
-  |-- public                - directory for refering public files
+  |-- public                - directory for referring public files
   |-- routes                - application routes
   |-- routes.js             - mapping of routes to application
   |-- scripts               - various scripts
@@ -305,13 +330,5 @@ plneni databaze realnymi daty:
   transformacni skript je umisten v /root/scripts/fticks_to_json_new.sh
   skript je dosdatecne komentovan a melo by byt zrejme, jak pracuje
   pomoci cronu budeme databazi plnit kazdych 5 minut
-
-
-TODO:
-  instalovat samotny passport !!!!
-  instalovat doplnek passport-saml
-  pridat do zavislosti
-  dodat do aplikace autentizaci
-
 
 
