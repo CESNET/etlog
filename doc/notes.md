@@ -290,6 +290,22 @@ TODO
 
 TODO
 
+### API
+
+TODO
+
+
+### Routes
+
+#### frontend
+
+TODO
+
+#### backend
+
+TODO
+
+
 ======================================================================================
 transformace dat:
 
