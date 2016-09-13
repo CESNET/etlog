@@ -146,7 +146,7 @@ apt-get install nodejs
 ### Database
 
 Application uses database etlog.
-Database is separeted into several collections.
+Database is separated into several collections.
 
 #### Collections
 
