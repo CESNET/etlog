@@ -60,6 +60,11 @@ su - etlog
 mkdir -p logs/fticks
 ```
 
+### Time setup
+
+TODO
+
+
 ### Packages
 
 These packages are necessary for etlog to run:
@@ -106,11 +111,17 @@ Data are divided into databases, same as in the sql dabases. Each database consi
 which is equivalent of sql tables. Collections consist of documents, which use the BSON notation, which is basen on JSON.
 
 Basic commands:
+
 `show databases` lists all databases which are available.
+
 `use my_database` swich current database to my\_database
+
 `show collections` lists collection for current database.
+
 `db.my_collection.find({})` display all documents in my\_collection
+
 `db.my_collection.find({}).limit(5)` display 5 document from my\_collection
+
 `db.my_collection.find({})limit(5).pretty()` display 5 nicely formatted documents
 
 
