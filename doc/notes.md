@@ -258,6 +258,7 @@ TODO
 
 ### Application structure
 
+```
   /home/etlog/etlog         - application root
   |-- app.js                - main application file, constains appliation configuration
   |-- auth.js               - authentication configuration
@@ -278,7 +279,7 @@ TODO
       `-- fticks_to_json.sh - transformation script from fticks to json
       `-- cron.sh           - cron script to import live data delivered by syslog
   |-- views                 - templates of displayed pages
-
+```
 
 
 ### Log files 
