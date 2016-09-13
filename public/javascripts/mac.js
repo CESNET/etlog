@@ -43,7 +43,7 @@ function search()
   
   $.ajax({
     type: 'post',
-    url: "/mac/search",
+    url: "/search/mac_count/search",
     dataType: "json",
     //data: input,
     success: function(json){
