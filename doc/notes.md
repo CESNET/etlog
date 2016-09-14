@@ -38,6 +38,8 @@ ip6tables-save > /etc/iptables/rules.v6
 
 Radius data are acquired through syslog. Installation and configuration:
 
+TODO - dodat certifikaty - CESNET CA Root, CESNET CA 3
+
 ```
 apt-get install syslog-ng
 cat > /etc/syslog-ng/conf.d/etlog-fticks.conf
@@ -233,6 +235,8 @@ db.privileged_ips.insert({ip : '::ffff:192.168.1.1/32'})
 |------------|-----------|-------------------------------------|
 | username   |   String  |         username                    |
 | count      |   Number  |         mac addresses count         |
+| addrs      |   Array   |         Array of mac addresses      |
+| date       |   Date    |         date specification          |
 
 
 ##### roaming
@@ -251,6 +255,7 @@ TODO
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
 | username   |   String  |         username                    |
+| date       |   Date    |         date specification          |
 
 ##### stats
 
