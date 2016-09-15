@@ -43,6 +43,7 @@ Radius data are acquired through syslog. Installation and configuration:
 cd /etc/ssl/certs/
 wget https://crt.cesnet-ca.cz/CESNET_CA_Root.pem
 wget https://crt.cesnet-ca.cz/CESNET_CA_3.pem
+c_rehash
 apt-get install syslog-ng
 cat > /etc/syslog-ng/conf.d/etlog-fticks.conf
 source net {
