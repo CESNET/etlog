@@ -28,7 +28,7 @@ var privileged_ips_schema = mongoose.Schema({
   ip : String
 });
 // --------------------------------------------------------------------------------------
-exports.privileged_ips = privileged_ips;
+exports.privileged_ips_schema = privileged_ips_schema;
 var privileged_ips = mongoose.model('privileged_ips', privileged_ips_schema, 'privileged_ips');
 exports.privileged_ips = privileged_ips;
 // --------------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ var invalid_records_schema = mongoose.Schema({
   records : Array
 });
 // --------------------------------------------------------------------------------------
-exports.invalid_records = invalid_records;
+exports.invalid_records_schema = invalid_records_schema;
 var invalid_records = mongoose.model('invalid_records', invalid_records_schema, 'invalid_records');
 exports.invalid_records = invalid_records;
 // --------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ var mac_count_schema = mongoose.Schema({
   date     : Date
 });
 // --------------------------------------------------------------------------------------
-exports.mac_count = mac_count;
+exports.mac_count_schema = mac_count_schema;
 var mac_count = mongoose.model('mac_count', mac_count_schema, 'mac_count');
 exports.mac_count = mac_count;
 // --------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ var roaming_schema = mongoose.Schema({
   date           : Date
 });
 // --------------------------------------------------------------------------------------
-exports.roaming = roaming;
+exports.roaming_schema = roaming_schema;
 var roaming = mongoose.model('roaming', roaming_schema, 'roaming');
 exports.roaming = roaming;
 // --------------------------------------------------------------------------------------
