@@ -8,7 +8,7 @@ var exp = {}
 // --------------------------------------------------------------------------------------
 exp.process_records = function (database) {
   var curr = new Date();        // current day
-  var prev_day = new Date(curr.getTime() - 86400000);   // previous day
+  var prev_day = new Date(curr.getTime() - 86400000 - 300000);   // previous day - 5 min to not miss any records due to overhead
 
   var log_root = "/home/etlog/logs/fticks/";
   var etlog_log_root = "/home/etlog/logs/";
