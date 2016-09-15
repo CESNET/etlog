@@ -3,6 +3,8 @@ var exp = {}
 // --------------------------------------------------------------------------------------
 // process old data through days until current day 
 // --------------------------------------------------------------------------------------
+// map usernames to mac addresses
+// --------------------------------------------------------------------------------------
 exp.process_old_data = function (database) {
   // find the lowest date in database and go from that date to present
   var date;
@@ -42,16 +44,16 @@ exp.process_old_data = function (database) {
   });
 };
 // --------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------
-// function for current day
-// just for current day
-// run once an hour          ???? maybe more often ?
+// function for current data
+// interval must be the same interval at which the task is running periodically!
+// interval is in seconds
 // --------------------------------------------------------------------------------------
 // map usernames to mac addresses
 // --------------------------------------------------------------------------------------
-exp.process_current_data = function (database) {
-  min_date = new Date();        // current day
-  max_date = new Date(min_date.getTime() + 86400000);   // the next day
+exp.process_current_data = function (database, interval) {
+  max_date = new Date();        // current day
+  // current day [hh:mm:ss] - ((interval * miliseconds) + something just to be sure, we dont miss any records * miliseconds)
+  min_date = new Date(max_date.getTime() - ((interval * 1000) + (interval / 4) * 1000 ));
 
   process_data(database, min_date, max_date);
 };
