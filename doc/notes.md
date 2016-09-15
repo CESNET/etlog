@@ -39,9 +39,10 @@ ip6tables-save > /etc/iptables/rules.v6
 
 Radius data are acquired through syslog. Installation and configuration:
 
-TODO - dodat certifikaty - CESNET CA Root, CESNET CA 3
-
 ```
+cd /etc/ssl/certs/
+wget https://crt.cesnet-ca.cz/CESNET_CA_Root.pem
+wget https://crt.cesnet-ca.cz/CESNET_CA_3.pem
 apt-get install syslog-ng
 cat > /etc/syslog-ng/conf.d/etlog-fticks.conf
 source net {
