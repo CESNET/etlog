@@ -127,7 +127,7 @@ Basic commands:
 
 `db.my_collection.find({}).limit(5)` display 5 document from my\_collection
 
-`db.my_collection.find({})limit(5).pretty()` display 5 nicely formatted documents
+`db.my_collection.find({})limit(5).pretty()` display 5 nicely formatted documents from my\_collection
 
 
 ### Node.js
