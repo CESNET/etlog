@@ -41,6 +41,28 @@ exports.invalid_records = invalid_records;
 var invalid_records = mongoose.model('invalid_records', invalid_records_schema, 'invalid_records');
 exports.invalid_records = invalid_records;
 // --------------------------------------------------------------------------------------
+var mac_count_schema = mongoose.Schema({
+  username : String,
+  count    : Number,
+  addrs    : Array,
+  date     : Date
+});
+// --------------------------------------------------------------------------------------
+exports.mac_count = mac_count;
+var mac_count = mongoose.model('mac_count', mac_count_schema, 'mac_count');
+exports.mac_count = mac_count;
+// --------------------------------------------------------------------------------------
+var roaming_schema = mongoose.Schema({
+  inst_name      : String,
+  used_count     : Number,
+  provided_count : Number,
+  date           : Date
+});
+// --------------------------------------------------------------------------------------
+exports.roaming = roaming;
+var roaming = mongoose.model('roaming', roaming_schema, 'roaming');
+exports.roaming = roaming;
+// --------------------------------------------------------------------------------------
 mongoose.connect('mongodb://localhost/etlog');
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
