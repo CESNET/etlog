@@ -216,6 +216,7 @@ ipv6 addresses format:
 
 After data update, the application must be restarted.
 Privileged ip addresses are loaded only on application startup.
+Localhost address is added for cron tasks to use application api.
 Data can be inserted by accesing mongo shell and using commands:
 
 ```
