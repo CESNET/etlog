@@ -286,6 +286,7 @@ TODO
   |-- node\_modules         - application dependency files
   |-- package.json          - definition of application dependencies and properties
   |-- public                - directory for referring public files
+  |-- README.md             - link to doc/notes.md
   |-- routes                - application routes
   |-- routes.js             - mapping of routes to application
   |-- scripts               - various scripts
