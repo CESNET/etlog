@@ -4,53 +4,56 @@ module.exports = function(app, database) {
   // passport
   var passport = require('passport');
   // passport-saml
-  var SamlStrategy = require('passport-saml').Strategy;
+  var saml_strategy = require('passport-saml').Strategy;
 
 // -----------------------------------------------------------
-
+  // passport setup
   app.use(passport.initialize());
 
 // -----------------------------------------------------------
-
+  // routing
   app.get('/login',
-    passport.authenticate(['ip', 'saml'], { failureRedirect: '/auth_fail'}),      // TODO
+    passport.authenticate(['ip', 'saml'], { failureRedirect: '/auth_fail', successRedirect: '/'})      // TODO
+    //function(req, res) {
+    //  // If this function gets called, authentication was successful.
+    //  //console.log("req: ");     // TODO
+    //  //console.log(req);
+    //  //console.log("res: ");
+    //  //console.log(res);
+    //  console.log(req.user);
+    //  console.log("auth successful");
+    //  res.redirect('/');
+    //}
+  );
+  // TODO - when is the defined strategy callback called ?
+
+
+  app.post('/login/callback',
+    //passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
+    passport.authenticate('saml', { failureRedirect: '/auth_fail' }),       // TODO
     function(req, res) {
-      // If this function gets called, authentication was successful.
-      //console.log("req: ");     // TODO
-      //console.log(req);
-      //console.log("res: ");
-      //console.log(res);
-      console.log("auth successful");
+      console.log("post login callback");
       res.redirect('/');
     }
   );
 
 // -----------------------------------------------------------
+  // saml
 
   var pvk = fs.readFileSync('cert/etlog.cesnet.cz.key.pem', 'utf-8');
   var cert = fs.readFileSync('cert/etlog.cesnet.cz.crt.pem', 'utf-8');
   var idpcert = fs.readFileSync('cert/idp-cert.pem', 'utf-8');
 
-  //console.log("debug");
-  //console.log(cert);
-
-  var str = new SamlStrategy({
-      //entryPoint: 'https://idp2.civ.cvut.cz/idp/profile/SAML2/Redirect/SSO',
-      //issuer: 'https://idp2.civ.cvut.cz/idp/shibboleth',
-
+  var strategy = new saml_strategy({
       callbackUrl: 'https://etlog.cesnet.cz/login/callback',
       entryPoint: 'https://whoami-dev.cesnet.cz/idp/profile/SAML2/Redirect/SSO',
       issuer: 'https://etlog.cesnet.cz/',
       protocol: 'https://',
-      
-      // zatim nechat byt
       decryptionPvk: pvk,
-      //privateCert: cert,
-      
+      //ecryptionCert: cert,
       identifierFormat : 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
-      
-      cert: idpcert
-      //privateCert: ''
+      cert: idpcert,
+      //privateCert: cert
     },
     function(profile, done) {         // TODO
       console.log("autentizace OK");
@@ -73,36 +76,34 @@ module.exports = function(app, database) {
     });
 
 
-  passport.use(str);
-  console.log(str.generateServiceProviderMetadata(cert));
+  passport.use(strategy);
+  console.log(strategy.generateServiceProviderMetadata(cert));
 
 // -----------------------------------------------------------
-
+  // ip based authentication
   var db_ips = database.privileged_ips.find({}, { _id: 0 },     // search db for privileged ip addresses
-    function(err, items) {
-      var allowed_ips = [];
+  function(err, items) {
+    var allowed_ips = [];
 
-      for(var ip in items) {
-        allowed_ips.push(items[ip]["ip"]);      // add to array
-      }
+    for(var ip in items) {
+      allowed_ips.push(items[ip]["ip"]);      // add to array
+    }
 
 // -----------------------------------------------------------
 
-      var IpStrategy = require('passport-ip').Strategy;
+    var ip_strategy = require('passport-ip').Strategy;
 
-      passport.use(new IpStrategy({
-        range: allowed_ips          // use data from db
-      }, function(profile, done){
-        console.log("profile");
-        console.log(profile);
-        console.log("done");
-        console.log(done);
-        done(null, profile);
-        //profile.id is the ip address.
-      }));
-    }
-  );
-  
+    passport.use(new ip_strategy({
+      range: allowed_ips          // use data from db
+    }, function(profile, done){
+      console.log("profile");
+      console.log(profile);
+      console.log("done");
+      console.log(done);
+      done(null, profile);
+      //profile.id is the ip address.
+    }));
+  });
 
 // -----------------------------------------------------------
 
@@ -115,7 +116,6 @@ module.exports = function(app, database) {
   passport.deserializeUser(function(user, done) { // TODO
         done(null, user);
   });
-
 
 // -----------------------------------------------------------
 }
