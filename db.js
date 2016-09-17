@@ -33,7 +33,7 @@ var privileged_ips = mongoose.model('privileged_ips', privileged_ips_schema, 'pr
 exports.privileged_ips = privileged_ips;
 // --------------------------------------------------------------------------------------
 var invalid_records_schema = mongoose.Schema({
-  date : String,
+  timestamp : Date,
   records : Array
 });
 // --------------------------------------------------------------------------------------
@@ -42,10 +42,10 @@ var invalid_records = mongoose.model('invalid_records', invalid_records_schema, 
 exports.invalid_records = invalid_records;
 // --------------------------------------------------------------------------------------
 var mac_count_schema = mongoose.Schema({
-  username : String,
-  count    : Number,
-  addrs    : Array,
-  date     : Date
+  username  : String,
+  count     : Number,
+  addrs     : Array,
+  timestamp : Date
 });
 // --------------------------------------------------------------------------------------
 exports.mac_count_schema = mac_count_schema;
@@ -56,7 +56,7 @@ var roaming_schema = mongoose.Schema({
   inst_name      : String,
   used_count     : Number,
   provided_count : Number,
-  date           : Date
+  timestmap      : Date
 });
 // --------------------------------------------------------------------------------------
 exports.roaming_schema = roaming_schema;

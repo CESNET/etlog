@@ -230,7 +230,7 @@ db.privileged_ips.insert({ip : '192.168.1.1/32'})
 
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
-| date       |   Date    |         date specification          |
+| timestamp  |   Date    |         timestamp                   |
 | records    |   Array   |         array of invalid records    |
 
 
@@ -241,7 +241,7 @@ db.privileged_ips.insert({ip : '192.168.1.1/32'})
 | username   |   String  |         username                    |
 | count      |   Number  |         mac addresses count         |
 | addrs      |   Array   |         Array of mac addresses      |
-| date       |   Date    |         date specification          |
+| timestamp  |   Date    |         timestamp                   |
 
 
 ##### roaming
@@ -251,7 +251,7 @@ db.privileged_ips.insert({ip : '192.168.1.1/32'})
 | inst\_name       |   String  | name of the institution                     |
 | used\_count      |   Number  | count of institution's users authenticated  |
 | provided\_count  |   Number  | count of authentications provided           |
-| date             |   Date    | date specification                          |
+| timestamp        |   Date    | timestamp                                   |
 
 ##### failed\_logins
 
@@ -260,7 +260,7 @@ TODO
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
 | username   |   String  |         username                    |
-| date       |   Date    |         date specification          |
+| timestamp  |   Date    |         timestamp                   |
 
 ##### stats
 
