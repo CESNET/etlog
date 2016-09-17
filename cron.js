@@ -2,11 +2,11 @@ module.exports = function(database) {
 // --------------------------------------------------------------------------------------
   var CronJob = require('cron').CronJob;
   var user_to_mac = require('./cron/user_to_mac.js');
-  var invalid_data = require('./cron/invalid_data.js');     // TODO - test
+  var invalid_records = require('./cron/invalid_records.js');     // TODO - test
 // --------------------------------------------------------------------------------------
 
-  //new CronJob('0 48 * * * *', function() {      // TODO
-  //    user_to_mac.process_current_data(database);
+  //new CronJob('0 50 * * * *', function() {      // TODO
+  //    user_to_mac.process_current_data(database, 1800);
 
   ////}, null, true, 'America/Los_Angeles');
   //}, null, true, 'Etc/UTC');                    // TODO
@@ -21,6 +21,8 @@ module.exports = function(database) {
   // debug
   //invalid_data.process_records(database)
 
+
+  //user_to_mac.process_old_data(database);
 
   // TODO - automatic data retention -> delete older data:
   // logs itself after a year ?
