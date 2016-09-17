@@ -19,7 +19,10 @@ module.exports = function(app) {
   // TODO
   // invalid data api
 
+  // login routing is defined separately
+  // see auth.js
+
   // saml test
   app.use('/auth_fail', require('./routes/auth_fail'));
-  app.use('/login/callback', require('./routes/callback'));
+  //app.use('/login/callback', require('./routes/callback'));
 }
