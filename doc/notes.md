@@ -191,13 +191,13 @@ Collection defines binding between user and all mac addresses, which he used for
 
 Collection containing privileged ip addresses, which will bypass
 saml authentication. Address authentication is done using module passport-ip.
-Addresses must be in special format used by [range\_check](https://www.npmjs.com/package/range_check).
+Addresses must be in commonly used slash format:
 
 ipv4 addresses format:
 
 ```
-'::ffff:192.168.1.1/32'
-'::ffff:10.0.0.0/8'
+'192.168.1.1/32'
+'10.0.0.0/8'
 ```
 
 ipv6 addresses format:
@@ -221,7 +221,8 @@ Data can be inserted by accesing mongo shell and using commands:
 
 ```
 use etlog
-db.privileged_ips.insert({ip : '::ffff:192.168.1.1/32'})
+db.privileged_ips.insert({ip : '127.0.0.1/32'})
+db.privileged_ips.insert({ip : '192.168.1.1/32'})
 ```
 
 
