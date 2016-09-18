@@ -70,6 +70,11 @@ mkdir -p logs/fticks
 TODO
 
 
+### Cron setup
+
+TODO
+
+
 ### Packages
 
 These packages are necessary for etlog to run:
