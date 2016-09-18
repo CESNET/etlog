@@ -234,6 +234,11 @@ db.privileged_ips.insert({ip : '192.168.1.1/32'})
 
 ##### invalid\_records
 
+Timestamp field is populated with artificial data, just to
+distint in which interval the record belongs.
+Lowest distinction interval for timestamp is 24 hours.
+
+
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
 | timestamp  |   Date    |         timestamp                   |
@@ -241,6 +246,11 @@ db.privileged_ips.insert({ip : '192.168.1.1/32'})
 
 
 ##### mac\_count
+
+Timestamp field is populated with artificial data, just to
+distint in which interval the record belongs.
+Lowest distinction interval for timestamp is 24 hours.
+
 
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
@@ -252,12 +262,26 @@ db.privileged_ips.insert({ip : '192.168.1.1/32'})
 
 ##### roaming
 
+Timestamp field is populated with artificial data, just to
+distint in which interval the record belongs.
+Lowest distinction interval for timestamp is 24 hours.
+
+
 | field name       | data type |               note                          |
 |------------------|-----------|---------------------------------------------|
 | inst\_name       |   String  | name of the institution                     |
 | used\_count      |   Number  | count of institution's users authenticated  |
 | provided\_count  |   Number  | count of authentications provided           |
 | timestamp        |   Date    | timestamp                                   |
+
+
+  // other possible structure
+  // inst_name : String
+  // data      : Array
+  //           | data.timestamp   
+  //           | data.used_count
+  //           | data.provided_count
+
 
 ##### failed\_logins
 
