@@ -35,7 +35,7 @@ exp.process_old_data = function (database) {
     date = new Date(fields[3], months[fields[1]], fields[2]);   // hh:mm:ss set to 0
     var next_date = new Date(date.getTime() + 86400000);        // next day
 
-    while(date < current) {
+    while(date < next_date) {
       process_data(database, date, next_date);
       date = next_date;                         // continue
       next_date = new Date(date.getTime() + 86400000);  // next day
