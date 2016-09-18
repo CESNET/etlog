@@ -164,7 +164,8 @@ Database is separated into several collections.
 
 #### Collections
 
-In the tables below the column note is just an explanatory, it is not really present in the database.
+In the tables below the column note is just explanatory, it is not really present in the database.
+Every document has also a field _id, which is just for internal MongoDB purposes, it is not shown in tables below.
 
 ##### logs
 
