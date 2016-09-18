@@ -8,6 +8,7 @@ var exp = {}
 exp.process_old_data = function (database) {
   // find the lowest date in database and go from that date to present
   var date;
+  var current = new Date();
 
   // find all, sort by timestamp, display only timestamp, display one document only
   database.logs.find({ query : {}, $orderby : { timestamp : 1 } } , { timestamp : 1, _id : 0 }, { limit : 1 },
@@ -35,12 +36,12 @@ exp.process_old_data = function (database) {
     date = new Date(fields[3], months[fields[1]], fields[2]);   // hh:mm:ss set to 0
     var next_date = new Date(date.getTime() + 86400000);        // next day
 
-    while(date < next_date) {
+    while(date < current) {
       process_data(database, date, next_date);
       date = next_date;                         // continue
       next_date = new Date(date.getTime() + 86400000);  // next day
     }
-    console.log("cron task users_to_mac finished processing old data");
+    console.log("cron task user_to_mac finished processing old data");
   });
 };
 // --------------------------------------------------------------------------------------
