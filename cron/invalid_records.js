@@ -1,6 +1,13 @@
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+exp.process_old_records = function (database) {
+  // TODO
+
+};
+// --------------------------------------------------------------------------------------
 // run once a day
 // --------------------------------------------------------------------------------------
 // get invalid records for previous day
@@ -8,21 +15,24 @@ var exp = {}
 // --------------------------------------------------------------------------------------
 exp.process_records = function (database) {
   var curr = new Date();        // current day
-  var prev_day = new Date(curr.getTime() - 86400000 - 300000);   // previous day - 5 min to not miss any records due to overhead
+  var prev_min = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 0, 0, 0, 0);       // previous day hh:mm:ss:ms set to 00:00:00:000
+  var prev_max = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 23, 59, 59, 999);  // previous day hh:mm:ss:ms set to 23:59:59:999
+  
+  // this date handling should guarantee correct interval for all processed records
 
   var log_root = "/home/etlog/logs/fticks/";
   var etlog_log_root = "/home/etlog/logs/";
-  var date = "-" + prev_day.getFullYear() + "-" + zero_pad((Number(prev_day.getMonth()) + 1), 2) + "-" + zero_pad(prev_day.getUTCDate(), 2);
+  var date = "-" + prev_min.getFullYear() + "-" + zero_pad((Number(prev_min.getMonth()) + 1), 2) + "-" + zero_pad(prev_min.getUTCDate(), 2);
 
   var log_file = log_root + "fticks" + date;      // original file, which constains invalid records
-  var err_file = etlog_log_root + "err" + date; // /var/log/etlog/fticks_err-2015-01-25
+  var err_file = etlog_log_root + "transform/err" + date; // /home/etlog/logs/transform/err-2015-01-25
 
-  get_record_numbers(err_file, log_file, read_lines, save_to_db, database, prev_day);
+  get_record_numbers(err_file, log_file, read_lines, save_to_db, database, prev_min);
 };
 // --------------------------------------------------------------------------------------
 // get invalid record line numbers and call next processing function
 // --------------------------------------------------------------------------------------
-function get_record_numbers(err_file, log_file, read_lines, save_to_db, database, prev_day)
+function get_record_numbers(err_file, log_file, read_lines, save_to_db, database, db_date)
 {
   var arr = [];
   var fs = require('fs');
@@ -45,20 +55,20 @@ function get_record_numbers(err_file, log_file, read_lines, save_to_db, database
   });
   
   lineReader.on('close', function() {   // when done
-    read_lines(log_file, arr, save_to_db, database, prev_day);
+    read_lines(log_file, arr, save_to_db, database, db_date);
   });
 }
 // --------------------------------------------------------------------------------------
 // save invalid records to database as array
 // --------------------------------------------------------------------------------------
-function save_to_db(database, arr, prev_day)
+function save_to_db(database, arr, db_date)
 {
-  database.invalid_records.insert({ date : prev_day, records : arr });
+  database.invalid_records.insert({ date : db_date, records : arr });
 }
 // --------------------------------------------------------------------------------------
 // read invalid lines from original file
 // --------------------------------------------------------------------------------------
-function read_lines(log_file, numbers, save_to_db, database, prev_day)
+function read_lines(log_file, numbers, save_to_db, database, db_date)
 {
   arr = [];
   var fs = require('fs');
@@ -81,7 +91,7 @@ function read_lines(log_file, numbers, save_to_db, database, prev_day)
       arr.push(lines[numbers[number] - 1]);         // indexed from 0
     }
 
-    save_to_db(database, arr, prev_day);            // save when done
+    save_to_db(database, arr, db_date);            // save when done
   });
 }
 // --------------------------------------------------------------------------------------
