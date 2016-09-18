@@ -8,6 +8,9 @@ exp.process_old_data = function (database) {
   var date;
   var current = new Date();
 
+  var curr_min = new Date(current.getFullYear(), current.getMonth(), current.getUTCDate(), 0, 0, 0, 0);   // current day hh:mm:ss:ms set to 00:00:00:000
+
+
   // find all, sort by timestamp, display only timestamp, display one document only
   database.logs.find({ query : {}, $orderby : { timestamp : 1 } } , { timestamp : 1, _id : 0 }, { limit : 1 },
   function(err, doc) {
@@ -31,13 +34,15 @@ exp.process_old_data = function (database) {
       "Dec" : 11
     }
 
-    date = new Date(fields[3], months[fields[1]], fields[2]);   // hh:mm:ss set to 0
-    var next_date = new Date(date.getTime() + 86400000);        // next day
+    var min = new Date(fields[3], months[fields[1]], fields[2], 0, 0, 0, 0);        // hh:mm:ss:ms set to 0
+    var max = new Date(fields[3], months[fields[1]], fields[2], 23, 59, 59, 9999);  // hh:mm:ss:ms set to 23:59:59:999
+    // this date handling should guarantee correct interval for all processed records
+    //var next_date = new Date(date.getTime() + 86400000);        // next day
 
-    while(date < current) {
-      search(database, date, next_date);
-      date = next_date;                         // continue
-      next_date = new Date(date.getTime() + 86400000);  // next day
+    while(min <= current) {
+      search(database, min, max);
+      min += 86400000;  // continue
+      max += 86400000;  // continue
     }
     console.log("cron task mac_count finished processing old data");
   });
@@ -47,18 +52,15 @@ exp.process_old_data = function (database) {
 // --------------------------------------------------------------------------------------
 exp.process_current_data = function (database) {
   var curr = new Date();        // current day
-  var prev_day = new Date(curr.getTime() - 86400000);   // previous day 
-
-  // TODO - is there a chance to miss any data here due to overhead?
-  // if it is possible, solution may me to manually insert date between min and max in the timestamp field of result
-
-  search(database, prev_day, curr);
+  var prev_min = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 0, 0, 0, 0);       // previous day hh:mm:ss:ms set to 00:00:00:000
+  var prev_max = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 23, 59, 59, 999);  // previous day hh:mm:ss:ms set to 23:59:59:999
+  
+  search(database, prev_min, prev_max);
 };
 // --------------------------------------------------------------------------------------
 // perform database search
 // --------------------------------------------------------------------------------------
 function search(database, min, max) {
-
   database.logs.aggregate(
   [ 
   { 
@@ -95,11 +97,7 @@ function search(database, min, max) {
           { 
             pn : "$pn", 
             csi : "$csi" 
-          }, 
-        timestamp : 
-          { 
-            $addToSet : "$timestamp"    // add timestamp
-          } 
+          }
       } 
   }, 
   { 
@@ -116,11 +114,7 @@ function search(database, min, max) {
         addrs : 
           { 
               $addToSet : "$_id.csi"    // add mac addresses to array
-          }, 
-        timestamp : 
-          { 
-            $addToSet : "$timestamp"    // add timestamp
-          } 
+          }
       } 
   }, 
   { 
@@ -131,23 +125,12 @@ function search(database, min, max) {
             $gt : 2                     // anyone with more than 2 mac addresses
           } 
       } 
-  },
-  { 
-    $project : 
-      { 
-        username : 1, 
-        count : 1, 
-        addrs : 1, 
-        timestamp : 
-          { 
-            $slice : [ "$timestamp", 1 ]    // limit number of elements in timestamp to 1
-          }
-      }
   }
   ],
     function(err, items) {
-      if(err == null)
-        save_to_db(database, transform(items));
+      if(err == null) {
+        save_to_db(database, transform(items, min));    // add timestamp in transform
+    }
       else
         console.log(err);
   });
@@ -160,7 +143,6 @@ function save_to_db(database, items) {
   // problem with duplicates 
 
   for(var item in items) {  // any better way to do this ?
-    console.log(items[item]);
     database.mac_count.update(items[item], items[item], { upsert : true },
     function(err, result) {
       console.log(err);
@@ -174,7 +156,7 @@ function save_to_db(database, items) {
 // output:
 // { username: '11542566@cuni.cz', count: 1, addrs: [ '90fd6159fe27' ], timestamp: 2015-04-23T14:32:21.000Z }
 // --------------------------------------------------------------------------------------
-function transform(items) {
+function transform(items, db_date) {
   var arr = [];
   var dict = {};
 
@@ -183,7 +165,7 @@ function transform(items) {
     dict['username'] = items[item]['_id']['username'];
     dict['count'] = items[item]['count'];
     dict['addrs'] = items[item]['addrs'];
-    dict['timestamp'] = items[item]['timestamp'][0][0];
+    dict['timestamp'] = db_date;
     arr.push(dict);
   }
 
