@@ -62,7 +62,7 @@ log { source(net); destination(fticks); };
 service syslog-ng restart
 
 su - etlog
-mkdir -p logs/fticks
+mkdir -p ~/logs/{fticks,transform,mongo}
 ```
 
 ### Time setup
