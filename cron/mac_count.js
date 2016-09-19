@@ -145,7 +145,8 @@ function save_to_db(database, items) {
   for(var item in items) {  // any better way to do this ?
     database.mac_count.update(items[item], items[item], { upsert : true },
     function(err, result) {
-      console.log(err);
+      if(err)  
+        console.log(err);
     });
   }
 }
