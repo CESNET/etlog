@@ -38,6 +38,6 @@ errlog="$etlog_log_root/transform/err-$date.log"
 mongo_errlog="$etlog_log_root/mongo/err-$date.log"
 
 # convert to json and import to database
-$etlog_root/scripts/fticks_to_json.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection 2>>$mongo_errlog
+$etlog_root/scripts/fticks_to_json.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
 
 exit 0
