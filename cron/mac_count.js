@@ -35,9 +35,9 @@ exp.process_old_data = function (database) {
     }
 
     var min = new Date(fields[3], months[fields[1]], fields[2], 0, 0, 0, 0);        // hh:mm:ss:ms set to 0
-    var max = new Date(fields[3], months[fields[1]], fields[2], 23, 59, 59, 9999);  // hh:mm:ss:ms set to 23:59:59:999
+    var max = new Date(fields[3], months[fields[1]], fields[2] + 1, 0, 0, 0, 0);    // next day, hh:mm:ss:ms set to 0
+                                                                                    // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
-    //var next_date = new Date(date.getTime() + 86400000);        // next day
 
     while(min <= current) {
       search(database, min, max);
@@ -52,9 +52,9 @@ exp.process_old_data = function (database) {
 // --------------------------------------------------------------------------------------
 exp.process_current_data = function (database) {
   var curr = new Date();        // current day
-  var prev_min = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 0, 0, 0, 0);       // previous day hh:mm:ss:ms set to 00:00:00:000
-  var prev_max = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 23, 59, 59, 999);  // previous day hh:mm:ss:ms set to 23:59:59:999
-  
+  var prev_min = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 0, 0, 0, 0); // previous day hh:mm:ss:ms set to 00:00:00:000
+  var prev_max = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate(), 0, 0, 0, 0);     // current day hh:mm:ss:ms set to 00:00:00:000
+                                                                                                   // search uses lower than max condition !
   search(database, prev_min, prev_max);
 };
 // --------------------------------------------------------------------------------------
