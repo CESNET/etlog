@@ -287,7 +287,7 @@ Lowest distinction interval for timestamp is 24 hours.
 | timestamp    |   Date    |         timestamp                   |
 | fail\_count  |   Number  |    count of failed login attempts   |
 | ok\_count    |   Number  |  count of successful login attempts |
-| ratio        |   Number  |  ratio of ok\_count and fail\_count |
+| ratio        |   Number  |  ratio of fail\_count to (ok\_count + fail\_count) |
 
 ##### stats
 
