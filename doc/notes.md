@@ -314,27 +314,31 @@ TODO
 ### Application structure
 
 ```
-  /home/etlog/etlog         - application root
-  |-- app.js                - main application file, constains appliation configuration
-  |-- auth.js               - authentication configuration
+  /home/etlog/etlog          - application root
+  |-- app.js                 - main application file, constains appliation configuration
+  |-- auth.js                - authentication configuration
   |-- bin                   
-      `-- www               - script to start the application
-  |-- cert                  - certificate related files
-  |-- cron                  - cron tasks
-      `-- users_to_mac.js   - cron task for mapping users and mac addresses
-  |-- db.js                 - database and schema configuration
-  |-- cron.js               - cron tasks definiton
-  |-- doc                   - documentation
-  |-- node\_modules         - application dependency files
-  |-- package.json          - definition of application dependencies and properties
-  |-- public                - directory for referring public files
-  |-- README.md             - link to doc/notes.md
-  |-- routes                - application routes
-  |-- routes.js             - mapping of routes to application
-  |-- scripts               - various scripts
-      `-- fticks_to_json.sh - transformation script from fticks to json
-      `-- cron.sh           - cron script to import live data delivered by syslog
-  |-- views                 - templates of displayed pages
+      `-- www                - script to start the application
+  |-- cert                   - certificate related files
+  |-- cron                   - cron tasks
+      `-- failed_logins.js   - cron task for generating failed_logins collection data
+      `-- invalid_records.js - cron task for generating invalid_records collection data
+      `-- mac_count.js       - cron task for generating mac_count collection data
+      `-- roaming.js         - cron task for generating roaming collection data
+      `-- users_to_mac.js    - cron task for mapping users and mac addresses
+  |-- db.js                  - database and schema configuration
+  |-- cron.js                - cron tasks definiton
+  |-- doc                    - documentation
+  |-- node\_modules          - application dependency files
+  |-- package.json           - definition of application dependencies and properties
+  |-- public                 - directory for referring public files
+  |-- README.md              - link to doc/notes.md
+  |-- routes                 - application routes
+  |-- routes.js              - mapping of routes to application
+  |-- scripts                - various scripts
+      `-- fticks_to_json.sh  - transformation script from fticks to json
+      `-- cron.sh            - cron script to import live data delivered by syslog
+  |-- views                  - templates of displayed pages
 ```
 
 
