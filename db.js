@@ -63,6 +63,18 @@ exports.roaming_schema = roaming_schema;
 var roaming = mongoose.model('roaming', roaming_schema, 'roaming');
 exports.roaming = roaming;
 // --------------------------------------------------------------------------------------
+var failed_logins_schema = mongoose.Schema({
+  username    : String,
+  timestamp   : Date,
+  fail_count  : Number,
+  ok_count    : Number,
+  ratio       : Number
+});
+// --------------------------------------------------------------------------------------
+exports.failed_logins_schema = failed_logins_schema;
+var failed_logins = mongoose.model('failed_logins', failed_logins_schema, 'failed_logins');
+exports.failed_logins = failed_logins;
+// --------------------------------------------------------------------------------------
 mongoose.connect('mongodb://localhost/etlog');
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
