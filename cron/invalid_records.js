@@ -3,7 +3,7 @@ var exp = {}
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
-exp.process_old_records = function (database) {
+exp.process_old_data = function (database) {
   // TODO
 
 };
@@ -13,7 +13,7 @@ exp.process_old_records = function (database) {
 // get invalid records for previous day
 // and save them to database
 // --------------------------------------------------------------------------------------
-exp.process_records = function (database) {
+exp.process_current_data = function (database) {
   var curr = new Date();        // current day
   var prev_min = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 0, 0, 0, 0);       // previous day hh:mm:ss:ms set to 00:00:00:000
   // this date handling should guarantee correct interval for all processed records
