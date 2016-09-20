@@ -275,22 +275,19 @@ Lowest distinction interval for timestamp is 24 hours.
 | timestamp        |   Date    | timestamp                                   |
 
 
-  // other possible structure
-  // inst_name : String
-  // data      : Array
-  //           | data.timestamp   
-  //           | data.used_count
-  //           | data.provided_count
-
-
 ##### failed\_logins
 
-TODO
+Timestamp field is populated with artificial data, just to
+distint in which interval the record belongs.
+Lowest distinction interval for timestamp is 24 hours.
 
-| field name | data type |               note                  |
-|------------|-----------|-------------------------------------|
-| username   |   String  |         username                    |
-| timestamp  |   Date    |         timestamp                   |
+| field name   | data type |               note                  |
+|--------------|-----------|-------------------------------------|
+| username     |   String  |         username                    |
+| timestamp    |   Date    |         timestamp                   |
+| fail\_count  |   Number  |    count of failed login attempts   |
+| ok\_count    |   Number  |  count of successful login attempts |
+| ratio        |   Number  |  ratio of ok\_count and fail\_count |
 
 ##### stats
 
