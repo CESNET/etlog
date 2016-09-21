@@ -40,8 +40,8 @@ exp.process_old_data = function (database) {
     
     while(min <= current) {
       process_data(database, min, max);
-      min += 86400000;  // continue
-      max += 86400000;  // continue
+      min.setDate(min.getDate() + 1);  // continue
+      max.setDate(max.getDate() + 1);  // continue
     }
     console.log("cron task user_to_mac finished processing old data");
   });
