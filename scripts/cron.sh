@@ -32,10 +32,10 @@ logfile="/home/etlog/logs/fticks/fticks-$date"
 etlog_log_root="/home/etlog/logs/"
 
 # fticks to json conversion error log
-errlog="$etlog_log_root/transform/err-$date.log"
+errlog="$etlog_log_root/transform/err-$date"
 
 # mongo error log
-mongo_errlog="$etlog_log_root/mongo/err-$date.log"
+mongo_errlog="$etlog_log_root/mongo/err-$date"
 
 # convert to json and import to database
 $etlog_root/scripts/fticks_to_json.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
