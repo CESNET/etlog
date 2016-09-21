@@ -67,7 +67,26 @@ mkdir -p ~/logs/{fticks,transform,mongo}
 
 ### Cron setup
 
+Cron is used to run tasks periodically.
+Setup is done in application for application logic and in user's
+crontab for incoming log importing.
+
+#### System
+
 TODO
+
+#### Node.js
+
+Setup is defined in cron.js.
+Table below defined how tasks are run.
+Every task generates data for collection of the same name.
+
+| task name        |              interval            |
+|------------------|----------------------------------|
+| failed\_logins   |      every day at 02:05:00       |
+| invalid\_records |      every day at 02:10:00       |
+| mac\_count       |      every day at 02:15:00       |
+| roaming          |      every day at 02:20:00       |
 
 
 ### Packages
