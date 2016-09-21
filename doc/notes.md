@@ -309,6 +309,7 @@ TODO
 
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
+| timestamp  |   Date    |         timestamp                   |
 
 
 ### Application structure
