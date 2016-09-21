@@ -73,7 +73,11 @@ crontab for incoming log importing.
 
 #### System
 
-TODO
+User's crontab can be edited by using `crontab -e`.
+Script for data importing may be run every 5 minutes by adding code below.
+```
+*/5 *  *   *   *     /home/etlog/etlog/scripts/cron.sh
+```
 
 #### Node.js
 
