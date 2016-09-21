@@ -33,13 +33,15 @@ exp.process_old_data = function (database) {
       "Dec" : 11
     }
 
-    date = new Date(fields[3], months[fields[1]], fields[2]);   // hh:mm:ss set to 0
-    var next_date = new Date(date.getTime() + 86400000);        // next day
-
-    while(date < current) {
-      process_data(database, date, next_date);
-      date = next_date;                         // continue
-      next_date = new Date(date.getTime() + 86400000);  // next day
+    var min = new Date(fields[3], months[fields[1]], fields[2], 0, 0, 0, 0);        // hh:mm:ss:ms set to 0
+    var max = new Date(fields[3], months[fields[1]], Number(fields[2]) + 1, 0, 0, 0, 0);    // next day, hh:mm:ss:ms set to 0
+                                                                                    // search uses lower than max condition !
+    // this date handling should guarantee correct interval for all processed records
+    
+    while(min <= current) {
+      process_data(database, min, max);
+      min += 86400000;  // continue
+      max += 86400000;  // continue
     }
     console.log("cron task user_to_mac finished processing old data");
   });
