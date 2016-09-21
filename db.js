@@ -75,6 +75,18 @@ exports.failed_logins_schema = failed_logins_schema;
 var failed_logins = mongoose.model('failed_logins', failed_logins_schema, 'failed_logins');
 exports.failed_logins = failed_logins;
 // --------------------------------------------------------------------------------------
+
+// TODO
+
+//var stats_schema = mongoose.Schema({
+//  timestamp   : Date,
+//});
+//// --------------------------------------------------------------------------------------
+//exports.stats_schema = stats_schema;
+//var stats = mongoose.model('stats', stats_schema, 'stats');
+//exports.stats = stats;
+
+// --------------------------------------------------------------------------------------
 mongoose.connect('mongodb://localhost/etlog');
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
