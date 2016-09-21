@@ -1,11 +1,65 @@
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
-// TODO
+// get invalid records for old data
+// and save them to database
 // --------------------------------------------------------------------------------------
 exp.process_old_data = function (database) {
-  // TODO
+  var log_root = "/home/etlog/logs/fticks/";
+  var etlog_log_root = "/home/etlog/logs/";
 
+  // find the lowest date in database and go from that date to present
+  var ref_date;
+  var current = new Date();
+  var curr_min = new Date(current.getFullYear(), current.getMonth(), current.getUTCDate(), 0, 0, 0, 0);   // current day hh:mm:ss:ms set to 00:00:00:000
+
+  // find all, sort by timestamp, display only timestamp, display one document only
+  database.logs.find({ query : {}, $orderby : { timestamp : 1 } } , { timestamp : 1, _id : 0 }, { limit : 1 },
+  function(err, doc) {
+    var ref_date = doc;
+
+    ref_date = String(ref_date[0]["timestamp"]);    // get only string representation of date
+
+    var fields = ref_date.split(" ");
+    var months = {      // months dict for date constructor
+      "Jan" : 0,
+      "Feb" : 1,
+      "Mar" : 2,
+      "Apr" : 3,
+      "May" : 4,
+      "Jun" : 5,
+      "Jul" : 6,
+      "Aug" : 7,
+      "Sep" : 8,
+      "Oct" : 9,
+      "Nov" : 10,
+      "Dec" : 11
+    }
+
+    // ------------------------------------
+    var date = "-" + fields[3] + "-" + zero_pad((Number(months[fields[1]]) + 1), 2) + "-" + zero_pad(fields[2], 2);
+    var min = new Date(fields[3], months[fields[1]], fields[2], 0, 0, 0, 0);        // hh:mm:ss:ms set to 0
+    var max = new Date(fields[3], months[fields[1]], Number(fields[2]) + 1, 0, 0, 0, 0);    // next day, hh:mm:ss:ms set to 0
+                                                                                    // search uses lower than max condition !
+    // this date handling should guarantee correct interval for all processed records
+
+    var log_file = log_root + "fticks" + date;      // original file, which constains invalid records
+    var err_file = etlog_log_root + "transform/err" + date; // /home/etlog/logs/transform/err-2015-01-25
+
+    while(min < curr_min) {
+      get_record_numbers(err_file, log_file, read_lines, save_to_db, database, min);
+ 
+      min.setDate(min.getDate() + 1);  // continue
+      max.setDate(max.getDate() + 1);  // continue
+
+      // use max for UTC correction
+      // using min could result in a bad day because of midnight and utc offset !
+      date = "-" + max.getFullYear() + "-" + zero_pad((Number(max.getMonth()) + 1), 2) + "-" + zero_pad(max.getUTCDate(), 2);   
+      log_file = log_root + "fticks" + date;      // original file, which constains invalid records
+      err_file = etlog_log_root + "transform/err" + date; // /home/etlog/logs/transform/err-2015-01-25
+    }
+    console.log("cron task invalid_records finished processing old data");
+  });
 };
 // --------------------------------------------------------------------------------------
 // run once a day
@@ -14,12 +68,13 @@ exp.process_old_data = function (database) {
 // and save them to database
 // --------------------------------------------------------------------------------------
 exp.process_current_data = function (database) {
+  var log_root = "/home/etlog/logs/fticks/";
+  var etlog_log_root = "/home/etlog/logs/";
+  
   var curr = new Date();        // current day
   var prev_min = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 0, 0, 0, 0);       // previous day hh:mm:ss:ms set to 00:00:00:000
   // this date handling should guarantee correct interval for all processed records
 
-  var log_root = "/home/etlog/logs/fticks/";
-  var etlog_log_root = "/home/etlog/logs/";
   var date = "-" + prev_min.getFullYear() + "-" + zero_pad((Number(prev_min.getMonth()) + 1), 2) + "-" + zero_pad(prev_min.getUTCDate(), 2);
 
   var log_file = log_root + "fticks" + date;      // original file, which constains invalid records
@@ -36,13 +91,13 @@ function get_record_numbers(err_file, log_file, read_lines, save_to_db, database
   var fs = require('fs');
   var process = require('process');
 
-  fs.access(err_file, fs.F_OK, function(err) {
-    if(err) {
-      console.log("error log file " + err_file + " does not exist");
-      console.log("cron job invalid_data.js failed");
-      process.exit(1);
-    }
-  });
+  try {
+    fs.accessSync(err_file, fs.F_OK);
+  }
+  catch(e) {
+    console.log("error log file " + err_file + " does not exist");  // most likely
+    return;
+  }
 
   var lineReader = require('readline').createInterface({
     input: require('fs').createReadStream(err_file) // read file
@@ -61,7 +116,7 @@ function get_record_numbers(err_file, log_file, read_lines, save_to_db, database
 // --------------------------------------------------------------------------------------
 function save_to_db(database, arr, db_date)
 {
-  database.invalid_records.insert({ date : db_date, records : arr });
+  database.invalid_records.insert({ date : db_date, records : arr });   // TODO use update instead ?
 }
 // --------------------------------------------------------------------------------------
 // read invalid lines from original file
@@ -72,13 +127,13 @@ function read_lines(log_file, numbers, save_to_db, database, db_date)
   var fs = require('fs');
   var process = require('process');
 
-  fs.access(log_file, fs.F_OK, function(err) {
-    if(err) {
-      console.log("log file " + log_file + " does not exist");
-      console.log("cron job invalid_data.js failed");
-      process.exit(1);
-    }
-  });
+  try {
+    fs.accessSync(log_file, fs.F_OK);
+  }
+  catch(e) {
+    console.log("log file " + log_file + " does not exist");  // most likely
+    return;
+  }
 
   fs.readFile(log_file, function (err, data) {      // read file
     if (err) throw err;
