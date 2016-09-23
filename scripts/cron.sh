@@ -8,6 +8,9 @@
 #   This adds possibility to process older data
 
 
+# TODO - add some logic, which processes the last interval for current day
+# if run every 5 minutes, the last 5 minutes of incomings logs for every day does not get processed !
+
 if [[ -n "$1" && "$1" =~ [0-9]{4}-[0-9]{2}-[0-9]{2} ]]  # first argument exists and has correct format
 then
   date=$1
