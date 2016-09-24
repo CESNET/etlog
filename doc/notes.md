@@ -118,6 +118,7 @@ syslog-ng
 gawk
 logtail
 postfix
+mailutils
 
 Other special packages along with installation are listed below.
   
