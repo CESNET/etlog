@@ -13,6 +13,7 @@
     "express": "~4.12.2",
     "express-restify-mongoose": "^4.1.1",
     "gulp": "^3.9.1",
+    "gulp-pug": "^3.0.4",
     "https": "^1.0.0",
     "moment-timezone": "^0.5.5",
     "mongoose": "~4.0.1",
