@@ -419,7 +419,9 @@ npm install -g gulp-cli
 
 #### Usage
 
-TODO
+Everything that gulp does is defined in gulpfile.js.
+After defining tasks, they can be run bu using `gulp`.
+
 
 ### Log files 
 
