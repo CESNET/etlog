@@ -395,6 +395,7 @@ TODO
   |-- node\_modules          - application dependency files
   |-- package.json           - definition of application dependencies and properties
   |-- public                 - directory for referring public files
+      `-- partials           - directory for generated html files from pug templates
   |-- README.md              - link to doc/notes.md
   |-- routes                 - application routes
   |-- routes.js              - mapping of routes to application
@@ -402,6 +403,7 @@ TODO
       `-- fticks_to_json.sh  - transformation script from fticks to json
       `-- cron.sh            - cron script to import live data delivered by syslog
   |-- views                  - templates of displayed pages
+      `-- templates          - directory with pug templates for html pages
 ```
 
 ### Gulp
