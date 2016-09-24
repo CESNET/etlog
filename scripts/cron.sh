@@ -3,18 +3,12 @@
 # Author: Václav Mach
 # 
 # This script runs fticks_to_json.sh and is intended to be run by cron at regular intervals.
-# Script takes one optional argument:
-#   specific date in format "%Y-%m-%d"
-#   This adds possibility to process older data
+# Script takes no arguments.
 
+# ==========================================================================================
 
-if [[ -n "$1" && "$1" =~ [0-9]{4}-[0-9]{2}-[0-9]{2} ]]  # first argument exists and has correct format
-then
-  date=$1
-else
-  # current date in format YYYY-MM-DD
-  date=$(date "+%Y-%m-%d")
-fi
+# current date in format YYYY-MM-DD
+date=$(date "+%Y-%m-%d")
 
 # application root
 etlog_root="/home/etlog/etlog/"
