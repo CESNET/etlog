@@ -93,6 +93,11 @@ Every task generates data for collection of the same name.
 | roaming          |      every day at 02:20:00       |
 
 
+### Mail setup
+
+TODO
+
+
 ### Packages
 
 These packages are necessary for etlog to run:
