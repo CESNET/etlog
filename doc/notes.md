@@ -97,6 +97,9 @@ Every task generates data for collection of the same name.
 
 Mail is handled by postfix mail server. 
 Postfix configuration type is set up as Internet site.
+Listeting only on localhost address is done with 
+`inet_interfaces = 127.0.0.1` in /etc/postfix/main.cf
+
 
 #### Node.js
 
