@@ -103,7 +103,8 @@ Listeting only on localhost address is done with
 
 #### Node.js
 
-TODO
+Setup is done with nodemailer package in mail.js in repository root.
+
 
 ### Packages
 
@@ -367,6 +368,7 @@ TODO
   |-- db.js                  - database and schema configuration
   |-- cron.js                - cron tasks definiton
   |-- doc                    - documentation
+  |-- mail.js                - mail setup
   |-- node\_modules          - application dependency files
   |-- package.json           - definition of application dependencies and properties
   |-- public                 - directory for referring public files
