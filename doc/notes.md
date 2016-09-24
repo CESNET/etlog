@@ -95,8 +95,12 @@ Every task generates data for collection of the same name.
 
 ### Mail setup
 
-TODO
+Mail is handled by postfix mail server. 
+Postfix configuration type is set up as Internet site.
 
+#### Node.js
+
+TODO
 
 ### Packages
 
@@ -113,6 +117,7 @@ make
 syslog-ng
 gawk
 logtail
+postfix
 
 Other special packages along with installation are listed below.
   
