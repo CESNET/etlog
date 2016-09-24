@@ -166,6 +166,29 @@ http://stackoverflow.com/questions/31353740/aggregating-in-local-timezone-in-mon
 http://stackoverflow.com/questions/18852095/how-to-agregate-by-year-month-day-on-a-different-timezone
 https://docs.mongodb.com/manual/tutorial/model-time-data/
 
+Conversion in aggregation pipeline from UTC to localtime can be done using:
+
+```
+db.roaming.aggregate([
+{ 
+  $project :
+    {
+      _id : 0, 
+      inst_name: 1, 
+    timestamp : 
+      { 
+        $add : [ "$timestamp", 7200000 ]          // convert UTC to localtime
+      }
+        // offset is -2 hours
+        // => 2 * 60 * 60 * 1000
+        // 2 hours * 60 minutes * 60 seconds * 1000 miliseconds
+    }
+},
+], function (err, items) {      // do not display object id and timestamp in result
+  respond(err, items, res)
+});
+```
+
 #### Usage
 
 Database can be accessed by command `mongo`. MongoDB is document oriented database. 
