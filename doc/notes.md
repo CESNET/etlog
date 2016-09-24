@@ -175,7 +175,7 @@ db.roaming.aggregate([
     {
       _id : 0, 
       inst_name: 1, 
-    timestamp : 
+      timestamp : 
       { 
         $add : [ "$timestamp", 7200000 ]          // convert UTC to localtime
       }
@@ -184,7 +184,7 @@ db.roaming.aggregate([
         // 2 hours * 60 minutes * 60 seconds * 1000 miliseconds
     }
 },
-], function (err, items) {      // do not display object id and timestamp in result
+], function (err, items) {
   respond(err, items, res)
 });
 ```
