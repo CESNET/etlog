@@ -8,9 +8,6 @@
 #   This adds possibility to process older data
 
 
-# TODO - add some logic, which processes the last interval for current day
-# if run every 5 minutes, the last 5 minutes of incomings logs for every day does not get processed !
-
 if [[ -n "$1" && "$1" =~ [0-9]{4}-[0-9]{2}-[0-9]{2} ]]  # first argument exists and has correct format
 then
   date=$1
@@ -28,11 +25,11 @@ database="etlog"
 # collection to which logs will be imported to
 collection="logs"
 
-# log file to process
-logfile="/home/etlog/logs/fticks/fticks-$date"
-
 # etlog log root
 etlog_log_root="/home/etlog/logs/"
+
+# log file to process
+logfile="/home/etlog/logs/fticks/fticks-$date"
 
 # fticks to json conversion error log
 errlog="$etlog_log_root/transform/err-$date"
@@ -40,7 +37,27 @@ errlog="$etlog_log_root/transform/err-$date"
 # mongo error log
 mongo_errlog="$etlog_log_root/mongo/err-$date"
 
+# last_log location
+last_log_loc="$etlog_log_root/last_log"
+
+# last processed log file
+# to ensure all data for every dat is processed
+if [[ "$(cat $last_log_loc)" != "$logfile" ]]
+then
+  last_log="$(cat $last_log_loc)"               # first processing of the day must process last data part of the last day
+  interval_processed=true                       # last interval is processed
+else
+  last_log=$logfile
+fi
+
 # convert to json and import to database
-$etlog_root/scripts/fticks_to_json.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
+$etlog_root/scripts/fticks_to_json.sh $last_log 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
+
+if [[ $interval_processed ]]
+then
+  echo $logfile > $last_log_loc                 # save current day filename for next processing
+fi
+
+# no change otherwise
 
 exit 0
