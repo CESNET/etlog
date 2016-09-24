@@ -404,6 +404,20 @@ TODO
   |-- views                  - templates of displayed pages
 ```
 
+### Gulp
+
+Gulp is a build system, which can be used for variuos tasks.
+
+#### Instalation
+
+Gulp must be installed globally by root user by typing:
+```
+npm install -g gulp-cli
+```
+
+#### Usage
+
+TODO
 
 ### Log files 
 
