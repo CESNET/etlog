@@ -1,4 +1,4 @@
-module.exports = function(app) {
+module.exports = function(app, database) {
   // set up routes
   app.use('/', require('./routes/index'));                                              // empty title page
   app.use('/angular_test', require('./routes/angular_test'));                           // angular test page

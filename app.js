@@ -38,7 +38,7 @@ app.use(function(req, res, next){
 // -----------------------------------------------------------
 
 // set up routes
-require('./routes')(app);
+require('./routes')(app, database);
 
 
 // -----------------------------------------------------------
