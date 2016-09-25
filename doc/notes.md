@@ -103,7 +103,7 @@ Listeting only on localhost address is done with
 
 #### Node.js
 
-Setup is done with nodemailer package in mail.js in repository root.
+Setup is done with nodemailer package in file mail.js.
 
 
 ### Packages
