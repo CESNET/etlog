@@ -392,7 +392,7 @@ TODO
   |-- cron.js                - cron tasks definiton
   |-- doc                    - documentation
   |-- mail.js                - mail setup
-  |-- node\_modules          - application dependency files
+  |-- node_modules          - application dependency files
   |-- package.json           - definition of application dependencies and properties
   |-- public                 - directory for referring public files
       `-- partials           - directory for generated html files from pug templates
