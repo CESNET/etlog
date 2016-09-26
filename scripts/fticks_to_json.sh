@@ -34,8 +34,11 @@
     (>&2 echo "provided log file $1 does not exist")
     exit 1
   fi
-     
+
   year=$(echo $1 | cut -d "-" -f 2)
+  last_line_log="/home/etlog/logs/transform/last_$(echo $1 | cut -d "-" -f 2-)" # this is where last processed line number is written
+
+  touch $last_line_log  # create it if does not exist
 
   if [[ ! $year =~ [0-9]{4} ]]
   then
@@ -43,7 +46,7 @@
     exit 1
   fi
 
-  /usr/sbin/logtail -o $1.offset -f $1 | gawk -v year=$year -v filename=$1 '
+  /usr/sbin/logtail -o $1.offset -f $1 | gawk -v year=$year -v filename=$1 -v last_filename=$last_line_log '
     BEGIN {
       # monitoring mac address which does not have to be stored in database
       # only 4 bytes are defined, the rest is generated
@@ -101,6 +104,19 @@
       replacement["\\x1d"] = "<29>"
       replacement["\\x1e"] = "<30>"
       replacement["\\x1f"] = "<31>"
+    
+      # ============================================================================
+      # when processing same file repeatedly from where we left last time, 
+      # FNR contains relative line numbers!
+      # we need to use absolute
+
+      # read last read line from last_filename
+      getline last_line < last_filename
+
+      # if last_line is empty, no reading has been done from the input file
+      if(length(last_line) == 0) {
+        last_line = 0;  # set last_line to 0
+      }
     }
     { 
       # ============================================================================
@@ -148,13 +164,13 @@
       # TODO - improve error handling
 
       if(length(csi[2]) != 12 && length(csi[2]) != 0) {
-        printf("%s:%d: skipped, invalid mac address\n", filename, FNR) > "/dev/stderr"
+        printf("%s:%d: skipped, invalid mac address\n", filename, FNR + last_line) > "/dev/stderr"
         next
       }
 
       # probably problem with parsing of whole record occured
       if(realm[2] == "" || result[2] == "") {
-        printf("%s:%d: skipped, general error in parsing current record\n", filename, FNR) > "/dev/stderr"
+        printf("%s:%d: skipped, general error in parsing current record\n", filename, FNR + last_line) > "/dev/stderr"
         next
       }
 
@@ -172,6 +188,8 @@
     }
 
     END {
+      # after processing all records save last processed line number
+      printf("%d\n", FNR + last_line) > last_filename
       exit 0;
     }
     '
