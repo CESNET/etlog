@@ -18,7 +18,7 @@ etlog consists of Node.js, Express web application framework and MongoDB.
 
 The application is setup on Debian jessie. It is running as user etlog and it's root is in /home/etlog/etlog/.
 It is listening for incoming connections on port 8080 for http connections and 
-on port 8443 for https connections. Http Connection are automatically redirected to https.
+on port 8443 for https connections. Http connections are automatically redirected to https.
 Successful redicretion requires HTTP 1.1 host header.
 
 ### Network setup
