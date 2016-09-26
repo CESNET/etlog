@@ -121,7 +121,7 @@
       day=$2
       time=$3   # in format "hours:minutes:seconds"
       
-      # uvodni rozdeleni pomoci #
+      # initial split on "#"
       split($0, fields, "#") 
       
       # next split by =
