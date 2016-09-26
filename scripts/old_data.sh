@@ -44,6 +44,12 @@ errlog="$etlog_log_root/transform/err-$date"
 # mongo error log
 mongo_errlog="$etlog_log_root/mongo/err-$date"
 
+# delete offset file if exists - all data for given date need to be read
+if [[ -e "${logfile}.offset" ]]
+then
+  rm "${logfile}.offset"
+fi
+
 # convert to json and import to database
 $etlog_root/scripts/fticks_to_json.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
 
