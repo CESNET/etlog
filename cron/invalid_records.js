@@ -37,26 +37,23 @@ exp.process_old_data = function (database) {
     }
 
     // ------------------------------------
-    var date = "-" + fields[3] + "-" + zero_pad((Number(months[fields[1]]) + 1), 2) + "-" + zero_pad(fields[2], 2);
     var min = new Date(fields[3], months[fields[1]], fields[2], 0, 0, 0, 0);        // hh:mm:ss:ms set to 0
     var max = new Date(fields[3], months[fields[1]], Number(fields[2]) + 1, 0, 0, 0, 0);    // next day, hh:mm:ss:ms set to 0
                                                                                     // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
 
-    var log_file = log_root + "fticks" + date;      // original file, which contains invalid records
-    var err_file = etlog_log_root + "transform/err" + date; // /home/etlog/logs/transform/err-2015-01-25
-
     while(min < curr_min) {
-      get_record_numbers(err_file, log_file, read_lines, save_to_db, database, min);
- 
-      min.setDate(min.getDate() + 1);  // continue
-      max.setDate(max.getDate() + 1);  // continue
-
       // use max for UTC correction
       // using min could result in a bad day because of midnight and utc offset !
       date = "-" + max.getFullYear() + "-" + zero_pad((Number(max.getMonth()) + 1), 2) + "-" + zero_pad(max.getUTCDate(), 2);   
+
       log_file = log_root + "fticks" + date;      // original file, which contains invalid records
       err_file = etlog_log_root + "transform/err" + date; // /home/etlog/logs/transform/err-2015-01-25
+
+      get_record_numbers(err_file, log_file, read_lines, save_to_db, database, min);
+
+      min.setDate(min.getDate() + 1);  // continue
+      max.setDate(max.getDate() + 1);  // continue
     }
     console.log("cron task invalid_records finished processing old data");
   });
