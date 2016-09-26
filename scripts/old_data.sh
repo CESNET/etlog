@@ -17,6 +17,12 @@ else
   exit 1
 fi
 
+if [[ "$1" == "$(date "+%Y-%m-%d")" ]]   # do not process data for current day, that is handled by cron
+then
+  echo "provided date is current date"
+  exit 1
+fi
+
 # application root
 etlog_root="/home/etlog/etlog/"
 
