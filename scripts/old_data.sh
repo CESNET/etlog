@@ -44,10 +44,30 @@ errlog="$etlog_log_root/transform/err-$date"
 # mongo error log
 mongo_errlog="$etlog_log_root/mongo/err-$date"
 
+# last line log
+last_line_log="$etlog_log_root/transform/last_$date"
+
 # delete offset file if exists - all data for given date need to be read
 if [[ -e "${logfile}.offset" ]]
 then
   rm "${logfile}.offset"
+fi
+
+# delete err logs if they exist
+if [[ -e "$errlog" ]]
+then
+  rm "$errlog"
+fi
+
+if [[ -e "$mongo_errlog" ]]
+then
+  rm "$mongo_errlog"
+fi
+
+# delete last line file if exists
+if [[ -e "$last_line_log"]]
+then
+  rm "$last_line_log"
 fi
 
 # convert to json and import to database
