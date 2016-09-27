@@ -23,6 +23,7 @@
     "passport-ip": "^0.1.2",
     "passport-saml": "^0.15.0",
     "pug": "^2.0.0-beta4",
+    "request": "^2.75.0",
     "serve-favicon": "~2.2.0"
   }
 }
