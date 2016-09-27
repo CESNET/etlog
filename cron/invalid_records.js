@@ -72,7 +72,8 @@ exp.process_current_data = function (database) {
   var prev_min = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 0, 0, 0, 0);       // previous day hh:mm:ss:ms set to 00:00:00:000
   // this date handling should guarantee correct interval for all processed records
 
-  var date = "-" + prev_min.getFullYear() + "-" + zero_pad((Number(prev_min.getMonth()) + 1), 2) + "-" + zero_pad(prev_min.getUTCDate(), 2);
+  var date = "-" + prev_min.getFullYear() + "-" + zero_pad((Number(prev_min.getMonth()) + 1), 2) + "-" + zero_pad(prev_min.getDate(), 2);
+  // getDate to compensate for UTC offset !!
 
   var log_file = log_root + "fticks" + date;      // original file, which contains invalid records
   var err_file = etlog_log_root + "transform/err" + date; // /home/etlog/logs/transform/err-2015-01-25
