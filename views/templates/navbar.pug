@@ -1,0 +1,38 @@
+//- taken from https://github.com/ALT-F1/bootstrap3-jade-node-express-grunt/blob/master/app/views/bootstrap3-templates/navbar-fixed-top.jade
+
+-var menu = {'Obecné Vyhledávání': '/search', 'Mac adresy': '/search/mac_count', 'Přihlášení': '/search/failed_logins'};
+-var roaming = { 'Organizace nejvíce poskytující roaming' : '/search/roaming/most_provided', 'Organizace nejvíce využívající roaming' : '/search/roaming/most_used' };
+
+mixin active(val, key)
+  li.active
+    a(href=val)= key
+
+mixin inactive(val, key)
+  li
+    a(href=val)= key
+
+.navbar.navbar-default.navbar-fixed-top(role='navigation')
+  .container
+    .navbar-header
+      button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+        span.sr-only Toggle navigation
+    .navbar-collapse.collapse
+      ul.nav.navbar-nav
+        each val, key in menu
+          if (selected === key)
+            +active(val, key)
+          else
+            +inactive(val, key)
+        li#roaming
+          a.dropdown-toggle(href='#', data-toggle='dropdown')
+            | Roaming
+            span.caret
+          ul.dropdown-menu(role='menu')
+            each val, key in roaming
+              li
+                a(href=val)= key
+      ul.nav.navbar-nav.navbar-right
+        li.active
+          a(href='./') prihlaseny uzivatel
+      .nav-collapse
+
