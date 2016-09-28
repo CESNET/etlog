@@ -52,6 +52,7 @@ exp.process_old_data = function (database) {
 
       get_record_numbers(err_file, log_file, read_lines, save_to_db, database, min);
 
+      min = new Date(min);  // do not use reference here !!
       min.setDate(min.getDate() + 1);  // continue
       max.setDate(max.getDate() + 1);  // continue
     }
@@ -125,9 +126,10 @@ function save_to_db(database, arr, db_date)
 // --------------------------------------------------------------------------------------
 function read_lines(log_file, numbers, save_to_db, database, db_date)
 {
-  arr = [];
+  var arr = [];
   var fs = require('fs');
   var process = require('process');
+  var readline = require('readline');
 
   try {
     fs.accessSync(log_file, fs.F_OK);
@@ -137,8 +139,8 @@ function read_lines(log_file, numbers, save_to_db, database, db_date)
     return;
   }
 
-  var lineReader = require('readline').createInterface({
-      input: require('fs').createReadStream(log_file)
+  var lineReader = readline.createInterface({
+    input: fs.createReadStream(log_file)
   });
 
   var idx = 0;  // index in numbers array
