@@ -137,15 +137,23 @@ function read_lines(log_file, numbers, save_to_db, database, db_date)
     return;
   }
 
-  fs.readFile(log_file, function (err, data) {      // read file
-    if (err) throw err;
+  var lineReader = require('readline').createInterface({
+      input: require('fs').createReadStream(log_file)
+  });
 
-    var lines = data.toString('utf-8').split("\n"); // split by newlines
+  var idx = 0;  // index in numbers array
+  var invalid_line = numbers[idx];      // first invalid line
+  var line_num = 1; // line number in file
 
-    for(var number in numbers) {
-      arr.push(lines[numbers[number] - 1]);         // indexed from 0
+  lineReader.on('line', function (line) {   // read file line by line
+    if(line_num++ == invalid_line) {
+      arr.push(line);
+      idx++;
+      invalid_line = numbers[idx];
     }
+  });
 
+  lineReader.on('close', function() {   // when done
     save_to_db(database, arr, db_date);            // save when done
   });
 }
