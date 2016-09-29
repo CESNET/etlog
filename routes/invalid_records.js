@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 // --------------------------------------------------------------------------------------
 // get invalid records for specific date
 router.get('/:date', function(req, res, next) {
