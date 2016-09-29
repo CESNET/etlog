@@ -31,25 +31,25 @@ module.exports = function(database) {
   // to prevent inconsistent data - localtime/UTC conversion issue
 // --------------------------------------------------------------------------------------
   new CronJob('0 05 02 * * *', function() {     // run at 02:05:00
-      failed_logins.process_current_data(database);
+    failed_logins.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 10 02 * * *', function() {     // run at 02:10:00
-      invalid_records.process_current_data(database);
+    invalid_records.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 15 02 * * *', function() {     // run at 02:15:00
-      mac_count.process_current_data(database);
+    mac_count.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 20 02 * * *', function() {     // run at 02:20:00
-      roaming.process_current_data(database);
+    roaming.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------
   // mac to user mapping is run more often
   new CronJob('0 */15 * * * *', function() {   // every 15 minutes
-      user_to_mac.process_current_data(database, 900); // every 15 minutes  // TODO - old data has to process even data for current day !!
+    user_to_mac.process_current_data(database, 900); // every 15 minutes  // TODO - old data has to process even data for current day !!
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------
