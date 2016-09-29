@@ -1,13 +1,13 @@
 // Include gulp
-var gulp = require('gulp');
+const gulp = require('gulp');
 // -----------------------------------------------------------
 // Include Our Plugins
-//var jshint = require('gulp-jshint');
-//var sass = require('gulp-sass');
-//var concat = require('gulp-concat');
-//var uglify = require('gulp-uglify');
-//var rename = require('gulp-rename');
-var pug = require('gulp-pug');
+//const jshint = require('gulp-jshint');
+//const sass = require('gulp-sass');
+//const concat = require('gulp-concat');
+//const uglify = require('gulp-uglify');
+//const rename = require('gulp-rename');
+const pug = require('gulp-pug');
 //// -----------------------------------------------------------
 //// Lint Task
 //gulp.task('lint', function() {

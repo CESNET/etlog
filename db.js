@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 exports.mongoose = mongoose;
 // --------------------------------------------------------------------------------------
 var logs_schema = mongoose.Schema({

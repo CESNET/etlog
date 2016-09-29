@@ -1,10 +1,10 @@
 module.exports = function(app, database) {
 // -----------------------------------------------------------
-  var fs = require( 'fs' );
+  const fs = require( 'fs' );
   // passport
-  var passport = require('passport');
+  const passport = require('passport');
   // passport-saml
-  var saml_strategy = require('passport-saml').Strategy;
+  const saml_strategy = require('passport-saml').Strategy;
 
 // -----------------------------------------------------------
   // passport setup
@@ -93,7 +93,7 @@ module.exports = function(app, database) {
 
 // -----------------------------------------------------------
 
-    var ip_strategy = require('passport-ip').Strategy;
+    const ip_strategy = require('passport-ip').Strategy;
 
     passport.use(new ip_strategy({
       range: allowed_ips          // use data from db

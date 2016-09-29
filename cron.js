@@ -1,14 +1,14 @@
 module.exports = function(database) {
 // --------------------------------------------------------------------------------------
-  var CronJob = require('cron').CronJob;
-  //var mail = require('./mail');
-  var failed_logins = require('./cron/failed_logins.js');
-  var invalid_records = require('./cron/invalid_records.js');
-  var mac_count = require('./cron/mac_count.js');
-  var roaming = require('./cron/roaming.js');
-  //var stats = require('./cron/stats.js'); // TODO
-  var user_to_mac = require('./cron/user_to_mac.js');
-  //var request = require('./request'); // TODO
+  const CronJob = require('cron').CronJob;
+  //const mail = require('./mail');
+  const failed_logins = require('./cron/failed_logins.js');
+  const invalid_records = require('./cron/invalid_records.js');
+  const mac_count = require('./cron/mac_count.js');
+  const roaming = require('./cron/roaming.js');
+  //const stats = require('./cron/stats.js'); // TODO
+  const user_to_mac = require('./cron/user_to_mac.js');
+  //const request = require('./request'); // TODO
 // --------------------------------------------------------------------------------------
 
   // TODO - invalid data - once a day

@@ -1,12 +1,12 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
-var database = require( './db' );
-var fs = require( 'fs' );
+const database = require( './db' );
+const fs = require( 'fs' );
 
 // -----------------------------------------------------------
 // call express
@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var saml = require('./auth')(app, database);          // SAML + IP based auth
+const saml = require('./auth')(app, database);          // SAML + IP based auth
 
 // -----------------------------------------------------------
 // Make our db accessible to our router
