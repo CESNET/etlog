@@ -46,6 +46,8 @@ require('./routes')(app, database);
 require('./cron')(database);  // TODO
 
 
+// TODO - http://stackoverflow.com/questions/16010915/parsing-huge-logfiles-in-node-js-read-in-line-by-line
+
 // debug routovani
 //console.log(app._router.stack);
 

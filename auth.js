@@ -28,6 +28,8 @@ module.exports = function(app, database) {
   // TODO - when is the defined strategy callback called ?
 
 
+  // TODO - different failureRedirects on both routes ?
+
   app.post('/login/callback',
     //passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
     passport.authenticate('saml', { failureRedirect: '/auth_fail' }),       // TODO

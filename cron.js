@@ -49,7 +49,7 @@ module.exports = function(database) {
 // --------------------------------------------------------------------------------------
   // mac to user mapping is run more often
   new CronJob('0 */15 * * * *', function() {   // every 15 minutes
-      user_to_mac.process_current_data(database, 900); // every 15 minutes
+      user_to_mac.process_current_data(database, 900); // every 15 minutes  // TODO - old data has to process even data for current day !!
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------

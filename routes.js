@@ -1,4 +1,8 @@
 module.exports = function(app, database) {
+// -----------------------------------------------------------
+  // TODO
+  // prepend authentication to all routes
+ 
   // set up routes
   app.use('/', require('./routes/index'));                                              // empty title page
   app.use('/angular_test', require('./routes/angular_test'));                           // angular test page
@@ -8,6 +12,7 @@ module.exports = function(app, database) {
   app.use('/search/roaming/most_used', require('./routes/roaming_most_used'));          // generic search of institutions most using roaming
   app.use('/search/failed_logins', require('./routes/failed_logins'));                  // TODO
   app.use('/search/failed_logins_search', require('./routes/failed_logins_search'));    // TODO
+// -----------------------------------------------------------
 
   // TODO
   //app.use('/search/mac_identifier', require('./routes/mac_identifier'));              // TODO
@@ -18,7 +23,13 @@ module.exports = function(app, database) {
 
   // TODO
   // invalid data api
+  app.use('/invalid_records', require('./routes/invalid_records'));   // TODO
 
+  //var test = require('./routes/invalid_records')(database);
+  //var test = require('./routes/invalid_records');
+  //app.use('/invalid_records', test);
+
+// -----------------------------------------------------------
   // login routing is defined separately
   // see auth.js
 
