@@ -7,6 +7,7 @@ router.get('/:date', function(req, res, next) {
   
   // TODO - validation
   console.log(req.params);
+  console.log(req.query);
 
   
 
