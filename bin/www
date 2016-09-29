@@ -45,7 +45,7 @@ var server = https.createServer(https_options, app);
 /**
  * Create HTTP server.
  */
-// Redirect from http port 80 to https
+// Redirect from http port 8080 to 8443
 http.createServer(function (req, res) {
   res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });   // does not work for http 1.0 - no host http header
   res.end();
