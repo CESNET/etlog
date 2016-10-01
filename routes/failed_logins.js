@@ -23,8 +23,10 @@ router.get('/', function(req, res, next) {
   for(var key in keys) {
     range.push(keys[key]);      // for further processing
 
-    if(isNaN(Date.parse(keys[key])))     // invalid date
+    if(isNaN(Date.parse(keys[key]))) {    // invalid date
       res.end("invalid date: " + keys[key]);
+      return;
+    }
   }
   
   // valid cases for timestamp
