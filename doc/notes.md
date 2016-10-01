@@ -311,6 +311,7 @@ db.privileged_ips.insert({ip : '192.168.1.1/32'})
 
 Timestamp field is populated with artificial data, just to
 distint in which interval the record belongs.
+Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
 Lowest distinction interval for timestamp is 24 hours.
 
 
@@ -324,6 +325,7 @@ Lowest distinction interval for timestamp is 24 hours.
 
 Timestamp field is populated with artificial data, just to
 distint in which interval the record belongs.
+Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
 Lowest distinction interval for timestamp is 24 hours.
 
 
@@ -339,6 +341,7 @@ Lowest distinction interval for timestamp is 24 hours.
 
 Timestamp field is populated with artificial data, just to
 distint in which interval the record belongs.
+Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
 Lowest distinction interval for timestamp is 24 hours.
 
 
@@ -354,6 +357,7 @@ Lowest distinction interval for timestamp is 24 hours.
 
 Timestamp field is populated with artificial data, just to
 distint in which interval the record belongs.
+Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
 Lowest distinction interval for timestamp is 24 hours.
 
 | field name   | data type |               note                  |
