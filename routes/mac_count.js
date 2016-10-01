@@ -1,73 +1,68 @@
 var express = require('express');
 var router = express.Router();
+const aqp = require('api-query-params').default;    // uses ES6
+// --------------------------------------------------------------------------------------
+// get mac_count data
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
-  res.render('mac', { title: 'Ukazkove rozhrani pro vyhledavani nad radius logy' });
-});
-// --------------------------------------------------------------------------------------
-router.post('/search', function(req, res, next) {
-  search(req, res, respond);
-});
-// --------------------------------------------------------------------------------------
-function search(req, res) {
-  req.db.logs.aggregate(  // search db
-  [ 
-  { 
-    $match : 
-      { 
-        pn : 
-          { 
-            $ne : ""        // no empty usernames
-          } 
-      } 
-  },  
-  { 
-    $group :                // group by pair [ username, mac_address ]
-      { 
-        _id : 
-          { 
-            pn : "$pn", csi : "$csi" 
-          } 
-      } 
-  },  
-  { 
-    $group :                // group again by username
-      { 
-        _id : 
-          { 
-            pn : "$_id.pn" 
-          }, 
-        count : 
-          { 
-            $sum :  1       // count number of occurences
-          } 
-      } 
-  }, 
-  { 
-    $match :                // match
-      { 
-        count : 
-          { 
-            $gt : 2         // more than 2 mac addresses
-          } 
-      } 
-  } , 
-  { 
-    $sort :                 // sort from lowest to highest
-    { 
-      count : 1
+  var qs = req.url.substr(2);   // remove '/?'
+
+  var query = aqp(qs, {         // parse query string
+    whitelist : [ 'username', 'timestamp', 'count', 'addrs' ]       // whitelist collection keys
+  });
+
+  if(query.filter.timestamp == undefined) {    // do not search if timestamp is not defined
+    res.end("timestamp must be defined!");
+    return;
+  }
+
+  // validation
+  var keys = query.filter.timestamp;
+  var range = [];
+
+  for(var key in keys) {
+    range.push(keys[key]);      // for further processing
+
+    if(isNaN(Date.parse(keys[key]))) {    // invalid date
+      res.end("invalid date: " + keys[key]);
+      return;
     }
-  } 
-  ],
-    function(err, items) {
-      if(err == null)
-        items = filter(items);
+  }
+  
+  // valid cases for timestamp
+  //
+  // = exactly one day
+  // = range from, to
+  //
+  // TODO - distinct date at 00:00:00:000 and other dates
+  // needs to be implemented?
+  if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length > 1) {  // range
+    if(Math.abs(range[0] - range[1]) % 86400000 == 0) {     // exact range of days
+      search_days(req, res, respond, query);
+    }
+    else {  // another range
+      //search_interval(req, res, respond, query);
+      // TODO
+    }
+  }
+  else {    // one day only
+    search_days(req, res, respond, query);
+  }
 
-      //console.log(items);
-
-      respond(err, items, res);
+});
+// --------------------------------------------------------------------------------------
+// search database for specified data
+// timestamp matches specific day or range of days
+// --------------------------------------------------------------------------------------
+function search_days(req, res, respond, query) {
+  req.db.mac_count.find(query.filter,  { _id : 0, timestamp : 0}, function(err, items) {
+    // debug
+    console.log(items);
+    respond(err, items, res)
   });
 }
+// --------------------------------------------------------------------------------------
+// send data to user
 // --------------------------------------------------------------------------------------
 function respond(err, items, res) {
   if(err) {
@@ -76,22 +71,7 @@ function respond(err, items, res) {
     return;
   }
   
-  // debug
-  //console.log(items);
-
   res.json(items);
-}
-// --------------------------------------------------------------------------------------
-function filter(items)
-{
-  dict = {};
-
-  for(var item in items) {
-    var key = items[item];
-    dict[key._id.pn] = key.count    // save count on username
-  }
-
-  return dict;
 }
 // --------------------------------------------------------------------------------------
 module.exports = router;
