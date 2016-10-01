@@ -429,7 +429,49 @@ TODO
 
 ### API
 
-TODO
+#### api-query-params
+
+For easy use mapping from query string to MongoDB queries is used.
+Module api-query-params is used for this functionality.
+Official [documentation](https://www.npmjs.com/package/api-query-params) provides information how to use.
+
+Table below defined operators usage:
+
+| URI                  | Example                | Explanation            |
+|----------------------|------------------------|------------------------|
+| `key=val`            | `type=public`          | equal                  |
+| `key>val`            | `count>5`              | greater                |
+| `key>=val`           | `rating>=9.5`          | greater or equal       |
+| `key<val`            | `createdAt<2016-01-01` | lower                  |
+| `key<=val`           | `score<=-5`            | lower or equal         |
+| `key!=val`           | `status!=success`      | not equal              |
+| `key=val1,val2`      | `country=GB,US`        | equal to all listed    |
+| `key!=val1,val2`     | `lang!=fr,en`          | not equal to all listed|
+| `key`                | `phone`                | exists                 |
+| `!key`               | `!email`               | not exists             |
+| `key=/value/<opts>`  | `email=/@gmail\.com$/i`| reqex equal            |
+| `key!=/value/<opts>` | `phone!=/^06/`         | regex not equal        |
+
+#### Failed logins
+
+Failed logins api is available at `/failed_logins/`
+
+All operators desctibed in [General info](#General info) may be used.
+Query may by done easily for example by:
+```
+curl 'https://etlog.cesnet.cz/failed_logins/?timestamp>=2016-09-26'
+```
+Timestamp must be defined and must be valid to retrieve data.
+Format of timestamp must be one of ISO-8601 or `YYYY-MM-DD`.
+
+All kyes defined for [failed\_logins](#failed_logins) collection may be used.
+Only timestamp and username is meaningful at present time.
+
+Timestamp range may be specified, for example:
+```
+curl 'https://etlog.cesnet.cz/failed_logins/?timestamp>=2016-09-26&timestamp<2016-09-28'
+```
+Range of timestamp may be arbitrary.
 
 
 ### Routes
