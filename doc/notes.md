@@ -469,7 +469,7 @@ Timestamp must be defined and must be valid to retrieve data.
 Format of timestamp must be one of ISO-8601 or `YYYY-MM-DD`.
 
 All kyes defined for [failed\_logins](#failed_logins) collection may be used.
-Only timestamp and username is meaningful at present time.
+Only timestamp and username are meaningful at present time.
 
 Timestamp range may be specified, for example:
 ```
