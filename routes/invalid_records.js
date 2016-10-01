@@ -3,36 +3,22 @@ const router = express.Router();
 // --------------------------------------------------------------------------------------
 // get invalid records for specific date
 router.get('/:date', function(req, res, next) {
-  // TODO
+  if(isNaN(Date.parse(req.params.date))) {  // validate date
+    res.end("invalid date: " + req.params.date);
+    return;
+  }
   
-  // TODO - validation
-  console.log(req.params);
-  console.log(req.query);
-
+  var date = new Date(req.params.date);  
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
+  date.setMilliseconds(0);  // set to 00:00:00:000
   
-
-  var min = new Date(req.params.date);  
-  min.setHours(0);
-  min.setMinutes(0);
-  min.setSeconds(0);
-  min.setMilliseconds(0);  // set to 00:00:00:000
-  
-  var max = new Date(min);
-  max.setDate(max.getDate() + 1);  // set to next day 00:00:00:000
-
-  console.log(min);
-  console.log(max);
-  console.log(new Date());
-
   req.db.invalid_records.aggregate([
   {
     $match :
       { 
-        timestamp :         // get data for one day
-          { 
-            $gte : min, 
-            $lt : max 
-          }
+        timestamp : date
       } 
   },
   { 
