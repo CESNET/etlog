@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const aqp = require('api-query-params').default;    // uses ES6
 // --------------------------------------------------------------------------------------
-// get failed records for specific date
+// get failed records data
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
   var qs = req.url.substr(2);   // remove '/?'
 
   var query = aqp(qs, {         // parse query string
-    whitelist : [ 'username', 'timestamp', 'fail_count', 'ok_count', 'ratio' ]       // whitelist collection variables
+    whitelist : [ 'username', 'timestamp', 'fail_count', 'ok_count', 'ratio' ]       // whitelist collection keys
   });
 
   if(query.filter.timestamp == undefined) {    // do not search if timestamp is not defined
