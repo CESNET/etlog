@@ -56,7 +56,7 @@ var roaming_schema = mongoose.Schema({
   inst_name      : String,
   used_count     : Number,
   provided_count : Number,
-  timestmap      : Date
+  timestamp      : Date
 });
 // --------------------------------------------------------------------------------------
 exports.roaming_schema = roaming_schema;
