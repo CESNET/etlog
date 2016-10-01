@@ -47,13 +47,21 @@ function parseValue(rawValue) {
     return Number(value);
   }
 
+  // Match YYYY-MM-DD
+  const short_date = value.match(/[12]\d{3}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)/);
+  if (short_date) {
+    const fields = value.split("-");
+    return new Date(fields[0], fields[1], fields[2], 0, 0, 0, 0);   // return specified date at 00:00:00:000
+  }
+
   // Match YYYY-MM-DDTHH:mm:ssZ format dates
   /* eslint-disable max-len */
-  const date = value.match(/[12]\d{3}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)(T| )?(([01][0-9]|2[0-3]):[0-5]\d(:[0-5]\d(\.\d+)?)?(Z|[+-]\d{2}:\d{2})?)?/);
+  const full_date = value.match(/[12]\d{3}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)(T| )?(([01][0-9]|2[0-3]):[0-5]\d(:[0-5]\d(\.\d+)?)?(Z|[+-]\d{2}:\d{2})?)?/);
   /* eslint-enable max-len */
-  if (date) {
+  if (full_date) {
     return new Date(value);
   }
+
 
   return value;
 }
