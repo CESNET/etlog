@@ -460,7 +460,7 @@ Table below defined operators usage:
 
 Failed logins api is available at `/failed_logins/`
 
-All operators desctibed in [General info](#General info) may be used.
+All operators desctibed in [api-query-params](#api-query-params) may be used.
 Query may by done easily for example by:
 ```
 curl 'https://etlog.cesnet.cz/failed_logins/?timestamp>=2016-09-26'
