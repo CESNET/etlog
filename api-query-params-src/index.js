@@ -51,7 +51,7 @@ function parseValue(rawValue) {
   const short_date = value.match(/[12]\d{3}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)/);
   if (short_date) {
     const fields = value.split("-");
-    return new Date(fields[0], fields[1], fields[2], 0, 0, 0, 0);   // return specified date at 00:00:00:000
+    return new Date(fields[0], Number(fields[1]) - 1, fields[2], 0, 0, 0, 0);   // return specified date at 00:00:00:000
   }
 
   // Match YYYY-MM-DDTHH:mm:ssZ format dates
