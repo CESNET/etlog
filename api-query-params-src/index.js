@@ -47,21 +47,23 @@ function parseValue(rawValue) {
     return Number(value);
   }
 
-  // Match YYYY-MM-DD
-  const short_date = value.match(/[12]\d{3}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)/);
-  if (short_date) {
-    const fields = value.split("-");
-    return new Date(fields[0], Number(fields[1]) - 1, fields[2], 0, 0, 0, 0);   // return specified date at 00:00:00:000
-  }
-
-  // Match YYYY-MM-DDTHH:mm:ssZ format dates
+  // Match YYYY-MM-DDTHH:mm:ss.mlsZ format dates
+  // ex: 2016-09-02T22:00:00.000Z
   /* eslint-disable max-len */
-  const full_date = value.match(/[12]\d{3}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)(T| )?(([01][0-9]|2[0-3]):[0-5]\d(:[0-5]\d(\.\d+)?)?(Z|[+-]\d{2}:\d{2})?)?/);
+  const full_date = value.match(/([12]\d{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])(T| )?([01][0-9]|2[0-3]):([0-5]\d):([0-5]\d)\.(\d{3})Z/);
   /* eslint-enable max-len */
+
   if (full_date) {
     return new Date(value);
   }
 
+  // Match YYYY-MM-DD
+  /* eslint-disable max-len */
+  const short_date = value.match(/([12]\d{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])/);
+  /* eslint-enable max-len */
+  if (short_date) {
+    return new Date(short_date[1], short_date[2], short_date[3], 0, 0, 0, 0);   // return specified date at 00:00:00:000
+  }
 
   return value;
 }
