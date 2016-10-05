@@ -82,13 +82,13 @@ function get_most_provided(database, min_date, max_date)
   },  
   {
     $group :                  // group by pair [realm, csi] - normalization by mac address
-    { 
-      _id : 
-        { 
-          realm : "$realm", 
-          csi : "$csi" 
-        } 
-    } 
+      { 
+        _id : 
+          { 
+            realm : "$realm", 
+            csi : "$csi" 
+          } 
+      } 
   },
   { 
     $project : 
