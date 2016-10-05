@@ -129,6 +129,8 @@ Other special packages along with installation are listed below.
   
 ### MongoDB
 
+MongoDB is document oriented database.
+
 #### installation
 
 At the time of writing this guide, no official documentation for installation on Debian jessie
@@ -191,7 +193,7 @@ db.roaming.aggregate([
 
 #### Usage
 
-Database can be accessed by command `mongo`. MongoDB is document oriented database. 
+Database can be accessed by command `mongo`.  
 Data are divided into databases, same as in the sql dabases. Each database consists of collections,
 which is equivalent of sql tables. Collections consist of documents, which use the BSON notation, which is basen on JSON.
 
