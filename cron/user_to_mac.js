@@ -85,7 +85,8 @@ function process_data(database, min_date, max_date)
           csi :
             {
               $ne : ""            // only non empty mac addresses
-            }
+            },
+          result : "OK"           // only successfully authenticated users
         } 
     }, 
     { 
