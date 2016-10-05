@@ -61,6 +61,8 @@ exp.process_current_data = function (database, interval) {
   process_data(database, min_date, max_date);
 };
 // --------------------------------------------------------------------------------------
+// search the database for given time interval
+// --------------------------------------------------------------------------------------
 function process_data(database, min_date, max_date)
 {
   database.logs.aggregate([ 
@@ -76,11 +78,14 @@ function process_data(database, min_date, max_date)
             { 
               $ne : ""            // only non empty usernames
             }
-          //  , 
-          //csi :                 // data can contain records where one mac address is empty for certain username, we also want to includes these records
-          //  {           
-          //    $ne : ""            // only non empty mac addresses
-          //  } 
+            , 
+          // data can contain records where one mac address is empty for certain username, we do not want to includes these records here
+          // at this point generated data may be inconsistent with mac_count because of empty mac addresses
+          // but it is neccessary to not allow empty addresses in here!
+          csi :
+            {
+              $ne : ""            // only non empty mac addresses
+            }
         } 
     }, 
     { 
@@ -107,17 +112,13 @@ function process_data(database, min_date, max_date)
             { 
               pn : "$_id.pn" 
             }, 
-            addrs : 
-              { 
-                $addToSet : "$$ROOT._id.csi"  // add mac addresses for matching username to array
-              } 
+          addrs :
+            {
+              $addToSet : "$$ROOT._id.csi"  // add mac addresses for matching username to array
+            }
         } 
-    },
-    //{
-    //  $out : "users_mac"       // write result to collection
-    //}
+    }
     ],
-
     function(err, items) {
       transform(items, database);
     });
@@ -152,8 +153,9 @@ function transform(items, database)
         upsert : true                   // update if matching document is found
       }, 
       function (err, result) {
-        // nothing to do here
-        // update needs a function to work
+        if(err)
+          console.log(err);
+        // nothing more to do here
     });
   }
 }
