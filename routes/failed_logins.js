@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const aqp = require('api-query-params').default;    // uses ES6
 // --------------------------------------------------------------------------------------
-// get failed records data
+// get failed logins data
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
   var qs = req.url.substr(2);   // remove '/?'
@@ -63,9 +63,6 @@ function search_interval(req, res, respond, query) {
   // TODO - other fields will be hard to get from this collection
   // should this logic be implemented ?
 
-  //console.log(dict);
-
-  // TODO - must return same structure as search for day interval !
   req.db.logs.aggregate(
   [ 
   { 
@@ -117,7 +114,7 @@ function search_interval(req, res, respond, query) {
     }  
   }
   ], function(err, items) {
-    respond(err, items, res)
+    respond(err, transform(items), res)
   });
 }
 // --------------------------------------------------------------------------------------
@@ -140,6 +137,51 @@ function respond(err, items, res) {
   }
   
   res.json(items);
+}
+// --------------------------------------------------------------------------------------
+// transform item structure
+// input : 
+// { _id: { pn: 'skgtns1@ucl.ac.uk' }, results: [ 'OK', 'FAIL' ], result_count: [ 2, 1 ] }
+// output:
+// { username: 'skgtns1@ucl.ac.uk', OK: 2, FAIL: 1, ratio: 0.3333333333333333, timestamp: 2016-09-12T22:00:00.000Z }
+// --------------------------------------------------------------------------------------
+function transform(items) {
+  var arr = [];
+  var dict = {};
+
+  for(var item in items) {
+    dict = {};              // needed for deep copy
+    dict['username'] = items[item]['_id']['pn'];
+
+    if(items[item]['results'].length != items[item]['result_count'].length) {   // both numbers for ok and fail are the same [ result_count.lenght == 1 ]
+        dict['ok_count'] = items[item]['result_count'][0];
+        dict['fail_count'] = items[item]['result_count'][0];
+    }
+    else {  // both numbers are different
+      //for(var i = 0; i < items[item]['results'].length; i++)
+      //  dict[items[item]['results'][i]] = items[item]['result_count'][i]; 
+      // this code can be used, but dict keys "OK" and "FAIL" have to be transladed
+      // also "OK" may not be present at all, so it must be filled manually
+
+      // another problem here is that order of values in Array results (results: [ 'OK', 'FAIL' ]) is undefined
+      // order of values in result_count corresponds to order of results
+      if(items[item]['results'][0] == "OK") {   //  results: [ 'OK', 'FAIL' ]
+        dict['ok_count'] = items[item]['result_count'][0];
+        dict['fail_count'] = items[item]['result_count'][1];
+      }
+      else {   //  results: [ 'FAIL', 'OK' ]
+        // "OK" may be undefined !
+
+        dict['fail_count'] = items[item]['result_count'][0];
+        dict['ok_count'] = items[item]['result_count'][1] || 0; // if "OK" is undefined, count is 0
+      }
+    }
+
+    dict['ratio'] =  (dict['fail_count'] / (dict['fail_count'] + dict['ok_count']));
+    arr.push(dict);
+  }
+
+  return arr;
 }
 // --------------------------------------------------------------------------------------
 module.exports = router;
