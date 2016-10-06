@@ -71,7 +71,7 @@ function search_days(req, res, respond, query) {
 
   req.db.roaming.find(query.filter, { _id : 0, timestamp : 0}, function(err, items) {
     respond(err, items, res);
-  }
+  });
 }
 // --------------------------------------------------------------------------------------
 module.exports = router;
