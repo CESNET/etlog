@@ -3,7 +3,6 @@ var router = express.Router();
 const aqp = require('api-query-params').default;    // uses ES6
 // --------------------------------------------------------------------------------------
 // get roaming data for organisations most providing roaming
-// timestamp, [inst_name, provided_count]
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
   var qs = req.url.substr(2);   // remove '/?'
