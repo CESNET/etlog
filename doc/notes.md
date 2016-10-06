@@ -488,10 +488,10 @@ TODO
 
 #### Backend
 
-| URL              | params | query string variables                             | note                                                                   |
-|------------------|--------|----------------------------------------------------|------------------------------------------------------------------------|
-| /failed\_logins/ | -      | username, timestamp, fail\_count, ok\_count, ratio | query string variables only for short date -- see [examples](#examples)|
-| /failed\_logins/ | -      | username, timestamp                                | query string variables only for long date - see [examples](#examples)  |
+| URL              | params | query string variables                                 | note        |
+|------------------|--------|--------------------------------------------------------|-------------|
+| /failed\_logins/ | -      | timestamp, [ username, fail\_count, ok\_count, ratio ] | query string variables only specific date or interval exactly matching days -- see [examples](#examples)|
+| /failed\_logins/ | -      | timestamp, [ username ]                              | query string variables only for specific interval not matching days - see [examples](#examples)           |
 |                  |        |                                                    |                                                                        |
 |                  |        |                                                    |                                                                        |
 |                  |        |                                                    |                                                                        |
