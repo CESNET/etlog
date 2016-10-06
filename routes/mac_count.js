@@ -56,7 +56,7 @@ router.get('/', function(req, res, next) {
 // --------------------------------------------------------------------------------------
 function search_days(req, res, respond, query) {
   req.db.mac_count.find(query.filter,  { _id : 0, timestamp : 0}, function(err, items) {
-    respond(err, items, res)
+    respond(err, items, res);
   });
 }
 // --------------------------------------------------------------------------------------
