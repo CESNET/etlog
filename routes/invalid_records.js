@@ -16,21 +16,7 @@ router.get('/:date', function(req, res, next) {
   date.setSeconds(0);
   date.setMilliseconds(0);  // set to 00:00:00:000
   
-  req.db.invalid_records.aggregate([
-  {
-    $match :
-      { 
-        timestamp : date
-      } 
-  },
-  { 
-    $project :
-      {
-        _id : 0, 
-        records : 1     // get only records
-      }
-  }
-  ], function (err, items) {
+  req.db.invalid_records.find({timestamp : date}, { _id : 0, timestamp : 0 }, function (err, items) {
     respond(err, items, res)
   });
 });
