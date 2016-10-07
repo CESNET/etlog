@@ -20,16 +20,16 @@ collection="logs"
 etlog_log_root="/home/etlog/logs/"
 
 # last_date location
-last_date_loc="$elog_log_root/last_date"
+last_date_loc="$etlog_log_root/last_date"
 
 # current date in format YYYY-MM-DD
 date=$(date "+%Y-%m-%d")
 
 # check if date is the same as should be for processing log files
-if [[ "$(cat $last_log_loc)" != "$date" ]]
+if [[ "$(cat $last_date_loc)" != "$date" ]]
 then
   # date differs => processing of last interval of previous day
-  date=$(cat $last_log_loc)                     # set variable to correct date
+  date=$(cat $last_date_loc)                     # set variable to correct date
   interval_processed=true                       # last interval is processed
 fi
 
