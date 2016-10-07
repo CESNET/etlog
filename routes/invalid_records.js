@@ -86,8 +86,30 @@ router.get('/filtered/:date/', function(req, res, next) {
   request.get({
     url: url_base + url + req.params.date,
   }, function (error, response, body) {
-    if(error)
-      console.log(error);
+    //if(response)
+    //  console.log("response");
+    //  console.log(response);
+
+    //if(response.status)
+    //  console.log("response.status");
+
+    //if(error)
+    //  console.log("error");
+
+
+    if(error || (response.status != undefined && response.status != 200)) {
+      //console.log(error);
+      //console.log(response.status);
+      console.log("here");
+      if(error) {   // handle error
+        console.log(error);
+        res.end(error);
+      }
+      else {    // handle status code
+        console.log(JSON.parse(body).error);
+        res.end(JSON.parse(body).error);
+      }
+    }
     else {
       if(JSON.parse(body).length == 0) {   // handle empty data
         res.json([]);
