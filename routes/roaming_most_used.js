@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
   });
 
   if(query.filter.timestamp == undefined) {    // do not search if timestamp is not defined
-    res.end("timestamp must be defined!");
+    res.status(500).send({ error : "timestamp must be defined!"});        // send error status and message
     return;
   }
 
@@ -25,7 +25,7 @@ router.get('/', function(req, res, next) {
     range.push(keys[key]);      // for further processing
 
     if(isNaN(Date.parse(keys[key]))) {    // invalid date
-      res.end("invalid date: " + keys[key]);
+      res.status(500).send({ error : "invalid date: " + keys[key]});        // send error status and message
       return;
     }
   }
