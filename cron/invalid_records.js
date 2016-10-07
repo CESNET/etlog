@@ -115,7 +115,7 @@ function get_record_numbers(err_file, log_file, read_lines, save_to_db, database
 // --------------------------------------------------------------------------------------
 function save_to_db(database, arr, db_date)
 {
-  database.invalid_records.update({ timestamp : db_date, records : arr }, { timestamp : db_date, records : arr }, { upsert : true },
+  database.invalid_records.update({ timestamp : db_date }, { timestamp : db_date, records : arr }, { upsert : true },
   function(err, result) {
     if(err)  
       console.log(err);
