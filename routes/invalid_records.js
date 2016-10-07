@@ -88,8 +88,14 @@ router.get('/filtered/:date/', function(req, res, next) {
   }, function (error, response, body) {
     if(error)
       console.log(error);
-    else
-      res.json(filter_data(JSON.parse(body)[0]['records']));      // body contains array which contains dict, the key "records" holds the data
+    else {
+      if( JSON.parse(body).length == 0) {   // handle empty data
+        res.json([]);
+      }
+      else {    // non empty response
+        res.json(filter_data(JSON.parse(body)[0]['records']));      // body contains array which contains dict, the key "records" holds the data
+      }
+    }
   });
 
 });
