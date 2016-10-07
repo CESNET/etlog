@@ -7,9 +7,6 @@
 
 # ==========================================================================================
 
-# current date in format YYYY-MM-DD
-date=$(date "+%Y-%m-%d")
-
 # application root
 etlog_root="/home/etlog/etlog/"
 
@@ -22,6 +19,20 @@ collection="logs"
 # etlog log root
 etlog_log_root="/home/etlog/logs/"
 
+# last_date location
+last_date_loc="$elog_log_root/last_date"
+
+# current date in format YYYY-MM-DD
+date=$(date "+%Y-%m-%d")
+
+# check if date is the same as should be for processing log files
+if [[ "$(cat $last_log_loc)" != "$date" ]]
+then
+  # date differs => processing of last interval of previous day
+  date=$(cat $last_log_loc)                     # set variable to correct date
+  interval_processed=true                       # last interval is processed
+fi
+
 # log file to process
 logfile="/home/etlog/logs/fticks/fticks-$date"
 
@@ -31,25 +42,13 @@ errlog="$etlog_log_root/transform/err-$date"
 # mongo error log
 mongo_errlog="$etlog_log_root/mongo/err-$date"
 
-# last_log location
-last_log_loc="$etlog_log_root/last_log"
-
-# last processed log file
-# to ensure all data for every day is processed
-if [[ "$(cat $last_log_loc)" != "$logfile" ]]
-then
-  last_log="$(cat $last_log_loc)"               # first processing of the day must process last data part of the last day
-  interval_processed=true                       # last interval is processed
-else
-  last_log=$logfile
-fi
 
 # convert to json and import to database
-$etlog_root/scripts/fticks_to_json.sh $last_log 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
+$etlog_root/scripts/fticks_to_json.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
 
 if [[ $interval_processed ]]
 then
-  echo $logfile > $last_log_loc                 # save current day filename for next processing
+  date "+%Y-%m-%d" > $last_date_loc                 # save current date for next processing
 fi
 
 # no change otherwise
