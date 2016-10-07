@@ -38,7 +38,8 @@ exp.process_old_data = function (database) {
 
     // ------------------------------------
     var min = new Date(fields[3], months[fields[1]], fields[2], 0, 0, 0, 0);        // hh:mm:ss:ms set to 0
-    var max = new Date(fields[3], months[fields[1]], Number(fields[2]) + 1, 0, 0, 0, 0);    // next day, hh:mm:ss:ms set to 0
+    var max = new Date(fields[3], months[fields[1]], Number(fields[2]) + 1, 12, 0, 0, 0);    // next day
+                                                                                    // hours must be set to compensate UTC offset
                                                                                     // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
 
