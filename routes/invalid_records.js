@@ -89,7 +89,7 @@ router.get('/filtered/:date/', function(req, res, next) {
     if(error)
       console.log(error);
     else {
-      if( JSON.parse(body).length == 0) {   // handle empty data
+      if(JSON.parse(body).length == 0) {   // handle empty data
         res.json([]);
       }
       else {    // non empty response
