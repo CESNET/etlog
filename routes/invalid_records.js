@@ -17,6 +17,9 @@ router.get('/:date', function(req, res, next) {
   date.setMilliseconds(0);  // set to 00:00:00:000
   
   req.db.invalid_records.find({timestamp : date}, { _id : 0, timestamp : 0 }, function (err, items) {
+    if(items.length != 0)       // database returned data
+      items = items[0]['records']; // convert [{"records":[ ... ]}] to [ ... ]
+
     respond(err, items, res)
   });
 });
@@ -83,12 +86,7 @@ router.get('/filtered/:date/', function(req, res, next) {
       }
     }
     else {
-      if(JSON.parse(body).length == 0) {   // handle empty data
-        res.json([]);
-      }
-      else {    // non empty response
-        res.json(filter_data(JSON.parse(body)[0]['records']));      // body contains array which contains dict, the key "records" holds the data
-      }
+      res.json(filter_data(JSON.parse(body)));  // send filtered data
     }
   });
 
