@@ -35,7 +35,7 @@ mongo_errlog="$etlog_log_root/mongo/err-$date"
 last_log_loc="$etlog_log_root/last_log"
 
 # last processed log file
-# to ensure all data for every dat is processed
+# to ensure all data for every day is processed
 if [[ "$(cat $last_log_loc)" != "$logfile" ]]
 then
   last_log="$(cat $last_log_loc)"               # first processing of the day must process last data part of the last day
