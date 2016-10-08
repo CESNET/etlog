@@ -38,7 +38,7 @@ exp.process_old_data = function (database) {
 
     // ------------------------------------
     var min = new Date(fields[3], months[fields[1]], fields[2], 0, 0, 0, 0);        // hh:mm:ss:ms set to 0
-    var max = new Date(fields[3], months[fields[1]], Number(fields[2]) + 1, 12, 0, 0, 0);    // next day
+    var max = new Date(fields[3], months[fields[1]], Number(fields[2]) + 1, 0, 0, 0, 0);    // next day, hh:mm:ss:ms set to 0
                                                                                     // hours must be set to compensate UTC offset
                                                                                     // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
@@ -46,7 +46,8 @@ exp.process_old_data = function (database) {
     while(min < curr_min) {
       // use max for UTC correction
       // using min could result in a bad day because of midnight and utc offset !
-      date = "-" + max.getFullYear() + "-" + zero_pad((Number(max.getMonth()) + 1), 2) + "-" + zero_pad(max.getUTCDate(), 2);   
+      // use min to determine month - max could be in another month already
+      date = "-" + max.getFullYear() + "-" + zero_pad((Number(min.getMonth()) + 1), 2) + "-" + zero_pad(max.getUTCDate(), 2);
 
       log_file = log_root + "fticks" + date;      // original file, which contains invalid records
       err_file = etlog_log_root + "transform/err" + date; // /home/etlog/logs/transform/err-2015-01-25
