@@ -65,7 +65,7 @@ then
 fi
 
 # delete last line file if exists
-if [[ -e "$last_line_log"]]
+if [[ -e "$last_line_log" ]]
 then
   rm "$last_line_log"
 fi
