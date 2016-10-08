@@ -513,14 +513,15 @@ TODO
 
 | URL              | params | query string variables                                 | note        |
 |------------------|--------|--------------------------------------------------------|-------------|
-| /failed\_logins/ | -      | timestamp, [ username, fail\_count, ok\_count, ratio ] | query string variables only specific date or interval exactly matching days -- see [examples](#examples)|
-| /failed\_logins/ | -      | timestamp, [ username ]                              | query string variables only for specific interval not matching days - see [examples](#examples)           |
-|                  |        |                                                    |                                                                        |
-|                  |        |                                                    |                                                                        |
-|                  |        |                                                    |                                                                        |
-|                  |        |                                                    |                                                                        |
-|                  |        |                                                    |                                                                        |
+| /failed\_logins/ |       | timestamp, [ username, fail\_count, ok\_count, ratio ] | query string variables only specific date or interval exactly matching days -- see [examples](#examples)|
+| /failed\_logins/ |       | timestamp, [ username ]                              | query string variables only for specific interval not matching days - see [examples](#examples)           |
+| /invalid\_records/          | date |                                            | |
+| /invalid\_records/filtered/ | date |                                            | |
+| /mac\_count/                |      | timestamp, [ username, count, addrs ]      | |
+| /roaming/most\_provided/    |      | timestamp, [ inst\_name, provided\_count ] | |
+| /roaming/most\_used/        |      | timestamp, [ inst\_name, used\_count ]     | |
 
 ##### Examples
 
+TODO - query string variable values !!
 
