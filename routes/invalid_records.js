@@ -31,6 +31,28 @@ function filter_data(data)
   var filter = [];   // filtering "rules"
   var ret = [];
 
+// --------------------------------------------------------------------------------------
+// filter monitoring mac addresses
+// part of address is currently 706f6c69*
+
+  var len = data.length;    // number of records
+  var i = 0;    // index
+
+  while(i != len) {            // safe way, to iterate all items
+    if(data[i].match(/CSI=(706f6c69|70-6f-6c-69|70:6f:6c:69|706f\.6c69\.)*/i).indexOf(undefined) == -1) {
+      // match returns ["CSI=", undefined] if no match for address is found !
+      // so we use the logic above, to verify that match is really found
+      data.splice(i, 1);       // delete line from data
+      len = data.length;       // update len
+    }
+    else {
+      i++;      // increase only if no match is found
+    }
+  }
+
+// --------------------------------------------------------------------------------------
+// filtering rules
+
   for(var item in data) {       // create filtering rules
     var fields = data[item].split("#");
     var csi = fields[4];
@@ -88,7 +110,6 @@ router.get('/filtered/:date/', function(req, res, next) {
       res.json(filter_data(JSON.parse(body)));  // send filtered data
     }
   });
-
 });
 // --------------------------------------------------------------------------------------
 // send data to user
