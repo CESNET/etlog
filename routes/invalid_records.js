@@ -26,7 +26,6 @@ router.get('/:date', function(req, res, next) {
 // --------------------------------------------------------------------------------------
 // filter invalid records data to gen only one entry per pair [ pn, csi ]
 // --------------------------------------------------------------------------------------
-//var filter_data = function(data)
 function filter_data(data)
 {
   var filter = [];   // filtering "rules"
