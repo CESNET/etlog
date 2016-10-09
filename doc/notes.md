@@ -394,20 +394,24 @@ TODO
       `-- mac_count.js       - cron task for generating mac_count collection data
       `-- roaming.js         - cron task for generating roaming collection data
       `-- users_to_mac.js    - cron task for mapping users and mac addresses
-  |-- db.js                  - database and schema configuration
   |-- cron.js                - cron tasks definiton
+  |-- db.js                  - database and schema configuration
   |-- doc                    - documentation
-  |-- mail.js                - mail setup
-  |-- node_modules          - application dependency files
+  |-- gulpfile.js            - definition of gulp tasks
+  |-- mail.js                - mail api
+  |-- mongo_queries          - directory with mongo shell queries for debugging purposes
+  |-- node_modules           - application dependency files
   |-- package.json           - definition of application dependencies and properties
   |-- public                 - directory for referring public files
       `-- partials           - directory for generated html files from pug templates
   |-- README.md              - link to doc/notes.md
+  |-- request.js             - wrapper to backend api
   |-- routes                 - application routes
   |-- routes.js              - mapping of routes to application
   |-- scripts                - various scripts
       `-- fticks_to_json.sh  - transformation script from fticks to json
       `-- cron.sh            - cron script to import live data delivered by syslog
+      `-- old_data.sh        - script to import old data
   |-- views                  - templates of displayed pages
       `-- templates          - directory with pug templates for html pages
 ```
