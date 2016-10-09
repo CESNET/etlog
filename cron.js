@@ -15,6 +15,7 @@ module.exports = function(database) {
   // once a month
   new CronJob('0 00 06 1 * *', function() {     // run once a month
     //mail.send_mail("měsíční report - nevalidní záznamy", request.get_invalid_records_monthly());  // TODO
+    //mail.send_mail("měsíční report - neúspěšná přihlášení", request.get_failed_logins_monthly());  // TODO
   }, null, true, 'Europe/Prague');
 
 

@@ -98,9 +98,10 @@ function filter_data(data)
   return ret;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get failed logins
+// parameter limit number of results
 // --------------------------------------------------------------------------------------
-exp.get_failed_logins_monthly = function()
+exp.get_failed_logins_monthly = function(limit)
 {
   var test = [];
   var url = "/failed_logins/";
@@ -115,22 +116,18 @@ exp.get_failed_logins_monthly = function()
   min.setDate(max.getDate() - 30);  // 30 days before
 
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
-  // TODO - sorting
-  console.log(query);
-
+  query += "&limit=" + limit;   // limit number of records
+  query += "&sort=-fail_count";   // sort by count
+ 
   request.get({
     url: url_base + url + query     // use query string here for simple usage
   }, function (error, response, body) {
     if(error)
       console.log(error);
     else
-      //console.log(response);
-      console.log(body);
+      return(body); // return response to caller
   });
 
 }
-// --------------------------------------------------------------------------------------
-//exp.get_invalid_records_monthly();       // debug only
-//exp.get_failed_logins_monthly();       // debug only
 // --------------------------------------------------------------------------------------
 module.exports = exp;
