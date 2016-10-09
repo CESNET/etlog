@@ -1,29 +1,31 @@
 module.exports = function(database) {
 // --------------------------------------------------------------------------------------
   const CronJob = require('cron').CronJob;
-  //const mail = require('./mail');
+  const async = require('async');
+  const mail = require('./mail');
   const failed_logins = require('./cron/failed_logins.js');
   const invalid_records = require('./cron/invalid_records.js');
   const mac_count = require('./cron/mac_count.js');
   const roaming = require('./cron/roaming.js');
   //const stats = require('./cron/stats.js'); // TODO
   const user_to_mac = require('./cron/user_to_mac.js');
-  //const request = require('./request'); // TODO
+  const request = require('./request');
+// --------------------------------------------------------------------------------------
+  // TODO
+  // once a month
+  new CronJob('0 00 06 1 * *', function() {     // run once a month
+    //mail.send_mail("měsíční report - nevalidní záznamy", request.get_invalid_records_monthly());  // TODO
+  }, null, true, 'Europe/Prague');
+
+
 // --------------------------------------------------------------------------------------
 
   // TODO - invalid data - once a day
   // send mail about invalid data - once a month ? or configurable time ?
 
   //new CronJob('0 30 02 * * 0', function() {     // run once every week at 02:30:00
-  //    
-  //    // get invalid data
-  //    // 
-
-  //request.get_unique_records();
-
-  //    //mail.send_mail(data);
-  //    //failed_logins.process_current_data(database);
-  //}, null, false, 'Europe/Prague');
+  // TODO
+  //}, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------
   // run once a day
@@ -65,13 +67,11 @@ module.exports = function(database) {
   var process_old = false;
 
   if (process_old) {
-    //failed_logins.process_old_data(database);
+    failed_logins.process_old_data(database);
     invalid_records.process_old_data(database);
-    //mac_count.process_old_data(database);
-    //roaming.process_old_data(database);
-    //user_to_mac.process_old_data(database);
+    mac_count.process_old_data(database);
+    roaming.process_old_data(database);
+    user_to_mac.process_old_data(database);
   }
-
-// --------------------------------------------------------------------------------------
 }
 // --------------------------------------------------------------------------------------
