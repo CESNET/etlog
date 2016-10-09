@@ -4,34 +4,26 @@ module.exports = function(app, database) {
   // prepend authentication to all routes
  
   // set up routes
-  app.use('/', require('./routes/index'));                                              // empty title page
-  app.use('/angular_test', require('./routes/angular_test'));                           // angular test page
-  app.use('/search', require('./routes/search'));                                       // generic search
-  app.use('/search/mac_count', require('./routes/mac_count'));                          // generic mac address count search
-  app.use('/search/roaming/most_provided', require('./routes/roaming_most_provided'));  // generic search of institutions most providing roaming
-  app.use('/search/roaming/most_used', require('./routes/roaming_most_used'));          // generic search of institutions most using roaming
-  app.use('/search/failed_logins', require('./routes/failed_logins'));                  // TODO
-  app.use('/search/failed_logins_search', require('./routes/failed_logins_search'));    // TODO
 // -----------------------------------------------------------
-
+  app.use('/', require('./routes/index'));                                       // empty title page
+  app.use('/angular_test', require('./routes/angular_test'));                    // angular test page
+  app.use('/search', require('./routes/search'));                                // generic search api
+  app.use('/mac_count', require('./routes/mac_count'));                          // generic api for mac address count
+  app.use('/roaming/most_provided', require('./routes/roaming_most_provided'));  // generic api for institutions most providing roaming
+  app.use('/roaming/most_used', require('./routes/roaming_most_used'));          // generic api for institutions most using roaming
+  app.use('/invalid_records', require('./routes/invalid_records'));   // TODO
+  app.use('/failed_logins', require('./routes/failed_logins'));                  // TODO
   // TODO
-  //app.use('/search/mac_identifier', require('./routes/mac_identifier'));              // TODO
-  //app.use('/search/lost_devices', require('./routes/lost_device'));              // TODO
-
-  // TODO
+  //app.use('/mac_identifier', require('./routes/mac_identifier'));              // TODO
+  //app.use('/lost_devices', require('./routes/lost_device'));              // TODO
   // app.use('/stats', require('./routes/stats'));   // TODO
 
-  // TODO
-  // invalid data api
-  app.use('/invalid_records', require('./routes/invalid_records'));   // TODO
-
-  //var test = require('./routes/invalid_records')(database);
-  //var test = require('./routes/invalid_records');
-  //app.use('/invalid_records', test);
 
 // -----------------------------------------------------------
   // login routing is defined separately
   // see auth.js
+  // TODO
+  // metadata url
 
   // saml test
   app.use('/auth_fail', require('./routes/auth_fail'));
