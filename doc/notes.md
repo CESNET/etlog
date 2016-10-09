@@ -525,7 +525,20 @@ TODO
 | /roaming/most\_provided/    |      | timestamp, [ inst\_name, provided\_count ] | |
 | /roaming/most\_used/        |      | timestamp, [ inst\_name, used\_count ]     | |
 
+
 ##### Examples
 
-TODO - query string variable values !!
+
+
+
+##### Timestamp
+
+Allowed timestamp values must be in one of the formats in table below.
+
+| format            | example                   |
+|-------------------|---------------------------|
+| ISO-8601          | 2016-10-06T22:00:00.000Z  |
+| reduced ISO-8601  | 2016-10-06T22:00:00       |
+| %Y-%m-%d          | 2016-10-06                |
+
 
