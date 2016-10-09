@@ -11,8 +11,8 @@ module.exports = function(app, database) {
   app.use('/mac_count', require('./routes/mac_count'));                          // generic api for mac address count
   app.use('/roaming/most_provided', require('./routes/roaming_most_provided'));  // generic api for institutions most providing roaming
   app.use('/roaming/most_used', require('./routes/roaming_most_used'));          // generic api for institutions most using roaming
-  app.use('/invalid_records', require('./routes/invalid_records'));   // TODO
-  app.use('/failed_logins', require('./routes/failed_logins'));                  // TODO
+  app.use('/invalid_records', require('./routes/invalid_records'));              // api for invalid records
+  app.use('/failed_logins', require('./routes/failed_logins'));                  // generic api for failed logins
   // TODO
   //app.use('/mac_identifier', require('./routes/mac_identifier'));              // TODO
   //app.use('/lost_devices', require('./routes/lost_device'));              // TODO
