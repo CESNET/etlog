@@ -46,28 +46,11 @@ exp.get_invalid_records_monthly = function()
       cnt++;    // increase processed count
 
       if(cnt == interval)
-        return_data(ret);   // return data, when all requests are done
+        return filter_data(ret);  // return data when all requests are done
     });
 
     date.setDate(date.getDate() -1);    // decrease by 1 day
   }
-}
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-function return_data(data)
-{
-  // TODO  
-  //console.log(filter_data(data));
-  var res = filter_data(data);
-
-  //console.log(res);
-
-  for(var item in res) {
-    console.log(res[item]);
-  }
-  //console.log("return_data");
-  //console.log(data);
 }
 // --------------------------------------------------------------------------------------
 // filter invalid records data to gen only one entry per pair [ pn, csi ]
@@ -147,7 +130,7 @@ exp.get_failed_logins_monthly = function()
 
 }
 // --------------------------------------------------------------------------------------
-exp.get_invalid_records_monthly();       // debug only
+//exp.get_invalid_records_monthly();       // debug only
 //exp.get_failed_logins_monthly();       // debug only
 // --------------------------------------------------------------------------------------
 module.exports = exp;
