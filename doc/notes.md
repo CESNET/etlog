@@ -533,7 +533,7 @@ TODO
 
 ##### Timestamp
 
-Allowed timestamp values must be in one of the formats in table below.
+Timestamp value must be in one of the formats in table below.
 
 | format            | example                   |
 |-------------------|---------------------------|
