@@ -2,10 +2,6 @@
 var exp = {}
 const request = require('request');
 const url_base = 'https://etlog.cesnet.cz:8443';
-const mongo_qs = require('mongo-querystring');
-const querystring = require('querystring');
-const qs = require('qs');
-var MongoQS = require('mongo-querystring');
 // --------------------------------------------------------------------------------------
 // get invalid records 
 // --------------------------------------------------------------------------------------
