@@ -69,8 +69,12 @@ function respond(err, items, res) {
 function search_days(req, res, respond, query) {
   query.filter.provided_count = query.used_count || { "$exists" : true };   // make sure used count is set
 
-  req.db.roaming.find(query.filter, { _id : 0, timestamp : 0}, function(err, items) {
-    respond(err, items, res);
+  req.db.roaming.find(query.filter,  { _id : 0, timestamp : 0})   // apply filter
+  .skip(query.skip)     // skip
+  .limit(query.limit)   // limit
+  .sort(query.sort)     // sort
+  .exec(function(err, items) {
+    respond(err, items, res)    // respond to user
   });
 }
 // --------------------------------------------------------------------------------------

@@ -122,8 +122,12 @@ function search_interval(req, res, respond, query) {
 // timestamp matches specific day or range of days
 // --------------------------------------------------------------------------------------
 function search_days(req, res, respond, query) {
-  req.db.failed_logins.find(query.filter,  { _id : 0, timestamp : 0}, function(err, items) {
-    respond(err, items, res)
+  req.db.failed_logins.find(query.filter,  { _id : 0, timestamp : 0})   // apply filter
+  .skip(query.skip)     // skip
+  .limit(query.limit)   // limit
+  .sort(query.sort)     // sort
+  .exec(function(err, items) {
+    respond(err, items, res)    // respond to user
   });
 }
 // --------------------------------------------------------------------------------------
