@@ -75,6 +75,15 @@ exports.failed_logins_schema = failed_logins_schema;
 var failed_logins = mongoose.model('failed_logins', failed_logins_schema, 'failed_logins');
 exports.failed_logins = failed_logins;
 // --------------------------------------------------------------------------------------
+var realm_admins_schema = mongoose.Schema({
+  realm       : String,
+  admins      : Array
+});
+// --------------------------------------------------------------------------------------
+exports.realm_admins_schema = realm_admins_schema;
+var realm_admins = mongoose.model('realm_admins', realm_admins_schema, 'realm_admins');
+exports.realm_admins = realm_admins;
+// --------------------------------------------------------------------------------------
 
 // TODO
 
