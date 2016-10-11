@@ -38,7 +38,7 @@ router.get('/', function(req, res, next) {
   // needs to be implemented?
   if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length > 1) {  // range
     if(Math.abs(range[0] - range[1]) % 86400000 == 0) {     // exact range of days
-      search_days(req, res, respond, query);
+      search_days(req, res, query);
     }
     else {  // another range
       //search_interval(req, res, respond, query);
@@ -46,7 +46,7 @@ router.get('/', function(req, res, next) {
     }
   }
   else {    // one day only
-    search_days(req, res, respond, query);
+    search_days(req, res, query);
   }
 
 });
@@ -54,7 +54,7 @@ router.get('/', function(req, res, next) {
 // search database for specified data
 // timestamp matches specific day or range of days
 // --------------------------------------------------------------------------------------
-function search_days(req, res, respond, query) {
+function search_days(req, res, query) {
   req.db.mac_count.find(query.filter,  { _id : 0, timestamp : 0})   // apply filter
   .skip(query.skip)     // skip
   .limit(query.limit)   // limit
