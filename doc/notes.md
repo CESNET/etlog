@@ -379,6 +379,14 @@ TODO
 | timestamp  |   Date    |         timestamp                   |
 
 
+##### realm\_admins
+
+| field name | data type |               note                                                            |
+|------------|-----------|-------------------------------------------------------------------------------|
+| realm      |   string  |          realm                                                                |
+| admins     |   Array   |   array containing email addresses of administrator(s) of corresponding realm |
+
+
 ### Application structure
 
 ```
