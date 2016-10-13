@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
   var qs = req.url.substr(2);   // remove '/?'
 
   var query = aqp(qs, {         // parse query string
-    whitelist : [ 'timestamp', 'inst_name', 'used_count' ]       // whitelist collection keys
+    whitelist : [ 'timestamp', 'inst_name', 'provided_count', 'used_count' ]       // whitelist collection keys
   });
 
   if(query.filter.timestamp == undefined) {    // do not search if timestamp is not defined
