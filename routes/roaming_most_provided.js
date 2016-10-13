@@ -66,7 +66,7 @@ function respond(err, items, res) {
 // timestamp matches specific day or range of days
 // --------------------------------------------------------------------------------------
 function search_days(req, res, query) {
-  query.filter.provided_count = query.provided_count || { "$exists" : true };   // make sure provided count is set
+  query.filter.provided_count = query.filter.provided_count || { "$exists" : true };   // make sure provided count is set
 
   req.db.roaming.find(query.filter,  { _id : 0, timestamp : 0})   // apply filter
   .skip(query.skip)     // skip
