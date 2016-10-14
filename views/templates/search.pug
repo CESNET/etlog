@@ -1,62 +1,61 @@
-extends layout
+//- navbar selected item
+-var selected = 'Obecné Vyhledávání';
 
-block content
-  //- navbar selected item
-  -var selected = 'Obecné Vyhledávání';
+//- TODO - https://material.angularjs.org/latest/demo/autocomplete
 
-  //- TODO
-  //- animace pri vyhledavani
-  //-#myModal.modal.fade.modal-white
-  //-  .modal-dialog
-  //-    #loader
-  //-      .diamond
-  //-      .diamond
-  //-      .diamond
+//- TODO
+//- animace pri vyhledavani
+//-#myModal.modal.fade.modal-white
+//-  .modal-dialog
+//-    #loader
+//-      .diamond
+//-      .diamond
+//-      .diamond
 
-  //- input - search parameters
-  //- "empty" action to prevent redirection
-  form.form-horizontal(ng-controller="search_contoller" ng-submit="submit()")
-    
-    .form-group
-      label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
-      .col-xs-3
-        input.form-control(type = 'text', placeholder = 'user@example.com', ng-model="formData['username']")
-    
-    .form-group(id = "mac_address_form")
-      label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
-      .col-xs-2
-        input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model="formData['mac_address']")
+//- input - search parameters
+//- "empty" action to prevent redirection
+form.form-horizontal(ng-controller="search_contoller" ng-submit="submit()")
+  
+  .form-group
+    label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
+    .col-xs-3
+      input.form-control(type = 'text', placeholder = 'user@example.com', ng-model="formData['username']")
+  
+  .form-group
+    label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
+    .col-xs-2
+      input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model="formData['mac_address']")
 
-    //.form-group
-    //  label.col-sm-2.control-label(for = 'auth_result') Výsledek autentizace:
-    //  .col-xs-2
-    //    select.form-control(id = "auth_result")
-    //      each res in ["nezadáno", "OK", "FAIL", "TIMEOUT"]
-    //        option(value = res) #{res}
+  .form-group
+    label.col-sm-2.control-label(for = 'auth_result') Výsledek autentizace:
+    .col-xs-2
+      select.form-control(id = "auth_result", ng-model="formData['auth_result']")
+        each res in ["nezadáno", "OK", "FAIL", "TIMEOUT"]
+          option(value = res) #{res}
 
-    //.form-group
-    //  label.col-sm-2.control-label(for = 'date_from') Datum od:
-    //  .col-xs-2
-    //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_from", name = "date_from" onkeydown="return false")
+  //.form-group
+  //  label.col-sm-2.control-label(for = 'date_from') Datum od:
+  //  .col-xs-2
+  //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_from", name = "date_from" onkeydown="return false")
 
-    //.form-group
-    //  label.col-sm-2.control-label(for = 'date_to') Datum do:
-    //  .col-xs-2
-    //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_to", name = "date_to" onkeydown="return false")
+  //.form-group
+  //  label.col-sm-2.control-label(for = 'date_to') Datum do:
+  //  .col-xs-2
+  //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_to", name = "date_to" onkeydown="return false")
 
-    .form-group
-      .col-sm-offset-2.col-sm-10
-        button.btn.btn-default(type = 'submit') Hledej
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      button.btn.btn-default(type = 'submit') Hledej
 
-    pre.
-      {{formData}}
-  //- TODO - asi dat jako vlastni stranku a pouze odkazovat
-  //-p
-  //-  button(class = "btn", id = "roaming") Největší roaming
+  pre.
+    {{formData}}
+//- TODO - asi dat jako vlastni stranku a pouze odkazovat
+//-p
+//-  button(class = "btn", id = "roaming") Největší roaming
 
-  div
-    h2(id = "results_h")
-    table(id = "results", class = "table table-bordered")
+div
+  h2(id = "results_h")
+  table(id = "results", class = "table table-bordered")
   
 block includes
     //-link(rel='stylesheet', href='/stylesheets/bootstrap-datetimepicker.css')
@@ -69,9 +68,9 @@ block includes
     //-script(src='/javascripts/bootstrap-datetimepicker.js')
     
     //-script(src='/javascripts/datatables.min.js')
-    script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js')
-    script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js')
-    script(src='/javascripts/search.js')
+    //script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js')
+    //script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js')
+    //script(src='/javascripts/search.js')
     //script(src='/javascripts/angular.min.js')     // TODO
     
 
@@ -84,8 +83,5 @@ block includes
     //-script(src='/javascripts/filters.js')
     //-script(src='/javascripts/directives.js')
     //-script(src='/javascripts/angular_test.js')
-
-
-
 
 

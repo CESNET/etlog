@@ -1,14 +1,12 @@
-extends layout
-
 block content
-  //- navbar selected item
-  -var selected = 'Mac adresy';
-
   div
     h2(id = "results_h")
     table(id = "results", class = "table table-bordered")
 
+  script.
+    var selected = 'Organizace nejvíce poskytující roaming';
+
 block includes
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     script(src='/javascripts/jquery.min.js')
-    script(src='/javascripts/mac.js')
+    script(src='/javascripts/roaming.js')
