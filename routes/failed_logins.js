@@ -122,12 +122,79 @@ function search_interval(req, res, respond, query) {
 // timestamp matches specific day or range of days
 // --------------------------------------------------------------------------------------
 function search_days(req, res, query) {
-  req.db.failed_logins.find(query.filter,  { _id : 0, timestamp : 0})   // apply filter
-  .skip(query.skip)     // skip
-  .limit(query.limit)   // limit
-  .sort(query.sort)     // sort
-  .exec(function(err, items) {
-    respond(err, items, res)    // respond to user
+  // query for username with records for multiple days
+  // gets results separated for each day !
+  // this is defined by the query -> needs to be computed on the fly
+
+  // ===================================================
+  // construct base query
+  var aggregate_query = [
+    {
+      $match : query.filter       // filter by query
+    },
+    {
+      $group :
+        {
+          _id :
+            {
+              username : "$username"  // group by username -> query on multiple records, we want only on record on the output
+            },
+          ok_count :
+            {
+              $sum : "$ok_count"      // sum ok_count
+            },
+          fail_count :
+            {
+              $sum : "$fail_count"    // sum fail_count
+            }
+        }
+    },
+    {
+      $project :
+        {
+          ratio :                     // ratio = fail_count / (fail_count + ok_count)
+            {
+              $divide :
+              [
+                "$fail_count",
+                {
+                  $add :
+                  [
+                    "$fail_count",
+                    "$ok_count"
+                  ]
+                }
+              ]
+            },
+          fail_count : 1,
+          ok_count : 1,
+          username : "$_id.username",   // id.username -> username
+          _id : 0
+        }
+    }
+  ];
+
+  // ===================================================
+  // add other operators, if defined in query
+
+  if(query.sort) {
+   aggregate_query.push({ $sort : query.sort });   // sort
+  }
+
+  if(query.limit) {
+   aggregate_query.push({ $limit : query.limit }); // limit
+  }
+
+  if(query.skip) {
+   aggregate_query.push({ $skip : query.skip });   // skip
+  }
+
+  // ===================================================
+  // search
+
+  req.db.failed_logins.aggregate(aggregate_query,
+  function(err, items) {
+    respond(err, items, res);
   });
 }
 // --------------------------------------------------------------------------------------
