@@ -247,7 +247,7 @@ Every document has also a field _id, which is just for internal MongoDB purposes
 ##### logs
 
 Collection represents raw radius log records transformed to json format. 
-For details on data transformation see scripts/fticks\_to\_json.sh
+For details on data transformation see scripts/fticks\_to\_bson.sh
 
 | field name | data type |               note               |
 |------------|-----------|----------------------------------|
@@ -417,7 +417,7 @@ TODO
   |-- routes                 - application routes
   |-- routes.js              - mapping of routes to application
   |-- scripts                - various scripts
-      `-- fticks_to_json.sh  - transformation script from fticks to json
+      `-- fticks_to_bson.sh  - transformation script from fticks to bson
       `-- cron.sh            - cron script to import live data delivered by syslog
       `-- old_data.sh        - script to import old data
   |-- views                  - templates of displayed pages
@@ -457,7 +457,7 @@ Everything related to log files is located in /home/etlog/logs.
 
 #### New data
 
-Incoming syslog data are processed by `scripts/cron.sh` and subsequently by `scripts/fticks_to_json.sh`.
+Incoming syslog data are processed by `scripts/cron.sh` and subsequently by `scripts/fticks_to_bson.sh`.
 Data are converted from F-Ticks format (for more see [this](https://tools.ietf.org/id/draft-johansson-fticks-00.html)) to BSON.
 
 Data are processed every 5 minutes by user's crontab.

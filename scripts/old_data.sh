@@ -38,7 +38,7 @@ logfile="/home/etlog/logs/fticks/fticks-$date"
 # etlog log root
 etlog_log_root="/home/etlog/logs/"
 
-# fticks to json conversion error log
+# fticks to bson conversion error log
 errlog="$etlog_log_root/transform/err-$date"
 
 # mongo error log
@@ -70,7 +70,7 @@ then
   rm "$last_line_log"
 fi
 
-# convert to json and import to database
-$etlog_root/scripts/fticks_to_json.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
+# convert to bson and import to database
+$etlog_root/scripts/fticks_to_bson.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
 
 exit 0

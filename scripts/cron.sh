@@ -2,7 +2,7 @@
 #
 # Author: Václav Mach
 # 
-# This script runs fticks_to_json.sh and is intended to be run by cron at regular intervals.
+# This script runs fticks_to_bson.sh and is intended to be run by cron at regular intervals.
 # Script takes no arguments.
 
 # ==========================================================================================
@@ -36,15 +36,15 @@ fi
 # log file to process
 logfile="/home/etlog/logs/fticks/fticks-$date"
 
-# fticks to json conversion error log
+# fticks to bson conversion error log
 errlog="$etlog_log_root/transform/err-$date"
 
 # mongo error log
 mongo_errlog="$etlog_log_root/mongo/err-$date"
 
 
-# convert to json and import to database
-$etlog_root/scripts/fticks_to_json.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
+# convert to bson and import to database
+$etlog_root/scripts/fticks_to_bson.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
 
 if [[ $interval_processed ]]
 then
