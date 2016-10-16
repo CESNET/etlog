@@ -63,7 +63,7 @@ http_server4.listen(app.get('http_port'), app.get('ipv4'));     // listen on ipv
 
 var http_server6 = http.createServer();
 http_server6.addListener("request", handler);
-http_server6.listen(app.get('http_port'), app.get('ipv6'));         // listen on ipv4 + http-alt
+http_server6.listen(app.get('http_port'), app.get('ipv6'));         // listen on ipv6 + http-alt
 
 
 /**
