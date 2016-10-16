@@ -1,30 +1,30 @@
 // --------------------------------------------------------------------------------------
-angular.module('etlog').config(function($routeProvider) {
-  $routeProvider
+angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
+  $stateProvider
 
-  .when('/search', {
-    templateUrl : '/partials/search.html',
-    controller  : 'search_contoller'
+  .state('search', {
+    url: '/search',
+    templateUrl: '/partials/search.html'
   })
 
-  .when('/mac_count', {
-    templateUrl : '/partials/mac_count.html',
-    controller  : 'mac_controller'
+  .state('mac_count', {
+    url: '/mac_count',
+    templateUrl: '/partials/mac_count.html'
   })
 
-  .when('/failed_logins', {
-    templateUrl : '/partials/failed_logins.html',
-    controller  : 'failed_logins_controller'
+  .state('failed_logins', {
+    url: '/failed_logins',
+    templateUrl: '/partials/failed_logins.html'
   })
 
-  .when('/roaming_most_provided', {
-    templateUrl : '/partials/roaming_most_provided.html',
-    controller  : 'roaming_most_provided_controller'
+  .state('roaming_most_provided', {
+    url: '/roaming_most_provided',
+    templateUrl: '/partials/roaming_most_provided.html'
   })
 
-  .when('/roaming_most_used', {
-    templateUrl : '/partials/roaming_most_used.html',
-    controller  : 'roaming_most_used_controller'
+  .state('roaming_most_used', {
+    url: '/roaming_most_used',
+    templateUrl: '/partials/roaming_most_used.html'
   })
 });
 // --------------------------------------------------------------------------------------
