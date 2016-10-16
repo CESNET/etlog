@@ -23,6 +23,8 @@ Successful redicretion requires HTTP 1.1 host header.
 
 ### Network setup
 
+Application is running by unprivileged user, so he cant bind standard http and https port.
+Instead ports 8080 and 8443 are used.
 Automatic port redirection to ports 8080 and 8443 is provided through iptables:
 Persistence of rules is ensured by iptables-persistent debian package:
 ```
