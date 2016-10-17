@@ -12,50 +12,55 @@
 //-      .diamond
 //-      .diamond
 
+//- TODO
 //- input - search parameters
 //- "empty" action to prevent redirection
-form.form-horizontal(ng-controller="search_contoller" ng-submit="submit()")
+
+div(ng-controller="search_contoller")
+  div
+    form.form-horizontal(ng-submit="submit()")
+      
+      .form-group
+        label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
+        .col-xs-3
+          input.form-control(type = 'email', placeholder = 'user@example.com', ng-model="formData['username']")
+      
+      .form-group
+        label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
+        .col-xs-2
+          input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model="formData['mac_address']")
+
+      .form-group
+        label.col-sm-2.control-label(for = 'auth_result') Výsledek autentizace:
+        .col-xs-2
+          select.form-control(id = "auth_result", ng-model="formData['auth_result']")
+            each key, val in {"nezadáno" : "", "OK" : "OK", "FAIL" : "FAIL", "TIMEOUT" : "TIMEOUT"}
+              option(value = key) #{val}
+
+      // TODO - set default value
+      // TODO - unset auth result
+
+      //.form-group
+      //  label.col-sm-2.control-label(for = 'date_from') Datum od:
+      //  .col-xs-2
+      //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_from", name = "date_from" onkeydown="return false")
+
+      //.form-group
+      //  label.col-sm-2.control-label(for = 'date_to') Datum do:
+      //  .col-xs-2
+      //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_to", name = "date_to" onkeydown="return false")
+
+      .form-group
+        .col-sm-offset-2.col-sm-10
+          button.btn.btn-default(type="submit") Hledej
+  div
+    p.
+      message: {{message}}
+
+// TODO
   
-  .form-group
-    label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
-    .col-xs-3
-      input.form-control(type = 'text', placeholder = 'user@example.com', ng-model="formData['username']")
-  
-  .form-group
-    label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
-    .col-xs-2
-      input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model="formData['mac_address']")
-
-  .form-group
-    label.col-sm-2.control-label(for = 'auth_result') Výsledek autentizace:
-    .col-xs-2
-      select.form-control(id = "auth_result", ng-model="formData['auth_result']")
-        each res in ["nezadáno", "OK", "FAIL", "TIMEOUT"]
-          option(value = res) #{res}
-
-  //.form-group
-  //  label.col-sm-2.control-label(for = 'date_from') Datum od:
-  //  .col-xs-2
-  //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_from", name = "date_from" onkeydown="return false")
-
-  //.form-group
-  //  label.col-sm-2.control-label(for = 'date_to') Datum do:
-  //  .col-xs-2
-  //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_to", name = "date_to" onkeydown="return false")
-
-  .form-group
-    .col-sm-offset-2.col-sm-10
-      button.btn.btn-default(type = 'submit') Hledej
-
-  pre.
-    {{formData}}
-//- TODO - asi dat jako vlastni stranku a pouze odkazovat
-//-p
-//-  button(class = "btn", id = "roaming") Největší roaming
-
-div
-  h2(id = "results_h")
-  table(id = "results", class = "table table-bordered")
+//h2(id = "results_h")
+//table(id = "results", class = "table table-bordered")
   
 block includes
     //-link(rel='stylesheet', href='/stylesheets/bootstrap-datetimepicker.css')
@@ -68,20 +73,3 @@ block includes
     //-script(src='/javascripts/bootstrap-datetimepicker.js')
     
     //-script(src='/javascripts/datatables.min.js')
-    //script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js')
-    //script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js')
-    //script(src='/javascripts/search.js')
-    //script(src='/javascripts/angular.min.js')     // TODO
-    
-
-     
-    //-script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js')
-    //-script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-resource.js')
-    //-script(src='/javascripts/app.js')
-    //-script(src='/javascripts/services.js')
-    //-script(src='/javascripts/controllers.js')
-    //-script(src='/javascripts/filters.js')
-    //-script(src='/javascripts/directives.js')
-    //-script(src='/javascripts/angular_test.js')
-
-
