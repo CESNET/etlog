@@ -5,7 +5,7 @@ const url_base = 'https://etlog.cesnet.cz:8443';
 // --------------------------------------------------------------------------------------
 // get invalid records 
 // --------------------------------------------------------------------------------------
-exp.get_invalid_records_monthly = function()
+exp.get_invalid_records_monthly = function(callback)
 {
   var ret = [];
   var url = "/invalid_records/filtered/";
@@ -41,8 +41,12 @@ exp.get_invalid_records_monthly = function()
       }
       cnt++;    // increase processed count
 
-      if(cnt == interval)
-        return filter_data(ret);  // return data when all requests are done
+      if(cnt == interval) {
+        //callback("měsíční report - invalidní záznamy", filter_data(ret).toString());  // return data when all requests are done
+        // TODO - mail content is too big
+        // debug
+        return;
+      }
     });
 
     date.setDate(date.getDate() -1);    // decrease by 1 day
@@ -83,8 +87,7 @@ function filter_data(data)
       for(var line in data[arr]) {
         if(data[arr][line].indexOf(filter[item]) != -1) {  // pair present in line
           if(cnt == 0)    // first occurence
-            ret.push(data[arr][line]);     // add to result
-
+            ret.push(data[arr][line].replace(/[^ -~]+/g, ""));     // add to result, remove non printable characters
           cnt++;
         }
       }
@@ -97,7 +100,7 @@ function filter_data(data)
 // get failed logins
 // parameter limit number of results
 // --------------------------------------------------------------------------------------
-exp.get_failed_logins_monthly = function(limit)
+exp.get_failed_logins_monthly = function(limit, callback)
 {
   var test = [];
   var url = "/failed_logins/";
@@ -113,7 +116,7 @@ exp.get_failed_logins_monthly = function(limit)
 
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
   query += "&limit=" + limit;   // limit number of records
-  query += "&sort=-fail_count";   // sort by count
+  query += "&sort=-fail_count";   // sort by fail_count
  
   request.get({
     url: url_base + url + query     // use query string here for simple usage
@@ -121,9 +124,20 @@ exp.get_failed_logins_monthly = function(limit)
     if(error)
       console.log(error);
     else
-      return(body); // return response to caller
+      callback("měsíční report - neúspěšná přihlášení", failed_to_human_readable(JSON.parse(body))); // return response to caller
   });
+}
+// --------------------------------------------------------------------------------------
+// convert failed logins structure to human readable text
+// --------------------------------------------------------------------------------------
+function failed_to_human_readable(data)
+{
+  var ret = "";
 
+  for(var item in data)
+    ret += data[item].username + "| fail_count: " + data[item].fail_count + ", ok_count: " + data[item].ok_count + ", ratio : " + data[item].ratio + "\n";
+
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 module.exports = exp;

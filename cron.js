@@ -1,7 +1,6 @@
 module.exports = function(database) {
 // --------------------------------------------------------------------------------------
   const CronJob = require('cron').CronJob;
-  const async = require('async');
   const mail = require('./mail');
   const failed_logins = require('./cron/failed_logins.js');
   const invalid_records = require('./cron/invalid_records.js');
@@ -14,9 +13,14 @@ module.exports = function(database) {
   // TODO
   // once a month
   new CronJob('0 00 06 1 * *', function() {     // run once a month
-    //mail.send_mail("měsíční report - invalidní záznamy", request.get_invalid_records_monthly());  // TODO
-    //mail.send_mail("měsíční report - neúspěšná přihlášení", request.get_failed_logins_monthly());  // TODO
+    //request.get_invalid_records_monthly(mail.send_mail);      // TODO
+    //request.get_failed_logins_monthly(100, mail.send_mail);   // TODO
   }, null, true, 'Europe/Prague');
+
+
+  //request.get_invalid_records_monthly(mail.send_mail);
+  //request.get_failed_logins_monthly(100, mail.send_mail);
+
 
 
 // --------------------------------------------------------------------------------------
