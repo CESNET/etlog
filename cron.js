@@ -65,18 +65,5 @@ module.exports = function(database) {
   // logs itself after a year ?
   // invalid data after .. ?
   // 
-
-// --------------------------------------------------------------------------------------
-  // set to true if old data should be processed
-  // old data is processed only once
-  var process_old = false;
-
-  if (process_old) {
-    failed_logins.process_old_data(database);
-    invalid_records.process_old_data(database);
-    mac_count.process_old_data(database);
-    roaming.process_old_data(database);
-    user_to_mac.process_old_data(database);
-  }
 }
 // --------------------------------------------------------------------------------------
