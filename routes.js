@@ -3,9 +3,16 @@ module.exports = function(app, database) {
   // TODO
   // prepend authentication to all routes
  
+  // TODO
+  // use permissions - [ user, administrator ]
+  //
+  // all routes may be used by administrator
+  //
+  // only specific routes may be used by user
+
   // set up routes
 // -----------------------------------------------------------
-  app.use('/', require('./routes/index'));                                       // empty title page
+  app.use('/', require('./routes/index'));                                       // title page
   app.use('/angular_test', require('./routes/angular_test'));                    // angular test page
   app.use('/search', require('./routes/search'));                                // generic search api
   app.use('/mac_count', require('./routes/mac_count'));                          // generic api for mac address count
