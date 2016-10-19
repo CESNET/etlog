@@ -92,7 +92,7 @@ function filter_data(data)
 // get invalid records and perform filtering 
 // --------------------------------------------------------------------------------------
 router.get('/filtered/:date/', function(req, res, next) {
-  var url_base = 'https://etlog.cesnet.cz:8443';
+  var url_base = 'https://etlog.cesnet.cz:8443/api';
   var url = "/invalid_records/";
 
   request.get({
