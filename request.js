@@ -133,9 +133,27 @@ exp.get_failed_logins_monthly = function(limit, callback)
 function failed_to_human_readable(data)
 {
   var ret = "";
+  var longest = 0;
 
-  for(var item in data)
-    ret += data[item].username + "| fail_count: " + data[item].fail_count + ", ok_count: " + data[item].ok_count + ", ratio : " + data[item].ratio + "\n";
+  //for(var item in data)
+  //  ret += data[item].username + "| fail_count: " + data[item].fail_count + ", ok_count: " + data[item].ok_count + ", ratio : " + data[item].ratio + "\n";
+
+  // fancy version
+  // =======================
+
+  for(var item in data) {
+    if(data[item].username.length > longest)
+      longest = data[item].username.length;
+  }
+
+  for(var item in data) {
+    ret += data[item].username;
+    for(var i = data[item].username.length; i < longest; i++)   // insert space padding
+      ret+= " ";
+
+    ret += " | fail_count: " + data[item].fail_count + ", ok_count: " + data[item].ok_count + ", ratio : " + data[item].ratio + "\n";
+  }
+
 
   return ret;
 }
