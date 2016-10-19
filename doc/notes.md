@@ -544,49 +544,49 @@ Some of the command below may take some time (units of seconds) to complete.
 ##### Basic examples
 
 ```
-curl 'https://etlog.cesnet.cz/mac_count/?timestamp=2016-10-07'
-curl 'https://etlog.cesnet.cz/roaming/most_provided/?timestamp=2016-10-07'
-curl 'https://etlog.cesnet.cz/roaming/most_used/?timestamp=2016-10-07'
-curl 'https://etlog.cesnet.cz/invalid_records/2016-10-07'
-curl 'https://etlog.cesnet.cz/invalid_records/filtered/2016-10-07'
-curl 'https://etlog.cesnet.cz/failed_logins/?timestamp=2016-10-07'
+curl 'https://etlog.cesnet.cz/api/mac_count/?timestamp=2016-10-07'
+curl 'https://etlog.cesnet.cz/api/roaming/most_provided/?timestamp=2016-10-07'
+curl 'https://etlog.cesnet.cz/api/roaming/most_used/?timestamp=2016-10-07'
+curl 'https://etlog.cesnet.cz/api/invalid_records/2016-10-07'
+curl 'https://etlog.cesnet.cz/api/invalid_records/filtered/2016-10-07'
+curl 'https://etlog.cesnet.cz/api/failed_logins/?timestamp=2016-10-07'
 ```
 
 ##### Advanced examples
 
 ```
 # get mac count records for 2016-10-07 with more than 5 mac addresses
-curl 'https://etlog.cesnet.cz/mac_count/?timestamp=2016-10-07&count>5'
+curl 'https://etlog.cesnet.cz/api/mac_count/?timestamp=2016-10-07&count>5'
 
 # get mac count records for 2016-10-07 with more than 5 mac addresses, sort from most to least
-curl 'https://etlog.cesnet.cz/mac_count/?timestamp=2016-10-07&count>5&sort=-count'
+curl 'https://etlog.cesnet.cz/api/mac_count/?timestamp=2016-10-07&count>5&sort=-count'
 
 # get mac count records for 2016-10-07 with more than mac addresses between 5 and 15, sort from most to least
-curl 'https://etlog.cesnet.cz/mac_count/?timestamp=2016-10-07&count>5&count<15&sort=-count'
+curl 'https://etlog.cesnet.cz/api/mac_count/?timestamp=2016-10-07&count>5&count<15&sort=-count'
 
 # get most provided roaming records for 2016-10-07 with more than 1000 provided roamings, sort from most to least
-curl 'https://etlog.cesnet.cz/roaming/most_provided/?timestamp=2016-10-07&provided_count>1000&sort=-count'
+curl 'https://etlog.cesnet.cz/api/roaming/most_provided/?timestamp=2016-10-07&provided_count>1000&sort=-count'
 
 # get most used roaming records for 2016-10-07 with more than 100 used roamings, sort from most to least
-curl 'https://etlog.cesnet.cz/roaming/most_used/?timestamp=2016-10-07&used_count>100&sort=-count'
+curl 'https://etlog.cesnet.cz/api/roaming/most_used/?timestamp=2016-10-07&used_count>100&sort=-count'
 
 # display filtered invalid records for 2016-10-07 in human readable form
-curl 'https://etlog.cesnet.cz/invalid_records/filtered/2016-10-07' | sed -e 's/,/\n/g;'
+curl 'https://etlog.cesnet.cz/api/invalid_records/filtered/2016-10-07' | sed -e 's/,/\n/g;'
 
 # get failed logins records for 2016-10-07 with ratio between 0.4 and 0.9, sort from most to least
-curl 'https://etlog.cesnet.cz/failed_logins/?timestamp=2016-10-07&ratio>0.4&ratio<0.9&sort=-ratio'
+curl 'https://etlog.cesnet.cz/api/failed_logins/?timestamp=2016-10-07&ratio>0.4&ratio<0.9&sort=-ratio'
 
-# get failed logins records for 2016-10-07 only for users with realms ending '.cz' with fail count more than 500, sort from most to least
-curl 'https://etlog.cesnet.cz/failed_logins/?username=/\.cz$/&timestamp=2016-10-07&fail_count>500&sort=-fail_count'
+# get failed logins records for 2016-10-07 only for users with realms ending '.cz/api' with fail count more than 500, sort from most to least
+curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/\.cz$/&timestamp=2016-10-07&fail_count>500&sort=-fail_count'
 
 # get failed logins records from 2016-09-20 to 2016-09-30 only for users with realms ending '.edu'
 # with fail count more than 100, sort from most to least
-curl 'https://etlog.cesnet.cz/failed_logins/?username=/\.edu$/&timestamp>2016-09-20&timestamp<2016-09-30&fail_count>100&sort=-fail_count'
+curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/\.edu$/&timestamp>2016-09-20&timestamp<2016-09-30&fail_count>100&sort=-fail_count'
 
-# get failed logins records from 2016-09-20 to 2016-10-10 only for users from realm 'fit.cvut.cz'
+# get failed logins records from 2016-09-20 to 2016-10-10 only for users from realm 'fit.cvut.cz/api'
 # with no successful logins, sort from most failed logins to least
 # get only 10 results
-curl 'https://etlog.cesnet.cz/failed_logins/?username=/.*@fit\.cvut\.cz$/&timestamp>2016-09-20&timestamp<2016-10-10&ok_count=0&sort=-fail_count&limit=10'
+curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/.*@fit\.cvut\.cz$/&timestamp>2016-09-20&timestamp<2016-10-10&ok_count=0&sort=-fail_count&limit=10'
 
 ```
 
