@@ -5,50 +5,12 @@ const aqp = require('api-query-params').default;    // uses ES6
 // get mac_count data
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
-  var qs = req.url.substr(2);   // remove '/?'
-
-  var query = aqp(qs, {         // parse query string
-    whitelist : [ 'username', 'timestamp', 'count', 'addrs' ]       // whitelist collection keys
-  });
-
-  if(query.filter.timestamp == undefined) {    // do not search if timestamp is not defined
-    res.status(500).send({ error : "timestamp must be defined!"});        // send error status and message
-    return;
-  }
-
-  // validation
-  var keys = query.filter.timestamp;
-  var range = [];
-
-  for(var key in keys) {
-    range.push(keys[key]);      // for further processing
-
-    if(isNaN(Date.parse(keys[key]))) {    // invalid date
-      res.status(500).send({ error : "invalid date: " + keys[key]});        // send error status and message
-      return;
-    }
-  }
+  var query = qp.parse_query_string(req.url, 
+    ['username', 'timestamp', 'count', 'addrs'],
+    search_days, 
+    search_interval);
   
-  // valid cases for timestamp
-  //
-  // = exactly one day
-  // = range from, to
-  //
-  // TODO - distinct date at 00:00:00:000 and other dates
-  // needs to be implemented?
-  if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length > 1) {  // range
-    if(Math.abs(range[0] - range[1]) % 86400000 == 0) {     // exact range of days
-      search_days(req, res, query);
-    }
-    else {  // another range
-      //search_interval(req, res, respond, query);
-      // TODO
-    }
-  }
-  else {    // one day only
-    search_days(req, res, query);
-  }
-
+  query.search(req, res, query.query);    // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // search database for specified data
