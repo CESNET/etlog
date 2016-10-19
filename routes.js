@@ -13,17 +13,16 @@ module.exports = function(app, database) {
   // set up routes
 // -----------------------------------------------------------
   app.use('/', require('./routes/index'));                                       // title page
-  app.use('/angular_test', require('./routes/angular_test'));                    // angular test page
-  app.use('/search', require('./routes/search'));                                // generic search api
-  app.use('/mac_count', require('./routes/mac_count'));                          // generic api for mac address count
-  app.use('/roaming/most_provided', require('./routes/roaming_most_provided'));  // generic api for institutions most providing roaming
-  app.use('/roaming/most_used', require('./routes/roaming_most_used'));          // generic api for institutions most using roaming
-  app.use('/invalid_records', require('./routes/invalid_records'));              // api for invalid records
-  app.use('/failed_logins', require('./routes/failed_logins'));                  // generic api for failed logins
+  app.use('/api/search', require('./routes/search'));                                // generic search api
+  app.use('/api/mac_count', require('./routes/mac_count'));                          // generic api for mac address count
+  app.use('/api/roaming/most_provided', require('./routes/roaming_most_provided'));  // generic api for institutions most providing roaming
+  app.use('/api/roaming/most_used', require('./routes/roaming_most_used'));          // generic api for institutions most using roaming
+  app.use('/api/invalid_records', require('./routes/invalid_records'));              // api for invalid records
+  app.use('/api/failed_logins', require('./routes/failed_logins'));                  // generic api for failed logins
   // TODO
-  //app.use('/mac_identifier', require('./routes/mac_identifier'));              // TODO
-  //app.use('/lost_devices', require('./routes/lost_device'));              // TODO
-  // app.use('/stats', require('./routes/stats'));   // TODO
+  //app.use('/api/mac_identifier', require('./routes/mac_identifier'));              // TODO
+  //app.use('/api/lost_devices', require('./routes/lost_device'));              // TODO
+  // app.use('/api/stats', require('./routes/stats'));   // TODO
 
 
 // -----------------------------------------------------------
