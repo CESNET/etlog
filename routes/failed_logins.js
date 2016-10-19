@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-//const aqp = require('api-query-params').default;    // uses ES6
 const qp = require('./query_parser');
 // --------------------------------------------------------------------------------------
 // get failed logins data
