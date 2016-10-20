@@ -22,18 +22,11 @@ exp.parse_query_string = function(url, whitelist, validate) {
   }
 
   // validation
-  // TODO
   var keys = query.filter.timestamp;
-  var range = [];
 
-  for(var key in keys) {
-    range.push(keys[key]);      // for further processing
-
-    if(isNaN(Date.parse(keys[key]))) {    // invalid date
-      res.status(500).send({ error : "invalid date: " + keys[key]});        // send error status and message // TODO
-      return;
-    }
-  }
+  for(var key in keys)
+    if(isNaN(Date.parse(keys[key])))    // invalid date
+      throw { error : "invalid date: " + keys[key]};
   
   if(!validate(query)) {  // check correctly specified time interval
     throw { error : "incorrect interval specification!"};
