@@ -525,15 +525,15 @@ TODO
 
 #### Backend
 
-| URL              | params | query string variables                                 | note        |
-|------------------|--------|--------------------------------------------------------|-------------|
-| /api/failed\_logins/ |       | timestamp, [ username, fail\_count, ok\_count, ratio ] | query string variables only specific date or interval exactly matching days -- see [examples](#examples)|
-| /api/failed\_logins/ |       | timestamp, [ username ]                              | query string variables only for specific interval not matching days - see [examples](#examples)           |
-| /api/invalid\_records/          | date |                                            | |
-| /api/invalid\_records/filtered/ | date |                                            | |
-| /api/mac\_count/                |      | timestamp, [ username, count, addrs ]      | |
-| /api/roaming/most\_provided/    |      | timestamp, [ inst\_name, provided\_count ] | |
-| /api/roaming/most\_used/        |      | timestamp, [ inst\_name, used\_count ]     | |
+| URL                             | params | query string variables                                 | note |
+|---------------------------------|--------|--------------------------------------------------------|------|
+| /api/failed\_logins/days        |        | timestamp, [ username, fail\_count, ok\_count, ratio ] |      |
+| /api/failed\_logins/interval    |        | timestamp, [ username ]                                |      |
+| /api/invalid\_records/          | date   |                                                        |      |
+| /api/invalid\_records/filtered/ | date   |                                                        |      |
+| /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |      |
+| /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |      |
+| /api/roaming/most\_used/        |        | timestamp, [ inst\_name, used\_count ]                 |      |
 
 
 ##### Examples
@@ -549,7 +549,7 @@ curl 'https://etlog.cesnet.cz/api/roaming/most_provided/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/roaming/most_used/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/invalid_records/2016-10-07'
 curl 'https://etlog.cesnet.cz/api/invalid_records/filtered/2016-10-07'
-curl 'https://etlog.cesnet.cz/api/failed_logins/?timestamp=2016-10-07'
+curl 'https://etlog.cesnet.cz/api/failed_logins/days?timestamp=2016-10-07'
 ```
 
 ##### Advanced examples
@@ -574,19 +574,22 @@ curl 'https://etlog.cesnet.cz/api/roaming/most_used/?timestamp=2016-10-07&used_c
 curl 'https://etlog.cesnet.cz/api/invalid_records/filtered/2016-10-07' | sed -e 's/,/\n/g;'
 
 # get failed logins records for 2016-10-07 with ratio between 0.4 and 0.9, sort from most to least
-curl 'https://etlog.cesnet.cz/api/failed_logins/?timestamp=2016-10-07&ratio>0.4&ratio<0.9&sort=-ratio'
+curl 'https://etlog.cesnet.cz/api/failed_logins/days?timestamp=2016-10-07&ratio>0.4&ratio<0.9&sort=-ratio'
 
 # get failed logins records for 2016-10-07 only for users with realms ending '.cz/api' with fail count more than 500, sort from most to least
-curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/\.cz$/&timestamp=2016-10-07&fail_count>500&sort=-fail_count'
+curl 'https://etlog.cesnet.cz/api/failed_logins/days?username=/\.cz$/&timestamp=2016-10-07&fail_count>500&sort=-fail_count'
 
 # get failed logins records from 2016-09-20 to 2016-09-30 only for users with realms ending '.edu'
 # with fail count more than 100, sort from most to least
-curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/\.edu$/&timestamp>2016-09-20&timestamp<2016-09-30&fail_count>100&sort=-fail_count'
+curl 'https://etlog.cesnet.cz/api/failed_logins/days?username=/\.edu$/&timestamp>2016-09-20&timestamp<2016-09-30&fail_count>100&sort=-fail_count'
 
 # get failed logins records from 2016-09-20 to 2016-10-10 only for users from realm 'fit.cvut.cz/api'
 # with no successful logins, sort from most failed logins to least
 # get only 10 results
-curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/.*@fit\.cvut\.cz$/&timestamp>2016-09-20&timestamp<2016-10-10&ok_count=0&sort=-fail_count&limit=10'
+curl 'https://etlog.cesnet.cz/api/failed_logins/days?username=/.*@fit\.cvut\.cz$/&timestamp>2016-09-20&timestamp<2016-10-10&ok_count=0&sort=-fail_count&limit=10'
+
+# get failed logins records for 2016-10-07 from 10:00:00 to 10:00:05'
+curl 'https://etlog.cesnet.cz/api/failed_logins/interval?timestamp>=2016-10-07T10:00:00&timestamp<2016-10-07T10:05:00'
 
 ```
 
