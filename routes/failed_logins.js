@@ -2,21 +2,42 @@ const express = require('express');
 const router = express.Router();
 const qp = require('./query_parser');
 // --------------------------------------------------------------------------------------
-// get failed logins data
+// get failed logins data for day(s)
 // --------------------------------------------------------------------------------------
-router.get('/', function(req, res, next) {
-  var query = qp.parse_query_string(req.url, 
-    ['username', 'timestamp', 'fail_count', 'ok_count', 'ratio'], 
-    search_days, 
-    search_interval);
-  
-  query.search(req, res, query.query);    // perform search with constructed mongo query
+router.get('/days', function(req, res, next) {
+  try {
+    var query = qp.parse_query_string(req.url,
+      ['username', 'timestamp', 'fail_count', 'ok_count', 'ratio'],
+      qp.validate_days);
+  }
+  catch(err) {
+    res.status(400).send(err.error);
+    return;
+  }
+
+  search_days(req, res, query);     // perform search with constructed mongo query
+});
+// --------------------------------------------------------------------------------------
+// get failed logins data for specific interval
+// --------------------------------------------------------------------------------------
+router.get('/interval', function(req, res, next) {
+  try {
+    var query = qp.parse_query_string(req.url,
+      ['username', 'timestamp', 'fail_count', 'ok_count', 'ratio'],
+      qp.validate_interval);
+  }
+  catch(err) {
+    res.status(400).send(err.error);
+    return;
+  }
+
+  search_interval(req, res, query);     // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // search database for specified data
 // timestamp matches specific day or range of days
 // --------------------------------------------------------------------------------------
-function search_interval(req, res, respond, query) {
+function search_interval(req, res, query) {
   username = query.filter.username || { $ne : "" };     // specific username or no empty one
 
   dict = {
