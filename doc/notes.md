@@ -432,6 +432,8 @@ npm install -g gulp-cli
 
 Everything that gulp does is defined in gulpfile.js.
 After defining tasks, they can be run bu using `gulp`.
+Gulp is used to generate html files from pug templating language.
+Pug files are in `views/templates/`, html output is in `public/partials`.
 
 
 ### Log files 
