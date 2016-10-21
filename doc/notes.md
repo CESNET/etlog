@@ -456,12 +456,33 @@ Incoming syslog data are processed by `scripts/cron.sh` and subsequently by `scr
 Data are converted from F-Ticks format (for more see [this](https://tools.ietf.org/id/draft-johansson-fticks-00.html)) to BSON.
 
 Data are processed every 5 minutes by user's crontab.
+Last date file (`/home/etlog/logs/last_date`) contains date of last processed log file.
+File is updated every day, when the last part of the data is imported.
 
-TODO - last\_log, last\_* .. 
+Last file for every processed log file contains last processed line number.
+File on every cron job run. It is used to calculate absolute line numbers for error reporting.
 
 #### Error files
 
-TODO
+Transform error log like has this structure:
+`filename:line number:error reason`
+Transform error log file may look like:
+
+```
+/home/etlog/logs/fticks/fticks-2016-10-20:681871: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:682504: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:683314: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:684293: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:685727: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:686547: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:688106: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:688122: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:688317: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:689784: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:690431: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:690872: skipped, general error in parsing current record
+/home/etlog/logs/fticks/fticks-2016-10-20:692246: skipped, invalid mac address
+```
 
 ### API
 
