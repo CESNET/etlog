@@ -93,6 +93,7 @@ Every task generates data for collection of the same name.
 | invalid\_records |      every day at 02:10:00       |
 | mac\_count       |      every day at 02:15:00       |
 | roaming          |      every day at 02:20:00       |
+| users\_mac       |      every 15 minutes            |
 
 
 ### Mail setup
@@ -394,7 +395,7 @@ TODO - hierarchy, usage in application
       `-- invalid_records.js - cron task for generating invalid_records collection data
       `-- mac_count.js       - cron task for generating mac_count collection data
       `-- roaming.js         - cron task for generating roaming collection data
-      `-- users_to_mac.js    - cron task for mapping users and mac addresses
+      `-- users_mac.js       - cron task for mapping users and mac addresses
   |-- cron.js                - cron tasks definiton
   |-- db.js                  - database and schema configuration
   |-- doc                    - documentation
