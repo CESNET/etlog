@@ -160,16 +160,6 @@ Official MongoDB [docs](https://docs.mongodb.com/manual/tutorial/model-time-data
 > MongoDB stores times in UTC by default, and will convert any local time representations into this form. Applications that must operate or report on some unmodified local time value may store the time zone alongside the UTC timestamp, and compute the original local time in their application logic.
 
 Data will be reconstructed to original time when presenting to the user.
-
-TODO
-Should the apllication use momentjs for conversion to local timezone?
-
-possible help:
-http://stackoverflow.com/questions/18287493/how-to-deal-with-the-timezone-issue-when-storing-dates-in-utc-using-mongod
-http://stackoverflow.com/questions/31353740/aggregating-in-local-timezone-in-mongodb
-http://stackoverflow.com/questions/18852095/how-to-agregate-by-year-month-day-on-a-different-timezone
-https://docs.mongodb.com/manual/tutorial/model-time-data/
-
 Conversion in aggregation pipeline from UTC to localtime can be done using:
 
 ```
