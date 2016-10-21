@@ -378,6 +378,7 @@ TODO
 | realm      |   string  |          realm                                                                |
 | admins     |   Array   |   array containing email addresses of administrator(s) of corresponding realm |
 
+TODO - hierarchy, usage in application
 
 ### Application structure
 

@@ -13,15 +13,11 @@ module.exports = function(database) {
   // TODO
   // once a month
   new CronJob('0 00 06 1 * *', function() {     // run once a month
-    //request.get_invalid_records_monthly(mail.send_mail);      // TODO
-    //request.get_failed_logins_monthly(100, mail.send_mail);   // TODO
+    // TODO
+    // administrative contacts logic
+    //mail.send_mail_to_realm_admins(database, request.get_failed_logins_monthly, 100);
+    //mail.send_mail_to_realm_admins(database, request.get_invalid_records_monthly);
   }, null, true, 'Europe/Prague');
-
-
-  //request.get_invalid_records_monthly(mail.send_mail);
-  //request.get_failed_logins_monthly(100, mail.send_mail);
-
-
 
 // --------------------------------------------------------------------------------------
 

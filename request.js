@@ -5,7 +5,7 @@ const url_base = 'https://etlog.cesnet.cz:8443/api';
 // --------------------------------------------------------------------------------------
 // get invalid records 
 // --------------------------------------------------------------------------------------
-exp.get_invalid_records_monthly = function(callback)
+exp.get_invalid_records_monthly = function(realm, recipients, callback)
 {
   var ret = [];
   var url = "/invalid_records/filtered/";
@@ -42,7 +42,8 @@ exp.get_invalid_records_monthly = function(callback)
       cnt++;    // increase processed count
 
       if(cnt == interval) {
-        //callback("měsíční report - invalidní záznamy", filter_data(ret).toString());  // return data when all requests are done
+        //callback("měsíční report - invalidní záznamy", recipients, filter_data(ret).toString());  // return data when all requests are done
+        // TODO - solve filtering by realm
         // TODO - mail content is too big
         // debug
         return;
@@ -100,10 +101,10 @@ function filter_data(data)
 // get failed logins
 // parameter limit number of results
 // --------------------------------------------------------------------------------------
-exp.get_failed_logins_monthly = function(limit, callback)
+exp.get_failed_logins_monthly = function(realm, recipients, limit, callback)
 {
   var test = [];
-  var url = "/failed_logins/";
+  var url = "/failed_logins/days";
 
   var max = new Date();     // current date
   max.setHours(0);
@@ -115,7 +116,12 @@ exp.get_failed_logins_monthly = function(limit, callback)
   min.setDate(max.getDate() - 30);  // 30 days before
 
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
-  query += "&limit=" + limit;   // limit number of records
+
+  if(realm != "cz") // exception for tld
+    query += "&username=/.*@" + realm + "$/";          // limit by domain part uf username => realm
+
+  query += "&ok_count=0";         // limit to only users, which have not successfully authenticated
+  query += "&limit=" + limit;     // limit number of records
   query += "&sort=-fail_count";   // sort by fail_count
  
   request.get({
@@ -124,7 +130,7 @@ exp.get_failed_logins_monthly = function(limit, callback)
     if(error)
       console.log(error);
     else
-      callback("měsíční report - neúspěšná přihlášení", failed_to_human_readable(JSON.parse(body))); // return response to caller
+      callback("měsíční report - neúspěšná přihlášení", recipients, failed_to_human_readable(JSON.parse(body))); // return response to caller
   });
 }
 // --------------------------------------------------------------------------------------

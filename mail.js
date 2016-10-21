@@ -30,11 +30,12 @@ function set_up_mailer()
 // --------------------------------------------------------------------------------------
 // send mail with defined subject and data
 // --------------------------------------------------------------------------------------
-module.exports.send_mail = function (subject, data)
+module.exports.send_mail = function (subject, recipients, data)
 {
   var mailer = set_up_mailer();     // set up
   mailer.mail_options.subject = subject;  // set mail subject
   mailer.mail_options.text = data;  // set mail text
+  mailer.mail_options.to = recipients;   // set recipients
 
   // send mail with defined transport object
   mailer.transporter.sendMail(mailer.mail_options, function(error, info) {
@@ -42,6 +43,31 @@ module.exports.send_mail = function (subject, data)
       return console.log(error);
     }
     console.log('Message sent: ' + info.response);
+  });
+}
+// --------------------------------------------------------------------------------------
+// send mail to all defined realm admins
+// params:
+// 1) database
+// 2) mail subject
+// 3) function which returns data - mail contents
+// 4) optional limit for data function
+// --------------------------------------------------------------------------------------
+module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
+{
+  database.realm_admins.find({ query : {}, $orderby : { timestamp : 1 } } , { realm : 1, admins : 1, _id : 0 },
+  function(err, items) {
+    for(var dict in items) {
+      // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
+
+      // TODO - sort by length ?
+      // TODO - possible duplicates across realms - needs to be solved ?
+
+      // TODO - possible problem with mapping of username to realm - needs to be solved?
+      // possible workaround - search each username separately and get realm value there
+
+      data_func(items[dict].realm, items[dict].admins, limit, module.exports.send_mail);
+    }
   });
 }
 // --------------------------------------------------------------------------------------
