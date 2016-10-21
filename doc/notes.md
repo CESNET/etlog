@@ -521,27 +521,6 @@ Other operators usage:
 | sort                 | `sort=-key`            | sort descending by key                      |
 | sort                 | `sort=-key1,-key2`     | sort descending by both key1 and key2       |
 
-#### Failed logins
-
-Failed logins api is available at `/failed_logins/`
-
-All operators desctibed in [api-query-params](#api-query-params) may be used.
-Query may by done easily for example by:
-```
-curl 'https://etlog.cesnet.cz/failed_logins/?timestamp>=2016-09-26'
-```
-Timestamp must be defined and must be valid to retrieve data.
-Format of timestamp must be one of ISO-8601 or `YYYY-MM-DD`.
-
-All kyes defined for [failed\_logins](#failed_logins) collection may be used.
-Only timestamp and username are meaningful at present time.
-
-Timestamp range may be specified, for example:
-```
-curl 'https://etlog.cesnet.cz/failed_logins/?timestamp>=2016-09-26&timestamp<2016-09-28'
-```
-Range of timestamp may be arbitrary.
-
 
 ### Routes
 
