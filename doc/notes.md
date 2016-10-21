@@ -490,9 +490,10 @@ Transform error log file may look like:
 
 For easy use mapping from query string to MongoDB queries is used.
 Module api-query-params is used for this functionality.
-Official [documentation](https://www.npmjs.com/package/api-query-params) provides information how to use.
+Official [documentation](https://www.npmjs.com/package/api-query-params) provides full information how to use.
+Module is slightly modified to support various timestamps and for correct mapping of them to backend api.
 
-Table below defined operators usage:
+Table below defines operators usage:
 
 | URI                  | example                | explanation            |
 |----------------------|------------------------|------------------------|
@@ -508,6 +509,16 @@ Table below defined operators usage:
 | `!key`               | `!email`               | not exists             |
 | `key=/value/<opts>`  | `email=/@gmail\.com$/i`| reqex equal            |
 | `key!=/value/<opts>` | `phone!=/^06/`         | regex not equal        |
+
+Other operators usage:
+
+| operator type        | example                | explanation                                 |
+|----------------------|------------------------|---------------------------------------------|
+| skip                 | `skip=10`              | skip 10 items before presenting to the user |
+| limit                | `limit=10`             | limit query to 10 items                     |
+| sort                 | `sort=key`             | sort ascending by key                       |
+| sort                 | `sort=-key`            | sort descending by key                      |
+| sort                 | `sort=-key1,-key2`     | sort descending by both key1 and key2       |
 
 #### Failed logins
 
