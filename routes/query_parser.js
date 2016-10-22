@@ -7,8 +7,11 @@ exp = {};
 // 1) request url
 // 2) array of collection keys, that should be whitelisted
 // 3) function to validate time interval
+// 4) optional parameter to validation function [bool]
+//    only used in validate_interval
+//    defines if both dates (starting and ending are requied)
 // --------------------------------------------------------------------------------------
-exp.parse_query_string = function(url, whitelist, validate) {
+exp.parse_query_string = function(url, whitelist, validate, date_req) {
 
   var qs = url.match(/\?.*$/)[0];     // extract query string part from request url
   qs = qs.substr(1);   // remove '?'
@@ -28,7 +31,7 @@ exp.parse_query_string = function(url, whitelist, validate) {
     if(isNaN(Date.parse(keys[key])))    // invalid date
       throw { error : "invalid date: " + keys[key]};
   
-  if(!validate(query)) {  // check correctly specified time interval
+  if(!validate(query, date_req)) {  // check correctly specified time interval
     throw { error : "incorrect interval specification!"};
   }
 
@@ -56,13 +59,16 @@ exp.validate_days = function(query) {
 // --------------------------------------------------------------------------------------
 // validate query for correct time interval
 // --------------------------------------------------------------------------------------
-exp.validate_interval = function(query) {
+exp.validate_interval = function(query, date_req) {
   if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length > 1) {  // range
     // is any checking needed here ?
     // TODO
   }
-  else {    // one day only is not allowed !
-    return false;
+  else {
+    if(date_req)        // both dates are required
+      return false;
+    else                // one date is sufficient
+      return true;
   }
 
   return true;

@@ -24,7 +24,8 @@ router.get('/interval', function(req, res, next) {
   try {
     var query = qp.parse_query_string(req.url,
       ['username', 'timestamp', 'fail_count', 'ok_count', 'ratio'],
-      qp.validate_interval);
+      qp.validate_interval,
+      true);
   }
   catch(err) {
     res.status(400).send(err.error);
