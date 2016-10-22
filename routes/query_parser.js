@@ -9,7 +9,9 @@ exp = {};
 // 3) function to validate time interval
 // 4) optional parameter to validation function [bool]
 //    only used in validate_interval
-//    defines if both dates (starting and ending are requied)
+//    defines if any date is requied
+//    -> true => both are required
+//    -> false => none is required
 // --------------------------------------------------------------------------------------
 exp.parse_query_string = function(url, whitelist, validate, date_req) {
   var qs = url.match(/\?.*$/);  // try to match query string if present
@@ -24,58 +26,65 @@ exp.parse_query_string = function(url, whitelist, validate, date_req) {
     whitelist : whitelist       // whitelist collection keys
   });
 
-  if(query.filter.timestamp == undefined) {    // do not search if timestamp is not defined
-    throw { error : "timestamp must be defined!"};
-  }
-
-  // validation
-  var keys = query.filter.timestamp;
-
-  for(var key in keys)
-    if(isNaN(Date.parse(keys[key])))    // invalid date
-      throw { error : "invalid date: " + keys[key]};
-  
-  if(!validate(query, date_req)) {  // check correctly specified time interval
-    throw { error : "incorrect interval specification!"};
-  }
-
+  validate(query, date_req);    // check correctly specified time interval, throws exception on error
   return query;
 }
 // --------------------------------------------------------------------------------------
 // validate query for correct time interval
 // --------------------------------------------------------------------------------------
 exp.validate_days = function(query) {
+  check_timestamp(query);       // throws exception on error
+  valid_timestamp(query);       // throws exception on error
+
   if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length > 1) {  // range
     var keys = Object.keys(query.filter.timestamp);
     for(var key in keys) {
-      if(!(query.filter.timestamp[keys[key]].getHours() == 0 && query.filter.timestamp[keys[key]].getMinutes() == 0 
+      if(!(query.filter.timestamp[keys[key]].getHours() == 0 && query.filter.timestamp[keys[key]].getMinutes() == 0
         && query.filter.timestamp[keys[key]].getSeconds() == 0 && query.filter.timestamp[keys[key]].getMilliseconds() == 0))
-        return false;       // some part is set incorrectly
+        throw { error : "incorrect interval specification!" };  // some part is set incorrectly
     }
   }
   else {    // one day only
-    return (query.filter.timestamp.getHours() == 0 && query.filter.timestamp.getMinutes() == 0 
-    && query.filter.timestamp.getSeconds() == 0 && query.filter.timestamp.getMilliseconds() == 0);
+    if(!(query.filter.timestamp.getHours() == 0 && query.filter.timestamp.getMinutes() == 0 
+      && query.filter.timestamp.getSeconds() == 0 && query.filter.timestamp.getMilliseconds() == 0))
+      throw { error : "incorrect date!" };  // some part is set incorrectly
   }
-
-  return true;
 }
 // --------------------------------------------------------------------------------------
 // validate query for correct time interval
 // --------------------------------------------------------------------------------------
 exp.validate_interval = function(query, date_req) {
-  if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length > 1) {  // range
-    // is any checking needed here ?
-    // TODO
-  }
-  else {
-    if(date_req)        // both dates are required
-      return false;
-    else                // one date is sufficient
-      return true;
+  if(date_req) {
+    check_timestamp(query);
+    valid_timestamp(query);
+
+    if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length > 1) {  // range
+      // is any checking needed here ?
+      // TODO
+    }
+    else {
+      throw { error : "end timestamp not defined!" };
+    }
   }
 
-  return true;
+  if(query.filter.timestamp != undefined)   // timestamp is defined
+    valid_timestamp(query);     // check if date is correct
+    // no other validation is needed
+}
+// --------------------------------------------------------------------------------------
+function valid_timestamp(query)
+{
+  var keys = query.filter.timestamp;
+
+  for(var key in keys)
+    if(isNaN(Date.parse(keys[key])))    // invalid date
+      throw { error : "invalid date: " + keys[key]};
+}
+// --------------------------------------------------------------------------------------
+function check_timestamp(query)
+{
+  if(query.filter.timestamp == undefined)
+    throw { error : "timestamp must be defined!"};
 }
 // --------------------------------------------------------------------------------------
 module.exports = exp;
