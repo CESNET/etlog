@@ -7,7 +7,7 @@ module.exports = function(database) {
   const mac_count = require('./cron/mac_count.js');
   const roaming = require('./cron/roaming.js');
   //const stats = require('./cron/stats.js'); // TODO
-  const user_to_mac = require('./cron/user_to_mac.js');
+  const users_mac = require('./cron/users_mac.js');
   const request = require('./request');
 // --------------------------------------------------------------------------------------
   // TODO
@@ -52,7 +52,7 @@ module.exports = function(database) {
 // --------------------------------------------------------------------------------------
   // mac to user mapping is run more often
   new CronJob('0 */15 * * * *', function() {   // every 15 minutes
-    user_to_mac.process_current_data(database, 900); // every 15 minutes  // TODO - old data has to process even data for current day !!
+    users_mac.process_current_data(database, 900); // every 15 minutes  // TODO - old data has to process even data for current day !!
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------
