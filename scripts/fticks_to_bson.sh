@@ -117,6 +117,9 @@
       if(length(last_line) == 0) {
         last_line = 0;  # set last_line to 0
       }
+
+      # number of fields in records - REALM, VISCOUNTRY, VISINST, CSI, PN, RESULT + (inital log part)
+      num_fields = 7
     }
     { 
       # ============================================================================
@@ -140,6 +143,17 @@
       # initial split on "#"
       split($0, fields, "#") 
       
+      # ============================================================================
+      # initial error detection
+      # each record must contain exactly 7 fields - REALM, VISCOUNTRY, VISINST, CSI, PN, RESULT + (inital log part)
+      # may contain more or less
+      if(length(fields) != num_fields) {
+        printf("%s:%d: skipped, record is malformed\n", filename, FNR + last_line) > "/dev/stderr"
+        next
+      }
+
+      # ============================================================================
+      # at this point, correct number of fields is present
       # next split by =
       # first index constains time, server address and opening log information
       split(fields[2], realm, "=")
@@ -160,21 +174,6 @@
       gsub("\\.", "", csi[2])
       
       # ============================================================================
-      # error detection
-      # TODO - improve error handling
-
-      if(length(csi[2]) != 12 && length(csi[2]) != 0) {
-        printf("%s:%d: skipped, invalid mac address\n", filename, FNR + last_line) > "/dev/stderr"
-        next
-      }
-
-      # probably problem with parsing of whole record occured
-      if(realm[2] == "" || result[2] == "") {
-        printf("%s:%d: skipped, general error in parsing current record\n", filename, FNR + last_line) > "/dev/stderr"
-        next
-      }
-
-      # ============================================================================
       # monitoring address detection
 
       if(tolower(csi[2]) ~ monit_regex) {
@@ -182,7 +181,50 @@
       }
 
       # ============================================================================
-      
+      # ============================================================================
+      # error detection
+
+      # check realm value
+      # attribute is separated by "=" from its value (2 fields), value must not be empty
+      if(length(realm) != 2 || length(realm[2]) == 0) {
+        printf("%s:%d: skipped, bad realm value\n", filename, FNR + last_line) > "/dev/stderr"
+        next
+      }
+
+      # check viscountry value
+      # attribute is separated by "=" from its value (2 fields), value must not be empty
+      if(length(viscountry) != 2 || length(viscountry[2]) == 0) {
+        printf("%s:%d: skipped, bad viscountry value\n", filename, FNR + last_line) > "/dev/stderr"
+        next
+      }
+
+      # check visinst value
+      # attribute is separated by "=" from its value (2 fields), value must not be empty
+      # visinst must begin with "1"
+      if(length(visinst) != 2 || length(visinst[2]) == 0 || visinst[2] ~ /^[^1]/) {
+        printf("%s:%d: skipped, bad visinst value\n", filename, FNR + last_line) > "/dev/stderr"
+        next
+      }
+
+      # check result value
+      # attribute is separated by "=" from its value (2 fields), value must not be empty
+      if(length(result) != 2 || length(result[2]) == 0) {
+        printf("%s:%d: skipped, bad result value\n", filename, FNR + last_line) > "/dev/stderr"
+        next
+      }
+
+      # username checking is not required
+
+      # mac address has bad value
+      if(length(csi[2]) != 12 && length(csi[2]) != 0) {
+        printf("%s:%d: skipped, invalid mac address\n", filename, FNR + last_line) > "/dev/stderr"
+        next
+      }
+
+      # TODO - replace utf-8 characters ?
+
+      # ============================================================================
+      # output data in BSON
 
       print "{ timestamp : { \"$date\" : "mktime(year " " months[month] " " day " "hms[1] " " hms[2] " " hms[3])"000 }, realm : \""realm[2]"\", viscountry : \""viscountry[2]"\", visinst : \""substr(visinst[2], 2)"\", csi : \""tolower(csi[2])"\", pn : \""pn[2]"\", result : \""result[2]"\" } "
     }
