@@ -20,9 +20,6 @@ async.series([
     failed_logins.process_old_data(database, callback);
   },
   function(callback) {
-    failed_logins.process_old_data(database, callback);
-  },
-  function(callback) {
     invalid_records.process_old_data(database, callback);
   },
   function(callback) {
