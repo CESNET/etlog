@@ -348,6 +348,9 @@ Lowest distinction interval for timestamp is 24 hours.
 
 ##### roaming
 
+Collection contains roaming related data.
+For every existing institution there is number of provided roamings and used roamings for every day.
+
 Timestamp field is populated with artificial data, just to
 distint in which interval the record belongs.
 Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
