@@ -96,9 +96,22 @@ exports.realm_admins = realm_admins;
 //exports.stats = stats;
 
 // --------------------------------------------------------------------------------------
-mongoose.connect('mongodb://localhost/etlog');
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
   console.log("sucesfully connected do mongodb database on localhost");
 });
+// --------------------------------------------------------------------------------------
+// connect to the databse
+// --------------------------------------------------------------------------------------
+exports.connect = function()
+{
+  mongoose.connect('mongodb://localhost/etlog');
+}
+// --------------------------------------------------------------------------------------
+// disconnect from the databse
+// --------------------------------------------------------------------------------------
+exports.disconnect = function()
+{
+  mongoose.connection.close();
+}
 // --------------------------------------------------------------------------------------
