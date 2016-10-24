@@ -329,6 +329,9 @@ Lowest distinction interval for timestamp is 24 hours.
 
 ##### mac\_count
 
+Collection contains mapping of users and mac addresses, which they used for successful authentication, for every day.
+Address count and all used mac addreses are also available.
+
 Timestamp field is populated with artificial data, just to
 distint in which interval the record belongs.
 Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
