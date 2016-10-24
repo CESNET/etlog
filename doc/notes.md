@@ -261,7 +261,7 @@ For details on data transformation see scripts/fticks\_to\_bson.sh
 
 ##### users\_mac
 
-Collection defines binding between user and all mac addresses, which he used for successfull authentication to eduroam.
+Collection defines binding between user and all mac addresses, which he used for successful authentication to eduroam.
 
 
 | field name | data type |               note                  |
