@@ -67,6 +67,12 @@ su - etlog
 mkdir -p ~/logs/{fticks,transform,mongo}
 ```
 
+The code above installs certificates required for syslog tls connection.
+Next part installs syslog-ng and creates it's configuration.
+last part creates directories `/home/etlog/logs/fticks`, `/home/etlog/logs/transform`
+and `/home/etlog/logs/mongo`.
+Log files created by syslog are located in `/home/etlog/logs/fticks`.
+
 ### Cron setup
 
 Cron is used to run tasks periodically.
