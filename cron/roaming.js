@@ -1,13 +1,15 @@
+const async = require( 'async' );
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
 // process old data through days until current day 
 // get roaming collection data
 // --------------------------------------------------------------------------------------
-exp.process_old_data = function (database) {
+exp.process_old_data = function (database, callback) {
   // find the lowest date in database and go from that date to present
   var date;
   var current = new Date();
+  var curr_min = new Date(current.getFullYear(), current.getMonth(), current.getUTCDate(), 0, 0, 0, 0);   // current day hh:mm:ss:ms set to 00:00:00:000
 
   // find all, sort by timestamp, display only timestamp, display one document only
   database.logs.find({ query : {}, $orderby : { timestamp : 1 } } , { timestamp : 1, _id : 0 }, { limit : 1 },
@@ -37,12 +39,31 @@ exp.process_old_data = function (database) {
                                                                                     // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
 
-    while(min <= current) {
-      process_data(database, min, max);
-      min.setDate(min.getDate() + 1);  // continue
-      max.setDate(max.getDate() + 1);  // continue
-    }
-    console.log("cron task roaming finished processing old data");
+    async.whilst(function () {
+      return min < curr_min;
+    },
+    function(next) {
+      async.series([
+        function(done) {
+          process_data(database, min, max, done);     // calls done when finished
+        },
+        function(done) {
+          min.setDate(min.getDate() + 1);  // continue
+          max.setDate(max.getDate() + 1);  // continue
+          done(null);                      // done
+        }
+        ],
+        function(err, results) {
+          next();   // next whilst iteration
+      });
+    },
+    function(err) {
+      if(err)
+        console.log(err);
+      else
+        console.log("cron task roaming finished processing old data");
+      callback(null, null);
+    });
   });
 };
 // --------------------------------------------------------------------------------------
@@ -57,15 +78,24 @@ exp.process_current_data = function (database) {
   process_data(database, prev_min, prev_max);
 };
 // --------------------------------------------------------------------------------------
-function process_data(database, min_date, max_date)
+function process_data(database, min_date, max_date, done)
 {
-  get_most_provided(database, min_date, max_date);
-  get_most_used(database, min_date, max_date);
+  async.series([
+    function(finished) {
+      get_most_provided(database, min_date, max_date, finished);
+    },
+    function(finished) {
+      get_most_used(database, min_date, max_date, finished);
+    }
+    ],
+    function(err, results) {
+      done(null);                      // both most_provided and most_used are done
+  });
 }
 // --------------------------------------------------------------------------------------
 // get data for organisations most providing roaming
 // --------------------------------------------------------------------------------------
-function get_most_provided(database, min_date, max_date)
+function get_most_provided(database, min_date, max_date, done)
 {
   database.logs.aggregate(
   [ 
@@ -111,8 +141,12 @@ function get_most_provided(database, min_date, max_date)
   }
   ],
     function(err, items) {
-      if(err == null)
-        save_to_db(database, transform_provided(items, min_date));
+      if(err == null) {
+        if(done)    // processing older data
+          save_to_db_callback(database, transform_provided(items, min_date), done);
+        else    // current data processing, no callback is needed
+          save_to_db(database, transform_provided(items, min_date));
+      }
       else
         console.log(err);
   });
@@ -129,6 +163,23 @@ function save_to_db(database, items)
         console.log(err);
     });
   }
+}
+// --------------------------------------------------------------------------------------
+// save data to database with callback
+// --------------------------------------------------------------------------------------
+function save_to_db_callback(database, items, done) {
+  async.forEachOf(items, function (value, key, callback) {
+    database.roaming.update(items[key], items[key], { upsert : true },
+    function(err, result) {
+      if(err)
+        console.log(err);
+      callback(null);   // save next item
+    });
+  }, function (err) {
+    if (err)
+      console.log(err);
+    done(null, null);   // all items are saved
+  });
 }
 // --------------------------------------------------------------------------------------
 // transform data for saving to database
@@ -169,7 +220,7 @@ function transform_used(items, db_date)
 // --------------------------------------------------------------------------------------
 // get data for organisations most using roaming
 // --------------------------------------------------------------------------------------
-function get_most_used(database, min_date, max_date)
+function get_most_used(database, min_date, max_date, done)
 {
   database.logs.aggregate(
   [ 
@@ -219,8 +270,12 @@ function get_most_used(database, min_date, max_date)
   }
   ],
     function(err, items) {
-      if(err == null)
-        save_to_db(database, transform_used(items, min_date));
+      if(err == null) {
+        if(done)    // processing older data
+          save_to_db_callback(database, transform_used(items, min_date), done);
+        else    // current data processing, no callback is needed
+          save_to_db(database, transform_used(items, min_date));
+      }
       else
         console.log(err);
   });

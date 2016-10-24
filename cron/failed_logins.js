@@ -1,13 +1,13 @@
+const async = require( 'async' );
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
 // perform failed logins counting
 // --------------------------------------------------------------------------------------
-exp.process_old_data = function (database) {
+exp.process_old_data = function (database, callback) {
   // find the lowest date in database and go from that date to present
   var date;
   var current = new Date();
-
   var curr_min = new Date(current.getFullYear(), current.getMonth(), current.getUTCDate(), 0, 0, 0, 0);   // current day hh:mm:ss:ms set to 00:00:00:000
 
   // find all, sort by timestamp, display only timestamp, display one document only
@@ -38,12 +38,31 @@ exp.process_old_data = function (database) {
                                                                                     // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
 
-    while(min <= current) {
-      search(database, min, max);
-      min.setDate(min.getDate() + 1);  // continue
-      max.setDate(max.getDate() + 1);  // continue
-    }
-    console.log("cron task failed_logins finished processing old data");
+    async.whilst(function () {
+      return min < curr_min;
+    },
+    function(next) {
+      async.series([
+        function(done) {
+          search(database, min, max, done);     // calls done when finished
+        },
+        function(done) {
+          min.setDate(min.getDate() + 1);  // continue
+          max.setDate(max.getDate() + 1);  // continue
+          done(null);                      // done
+        }
+        ],
+        function(err, results) {
+          next();   // next whilst iteration
+      });
+    },
+    function(err) {
+      if(err)
+        console.log(err);
+      else
+        console.log("cron task failed_logins finished processing old data");
+      callback(null, null);
+    });
   });
 };
 // --------------------------------------------------------------------------------------
@@ -59,7 +78,7 @@ exp.process_current_data = function (database) {
 // --------------------------------------------------------------------------------------
 // perform database search
 // --------------------------------------------------------------------------------------
-function search(database, min, max) {
+function search(database, min, max, done) {
   database.logs.aggregate(
   [ 
   { 
@@ -123,14 +142,18 @@ function search(database, min, max) {
   }
   ], 
     function (err, items) {
-      if(err == null)
-        save_to_db(database, transform(items, min));    // add timestamp in transform
+      if(err == null) {
+        if(done)    // processing older data
+          save_to_db_callback(database, transform(items, min), done);
+        else    // current data processing, no callback is needed
+          save_to_db(database, transform(items, min));    // add timestamp in transform
+      }
       else
         console.log(err);
   });
 }
 // --------------------------------------------------------------------------------------
-// save data to dabase
+// save data to database
 // --------------------------------------------------------------------------------------
 function save_to_db(database, items) {
   for(var item in items) {  // any better way to do this ?
@@ -140,6 +163,23 @@ function save_to_db(database, items) {
         console.log(err);
     });
   }
+}
+// --------------------------------------------------------------------------------------
+// save data to database with callback
+// --------------------------------------------------------------------------------------
+function save_to_db_callback(database, items, done) {
+  async.forEachOf(items, function (value, key, callback) {
+    database.failed_logins.update(items[key], items[key], { upsert : true },
+    function(err, result) {
+      if(err)
+        console.log(err);
+      callback(null);   // save next item
+    });
+  }, function (err) {
+    if (err)
+      console.log(err);
+    done(null, null);   // all items are saved
+  });
 }
 // --------------------------------------------------------------------------------------
 // transform item structure
