@@ -101,6 +101,7 @@ Every task generates data for collection of the same name.
 | roaming          |      every day at 02:20:00       |
 | users\_mac       |      every 15 minutes            |
 
+TODO - mail
 
 ### Mail setup
 
