@@ -381,6 +381,24 @@ TODO
 
 TODO - hierarchy, usage in application
 
+
+#### Indexes
+
+Indexes are used to speed up queries.
+Following indexes are used:
+
+| collection name   | indexed fields |   note  |
+|-------------------|----------------|---------|
+| failed\_logins    | _id, timestamp |         |
+| invalid\_records  | _id, timestamp |         |
+| logs              | _id, timestamp |         |
+| mac\_count        | _id, timestamp |         |
+| privileged\_ips   | _id            |         |
+| realm\_admins     | _id            |         |
+| roaming           | _id, timestamp |         |
+| users\_mac        | _id, username  |         |
+
+
 ### Application structure
 
 ```
