@@ -79,7 +79,12 @@ module.exports = function(app, database) {
 
 
   passport.use(strategy);
-  console.log(strategy.generateServiceProviderMetadata(cert));
+
+// --------------------------------------------------------------------------------------
+  app.get('/api/saml/metadata', function(req, res, next) {
+    res.send(strategy.generateServiceProviderMetadata(cert));
+  });
+
 
 // --------------------------------------------------------------------------------------
   // ip based authentication
