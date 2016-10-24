@@ -311,6 +311,10 @@ db.privileged_ips.insert({ip : '192.168.1.1/32'})
 
 ##### invalid\_records
 
+Collection contains array of invalid records for every day.
+Invalid records are records, which have not been imported by `scripts/fticks_to_bson.sh`.
+When some sort of error in the record itself occurs, document is not imported.
+
 Timestamp field is populated with artificial data, just to
 distint in which interval the record belongs.
 Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
