@@ -1,16 +1,21 @@
 var express = require('express');
 var router = express.Router();
-const aqp = require('api-query-params').default;    // uses ES6
+const qp = require('./query_parser');
 // --------------------------------------------------------------------------------------
 // get roaming data for organisations most providing roaming
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
-  var query = qp.parse_query_string(req.url, 
-    ['timestamp', 'inst_name', 'provided_count', 'used_count'],
-    search_days, 
-    search_interval);
-  
-  query.search(req, res, query.query);    // perform search with constructed mongo query
+  try {
+    var query = qp.parse_query_string(req.url,
+      ['timestamp', 'inst_name', 'provided_count', 'used_count'],
+      qp.validate_days);
+  }
+  catch(err) {
+    res.status(400).send(err.error);
+    return;
+  }
+
+  search_days(req, res, query);     // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // send data to user

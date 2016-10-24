@@ -1,16 +1,21 @@
 var express = require('express');
 var router = express.Router();
-const aqp = require('api-query-params').default;    // uses ES6
+const qp = require('./query_parser');
 // --------------------------------------------------------------------------------------
 // get mac_count data
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
-  var query = qp.parse_query_string(req.url, 
-    ['username', 'timestamp', 'count', 'addrs'],
-    search_days, 
-    search_interval);
-  
-  query.search(req, res, query.query);    // perform search with constructed mongo query
+  try {
+    var query = qp.parse_query_string(req.url,
+      ['username', 'timestamp', 'count', 'addrs'],
+      qp.validate_days);
+  }
+  catch(err) {
+    res.status(400).send(err.error);
+    return;
+  }
+
+  search_days(req, res, query);     // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // search database for specified data
