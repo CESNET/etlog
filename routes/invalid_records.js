@@ -6,7 +6,7 @@ const router = express.Router();
 // --------------------------------------------------------------------------------------
 router.get('/:date', function(req, res, next) {
   if(isNaN(Date.parse(req.params.date))) {  // validate date
-    res.status(500).send({ error : "invalid date: " + req.params.date});        // send error status and message
+    res.status(400).send({ error : "invalid date: " + req.params.date});        // send error status and message
     return;
   }
   
