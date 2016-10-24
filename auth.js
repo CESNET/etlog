@@ -1,16 +1,16 @@
 module.exports = function(app, database) {
-// -----------------------------------------------------------
+// --------------------------------------------------------------------------------------
   const fs = require( 'fs' );
   // passport
   const passport = require('passport');
   // passport-saml
   const saml_strategy = require('passport-saml').Strategy;
 
-// -----------------------------------------------------------
+// --------------------------------------------------------------------------------------
   // passport setup
   app.use(passport.initialize());
 
-// -----------------------------------------------------------
+// --------------------------------------------------------------------------------------
   // routing
   app.get('/login',
     passport.authenticate(['ip', 'saml'], { failureRedirect: '/auth_fail', successRedirect: '/'})      // TODO
@@ -39,7 +39,7 @@ module.exports = function(app, database) {
     }
   );
 
-// -----------------------------------------------------------
+// --------------------------------------------------------------------------------------
   // saml
 
   var pvk = fs.readFileSync('cert/etlog.cesnet.cz.key.pem', 'utf-8');
@@ -81,7 +81,7 @@ module.exports = function(app, database) {
   passport.use(strategy);
   console.log(strategy.generateServiceProviderMetadata(cert));
 
-// -----------------------------------------------------------
+// --------------------------------------------------------------------------------------
   // ip based authentication
   var db_ips = database.privileged_ips.find({}, { _id: 0 },     // search db for privileged ip addresses
   function(err, items) {
@@ -91,7 +91,7 @@ module.exports = function(app, database) {
       allowed_ips.push(items[ip]["ip"]);      // add to array
     }
 
-// -----------------------------------------------------------
+// --------------------------------------------------------------------------------------
 
     const ip_strategy = require('passport-ip').Strategy;
 
@@ -107,7 +107,7 @@ module.exports = function(app, database) {
     }));
   });
 
-// -----------------------------------------------------------
+// --------------------------------------------------------------------------------------
 
   //http://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
 
@@ -119,5 +119,5 @@ module.exports = function(app, database) {
         done(null, user);
   });
 
-// -----------------------------------------------------------
+// --------------------------------------------------------------------------------------
 }
