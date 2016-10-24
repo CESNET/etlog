@@ -1,10 +1,11 @@
+const async = require( 'async' );
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
 // get invalid records for old data
 // and save them to database
 // --------------------------------------------------------------------------------------
-exp.process_old_data = function (database) {
+exp.process_old_data = function (database, callback) {
   var log_root = "/home/etlog/logs/fticks/";
   var etlog_log_root = "/home/etlog/logs/";
 
@@ -43,22 +44,40 @@ exp.process_old_data = function (database) {
                                                                                     // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
 
-    while(min < curr_min) {
-      // use max for UTC correction
-      // using min could result in a bad day because of midnight and utc offset !
-      // use min to determine month - max could be in another month already
-      date = "-" + max.getFullYear() + "-" + zero_pad((Number(min.getMonth()) + 1), 2) + "-" + zero_pad(max.getUTCDate(), 2);
+    async.whilst(function () {
+      return min < curr_min;
+    },
+    function(next) {
+      async.series([
+        function(done) {
+          // use max for UTC correction
+          // using min could result in a bad day because of midnight and utc offset !
+          // use min to determine month - max could be in another month already
+          date = "-" + max.getFullYear() + "-" + zero_pad((Number(min.getMonth()) + 1), 2) + "-" + zero_pad(max.getUTCDate(), 2);
 
-      log_file = log_root + "fticks" + date;      // original file, which contains invalid records
-      err_file = etlog_log_root + "transform/err" + date; // /home/etlog/logs/transform/err-2015-01-25
+          log_file = log_root + "fticks" + date;      // original file, which contains invalid records
+          err_file = etlog_log_root + "transform/err" + date; // /home/etlog/logs/transform/err-2015-01-25
 
-      get_record_numbers(err_file, log_file, read_lines, save_to_db, database, min);
-
-      min = new Date(min);  // do not use reference here !!
-      min.setDate(min.getDate() + 1);  // continue
-      max.setDate(max.getDate() + 1);  // continue
-    }
-    console.log("cron task invalid_records finished processing old data");
+          get_record_numbers(err_file, log_file, database, min, done);
+        },
+        function(done) {
+          min = new Date(min);  // do not use reference here !!
+          min.setDate(min.getDate() + 1);  // continue
+          max.setDate(max.getDate() + 1);  // continue
+          done(null);                      // done
+        }
+        ],
+        function(err, results) {
+          next();   // next whilst iteration
+      });
+    },
+    function(err) {
+      if(err)
+        console.log(err);
+      else
+        console.log("cron task invalid_records finished processing old data");
+      callback(null, null);
+    });
   });
 };
 // --------------------------------------------------------------------------------------
@@ -86,7 +105,7 @@ exp.process_current_data = function (database) {
 // --------------------------------------------------------------------------------------
 // get invalid record line numbers and call next processing function
 // --------------------------------------------------------------------------------------
-function get_record_numbers(err_file, log_file, read_lines, save_to_db, database, db_date)
+function get_record_numbers(err_file, log_file, database, db_date, done)
 {
   var arr = [];
   var fs = require('fs');
@@ -109,24 +128,25 @@ function get_record_numbers(err_file, log_file, read_lines, save_to_db, database
   });
   
   lineReader.on('close', function() {   // when done
-    read_lines(log_file, arr, save_to_db, database, db_date);
+    read_lines(log_file, arr, database, db_date, done);
   });
 }
 // --------------------------------------------------------------------------------------
 // save invalid records to database as array
 // --------------------------------------------------------------------------------------
-function save_to_db(database, arr, db_date)
+function save_to_db(database, arr, db_date, done)
 {
   database.invalid_records.update({ timestamp : db_date }, { timestamp : db_date, records : arr }, { upsert : true },
   function(err, result) {
-    if(err)  
+    if(err)
       console.log(err);
+    done(null, null);   // record is saved
   });
 }
 // --------------------------------------------------------------------------------------
 // read invalid lines from original file
 // --------------------------------------------------------------------------------------
-function read_lines(log_file, numbers, save_to_db, database, db_date)
+function read_lines(log_file, numbers, database, db_date, done)
 {
   var arr = [];
   var fs = require('fs');
@@ -158,7 +178,7 @@ function read_lines(log_file, numbers, save_to_db, database, db_date)
   });
 
   lineReader.on('close', function() {   // when done
-    save_to_db(database, arr, db_date);            // save when done
+    save_to_db(database, arr, db_date, done);            // save when done
   });
 }
 // --------------------------------------------------------------------------------------
