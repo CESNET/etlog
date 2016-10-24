@@ -540,6 +540,20 @@ Other operators usage:
 | sort                 | `sort=-key1,-key2`     | sort descending by both key1 and key2       |
 
 
+Application api:
+
+| URL                             | params | query string variables                                 | note                   |
+|---------------------------------|--------|--------------------------------------------------------|------------------------|
+| /api/failed\_logins/days        |        | timestamp, [ username, fail\_count, ok\_count, ratio ] |                        |
+| /api/failed\_logins/interval    |        | timestamp, [ username ]                                |                        |
+| /api/invalid\_records/          | date   |                                                        |                        |
+| /api/invalid\_records/filtered/ | date   |                                                        |                        |
+| /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |                        |
+| /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
+| /api/roaming/most\_used/        |        | timestamp, [ inst\_name, used\_count ]                 |                        |
+| /api/saml/metadata              |        |                                                        | url with saml metadata |
+
+
 ### Routes
 
 #### Frontend
@@ -548,15 +562,12 @@ TODO
 
 #### Backend
 
-| URL                             | params | query string variables                                 | note |
-|---------------------------------|--------|--------------------------------------------------------|------|
-| /api/failed\_logins/days        |        | timestamp, [ username, fail\_count, ok\_count, ratio ] |      |
-| /api/failed\_logins/interval    |        | timestamp, [ username ]                                |      |
-| /api/invalid\_records/          | date   |                                                        |      |
-| /api/invalid\_records/filtered/ | date   |                                                        |      |
-| /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |      |
-| /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |      |
-| /api/roaming/most\_used/        |        | timestamp, [ inst\_name, used\_count ]                 |      |
+| URL             | explanation                                                        | 
+|-----------------|--------------------------------------------------------------------|
+| /               | title page                                                         |
+| /login          | login page                                                         |
+| /login/callback | page where the user is redirected after successful authentication  |
+| /auth_fail      | page where the user is redirected when authentication fails        |
 
 
 ##### Examples
