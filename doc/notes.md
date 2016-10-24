@@ -330,6 +330,7 @@ Lowest distinction interval for timestamp is 24 hours.
 ##### mac\_count
 
 Collection contains mapping of users and mac addresses, which they used for successful authentication, for every day.
+Each user with more than 2 devices (assuming notebook and smartphone) is inserted.
 Address count and all used mac addreses are also available.
 
 Timestamp field is populated with artificial data, just to
