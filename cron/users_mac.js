@@ -1,3 +1,4 @@
+const async = require( 'async' );
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
@@ -5,10 +6,11 @@ var exp = {}
 // --------------------------------------------------------------------------------------
 // map usernames to mac addresses
 // --------------------------------------------------------------------------------------
-exp.process_old_data = function (database) {
+exp.process_old_data = function (database, callback) {
   // find the lowest date in database and go from that date to present
   var date;
   var current = new Date();
+  var curr_min = new Date(current.getFullYear(), current.getMonth(), current.getUTCDate(), 0, 0, 0, 0);   // current day hh:mm:ss:ms set to 00:00:00:000
 
   // find all, sort by timestamp, display only timestamp, display one document only
   database.logs.find({ query : {}, $orderby : { timestamp : 1 } } , { timestamp : 1, _id : 0 }, { limit : 1 },
@@ -38,12 +40,31 @@ exp.process_old_data = function (database) {
                                                                                     // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
     
-    while(min <= current) {
-      process_data(database, min, max);
-      min.setDate(min.getDate() + 1);  // continue
-      max.setDate(max.getDate() + 1);  // continue
-    }
-    console.log("cron task user_to_mac finished processing old data");
+    async.whilst(function () {
+      return min <= curr_min;       // process data for current day !
+    },
+    function(next) {
+      async.series([
+        function(done) {
+          process_data(database, min, max, done);     // calls done when finished
+        },
+        function(done) {
+          min.setDate(min.getDate() + 1);  // continue
+          max.setDate(max.getDate() + 1);  // continue
+          done(null);                      // done
+        }
+        ],
+        function(err, results) {
+          next();   // next whilst iteration
+      });
+    },
+    function(err) {
+      if(err)
+        console.log(err);
+      else
+        console.log("cron task users_mac finished processing old data");
+      callback(null, null);
+    });
   });
 };
 // --------------------------------------------------------------------------------------
@@ -63,7 +84,7 @@ exp.process_current_data = function (database, interval) {
 // --------------------------------------------------------------------------------------
 // search the database for given time interval
 // --------------------------------------------------------------------------------------
-function process_data(database, min_date, max_date)
+function process_data(database, min_date, max_date, done)
 {
   database.logs.aggregate([ 
     { 
@@ -121,7 +142,14 @@ function process_data(database, min_date, max_date)
     }
     ],
     function(err, items) {
-      transform(items, database);
+      if(err == null) {
+        if(done)    // processing older data
+          transform_callback(items, database, done);
+        else    // current data processing, no callback is needed
+          transform(items, database);
+      }
+      else
+        console.log(err);
     });
 }
 // --------------------------------------------------------------------------------------
@@ -159,6 +187,45 @@ function transform(items, database)
         // nothing more to do here
     });
   }
+}
+// --------------------------------------------------------------------------------------
+// transform data and update database with callback
+// --------------------------------------------------------------------------------------
+function transform_callback(items, database, done)
+{
+  dict = {};
+
+  async.forEachOf(items, function (value, key, callback) {
+    dict["username"] = items[key]._id.pn;  // save username
+    dict["addrs"] = items[key].addrs;  // save array of mac addressses
+
+    database.users_mac.update(
+      {                                 // query
+        "username" : dict["username"]
+      },
+      {                                 // update
+        "username" : dict["username"],  // set username
+        $addToSet :                     // add mac addresses to array
+          {
+            "addrs" :
+              {
+                $each : dict["addrs"]   // each one separately not whole array
+              }
+          }
+      },
+      {
+        upsert : true                   // update if matching document is found
+      },
+      function (err, result) {
+        if(err)
+          console.log(err);
+        callback(null);   // process next item
+    });
+  }, function (err) {
+    if (err)
+      console.log(err);
+    done(null, null);   // all items are saved
+  });
 }
 // --------------------------------------------------------------------------------------
 module.exports = exp;
