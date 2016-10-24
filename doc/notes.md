@@ -368,6 +368,11 @@ Lowest distinction interval for timestamp is 24 hours.
 
 ##### failed\_logins
 
+Collection contains information about users, which have not successfully authenticated, for every day.
+Any user which has not successfully authenticated at least once is inserted.
+Both numbers for successful and unsuccessful authentication are available.
+There is also a field representing ratio (see below).
+
 Timestamp field is populated with artificial data, just to
 distint in which interval the record belongs.
 Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
