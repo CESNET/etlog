@@ -12,6 +12,9 @@ const fs = require( 'fs' );
 // call express
 var app = express();
 
+// connect to the database
+database.connect();
+
 // -----------------------------------------------------------
 // view engine setup
 app.set('views', __dirname + '/views');
