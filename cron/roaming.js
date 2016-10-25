@@ -89,7 +89,8 @@ function process_data(database, min_date, max_date, done)
     }
     ],
     function(err, results) {
-      done(null);                      // both most_provided and most_used are done
+      if(done)  // no callback needed for current data
+        done(null);                      // both most_provided and most_used are done
   });
 }
 // --------------------------------------------------------------------------------------
