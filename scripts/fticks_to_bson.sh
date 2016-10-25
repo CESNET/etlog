@@ -126,6 +126,8 @@
       # ============================================================================
       # replace special characters
       gsub(/\\/, "\\\\", $0);   # backslash
+      gsub(/"/, "\\\"", $0);   # quote
+
       
       # replace non printable characters
       # this is slow but works fine
