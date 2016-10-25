@@ -71,6 +71,6 @@ then
 fi
 
 # convert to bson and import to database
-$etlog_root/scripts/fticks_to_bson.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
+$etlog_root/scripts/fticks_to_bson.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection 2>>$mongo_errlog
 
 exit 0
