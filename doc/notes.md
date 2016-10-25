@@ -397,12 +397,44 @@ TODO
 
 ##### realm\_admins
 
+Collection contains array of administrators email's for institutions.
+Each instituon hay have administrators specified.
+
+If the insititution is defined and has administrators defined,
+the administrator(s) get a report every once every month.
+For more see [reports](#reports).
+
+The only exception is realm "cz" which does not correspond with any institution.
+In this case, the administrator recieves reports with most significant problems found.
+
+TODO - hierarchy, usage in application
+
 | field name | data type |               note                                                            |
 |------------|-----------|-------------------------------------------------------------------------------|
 | realm      |   string  |          realm                                                                |
 | admins     |   Array   |   array containing email addresses of administrator(s) of corresponding realm |
 
-TODO - hierarchy, usage in application
+
+Data insertion may done easily by:
+
+```
+use etlog
+db.realm_admins.insert({realm : "cvut.cz", admins : [ "administrator@cvut.cz" ]})
+```
+
+Data update may done easily by:
+
+```
+use etlog
+db.realm_admins.update({realm : "cvut.cz"}, { $addToSet : { admins : "administrator2@cvut.cz" } } )
+```
+
+Data may be easily erased by:
+
+```
+use etlog
+db.realm_admins.remove({realm : "cvut.cz"})
+```
 
 
 #### Indexes
