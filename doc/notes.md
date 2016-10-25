@@ -453,6 +453,9 @@ Following indexes are used:
 | roaming           | _id, timestamp |         |
 | users\_mac        | _id, username  |         |
 
+### Reports
+
+TODO
 
 ### Application structure
 
