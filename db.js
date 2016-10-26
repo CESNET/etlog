@@ -75,6 +75,17 @@ exports.realm_admins_schema = realm_admins_schema;
 var realm_admins = mongoose.model('realm_admins', realm_admins_schema, 'realm_admins');
 exports.realm_admins = realm_admins;
 // --------------------------------------------------------------------------------------
+var shared_mac_schema = mongoose.Schema({
+  timestamp   : Date,
+  mac_address : String,
+  users       : Array,
+  count       : Number
+});
+// --------------------------------------------------------------------------------------
+exports.shared_mac_schema = shared_mac_schema;
+var shared_mac = mongoose.model('shared_mac', shared_mac_schema, 'shared_mac');
+exports.shared_mac = shared_mac;
+// --------------------------------------------------------------------------------------
 
 // TODO
 

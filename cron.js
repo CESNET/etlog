@@ -7,6 +7,7 @@ module.exports = function(database) {
   const roaming = require('./cron/roaming.js');
   //const stats = require('./cron/stats.js'); // TODO
   const users_mac = require('./cron/users_mac.js');
+  const shared_mac = require('./cron/shared_mac.js');
   const request = require('./request');
 // --------------------------------------------------------------------------------------
   // TODO
@@ -42,6 +43,10 @@ module.exports = function(database) {
 
   new CronJob('0 20 02 * * *', function() {     // run at 02:20:00
     roaming.process_current_data(database);
+  }, null, true, 'Europe/Prague');
+
+  new CronJob('0 25 02 * * *', function() {     // run at 02:25:00
+    shared_mac.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------
