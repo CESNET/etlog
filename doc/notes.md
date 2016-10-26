@@ -425,6 +425,10 @@ db.realm_admins.remove({realm : "cvut.cz"})
 ```
 
 
+##### shared\_mac
+TODO
+
+
 #### Indexes
 
 Indexes are used to speed up queries.
