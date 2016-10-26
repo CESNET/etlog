@@ -518,7 +518,7 @@ Everything related to log files is located in /home/etlog/logs.
 #### New data
 
 Incoming syslog data are processed by `scripts/cron.sh` and subsequently by `scripts/fticks_to_bson.sh`.
-Data are converted from F-Ticks format (for more see [this](https://tools.ietf.org/id/draft-johansson-fticks-00.html)) to BSON.
+Data are converted from F-Ticks format (for more see [this](https://tools.ietf.org/html/draft-johansson-fticks-00)) to BSON.
 
 Data are processed every 5 minutes by user's crontab.
 Last date file (`/home/etlog/logs/last_date`) contains date of last processed log file.
