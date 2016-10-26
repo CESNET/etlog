@@ -8,7 +8,7 @@
 # ==========================================================================================
 
 # application root
-etlog_root="/home/etlog/etlog/"
+etlog_root="/home/etlog/etlog"
 
 # database to which logs will be imported to
 database="etlog"
@@ -17,7 +17,7 @@ database="etlog"
 collection="logs"
 
 # etlog log root
-etlog_log_root="/home/etlog/logs/"
+etlog_log_root="/home/etlog/logs"
 
 # last_date location
 last_date_loc="$etlog_log_root/last_date"
@@ -34,7 +34,7 @@ then
 fi
 
 # log file to process
-logfile="/home/etlog/logs/fticks/fticks-$date"
+logfile="$etlog_log_root/fticks/fticks-$date"
 
 # fticks to bson conversion error log
 errlog="$etlog_log_root/transform/err-$date"
@@ -42,9 +42,8 @@ errlog="$etlog_log_root/transform/err-$date"
 # mongo error log
 mongo_errlog="$etlog_log_root/mongo/err-$date"
 
-
 # convert to bson and import to database
-$etlog_root/scripts/fticks_to_bson.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection --quiet 2>>$mongo_errlog
+$etlog_root/scripts/fticks_to_bson.sh $logfile 2>>$errlog | mongoimport -d $database -c $collection 2>>$mongo_errlog
 
 if [[ $interval_processed ]]
 then
