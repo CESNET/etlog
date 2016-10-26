@@ -218,7 +218,7 @@
       # username checking is not required
 
       # mac address has bad value
-      if(length(csi[2]) != 12 && length(csi[2]) != 0) {
+      if(length(csi[2]) != 12) {
         printf("%s:%d: skipped, invalid mac address\n", filename, FNR + last_line) > "/dev/stderr"
         next
       }
