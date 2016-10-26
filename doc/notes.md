@@ -527,9 +527,34 @@ File is updated every day, when the last part of the data is imported.
 Last file for every processed log file contains last processed line number.
 File on every cron job run. It is used to calculate absolute line numbers for error reporting.
 
-#### Error files
 
-Transform error log like has this structure:
+##### Filtering
+
+Following filtering and replacements are done on incoming data:
+- All unprintable characters (ASCII codes 0 - 31) with exception of newline (\n, ASCII code 10)
+are replaced with string representing their code.
+For example data containing backspace (\b, ASCII code 8) will be replaced to string "<8>".
+
+- Backslash ('\') and quote ('"') are escaped:
+'\' will become '\\' and '"' will become '\"'
+
+- Correct number of fields in each record is checked:
+Each record must contain exactly 7 fields - REALM, VISCOUNTRY, VISINST, CSI, PN, RESULT + (inital log part).
+
+- Each of attributes REALM, VISCOUNTRY, VISINST, and RESULT must be separated from it's value by exactly one character '='
+and it's value must not be empty.
+
+- VISINST value must begin with character '1'.
+
+- CSI value after normalization (all byte separators are deleted - eg. 123456789abc) must be 12 characters long.
+
+Data which do not meet the filtering criteria are considered invalid and not imported to database.
+Information about invalid records are printed to error log files - see [error files](#error-files).
+
+
+#### Error log files
+
+Transform error log file has this structure:
 `filename:line number:error reason`
 Transform error log file may look like:
 
