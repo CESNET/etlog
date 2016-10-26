@@ -549,7 +549,7 @@ and it's value must not be empty.
 - CSI value after normalization (all byte separators are deleted - eg. 123456789abc) must be 12 characters long.
 
 Data which do not meet the filtering criteria are considered invalid and not imported to database.
-Information about invalid records are printed to error log files - see [error files](#error-log-files).
+Information about invalid records are printed to error log files - see [error log files](#error-log-files).
 
 
 #### Error log files
