@@ -64,13 +64,13 @@ log { source(net); destination(fticks); };
 service syslog-ng restart
 
 su - etlog
-mkdir -p ~/logs/{fticks,transform,mongo}
+mkdir -p ~/logs/{fticks,transform,mongo,invalid_records}
 ```
 
 The code above installs certificates required for syslog tls connection.
 Next part installs syslog-ng and creates it's configuration.
-last part creates directories `/home/etlog/logs/fticks`, `/home/etlog/logs/transform`
-and `/home/etlog/logs/mongo`.
+last part creates directories `/home/etlog/logs/fticks`, `/home/etlog/logs/transform`,
+`/home/etlog/logs/mongo` and .`/home/etlog/logs/invalid_records`
 Log files created by syslog are located in `/home/etlog/logs/fticks`.
 
 ### Cron setup
@@ -82,9 +82,17 @@ crontab for incoming log importing.
 #### System
 
 User's crontab can be edited by using `crontab -e`.
-Script for data importing may be run every 5 minutes by adding code below.
+Crontab contains following jobs:
+
+|   command                                        | interval           |              description                 |
+|--------------------------------------------------|--------------------|------------------------------------------|
+| `/home/etlog/etlog/scripts/cron.sh`              | every 5 minutes    | new data importing                       |
+| `/home/etlog/etlog/scripts/invalid_records.sh`   | every day at 1:00  | generating of files with invalid records |
+
+Crontab contents:
 ```
 */5 *  *   *   *     /home/etlog/etlog/scripts/cron.sh
+0   1  *   *   *     /home/etlog/etlog/scripts/invalid_records.sh
 ```
 
 #### Node.js
@@ -96,7 +104,6 @@ Every task generates data for collection of the same name.
 | task name        |              interval            |
 |------------------|----------------------------------|
 | failed\_logins   |      every day at 02:05:00       |
-| invalid\_records |      every day at 02:10:00       |
 | mac\_count       |      every day at 02:15:00       |
 | roaming          |      every day at 02:20:00       |
 | users\_mac       |      every 15 minutes            |
@@ -308,25 +315,6 @@ db.privileged_ips.insert({ip : '127.0.0.1/32'})
 db.privileged_ips.insert({ip : '192.168.1.1/32'})
 ```
 
-
-##### invalid\_records
-
-Collection contains array of invalid records for every day.
-Invalid records are records, which have not been imported by `scripts/fticks_to_bson.sh`.
-When some sort of error in the record itself occurs, document is not imported.
-
-Timestamp field is populated with artificial data, just to
-distint in which interval the record belongs.
-Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
-Lowest distinction interval for timestamp is 24 hours.
-
-
-| field name | data type |               note                  |
-|------------|-----------|-------------------------------------|
-| timestamp  |   Date    |         timestamp                   |
-| records    |   Array   |         array of invalid records    |
-
-
 ##### mac\_count
 
 Collection contains mapping of users and mac addresses, which they used for successful authentication, for every day.
@@ -445,7 +433,6 @@ Following indexes are used:
 | collection name   | indexed fields |   note  |
 |-------------------|----------------|---------|
 | failed\_logins    | _id, timestamp |         |
-| invalid\_records  | _id, timestamp |         |
 | logs              | _id, timestamp |         |
 | mac\_count        | _id, timestamp |         |
 | privileged\_ips   | _id            |         |
@@ -468,7 +455,6 @@ TODO
   |-- cert                    - certificate related files
   |-- cron                    - cron tasks
       `-- failed_logins.js    - cron task for generating failed_logins collection data
-      `-- invalid_records.js  - cron task for generating invalid_records collection data
       `-- mac_count.js        - cron task for generating mac_count collection data
       `-- roaming.js          - cron task for generating roaming collection data
       `-- users_mac.js        - cron task for mapping users and mac addresses
@@ -526,6 +512,7 @@ Everything related to log files is located in /home/etlog/logs.
   |-- transform              - directory with files related to transformation from F-Ticks to BSON
       `-- err-*              - file containing line numbers of invalid records
       `-- last_*             - file containing number of last processed line of corresponding log file
+  |-- invalid_records        - directory with files containing invalid records for every day
 ```
 
 #### New data
@@ -605,8 +592,6 @@ Application api:
 |---------------------------------|--------|--------------------------------------------------------|------------------------|
 | /api/failed\_logins/days        |        | timestamp, [ username, fail\_count, ok\_count, ratio ] |                        |
 | /api/failed\_logins/interval    |        | timestamp, [ username ]                                |                        |
-| /api/invalid\_records/          | date   |                                                        |                        |
-| /api/invalid\_records/filtered/ | date   |                                                        |                        |
 | /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |                        |
 | /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
 | /api/roaming/most\_used/        |        | timestamp, [ inst\_name, used\_count ]                 |                        |
@@ -640,8 +625,6 @@ Some of the command below may take some time (units of seconds) to complete.
 curl 'https://etlog.cesnet.cz/api/mac_count/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/roaming/most_provided/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/roaming/most_used/?timestamp=2016-10-07'
-curl 'https://etlog.cesnet.cz/api/invalid_records/2016-10-07'
-curl 'https://etlog.cesnet.cz/api/invalid_records/filtered/2016-10-07'
 curl 'https://etlog.cesnet.cz/api/failed_logins/days?timestamp=2016-10-07'
 ```
 
@@ -662,9 +645,6 @@ curl 'https://etlog.cesnet.cz/api/roaming/most_provided/?timestamp=2016-10-07&pr
 
 # get most used roaming records for 2016-10-07 with more than 100 used roamings, sort from most to least
 curl 'https://etlog.cesnet.cz/api/roaming/most_used/?timestamp=2016-10-07&used_count>100&sort=-count'
-
-# display filtered invalid records for 2016-10-07 in human readable form
-curl 'https://etlog.cesnet.cz/api/invalid_records/filtered/2016-10-07' | sed -e 's/,/\n/g;'
 
 # get failed logins records for 2016-10-07 with ratio between 0.4 and 0.9, sort from most to least
 curl 'https://etlog.cesnet.cz/api/failed_logins/days?timestamp=2016-10-07&ratio>0.4&ratio<0.9&sort=-ratio'
