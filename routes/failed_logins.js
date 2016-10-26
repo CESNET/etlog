@@ -4,7 +4,7 @@ const qp = require('./query_parser');
 // --------------------------------------------------------------------------------------
 // get failed logins data for day(s)
 // --------------------------------------------------------------------------------------
-router.get('/days', function(req, res, next) {
+router.get('/', function(req, res, next) {
   try {
     var query = qp.parse_query_string(req.url,
       ['username', 'timestamp', 'fail_count', 'ok_count', 'ratio'],
@@ -16,23 +16,6 @@ router.get('/days', function(req, res, next) {
   }
 
   search_days(req, res, query);     // perform search with constructed mongo query
-});
-// --------------------------------------------------------------------------------------
-// get failed logins data for specific interval
-// --------------------------------------------------------------------------------------
-router.get('/interval', function(req, res, next) {
-  try {
-    var query = qp.parse_query_string(req.url,
-      ['username', 'timestamp', 'fail_count', 'ok_count', 'ratio'],
-      qp.validate_interval,
-      true);
-  }
-  catch(err) {
-    res.status(400).send(err.error);
-    return;
-  }
-
-  search_interval(req, res, query);     // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // search database for specified data
