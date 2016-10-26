@@ -24,7 +24,7 @@ then
 fi
 
 # application root
-etlog_root="/home/etlog/etlog/"
+etlog_root="/home/etlog/etlog"
 
 # database to which logs will be imported to
 database="etlog"
@@ -32,11 +32,11 @@ database="etlog"
 # collection to which logs will be imported to
 collection="logs"
 
-# log file to process
-logfile="/home/etlog/logs/fticks/fticks-$date"
-
 # etlog log root
-etlog_log_root="/home/etlog/logs/"
+etlog_log_root="/home/etlog/logs"
+
+# log file to process
+logfile="$etlog_log_root/fticks/fticks-$date"
 
 # fticks to bson conversion error log
 errlog="$etlog_log_root/transform/err-$date"
