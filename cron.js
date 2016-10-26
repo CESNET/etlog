@@ -3,7 +3,6 @@ module.exports = function(database) {
   const CronJob = require('cron').CronJob;
   const mail = require('./mail');
   const failed_logins = require('./cron/failed_logins.js');
-  const invalid_records = require('./cron/invalid_records.js');
   const mac_count = require('./cron/mac_count.js');
   const roaming = require('./cron/roaming.js');
   //const stats = require('./cron/stats.js'); // TODO
@@ -35,10 +34,6 @@ module.exports = function(database) {
 // --------------------------------------------------------------------------------------
   new CronJob('0 05 02 * * *', function() {     // run at 02:05:00
     failed_logins.process_current_data(database);
-  }, null, true, 'Europe/Prague');
-
-  new CronJob('0 10 02 * * *', function() {     // run at 02:10:00
-    invalid_records.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 15 02 * * *', function() {     // run at 02:15:00
