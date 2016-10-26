@@ -7,51 +7,52 @@ const url_base = 'https://etlog.cesnet.cz:8443/api';
 // --------------------------------------------------------------------------------------
 exp.get_invalid_records_monthly = function(realm, recipients, callback)
 {
-  var ret = [];
-  var url = "/invalid_records/filtered/";
+  // TODO
+  //var ret = [];
+  //var url = "/invalid_records/filtered/";
 
-  var date = new Date();     // current date
-  date.setHours(0);
-  date.setMinutes(0);
-  date.setSeconds(0);
-  date.setMilliseconds(0);  // set to 00:00:00:000
-  date.setDate(date.getDate() -1);    // decrease by 1 day - data for current date are not available yet
+  //var date = new Date();     // current date
+  //date.setHours(0);
+  //date.setMinutes(0);
+  //date.setSeconds(0);
+  //date.setMilliseconds(0);  // set to 00:00:00:000
+  //date.setDate(date.getDate() -1);    // decrease by 1 day - data for current date are not available yet
 
-  var interval = 30;
-  var cnt = 0;      // number of processed items
+  //var interval = 30;
+  //var cnt = 0;      // number of processed items
 
-  for(var i = 0; i < interval; i++) {
-    request.get({           // get data
-      url: url_base + url + date.toISOString(),
-    }, function (error, response, body) {
-      if(error || (response.status != undefined && response.status != 200)) {
-        if(error) {   // handle error
-          console.log(error);
-          return;
-        }
-        else {    // handle status code
-          console.log(JSON.parse(body).error);
-          return;
-        }
-      }
-      else {
-        if(JSON.parse(body).length != 0) {       // no not add empty response
-          ret.push(JSON.parse(body));  // add data
-        }
-      }
-      cnt++;    // increase processed count
+  //for(var i = 0; i < interval; i++) {
+  //  request.get({           // get data
+  //    url: url_base + url + date.toISOString(),
+  //  }, function (error, response, body) {
+  //    if(error || (response.status != undefined && response.status != 200)) {
+  //      if(error) {   // handle error
+  //        console.log(error);
+  //        return;
+  //      }
+  //      else {    // handle status code
+  //        console.log(JSON.parse(body).error);
+  //        return;
+  //      }
+  //    }
+  //    else {
+  //      if(JSON.parse(body).length != 0) {       // no not add empty response
+  //        ret.push(JSON.parse(body));  // add data
+  //      }
+  //    }
+  //    cnt++;    // increase processed count
 
-      if(cnt == interval) {
-        //callback("měsíční report - invalidní záznamy", recipients, filter_data(ret).toString());  // return data when all requests are done
-        // TODO - solve filtering by realm
-        // TODO - mail content is too big
-        // debug
-        return;
-      }
-    });
+  //    if(cnt == interval) {
+  //      //callback("měsíční report - invalidní záznamy", recipients, filter_data(ret).toString());  // return data when all requests are done
+  //      // TODO - solve filtering by realm
+  //      // TODO - mail content is too big
+  //      // debug
+  //      return;
+  //    }
+  //  });
 
-    date.setDate(date.getDate() -1);    // decrease by 1 day
-  }
+  //  date.setDate(date.getDate() -1);    // decrease by 1 day
+  //}
 }
 // --------------------------------------------------------------------------------------
 // filter invalid records data to gen only one entry per pair [ pn, csi ]

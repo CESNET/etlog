@@ -17,7 +17,6 @@ module.exports = function(app, database) {
   app.use('/api/mac_count', require('./routes/mac_count'));                          // generic api for mac address count
   app.use('/api/roaming/most_provided', require('./routes/roaming_most_provided'));  // generic api for institutions most providing roaming
   app.use('/api/roaming/most_used', require('./routes/roaming_most_used'));          // generic api for institutions most using roaming
-  app.use('/api/invalid_records', require('./routes/invalid_records'));              // api for invalid records
   app.use('/api/failed_logins', require('./routes/failed_logins'));                  // generic api for failed logins
   // TODO
   //app.use('/api/mac_identifier', require('./routes/mac_identifier'));              // TODO
