@@ -36,13 +36,17 @@ exp.validate_days = function(query) {
   check_timestamp(query);       // throws exception on error
   valid_timestamp(query);       // throws exception on error
 
-  if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length > 1) {  // range
+  if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length == 2) {  // range
     var keys = Object.keys(query.filter.timestamp);
     for(var key in keys) {
       if(!(query.filter.timestamp[keys[key]].getHours() == 0 && query.filter.timestamp[keys[key]].getMinutes() == 0
         && query.filter.timestamp[keys[key]].getSeconds() == 0 && query.filter.timestamp[keys[key]].getMilliseconds() == 0))
         throw { error : "incorrect interval specification!" };  // some part is set incorrectly
     }
+  }
+  else if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length != 2 )   // more or less values
+  {
+    throw { error : "bad number of timestamp values for interval!" };  // some part is set incorrectly
   }
   else {    // one day only
     if(!(query.filter.timestamp.getHours() == 0 && query.filter.timestamp.getMinutes() == 0 
