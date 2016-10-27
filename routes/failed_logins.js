@@ -163,7 +163,7 @@ function search_days(req, res, query) {
 
   req.db.failed_logins.aggregate(aggregate_query,
   function(err, items) {
-    respond(err, items, res);
+    respond(err, round_ratio(items), res);
   });
 }
 // --------------------------------------------------------------------------------------
@@ -219,6 +219,18 @@ function transform(items) {
 
     dict['ratio'] =  (dict['fail_count'] / (dict['fail_count'] + dict['ok_count']));
     arr.push(dict);
+  }
+
+  return arr;
+}
+// --------------------------------------------------------------------------------------
+function round_ratio(items)
+{
+  arr = [];
+
+  for(var item in items) {
+    items[item].ratio = Number((items[item].ratio).toFixed(3));
+    arr.push(items[item]);
   }
 
   return arr;
