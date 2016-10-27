@@ -86,6 +86,14 @@ exports.shared_mac_schema = shared_mac_schema;
 var shared_mac = mongoose.model('shared_mac', shared_mac_schema, 'shared_mac');
 exports.shared_mac = shared_mac;
 // --------------------------------------------------------------------------------------
+var realms_schema = mongoose.Schema({
+  realm     : String
+});
+// --------------------------------------------------------------------------------------
+exports.realms_schema = realms_schema;
+var realms = mongoose.model('realms', realms_schema, 'realms');
+exports.realms = realms;
+// --------------------------------------------------------------------------------------
 
 // TODO
 
