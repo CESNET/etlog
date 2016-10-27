@@ -440,11 +440,10 @@ db.realm_admins.remove({realm : "cvut.cz"})
 
 
 ##### shared\_mac
-Coolection contains records about mac addresses, which have been used for successfull authnetication 
+Collection contains records about mac addresses, which have been used for successfull authnetication
 for mutiple different usernames for every day.
 
 Collection has following structure:
-
 
 | field name   | data type |               note                                      |
 |--------------|-----------|---------------------------------------------------------|
