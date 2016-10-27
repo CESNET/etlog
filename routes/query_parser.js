@@ -46,7 +46,7 @@ exp.validate_days = function(query) {
   }
   else if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length != 2 )   // more or less values
   {
-    throw { error : "bad number of timestamp values for interval!" };  // some part is set incorrectly
+    throw { error : "bad number of timestamp values for interval!" };
   }
   else {    // one day only
     if(!(query.filter.timestamp.getHours() == 0 && query.filter.timestamp.getMinutes() == 0 
