@@ -453,6 +453,16 @@ Collection has following structure:
 | count        | Number    |  number of users                                        |
 
 
+##### realms
+Collection contains all knows realms from Czech republic (ending with '.cz').
+
+Collection has following structure:
+
+| field name   | data type |             note             |
+|--------------|-----------|------------------------------|
+| realm        | String    |             realm            |
+
+
 #### Indexes
 
 Indexes are used to speed up queries.
