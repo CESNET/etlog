@@ -86,6 +86,16 @@ exports.shared_mac_schema = shared_mac_schema;
 var shared_mac = mongoose.model('shared_mac', shared_mac_schema, 'shared_mac');
 exports.shared_mac = shared_mac;
 // --------------------------------------------------------------------------------------
+var heat_map_schema = mongoose.Schema({
+  timestamp     : Date,
+  inst_name     : String,
+  institutions  : Array
+});
+// --------------------------------------------------------------------------------------
+exports.heat_map_schema = heat_map_schema;
+var heat_map = mongoose.model('heat_map', heat_map_schema, 'heat_map');
+exports.heat_map = heat_map;
+// --------------------------------------------------------------------------------------
 var realms_schema = mongoose.Schema({
   realm     : String
 });

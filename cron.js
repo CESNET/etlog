@@ -7,6 +7,7 @@ module.exports = function(database) {
   const roaming = require('./cron/roaming.js');
   //const stats = require('./cron/stats.js'); // TODO
   const users_mac = require('./cron/users_mac.js');
+  const heat_map = require('./cron/heat_map.js');
   const shared_mac = require('./cron/shared_mac.js');
   const request = require('./request');
 // --------------------------------------------------------------------------------------
@@ -48,6 +49,11 @@ module.exports = function(database) {
   new CronJob('0 25 02 * * *', function() {     // run at 02:25:00
     shared_mac.process_current_data(database);
   }, null, true, 'Europe/Prague');
+
+  new CronJob('0 35 02 * * *', function() {     // run at 02:35:00
+    heat_map.process_current_data(database);
+  }, null, true, 'Europe/Prague');
+
 
 // --------------------------------------------------------------------------------------
   // mac to user mapping is run more often
