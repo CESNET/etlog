@@ -256,6 +256,8 @@ Every document has also a field _id, which is just for internal MongoDB purposes
 Collection represents raw radius log records transformed to json format. 
 For details on data transformation see scripts/fticks\_to\_bson.sh
 
+Collection has following structure:
+
 | field name | data type |               note               |
 |------------|-----------|----------------------------------|
 | timestamp  |   Date    |      timestamp of authentication |
@@ -270,6 +272,7 @@ For details on data transformation see scripts/fticks\_to\_bson.sh
 
 Collection defines binding between user and all mac addresses, which he used for successful authentication to eduroam.
 
+Collection has following structure:
 
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
@@ -296,6 +299,8 @@ ipv6 addresses format:
 '2001:718:2:1::1/128'
 '2001:718:2:1::/64'
 ```
+
+Collection has following structure:
 
 | field name | data type |               note               |
 |------------|-----------|----------------------------------|
@@ -326,6 +331,7 @@ distint in which interval the record belongs.
 Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
 Lowest distinction interval for timestamp is 24 hours.
 
+Collection has following structure:
 
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
@@ -345,6 +351,7 @@ distint in which interval the record belongs.
 Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
 Lowest distinction interval for timestamp is 24 hours.
 
+Collection has following structure:
 
 | field name       | data type |               note                          |
 |------------------|-----------|---------------------------------------------|
@@ -366,6 +373,8 @@ distint in which interval the record belongs.
 Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
 Lowest distinction interval for timestamp is 24 hours.
 
+Collection has following structure:
+
 | field name   | data type |               note                  |
 |--------------|-----------|-------------------------------------|
 | username     |   String  |         username                    |
@@ -377,6 +386,8 @@ Lowest distinction interval for timestamp is 24 hours.
 ##### stats
 
 TODO
+
+Collection has following structure:
 
 | field name | data type |               note                  |
 |------------|-----------|-------------------------------------|
@@ -396,6 +407,8 @@ The only exception is realm "cz" which does not correspond with any institution.
 In this case, the administrator recieves reports with most significant problems found.
 
 TODO - hierarchy, usage in application
+
+Collection has following structure:
 
 | field name | data type |               note                                                            |
 |------------|-----------|-------------------------------------------------------------------------------|
