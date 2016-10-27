@@ -106,6 +106,7 @@ Every task generates data for collection of the same name.
 | failed\_logins   |      every day at 02:05:00       |
 | mac\_count       |      every day at 02:15:00       |
 | roaming          |      every day at 02:20:00       |
+| shared\_mac      |      every day at 02:25:00       |
 | users\_mac       |      every 15 minutes            |
 
 TODO - mail
@@ -486,6 +487,7 @@ TODO
       `-- mac_count.js        - cron task for generating mac_count collection data
       `-- roaming.js          - cron task for generating roaming collection data
       `-- users_mac.js        - cron task for mapping users and mac addresses
+      `-- shared_mac.js       - cron task for generating shared mac address data
   |-- cron.js                 - cron tasks definiton
   |-- db.js                   - database and schema configuration
   |-- doc                     - documentation
@@ -647,6 +649,7 @@ Application api:
 | /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |                        |
 | /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
 | /api/roaming/most\_used/        |        | timestamp, [ inst\_name, used\_count ]                 |                        |
+| /api/shared_mac/                |        | timestamp, [ count, mac_address, users ]               |                        |
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 
 
@@ -678,6 +681,7 @@ curl 'https://etlog.cesnet.cz/api/mac_count/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/roaming/most_provided/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/roaming/most_used/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/failed_logins/?timestamp=2016-10-07'
+curl 'https://etlog.cesnet.cz/api/shared_mac/?timestamp=2016-10-07'
 ```
 
 ##### Advanced examples
