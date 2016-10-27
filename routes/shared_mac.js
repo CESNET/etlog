@@ -7,7 +7,7 @@ const qp = require('./query_parser');
 router.get('/', function(req, res, next) {
   try {
     var query = qp.parse_query_string(req.url,
-      ['username', 'timestamp', 'count', 'addrs'],  // TODO
+      ['timestamp', 'count', 'mac_address', 'users'],
       qp.validate_days);
   }
   catch(err) {
@@ -28,50 +28,40 @@ function search_days(req, res, query) {
 
   // ===================================================
   // construct base query
+  var aggregate_query = [
+    {
+      $match : query.filter       // filter by query
+    },
+    {
+      $unwind : "$users"          // deconstruct users array
+    },
+    {
+      $group :
+        {
+          _id :
+            {
+              mac_address : "$mac_address"      // group by mac address
+            },
+          users :       // add users
+            {
+              $addToSet : "$users"
+            }
+        }
+    },
+    {
+      $project :
+        {
+          mac_address : "$_id.mac_address",
+          users : 1,
+          count :
+            {
+              $size : "$users"          // number of users
+            },
+          _id : 0
+        }
+    }
+  ];
   
-  // TODO
-  
-  //var aggregate_query = [
-  //  {
-  //    $match : query.filter       // filter by query
-  //  },
-  //  {
-  //    $project :                  // limit to username, addrs
-  //      {
-  //        username : 1,
-  //        addrs : 1
-  //      }
-  //  },
-  //  {
-  //    $unwind : "$addrs"          // deconstruct addrs array
-  //  },
-  //  {
-  //    $group :
-  //      {
-  //        _id :
-  //          {
-  //            username : "$username"  // group by username -> query on multiple records, we want only on record on the output
-  //          },
-  //        addrs :
-  //          {
-  //            $addToSet : "$addrs"   // add arrays
-  //          }
-  //      }
-  //  },
-  //  {
-  //    $project :
-  //      {
-  //        username : "$_id.username",   // id.username -> username
-  //        count :
-  //          {
-  //            $size : "$addrs"          // number of addresses
-  //          },
-  //        addrs : 1,
-  //        _id : 0
-  //      }
-  //  }
-  //];
-
   // ===================================================
   // add other operators, if defined in query
 
@@ -90,7 +80,7 @@ function search_days(req, res, query) {
   // ===================================================
   // search
 
-  req.db.mac_count.aggregate(aggregate_query,
+  req.db.shared_mac.aggregate(aggregate_query,
   function(err, items) {
     respond(err, items, res);
   });
