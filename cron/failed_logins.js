@@ -66,7 +66,7 @@ exp.process_old_data = function (database, callback) {
   });
 };
 // --------------------------------------------------------------------------------------
-// perform mac address counting
+// perform failed logins counting
 // --------------------------------------------------------------------------------------
 exp.process_current_data = function (database) {
   var curr = new Date();        // current day
