@@ -36,7 +36,7 @@ exp.validate_days = function(query) {
   check_timestamp(query);       // throws exception on error
   valid_timestamp(query);       // throws exception on error
 
-  if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length == 2) {  // range
+  if(query.filter.timestamp.constructor == Object && Object.keys(query.filter.timestamp).length == 2) {  // range
     var keys = Object.keys(query.filter.timestamp);
     for(var key in keys) {
       if(!(query.filter.timestamp[keys[key]].getHours() == 0 && query.filter.timestamp[keys[key]].getMinutes() == 0
@@ -44,7 +44,7 @@ exp.validate_days = function(query) {
         throw { error : "incorrect interval specification!" };  // some part is set incorrectly
     }
   }
-  else if(typeof(query.filter.timestamp) == "object" && Object.keys(query.filter.timestamp).length != 2 )   // more or less values
+  else if(query.filter.timestamp.constructor == Object && Object.keys(query.filter.timestamp).length != 2)   // more or less values
   {
     throw { error : "bad number of timestamp values for interval!" };
   }
