@@ -81,7 +81,9 @@ exp.process_current_data = function (database) {
 function search(database, min, max, done) {
   
   database.logs.aggregate([ 
-  { $match : { pn : { $ne : "" }, result : "OK" } },        // match non empty userames and only successfully authenticated users
+  { $match : {
+    timestamp :  { $gte : min, $lt : max },      // get only data for one day
+    pn : { $ne : "" }, result : "OK" } },        // match non empty userames and only successfully authenticated users
   { $group : { _id : { username : "$pn", mac_address: "$csi" } } },     // group by pair [ username, mac address ]
         // group again only by mac address, add users to array, count number of users
   { $group : { _id : { mac_address : "$_id.mac_address" }, users : { $addToSet : "$_id.username"  }, count : { $sum : 1 } } }, 
