@@ -35,22 +35,6 @@ function search_days(req, res, query) {
     {
       $unwind : "$institutions"          // deconstruct institutions array
     },
-
-    // TODO - renaming logic !!
-    //{
-    //  $project : { _id : 0, inst_name : 1, timestamp : 1, institutions : {
-    //    "$map": {
-    //      "input": "$institutions",
-    //      "as": "el",
-    //      "in": {
-    //      "visited_inst": "$$el.inst_name",
-    //      "count": "$$el.count"
-    //        },
-    //       }
-    //    }
-    //  }
-    //}
-    
     {
       $group :
         {
