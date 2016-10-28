@@ -10,7 +10,6 @@ exp.process_old_data = function (database, callback) {
   var current = new Date();
   var curr_min = new Date(current.getFullYear(), current.getMonth(), current.getUTCDate(), 0, 0, 0, 0);   // current day hh:mm:ss:ms set to 00:00:00:000
 
-
   // find all, sort by timestamp, display only timestamp, display one document only
   database.logs.find({ query : {}, $orderby : { timestamp : 1 } } , { timestamp : 1, _id : 0 }, { limit : 1 },
   function(err, doc) {
@@ -39,30 +38,49 @@ exp.process_old_data = function (database, callback) {
                                                                                     // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
 
-    async.whilst(function () {
-      return min < curr_min;
-    },
-    function(next) {
-      async.series([
-        function(done) {
-          search(database, min, max, done);     // calls done when finished
-        },
-        function(done) {
-          min.setDate(min.getDate() + 1);  // continue
-          max.setDate(max.getDate() + 1);  // continue
-          done(null);                      // done
-        }
+    // set up data for search
+    realms = [];
+
+    async.series([
+      function(done) {
+        database.realms.aggregate([
+        { $project : { _id : 0, realm : 1 } }
         ],
-        function(err, results) {
-          next();   // next whilst iteration
+        function(err, items) {
+          for(var item in items)
+            realms.push(items[item].realm);
+          done(null)
+        });
+      }
+    ],
+      function(err, results) {
+
+      // ---------------------------------------------------
+      async.whilst(function () {
+        return min < curr_min;
+      },
+      function(next) {
+        async.series([
+          function(done) {
+            search(database, realms, min, max, done);     // calls done when finished
+          },
+          function(done) {
+            min.setDate(min.getDate() + 1);  // continue
+            max.setDate(max.getDate() + 1);  // continue
+            done(null);                      // done
+          }
+          ],
+          function(err, results) {
+            next();   // next whilst iteration
+        });
+      },
+      function(err) {
+        if(err)
+          console.log(err);
+        else
+          console.log("cron task heat map finished processing old data");
+        callback(null, null);
       });
-    },
-    function(err) {
-      if(err)
-        console.log(err);
-      else
-        console.log("cron task heat map finished processing old data");
-      callback(null, null);
     });
   });
 };
