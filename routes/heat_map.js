@@ -76,7 +76,6 @@ function search_days(req, res, query) {
   // ===================================================
   // search
 
-  //req.db.heat_map_test.aggregate(aggregate_query,
   req.db.heat_map.aggregate(aggregate_query,
   function(err, items) {
     respond(err, items, res);
