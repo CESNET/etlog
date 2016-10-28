@@ -61,13 +61,11 @@ exp.process_old_data = function (database, callback) {
       if(err)
         console.log(err);
       else
-        console.log("cron task mac_count finished processing old data");
+        console.log("cron task heat map finished processing old data");
       callback(null, null);
     });
   });
 };
-
-
 // --------------------------------------------------------------------------------------
 // perform heat map data counting
 // --------------------------------------------------------------------------------------
@@ -86,8 +84,6 @@ exp.process_current_data = function (database)
     for(var item in items)
       realms.push(items[item].realm);
 
-    // debug
-    //realms = [ 'cvut.cz', 'fit.cvut.cz', 'cuni.cz' ];
     search(database, realms, prev_min, prev_max);
   });
 }
