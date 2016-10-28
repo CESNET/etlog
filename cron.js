@@ -11,24 +11,9 @@ module.exports = function(database) {
   const shared_mac = require('./cron/shared_mac.js');
   const request = require('./request');
 // --------------------------------------------------------------------------------------
-  // TODO
-  // once a month
   new CronJob('0 00 06 1 * *', function() {     // run once a month
-    // TODO
-    // administrative contacts logic
-    //mail.send_mail_to_realm_admins(database, request.get_failed_logins_monthly, 100);
-    //mail.send_mail_to_realm_admins(database, request.get_invalid_records_monthly);
+    mail.send_mail_to_realm_admins(database, request.get_failed_logins_monthly, 100);
   }, null, true, 'Europe/Prague');
-
-// --------------------------------------------------------------------------------------
-
-  // TODO - invalid data - once a day
-  // send mail about invalid data - once a month ? or configurable time ?
-
-  //new CronJob('0 30 02 * * 0', function() {     // run once every week at 02:30:00
-  // TODO
-  //}, null, true, 'Europe/Prague');
-
 // --------------------------------------------------------------------------------------
   // run once a day
   // should be run at more than Date.getTimezoneOffset(); [javascript method] minutes from midnight
