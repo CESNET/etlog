@@ -768,6 +768,15 @@ curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/\.edu$/&timestamp>201
 # with no successful logins, sort from most failed logins to least
 # get only 10 results
 curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/.*@fit\.cvut\.cz$/&timestamp>2016-09-20&timestamp<2016-10-10&ok_count=0&sort=-fail_count&limit=10'
+
+# get heat map data for 2016-08-30 for institution 'cvut.cz'
+curl 'https://etlog.cesnet.cz/api/heat_map/?timestamp=2016-08-30&inst_name=cvut.cz'
+
+# get heat map data for 2016-08-30 where institution 'vfn.cz' was the visited institution
+curl 'https://etlog.cesnet.cz/api/heat_map/?timestamp=2016-08-30&institutions.inst_name=vfn.cz'
+
+# get heat map data for 2016-08-30 where the visited count was more than 1000
+curl 'https://etlog.cesnet.cz/api/heat_map/?timestamp=2016-08-30&institutions.count>1000'
 ```
 
 
