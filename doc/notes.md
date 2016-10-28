@@ -699,7 +699,8 @@ Application api:
 | /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |                        |
 | /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
 | /api/roaming/most\_used/        |        | timestamp, [ inst\_name, used\_count ]                 |                        |
-| /api/shared_mac/                |        | timestamp, [ count, mac_address, users ]               |                        |
+| /api/shared\_mac/               |        | timestamp, [ count, mac\_address, users ]              |                        |
+| /api/heat\_map/                 |        | timestamp, [ inst\_name, institutions.inst\_name, institutions.count  |         |
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 
 
@@ -716,7 +717,7 @@ TODO
 | /               | title page                                                         |
 | /login          | login page                                                         |
 | /login/callback | page where the user is redirected after successful authentication  |
-| /auth_fail      | page where the user is redirected when authentication fails        |
+| /auth\_fail      | page where the user is redirected when authentication fails        |
 
 
 ##### Examples
@@ -732,6 +733,7 @@ curl 'https://etlog.cesnet.cz/api/roaming/most_provided/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/roaming/most_used/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/failed_logins/?timestamp=2016-10-07'
 curl 'https://etlog.cesnet.cz/api/shared_mac/?timestamp=2016-10-07'
+curl 'https://etlog.cesnet.cz/api/heat_map/?timestamp=2016-10-07'
 ```
 
 ##### Advanced examples
