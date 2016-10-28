@@ -757,14 +757,14 @@ curl 'https://etlog.cesnet.cz/api/roaming/most_used/?timestamp=2016-10-07&used_c
 # get failed logins records for 2016-10-07 with ratio between 0.4 and 0.9, sort from most to least
 curl 'https://etlog.cesnet.cz/api/failed_logins/?timestamp=2016-10-07&ratio>0.4&ratio<0.9&sort=-ratio'
 
-# get failed logins records for 2016-10-07 only for users with realms ending '.cz/api' with fail count more than 500, sort from most to least
+# get failed logins records for 2016-10-07 only for users with realms ending '.cz' with fail count more than 500, sort from most to least
 curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/\.cz$/&timestamp=2016-10-07&fail_count>500&sort=-fail_count'
 
 # get failed logins records from 2016-09-20 to 2016-09-30 only for users with realms ending '.edu'
 # with fail count more than 100, sort from most to least
 curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/\.edu$/&timestamp>2016-09-20&timestamp<2016-09-30&fail_count>100&sort=-fail_count'
 
-# get failed logins records from 2016-09-20 to 2016-10-10 only for users from realm 'fit.cvut.cz/api'
+# get failed logins records from 2016-09-20 to 2016-10-10 only for users from realm 'fit.cvut.cz'
 # with no successful logins, sort from most failed logins to least
 # get only 10 results
 curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/.*@fit\.cvut\.cz$/&timestamp>2016-09-20&timestamp<2016-10-10&ok_count=0&sort=-fail_count&limit=10'
