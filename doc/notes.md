@@ -84,15 +84,17 @@ crontab for incoming log importing.
 User's crontab can be edited by using `crontab -e`.
 Crontab contains following jobs:
 
-|   command                                        | interval           |              description                 |
-|--------------------------------------------------|--------------------|------------------------------------------|
-| `/home/etlog/etlog/scripts/cron.sh`              | every 5 minutes    | new data importing                       |
-| `/home/etlog/etlog/scripts/invalid_records.sh`   | every day at 1:00  | generating of files with invalid records |
+|   command                                             | interval              |              description                 |
+|-------------------------------------------------------|-----------------------|------------------------------------------|
+| `/home/etlog/etlog/scripts/cron.sh`                   | every 5 minutes       | new data importing                       |
+| `/home/etlog/etlog/scripts/invalid_records.sh`        | every day at 1:00     | generating of files with invalid records |
+| `/home/etlog/etlog/scripts/invalid_records_mail.sh`   | every monday at 6:00  | sending report about invalid records     |
 
 Crontab contents:
 ```
 */5 *  *   *   *     /home/etlog/etlog/scripts/cron.sh
 0   1  *   *   *     /home/etlog/etlog/scripts/invalid_records.sh
+0   6  *   *   1     /home/etlog/etlog/scripts/invalid_records_mail.sh
 ```
 
 #### Node.js
