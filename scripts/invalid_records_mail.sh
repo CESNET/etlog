@@ -8,7 +8,10 @@
 # ==========================================================================================
 
 # recipient
-to="j.tomasek@cesnet.cz"
+to="jan.tomasek@cesnet.cz"
+
+# copy for testing purposes
+cc="vac.mach@sh.cvut.cz"
 
 # sender
 sender="etlog@etlog.cesnet.cz"
@@ -29,8 +32,9 @@ text+="kompletní záznamy za poslední týden jsou dostupné v následujících
 
 for i in {7..1}
 do
-  text+="$etlog_log_root/invalid_records/invalid-$(date --date="$i days ago" "+%Y-%m-%d")\n"
+  file="$etlog_log_root/invalid_records/invalid-$(date --date="$i days ago" "+%Y-%m-%d")"
+  text+="$file - $(wc -l < "$file") záznamů\n"
 done
 
-echo -e "$text" | base64 | mail -a "Content-Type: text/plain; charset=\"utf-8\"" -a "Content-Transfer-Encoding: base64" -s "$subj" -r "$sender" "$to"
+echo -e "$text" | base64 | mail -a "Content-Type: text/plain; charset=\"utf-8\"" -a "Content-Transfer-Encoding: base64" -s "$subj" -r "$sender" "$to" "$cc"
 
