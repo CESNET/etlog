@@ -14,12 +14,8 @@ function set_up_mailer()
   // setup e-mail data with unicode symbols
   var mail_options = {
     from: 'etlog <etlog@etlog.cesnet.cz>', // sender address
-    //to: 'jan.tomasek@cesnet.cz', // list of receivers TODO
-    to: 'vac.mach@sh.cvut.cz',  // copy 
-    //cc: 'vac.mach@sh.cvut.cz',  // copy     // TODO set this as production
-    //subject: 'test', // Subject line      // TODO
-    //text: '' // plaintext body        // TODO
-    //text: 'testovaci email' // plaintext body        // TODO
+    to: 'jan.tomasek@cesnet.cz', // list of receivers
+    cc: 'vac.mach@sh.cvut.cz',  // copy
   };
 
   return {
