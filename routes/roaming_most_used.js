@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const qp = require('./query_parser');
 // --------------------------------------------------------------------------------------
 // get roaming data for organisations most using roaming
