@@ -702,7 +702,7 @@ Application api:
 | /api/shared\_mac/               |        | timestamp, [ count, mac\_address, users ]              |                        |
 | /api/heat\_map/                 |        | timestamp, [ inst\_name, institutions.inst\_name, institutions.count  |         |
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
-| /api/db_data/                   |        |                                                        | url with current data state |
+| /api/db\_data/                  |        |                                                        | url with current data state |
 
 
 ### Routes
