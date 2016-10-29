@@ -12,7 +12,7 @@ module.exports = function(app, database) {
 
   // set up routes
 // -----------------------------------------------------------
-  app.use('/', require('./routes/index'));                                       // title page
+  app.use('/', require('./routes/index'));                                           // title page
   app.use('/api/search', require('./routes/search'));                                // generic search api
   app.use('/api/mac_count', require('./routes/mac_count'));                          // generic api for mac address count
   app.use('/api/roaming/most_provided', require('./routes/roaming_most_provided'));  // generic api for institutions most providing roaming
@@ -20,9 +20,8 @@ module.exports = function(app, database) {
   app.use('/api/failed_logins', require('./routes/failed_logins'));                  // generic api for failed logins
   app.use('/api/shared_mac', require('./routes/shared_mac'));                        // generic api for shared mac
   app.use('/api/heat_map', require('./routes/heat_map'));                            // generic api for heat map
+  app.use('/api/db_data', require('./routes/db_data'));                              // api for db data
   // TODO
-  //app.use('/api/mac_identifier', require('./routes/mac_identifier'));              // TODO
-  //app.use('/api/lost_devices', require('./routes/lost_device'));              // TODO
   // app.use('/api/stats', require('./routes/stats'));   // TODO
 
 
