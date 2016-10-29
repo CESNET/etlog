@@ -114,7 +114,7 @@ Every task in the table below generates data for collection of the same name.
 | users\_mac       |      every 15 minutes            |
 
 Monthly report about failed logins is sent at 6:00 every first day of month.
-For detail see [realm_admins](#realm_admins).
+For detail see [reports](#reports).
 
 ### Mail setup
 
@@ -412,7 +412,13 @@ For more see [reports](#reports).
 The only exception is realm "cz" which does not correspond with any institution.
 In this case, the administrator recieves reports with most significant problems found.
 
-TODO - hierarchy, usage in application
+Realms are hierarchical - they are domain names, which use DNS.
+Every instituon has it's domain and may have subdomains.
+All of these are different realms. Depending on the size of a subdomain/realm,
+it may be efficient for each one to have separate administration.
+
+This collection is used to determine administrators for specific realm.
+If realm is defined, the the administrators can be notified about events in their realm.
 
 Collection has following structure:
 
@@ -706,6 +712,22 @@ Application api:
 | /api/heat\_map/                 |        | timestamp, [ inst\_name, institutions.inst\_name, institutions.count  |         |
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
+
+
+### Reports
+
+Application produces periodical reports.
+A report is a mail content, which is sent to eduroam administrators.
+
+#### Weekly reports
+
+Weekly report is sent only to national radius administrator.
+It contains information about invalid records of past week.
+
+#### Monthly reports
+
+Monthly report is sent to all administrators defined in [realm_admins](#realm_admins).
+It contains 100 most users with most failed logins from corresponding realm.
 
 
 ### Routes
