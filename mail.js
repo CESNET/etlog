@@ -55,13 +55,6 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
   function(err, items) {
     for(var dict in items) {
       // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
-
-      // TODO - sort by length ?
-      // TODO - possible duplicates across realms - needs to be solved ?
-
-      // TODO - possible problem with mapping of username to realm - needs to be solved?
-      // possible workaround - search each username separately and get realm value there
-
       data_func(items[dict].realm, items[dict].admins, limit, module.exports.send_mail);
     }
   });
