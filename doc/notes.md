@@ -530,7 +530,18 @@ Following indexes are used:
 
 ### Reports
 
-TODO
+Application produces periodical reports.
+A report is a mail content, which is sent to eduroam administrators.
+
+#### Weekly reports
+
+Weekly report is sent only to national radius administrator.
+It contains information about invalid records of past week.
+
+#### Monthly reports
+
+Monthly report is sent to all administrators defined in [realm_admins](#realm_admins).
+It contains 100 most users with most failed logins from corresponding realm.
 
 ### Application structure
 
@@ -712,22 +723,6 @@ Application api:
 | /api/heat\_map/                 |        | timestamp, [ inst\_name, institutions.inst\_name, institutions.count  |         |
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
-
-
-### Reports
-
-Application produces periodical reports.
-A report is a mail content, which is sent to eduroam administrators.
-
-#### Weekly reports
-
-Weekly report is sent only to national radius administrator.
-It contains information about invalid records of past week.
-
-#### Monthly reports
-
-Monthly report is sent to all administrators defined in [realm_admins](#realm_admins).
-It contains 100 most users with most failed logins from corresponding realm.
 
 
 ### Routes
