@@ -114,7 +114,7 @@ Every task in the table below generates data for collection of the same name.
 | users\_mac       |      every 15 minutes            |
 
 Monthly report about failed logins is sent at 6:00 every first day of month.
-For detail see [reports](#reports).
+For details see [reports](#reports).
 
 ### Mail setup
 
@@ -406,7 +406,7 @@ Collection contains array of administrators email's for institutions.
 Each instituon hay have administrators specified.
 
 If the insititution is defined and has administrators defined,
-the administrator(s) get a report every once every month.
+the administrator(s) get a report once every month.
 For more see [reports](#reports).
 
 The only exception is realm "cz" which does not correspond with any institution.
