@@ -101,7 +101,8 @@ Crontab contents:
 
 Setup is defined in cron.js.
 Table below defined how tasks are run.
-Every task generates data for collection of the same name.
+
+Every task in the table below generates data for collection of the same name.
 
 | task name        |              interval            |
 |------------------|----------------------------------|
@@ -109,9 +110,11 @@ Every task generates data for collection of the same name.
 | mac\_count       |      every day at 02:15:00       |
 | roaming          |      every day at 02:20:00       |
 | shared\_mac      |      every day at 02:25:00       |
+| heat\_map        |      every day at 02:35:00       |
 | users\_mac       |      every 15 minutes            |
 
-TODO - mail
+Monthly report about failed logins is sent at 6:00 every first day of month.
+For detail see [realm_admins](#realm_admins).
 
 ### Mail setup
 
