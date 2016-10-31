@@ -13,89 +13,89 @@ router.get('/', function(req, res, next) {
   ret.failed_logins = {};
   ret.shared_mac = {};
   ret.heat_map = {};
-  
+
   async.series([
     function(done) {
       req.db.logs.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.logs.min = doc[0].timestamp;
+        ret.logs.min = convert(doc[0].timestamp).toISOString();
       });
       
       req.db.logs.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.logs.max = doc[0].timestamp;
+        ret.logs.max = convert(doc[0].timestamp).toISOString();
         done(null);
       });
     },
     function(done) {
       req.db.mac_count.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.mac_count.min = doc[0].timestamp;
+        ret.mac_count.min = convert(doc[0].timestamp).toISOString();
       });
       
       req.db.mac_count.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.mac_count.max = doc[0].timestamp;
+        ret.mac_count.max = convert(doc[0].timestamp).toISOString();
         done(null);
       });
     },
     function(done) {
       req.db.roaming.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.roaming.min = doc[0].timestamp;
+        ret.roaming.min = convert(doc[0].timestamp).toISOString();
       });
       
       req.db.roaming.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.roaming.max = doc[0].timestamp;
+        ret.roaming.max = convert(doc[0].timestamp).toISOString();
         done(null);
       });
     },
     function(done) {
       req.db.failed_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.failed_logins.min = doc[0].timestamp;
+        ret.failed_logins.min = convert(doc[0].timestamp).toISOString();
       });
       
       req.db.failed_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.failed_logins.max = doc[0].timestamp;
+        ret.failed_logins.max = convert(doc[0].timestamp).toISOString();
         done(null);
       });
     },
     function(done) {
       req.db.shared_mac.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.shared_mac.min = doc[0].timestamp;
+        ret.shared_mac.min = convert(doc[0].timestamp).toISOString();
       });
       
       req.db.shared_mac.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.shared_mac.max = doc[0].timestamp;
+        ret.shared_mac.max = convert(doc[0].timestamp).toISOString();
         done(null);
       });
     },
     function(done) {
       req.db.heat_map.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.heat_map.min = doc[0].timestamp;
+        ret.heat_map.min = convert(doc[0].timestamp).toISOString();
       });
       
       req.db.heat_map.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : { $add : [ "$timestamp", 7200000 ] }, _id : 0 } } ],    // convert UTC to localtime
+      { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.heat_map.max = doc[0].timestamp;
+        ret.heat_map.max = convert(doc[0].timestamp).toISOString();
         done(null);
       });
     },
@@ -104,6 +104,15 @@ router.get('/', function(req, res, next) {
       respond(err, ret, res);
   });
 });
+// --------------------------------------------------------------------------------------
+// convert UTC to localtime based on input
+// --------------------------------------------------------------------------------------
+function convert(date)
+{
+  d = new Date(date);
+  d.setTime(d.getTime() + (-1 * d.getTimezoneOffset() * 60 * 1000));
+  return d;
+}
 // --------------------------------------------------------------------------------------
 // send data to user
 // --------------------------------------------------------------------------------------
