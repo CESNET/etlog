@@ -8,7 +8,6 @@ const url_base = 'https://etlog.cesnet.cz:8443/api';
 // --------------------------------------------------------------------------------------
 exp.get_failed_logins_monthly = function(realm, recipients, limit, callback)
 {
-  var test = [];
   var url = "/failed_logins/days";
 
   var max = new Date();     // current date
