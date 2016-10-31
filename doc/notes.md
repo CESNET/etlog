@@ -89,12 +89,14 @@ Crontab contains following jobs:
 | `/home/etlog/etlog/scripts/cron.sh`                   | every 5 minutes       | new data importing                       |
 | `/home/etlog/etlog/scripts/invalid_records.sh`        | every day at 1:00     | generating of files with invalid records |
 | `/home/etlog/etlog/scripts/invalid_records_mail.sh`   | every monday at 6:00  | sending report about invalid records     |
+| `/home/etlog/etlog/scripts/archive.sh`                | every monday at 6:05  | archiving old log files                  |
 
 Crontab contents:
 ```
 */5 *  *   *   *     /home/etlog/etlog/scripts/cron.sh
 0   1  *   *   *     /home/etlog/etlog/scripts/invalid_records.sh
 0   6  *   *   1     /home/etlog/etlog/scripts/invalid_records_mail.sh
+5   6  *   *   1     /home/etlog/etlog/scripts/archive.sh
 ```
 
 #### Node.js
@@ -674,6 +676,13 @@ Transform error log file may look like:
 /home/etlog/logs/fticks/fticks-2016-10-20:690872: skipped, general error in parsing current record
 /home/etlog/logs/fticks/fticks-2016-10-20:692246: skipped, invalid mac address
 ```
+
+#### Archiving
+
+Older data are archived due to space usage.
+Data are archived every monday at 6:05.
+F-tick files, transform log files and invalid records from past 14 days to past week are compressed.
+gzip is used for compression.
 
 ### API
 
