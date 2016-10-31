@@ -184,24 +184,25 @@ Data will be reconstructed to original time when presenting to the user.
 Conversion in aggregation pipeline from UTC to localtime can be done using:
 
 ```
-db.roaming.aggregate([
-{ 
-  $project :
-    {
-      _id : 0, 
-      inst_name: 1, 
-      timestamp : 
-      { 
-        $add : [ "$timestamp", 7200000 ]          // convert UTC to localtime
-      }
-        // offset is -2 hours
-        // => 2 * 60 * 60 * 1000
-        // 2 hours * 60 minutes * 60 seconds * 1000 miliseconds
-    }
-},
-], function (err, items) {
-  respond(err, items, res)
+req.db.logs.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+{ $project : { timestamp : 1, _id : 0 } } ],
+function(err, doc) {
+  ret.logs.min = convert(doc[0].timestamp).toISOString();
 });
+
+
+// --------------------------------------------------------------------------------------
+// convert UTC to localtime based on input
+// --------------------------------------------------------------------------------------
+function convert(date)
+{
+  d = new Date(date);
+  d.setTime(d.getTime() + (-1 * d.getTimezoneOffset() * 60 * 1000));
+  // offset is variable [ -60 and - 120 minutes, depending on Daylight saving time ]
+  // => offset * 60 * 1000
+  // offset * 60 seconds * 1000 miliseconds
+  return d;
+}
 ```
 
 #### Usage
