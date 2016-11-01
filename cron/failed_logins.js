@@ -70,9 +70,14 @@ exp.process_old_data = function (database, callback) {
 // --------------------------------------------------------------------------------------
 exp.process_current_data = function (database) {
   var curr = new Date();        // current day
-  var prev_min = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate() - 1, 0, 0, 0, 0); // previous day hh:mm:ss:ms set to 00:00:00:000
-  var prev_max = new Date(curr.getFullYear(), curr.getMonth(), curr.getUTCDate(), 0, 0, 0, 0);     // current day hh:mm:ss:ms set to 00:00:00:000
-                                                                                                   // search uses lower than max condition !
+  curr.setHours(0);
+  curr.setMinutes(0);
+  curr.setSeconds(0);
+  curr.setMilliseconds(0);
+  var prev_min = new Date(curr);
+  prev_min.setDate(prev_min.getDate() -1); // previous day hh:mm:ss:ms set to 00:00:00:000
+  var prev_max = new Date(curr);           // current day hh:mm:ss:ms set to 00:00:00:000
+                                           // search uses lower than max condition !
   search(database, prev_min, prev_max);
 };
 // --------------------------------------------------------------------------------------
