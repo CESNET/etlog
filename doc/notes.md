@@ -86,14 +86,14 @@ Crontab contains following jobs:
 
 |   command                                             | interval              |              description                 |
 |-------------------------------------------------------|-----------------------|------------------------------------------|
-| `/home/etlog/etlog/scripts/cron.sh`                   | every 5 minutes       | new data importing                       |
+| `/home/etlog/etlog/scripts/data_import.sh`            | every 5 minutes       | new data importing                       |
 | `/home/etlog/etlog/scripts/invalid_records.sh`        | every day at 1:00     | generating of files with invalid records |
 | `/home/etlog/etlog/scripts/invalid_records_mail.sh`   | every monday at 6:00  | sending report about invalid records     |
 | `/home/etlog/etlog/scripts/archive.sh`                | every monday at 6:05  | archiving old log files                  |
 
 Crontab contents:
 ```
-*/5 *  *   *   *     /home/etlog/etlog/scripts/cron.sh
+*/5 *  *   *   *     /home/etlog/etlog/scripts/data_import.sh
 0   1  *   *   *     /home/etlog/etlog/scripts/invalid_records.sh
 0   6  *   *   1     /home/etlog/etlog/scripts/invalid_records_mail.sh
 5   6  *   *   1     /home/etlog/etlog/scripts/archive.sh
@@ -578,7 +578,7 @@ It contains 100 most users with most failed logins from corresponding realm.
   |-- routes.js               - mapping of routes to application
   |-- scripts                 - various scripts
       `-- fticks_to_bson.sh   - transformation script from fticks to bson
-      `-- cron.sh             - cron script to import live data delivered by syslog
+      `-- data_import.sh      - cron script to import live data delivered by syslog
       `-- old_data.sh         - script to import old data
       `-- process_old_data.js - script to generate database data from old data
   |-- views                   - templates of displayed pages
@@ -621,7 +621,7 @@ Everything related to log files is located in /home/etlog/logs.
 
 #### New data
 
-Incoming syslog data are processed by `scripts/cron.sh` and subsequently by `scripts/fticks_to_bson.sh`.
+Incoming syslog data are processed by `scripts/data_import.sh` and subsequently by `scripts/fticks_to_bson.sh`.
 Data are converted from F-Ticks format (for more see [this](https://tools.ietf.org/html/draft-johansson-fticks-00)) to BSON.
 
 Data are processed every 5 minutes by user's crontab.
