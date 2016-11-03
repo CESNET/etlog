@@ -479,16 +479,16 @@ Collection has following structure:
 
 ##### heat\_map
 Collection contains data for every known realm (see [realms](#realms)) for every day.
-Attribute inst\_name represent institution from which the users roam.
-Attribute institutions is an array, which contains institution name and count.
-This array represents visited insitutions from users of realm inst\_name for specific day.
+Attribute realm represent institution from which the users roam.
+Attribute institutions is an array, which contains institution name (also named realm) and count.
+This array represents visited insitutions from users of specific realm for specific day.
 
 Collection has following structure:
 
 | field name   | data type |             note             |
 |--------------|-----------|------------------------------|
 | timestamp    | Date      |         timestamp            |
-| inst\_name   | String    |   institution name           |
+| realm        | String    |   institution name           |
 | institutions | Array     | array of other institutions  |
 
 
@@ -496,20 +496,20 @@ One record may look like:
 ```
 {
         "_id" : ObjectId("5812681deb7bfee4dcde417d"),
-        "inst_name" : "ufa.cas.cz",
+        "realm" : "ufa.cas.cz",
         "timestamp" : ISODate("2016-10-25T22:00:00Z"),
         "institutions" : [
                 {
                         "count" : 1,
-                        "inst_name" : "utia.cas.cz"
+                        "realm" : "utia.cas.cz"
                 },
                 {
                         "count" : 9,
-                        "inst_name" : "asu.cas.cz"
+                        "realm" : "asu.cas.cz"
                 },
                 {
                         "count" : 17,
-                        "inst_name" : "ig.cas.cz"
+                        "realm" : "ig.cas.cz"
                 }
         ]
 }
