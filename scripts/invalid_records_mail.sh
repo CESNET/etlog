@@ -4,37 +4,61 @@
 #
 # This script sends mail about invalid records.
 #
-
 # ==========================================================================================
 
-# recipient
-to="jan.tomasek@cesnet.cz"
+# ==========================================================================================
+# count number of imported documents
+# parameters:
+# 1) date for which number of imported documents should be counted
+# line in file may look like:
+# 2016-10-27T00:05:01.904+0200    imported 484 documents
+# ==========================================================================================
+function count_imported()
+{
+  local file="$etlog_log_root/mongo/err-$1"         # file with log information about imported records
+  local count="$(grep imported "$file" | awk '{ cnt += $3; } END { print cnt; }')"
+  echo "$count"
+}
+# ==========================================================================================
+# main function
+# ==========================================================================================
+function main()
+{
+  # recipient
+  to="jan.tomasek@cesnet.cz"
 
-# copy for testing purposes
-cc="vac.mach@sh.cvut.cz"
+  # copy for testing purposes
+  cc="vac.mach@sh.cvut.cz"
 
-# sender
-sender="etlog@etlog.cesnet.cz"
+  # sender
+  sender="etlog@etlog.cesnet.cz"
 
-# mail subject
-subj="týdenní report - invalidní záznamy"
-subj=$(echo "=?utf-8?B?$(echo $subj | base64)?=")   # utf-8 must be encoded
+  # mail subject
+  subj="týdenní report - invalidní záznamy"
+  subj=$(echo "=?utf-8?B?$(echo $subj | base64)?=")   # utf-8 must be encoded
 
-# etlog log root
-etlog_log_root="/home/etlog/logs"
+  # etlog log root
+  etlog_log_root="/home/etlog/logs"
 
-# mail text
-text="50 invalidních záznamů za poslední týden: \n"
-text+="==========================================================================================\n\n"
-text+="$(head -50 "$etlog_log_root/invalid_records/invalid-$(date --date="yesterday" "+%Y-%m-%d")")\n\n\n"
+  # mail text
+  text="50 invalidních záznamů za poslední týden: \n"
+  text+="==========================================================================================\n\n"
+  text+="$(head -50 "$etlog_log_root/invalid_records/invalid-$(date --date="yesterday" "+%Y-%m-%d")")\n\n\n"
 
-text+="kompletní záznamy za poslední týden jsou dostupné v následujících souborech:\n"
+  text+="kompletní záznamy za poslední týden jsou dostupné v následujících souborech:\n"
 
-for i in {7..1}
-do
-  file="$etlog_log_root/invalid_records/invalid-$(date --date="$i days ago" "+%Y-%m-%d")"
-  text+="$file - $(wc -l < "$file") záznamů\n"
-done
+  for i in {7..1}
+  do
+    day="$(date --date="$i days ago" "+%Y-%m-%d")"                                # determine day
+    all_cnt="$(count_imported "$day")"                                            # count number of all imported records
+    file="$etlog_log_root/invalid_records/invalid-$day"                           # invalid records file
+    invalid_cnt="$(wc -l < "$file")"                                              # count number of invalid records
+    percent=$(printf "%2.1f" $(echo "($invalid_cnt / $all_cnt) * 100" | bc -l))   # count percent
+    text+="$file - $invalid_cnt záznamů | $percent % z celkového počtu importovaných záznamů\n"
+  done
 
-echo -e "$text" | base64 | mail -a "Content-Type: text/plain; charset=\"utf-8\"" -a "Content-Transfer-Encoding: base64" -s "$subj" -r "$sender" "$to" "$cc"
+  echo -e "$text" | base64 | mail -a "Content-Type: text/plain; charset=\"utf-8\"" -a "Content-Transfer-Encoding: base64" -s "$subj" -r "$sender" "$to" "$cc"
+}
+# ==========================================================================================
 
+main
