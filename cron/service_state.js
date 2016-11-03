@@ -31,7 +31,8 @@ exp.process_current_data = function (database) {
     //realms = [ 'asu.cas.cz' ];
 
 
-    realms = [ 'flu.cas.cz', 'ssakhk.cz', 'ueb.cas.cz', 'mvso.cz', 'arup.cas.cz', 'uochb.cas.cz' ];
+    //realms = [ 'flu.cas.cz', 'ssakhk.cz', 'ueb.cas.cz', 'mvso.cz', 'arup.cas.cz', 'uochb.cas.cz' ];
+    realms = [ 'flu.cas.cz' ];
     compare_stats(database, realms);
   });
 
@@ -42,8 +43,8 @@ exp.process_current_data = function (database) {
 function compare_stats(database, realms)
 {
   var data = get_data(realms);
-  //console.log(data);
-  compare_data(data);
+  console.log(data);
+  //compare_data(data);
 
 
 
@@ -101,7 +102,7 @@ function compare_data(data)
         
 
         var highest = data[keys[key]].old_stats.sort(function(a, b) { return a - b; });
-        console.log(highest);
+        //console.log(highest);
 
         // check how much the the value differ from highest values
         if(data[keys[key]].current_stats >= (highest[0] * 2)) {   // at least twice as high as highest value
@@ -116,7 +117,7 @@ function compare_data(data)
           
           // check count of successfull logins for previous day
           var succ = request.get_succ_logins_daily(prev_min, keys[key]);
-          console.log(succ.length);
+          //console.log(succ.length);
           if(succ.length == 0) {     // no successful loging exist
             console.log("possible problem");
             console.log(keys[key]);
@@ -128,7 +129,17 @@ function compare_data(data)
   }
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get data for all realms
+//
+// one realm could produce for example:
+// { 'flu.cas.cz':
+//   { current_stats: { fail: [Object], ok: [Object] },
+//     current_avg_stats: { ok: 55, fail: 2 },
+//     current_day_stats: { ok: 52, fail: 0 },
+//     old_stats: { fail: [Object], ok: [Object] },
+//     old_avg_stats: { ok: 59.5, fail: 2 },
+//     avg_ratio: { ok: 0.9243697478991597, fail: 1 } } }
+//
 // --------------------------------------------------------------------------------------
 function get_data(realms)
 {
@@ -146,12 +157,12 @@ function get_data(realms)
   async.forEachOf(realms, function (value, key, callback) {                    // loop all realms
     prev_min = new Date(ref);
     ret[realms[key]] = {};
-    var current_stats = compute_month_stats(realms[key], prev_min);             // stats for past month including previous day
-    ret[realms[key]].current_avg_stats = compute_avg(current_stats);            // average
-    ret[realms[key]].current_stats = get_day_stats(prev_min, realms[key]);      // stats for previous day only
-    prev_min.setDate(prev_min.getDate() - 7);                                   // 8 days before current day
-    ret[realms[key]].old_stats = compute_month_stats(realms[key], prev_min);    // stats or past month excluding previous day
-    ret[realms[key]].old_avg_stats = compute_avg(ret[realms[key]].old_stats);   // average
+    ret[realms[key]].current_stats = compute_month_stats(realms[key], prev_min);        // stats for past month including previous day
+    ret[realms[key]].current_avg_stats = compute_avg(ret[realms[key]].current_stats);   // average
+    ret[realms[key]].current_day_stats = get_day_stats(prev_min, realms[key]);          // stats for previous day only
+    prev_min.setDate(prev_min.getDate() - 7);                                         // 8 days before current day
+    ret[realms[key]].old_stats = compute_month_stats(realms[key], prev_min);          // stats or past month excluding previous day
+    ret[realms[key]].old_avg_stats = compute_avg(ret[realms[key]].old_stats);         // average
     ret[realms[key]].avg_ratio = get_avg_ratio(ret[realms[key]].current_avg_stats, ret[realms[key]].old_avg_stats);
     callback(null);
   }, function (err) {
@@ -167,13 +178,15 @@ function get_data(realms)
   return ret;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get both ok and fail stats for past month from given gate for given realm
 // --------------------------------------------------------------------------------------
 function compute_month_stats(realm, prev_min)
 {
   var month = [0, 7, 14, 21];      // month by weeks
   var month_day = new Date(prev_min);
-  var res = [];
+  var res = {};
+  res.fail = [];
+  res.ok = [];
   var done = false;
 
   async.forEachOf(month, function (value, key, callback) {        // loop same days in month
@@ -182,13 +195,14 @@ function compute_month_stats(realm, prev_min)
         month_day = new Date(prev_min.getTime() - (month[key] * 86400000)); // correct time adjusting
         request.get_failed_logins_daily(month_day, realm, done);
       },
+      function(done) {
+        month_day = new Date(prev_min.getTime() - (month[key] * 86400000)); // correct time adjusting
+        res.ok.push(request.get_succ_logins_daily(month_day, realm).length);
+        done(null);
+      },
       ],
       function(err, results) {
-        res.push(sum_fail_count(results[0]));
-        
-        // debug
-        //console.log(new Date(prev_min.getTime() - month[key] * 86400000));
-        //console.log(sum_fail_count(results[0]));
+        res.fail.push(sum_fail_count(results[0]));
         callback(null);
     });
   }, function (err) {
@@ -201,89 +215,51 @@ function compute_month_stats(realm, prev_min)
     return !done;
   });
 
-  return res; // return array
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //async.forEachOf(realms, function (value_realm, key_realm, callback_realm) {     // loop all realms
-  //  async.forEachOf(month, function (value_month, key_month, callback_month) {        // loop same days in month
-  //    async.series([
-  //      function(done) {
-  //        month_day.setDate(prev_min.getDate() - month[key_month]);
-  //        request.get_failed_logins_daily(month_day, realms[key_realm], done);
-  //      },
-  //      ],
-  //      function(err, results) {
-  //        res.push(sum_fail_count(results[0]));
-  //        
-  //        // debug
-  //        //console.log(new Date(prev_min.getTime() - month[key_month] * 86400000));
-  //        //console.log(sum_fail_count(results[0]));
-  //        callback_month(null);
-  //    });
-  //  
-  //  }, function (err) {
-  //    if (err)
-  //      console.log(err);
-  //    callback_realm(null);
-  //  });
-  //
-  //}, function (err) {
-  //  if (err)
-  //    console.log(err);
-  //  done = true;  
-  //});
-
-  //deasync.loopWhile(function() {
-  //  return !done;
-  //});
-
-  //return res; // return array
+  return res; // return dict
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// compute ratio of both ok and fail average values
 // --------------------------------------------------------------------------------------
 function get_avg_ratio(curr, old)
 {
-  if(old == 0) {
-    if(curr != 0)
-      return curr;
-    else {
-      return 0;
+  var items = ['ok', 'fail'];
+  var res = {};
+
+  for(var i in items) {
+    if(old[items[i]] == 0) {
+      if(curr[items[i]] != 0)
+        res[items[i]] = curr[items[i]];
+      else
+        res[items[i]] = 0;
     }
+    else
+      res[items[i]] = curr[items[i]] / old[items[i]];
   }
 
-  return curr / old;
+  return res;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get both ok and fail stats for given day and realm
 // --------------------------------------------------------------------------------------
 function get_day_stats(date, realm)
 {
   var done = false;
-  var res;
+  var res = {};
 
   async.series([
     function(done) {
       request.get_failed_logins_daily(date, realm, done);
     },
+    function(done) {
+      res.ok = request.get_succ_logins_daily(date, realm).length;
+      done(null);
+    },
     ],
     function(err, results) {
-      res = sum_fail_count(results[0]);
+      res.fail = sum_fail_count(results[0]);
       done = true;
   });
-  
+ 
   deasync.loopWhile(function() {
     return !done;
   });
@@ -291,7 +267,7 @@ function get_day_stats(date, realm)
   return res;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// compute sum of fail count for given data
 // --------------------------------------------------------------------------------------
 function sum_fail_count(data)
 {
@@ -304,18 +280,29 @@ function sum_fail_count(data)
   return cnt;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// compute average value for both ok and fail values
 // --------------------------------------------------------------------------------------
 function compute_avg(data)
 {
-  var cnt = data.length;
+  var cnt = data.fail.length;   // same as ok
   var sum = 0;
+  var ret = {};
+  ret.ok = 0;
+  ret.fail = 0;
 
-  for(var item in data) {
-    sum += data[item];
+  for(var item in data.ok) {
+    ret.ok += data.ok[item];
   }
 
-  return (sum / cnt);
+  for(var item in data.fail) {
+    ret.fail += data.fail[item];
+  }
+
+  ret.ok = ret.ok / cnt;
+  ret.fail = ret.fail / cnt;
+
+  return ret;
 }
+// --------------------------------------------------------------------------------------
 module.exports = exp;
 
