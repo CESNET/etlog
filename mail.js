@@ -51,11 +51,13 @@ module.exports.send_mail = function (subject, recipients, data)
 // --------------------------------------------------------------------------------------
 module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
 {
+  var subj = "měsíční report - neúspěšná přihlášení";
+
   database.realm_admins.find({ query : {}, $orderby : { timestamp : 1 } } , { realm : 1, admins : 1, _id : 0 },
   function(err, items) {
     for(var dict in items) {
       // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
-      data_func(items[dict].realm, items[dict].admins, limit, module.exports.send_mail);
+      module.exports.send_mail(subj, items[dict].admins, data_func(items[dict].realm, limit));
     }
   });
 }

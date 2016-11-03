@@ -5,11 +5,16 @@ const deasync = require('deasync');
 const url_base = 'https://etlog.cesnet.cz:8443/api';
 // --------------------------------------------------------------------------------------
 // get failed logins
-// parameter limit number of results
+// parameters:
+// realm = limit query only to this realm
+// limit = limit number of results
+//  limit number of results
 // --------------------------------------------------------------------------------------
-exp.get_failed_logins_monthly = function(realm, recipients, limit, callback)
+exp.get_failed_logins_monthly = function(realm, limit)
 {
   var url = "/failed_logins/";
+  var done = false;
+  var fail;
 
   var max = new Date();     // current date
   max.setHours(0);
@@ -29,19 +34,30 @@ exp.get_failed_logins_monthly = function(realm, recipients, limit, callback)
   query += "&limit=" + limit;     // limit number of records
   query += "&sort=-fail_count";   // sort by fail_count
  
+  ok = exp.get_succ_logins_monthly(realm);
+
   request.get({
     url: url_base + url + query     // use query string here for simple usage
   }, function (error, response, body) {
     if(error)
       console.log(error);
-    else
-      callback("měsíční report - neúspěšná přihlášení", recipients, failed_to_human_readable(JSON.parse(body))); // return response to caller
+    fail = JSON.parse(body);
+    done = true;
   });
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
+
+  return failed_to_human_readable(fail, sum_fail_count(exp.get_all_failed_logins_monthly(realm)));
 }
 // --------------------------------------------------------------------------------------
 // convert failed logins structure to human readable text
+// parameters:
+// data - failed data to transform
+// sum - sum of all failed logins
 // --------------------------------------------------------------------------------------
-function failed_to_human_readable(data)
+function failed_to_human_readable(data, sum)
 {
   var ret = "";
   var longest = 0;
@@ -59,7 +75,7 @@ function failed_to_human_readable(data)
     for(var i = data[item].username.length; i < longest; i++)   // insert space padding
       ret+= " ";
 
-    ret += " | fail_count: " + data[item].fail_count + ", ok_count: " + data[item].ok_count + ", ratio : " + data[item].ratio + "\n";
+    ret += " | fail_count: " + data[item].fail_count + ", ok_count: " + data[item].ok_count + ", ratio : " + data[item].ratio + ", ratio to all : "            + Number(data[item].fail_count / sum).toFixed(4) + "\n";
   }
 
   return ret;
@@ -112,8 +128,8 @@ exp.get_succ_logins_daily = function(date, realm)
   min.setDate(max.getDate() - 1);  // 1 day before
 
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
-  query += "&realm=" + realm;
-  query += "&result=OK";
+  query += "&realm=" + realm;   // limit by realm
+  query += "&result=OK";        // only successful logins
 
   request.get({
     url: url_base + url + query     // use query string here for simple usage
@@ -131,6 +147,98 @@ exp.get_succ_logins_daily = function(date, realm)
   });
 
   return ret;
+}
+// --------------------------------------------------------------------------------------
+// get successful logins for past month for given realm
+// --------------------------------------------------------------------------------------
+exp.get_succ_logins_monthly = function(realm)
+{
+  var url = "/search/";
+  var done = false;
+  var max = new Date();     // current date
+  max.setHours(0);
+  max.setMinutes(0);
+  max.setSeconds(0);
+  max.setMilliseconds(0);  // set to 00:00:00:000
+
+  var min = new Date(max);
+  min.setDate(max.getDate() - 30);  // 30 days before
+  var ret;
+
+  var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
+  query += "&realm=" + realm;   // limit by realm
+  query += "&result=OK";        // only successful logins
+
+  request.get({
+    url: url_base + url + query     // use query string here for simple usage
+  }, function (error, response, body) {
+    if(error)
+      console.log(error);
+    ret = JSON.parse(body);
+    done = true;
+  });
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// return all failed logins for past month
+// parameters
+// realm = limit query only to this realm
+// --------------------------------------------------------------------------------------
+exp.get_all_failed_logins_monthly = function(realm)
+{
+  var url = "/failed_logins/";
+  var done = false;
+  var ret;
+
+  var max = new Date();     // current date
+  max.setHours(0);
+  max.setMinutes(0);
+  max.setSeconds(0);
+  max.setMilliseconds(0);  // set to 00:00:00:000
+
+  var min = new Date(max);
+  min.setDate(max.getDate() - 30);  // 30 days before
+
+  var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
+
+  if(realm != "cz") // exception for tld
+    query += "&username=/.*@" + realm + "$/";          // limit by domain part uf username => realm
+
+  // TODO ?
+  //query += "&ok_count=0";         // limit to only users, which have not successfully authenticated
+
+  request.get({
+    url: url_base + url + query     // use query string here for simple usage
+  }, function (error, response, body) {
+    if(error)
+      console.log(error);
+    ret = JSON.parse(body);
+    done = true;
+  });
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// compute sum of fail count for given data
+// --------------------------------------------------------------------------------------
+function sum_fail_count(data)
+{
+  var cnt = 0;
+
+  for(var item in data) {
+    cnt += data[item].fail_count;
+  }
+
+  return cnt;
 }
 // --------------------------------------------------------------------------------------
 module.exports = exp;
