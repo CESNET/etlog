@@ -148,6 +148,7 @@ gawk
 logtail
 postfix
 mailutils
+bc
 
 Other special packages along with installation are listed below.
   
