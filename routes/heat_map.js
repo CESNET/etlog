@@ -7,7 +7,7 @@ const qp = require('./query_parser');
 router.get('/', function(req, res, next) {
   try {
     var query = qp.parse_query_string(req.url,
-      ['timestamp', 'inst_name', 'institutions.inst_name', 'institutions.count'],
+      ['timestamp', 'realm', 'institutions.realm', 'institutions.count'],
       qp.validate_days);
   }
   catch(err) {
@@ -40,7 +40,7 @@ function search_days(req, res, query) {
         {
           _id :
             {
-              inst_name : "$inst_name"      // group by isnt name
+              realm : "$realm"      // group by realm
             },
           institutions :       // add users
             {
@@ -51,7 +51,7 @@ function search_days(req, res, query) {
     {
       $project :
         {
-          inst_name : "$_id.inst_name",
+          realm : "$_id.realm",
           institutions : 1,
           _id : 0
         }
