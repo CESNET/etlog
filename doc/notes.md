@@ -730,7 +730,7 @@ Application api:
 | /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
 | /api/roaming/most\_used/        |        | timestamp, [ inst\_name, used\_count ]                 |                        |
 | /api/shared\_mac/               |        | timestamp, [ count, mac\_address, users ]              |                        |
-| /api/heat\_map/                 |        | timestamp, [ inst\_name, institutions.inst\_name, institutions.count  |         |
+| /api/heat\_map/                 |        | timestamp, [ realm, institutions.realm, institutions.count  |         |
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
 
@@ -801,10 +801,10 @@ curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/\.edu$/&timestamp>201
 curl 'https://etlog.cesnet.cz/api/failed_logins/?username=/.*@fit\.cvut\.cz$/&timestamp>2016-09-20&timestamp<2016-10-10&ok_count=0&sort=-fail_count&limit=10'
 
 # get heat map data for 2016-08-30 for institution 'cvut.cz'
-curl 'https://etlog.cesnet.cz/api/heat_map/?timestamp=2016-08-30&inst_name=cvut.cz'
+curl 'https://etlog.cesnet.cz/api/heat_map/?timestamp=2016-08-30&realm=cvut.cz'
 
 # get heat map data for 2016-08-30 where institution 'vfn.cz' was the visited institution
-curl 'https://etlog.cesnet.cz/api/heat_map/?timestamp=2016-08-30&institutions.inst_name=vfn.cz'
+curl 'https://etlog.cesnet.cz/api/heat_map/?timestamp=2016-08-30&institutions.realm=vfn.cz'
 
 # get heat map data for 2016-08-30 where the visited count was more than 1000
 curl 'https://etlog.cesnet.cz/api/heat_map/?timestamp=2016-08-30&institutions.count>1000'
