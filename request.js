@@ -1,6 +1,7 @@
 // --------------------------------------------------------------------------------------
 var exp = {}
 const request = require('request');
+const deasync = require('deasync');
 const url_base = 'https://etlog.cesnet.cz:8443/api';
 // --------------------------------------------------------------------------------------
 // get failed logins
@@ -95,9 +96,41 @@ exp.get_failed_logins_daily = function(date, realm, callback)
 // --------------------------------------------------------------------------------------
 // returns successful logins for given date and realm
 // --------------------------------------------------------------------------------------
-exp.get_succ_logins_daily = function(date, realm, callback)
+exp.get_succ_logins_daily = function(date, realm)
 {
-  // TODO
+  var url = "/search/";
+  var done = false;
+  var ret;
+
+  var max = new Date(date);
+  max.setHours(0);
+  max.setMinutes(0);
+  max.setSeconds(0);
+  max.setMilliseconds(0);  // set to 00:00:00:000
+
+  var min = new Date(max);
+  min.setDate(max.getDate() - 1);  // 1 day before
+
+  var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
+  query += "&realm=" + realm;
+  query += "&result=OK";
+
+  request.get({
+    url: url_base + url + query     // use query string here for simple usage
+  }, function (error, response, body) {
+    if(error)
+      console.log(error);
+    else {
+      ret = JSON.parse(body);
+      done = true;
+    }
+  });
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
+
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 module.exports = exp;
