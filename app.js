@@ -21,7 +21,8 @@ app.set('view engine', 'pug');
 // --------------------------------------------------------------------------------------
 // uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
+// Standard Apache combined log output with added response time and status
+app.use(logger(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time[3] ms :status'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
