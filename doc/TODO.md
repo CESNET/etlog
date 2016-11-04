@@ -1,5 +1,7 @@
 # Reporty
 
+- Sjednotit české a anglické popisky v emailech?
+
 ## Neúspěsná přihlášení
 
 Celkovým počtem je míněno:
@@ -48,8 +50,22 @@ TODO
 
 ## Filtrování
 
-TODO
+- povolit import záznamů s prázdnými jmény?
+- nějakou další logiku, která bude analyzovat/zobrazovat prázdné mac adresy a jména? (prázdné mac adresy tvoří zhruba 5 %, prázdná username zhruba 20 %)
+
+# Archivace
+
+- Archivace jednou za týden.
+- Archivována data stará 14 dní až týden.
+- Žádná data nejsou mazána.
+
+- Vyhovuje to takto?
+
+# Ostatní
+
+- specifikovat licenci v repozitáři?
 
 # TODO list
 1. Autentizace
-2. ...
+2. Webové rozhraní
+3. ...
