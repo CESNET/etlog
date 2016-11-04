@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const database = require( './db' );
 const fs = require( 'fs' );
+const rotator = require('file-stream-rotator')
 // --------------------------------------------------------------------------------------
 // call express
 var app = express();
@@ -19,10 +20,27 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
 
 // --------------------------------------------------------------------------------------
+// set up webserver log files
+
+var log_dir = '/home/etlog/logs/access/';
+
+// ensure log directory exists
+fs.existsSync(log_dir) || fs.mkdirSync(log_dir);
+
+// create a rotating write stream
+var access_log = rotator.getStream({
+  date_format: 'YYYY-MM-DD',
+  filename: path.join(log_dir, 'access-%DATE%.log'),
+  frequency: 'daily',
+  verbose: false
+})
+
+// --------------------------------------------------------------------------------------
 // uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.ico'));
 // Standard Apache combined log output with added response time and status
-app.use(logger(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time[3] ms :status'));
+// output to access log
+app.use(logger(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time[3] ms :status', { stream : access_log }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
