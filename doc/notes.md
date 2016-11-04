@@ -546,6 +546,7 @@ It contains information about invalid records of past week.
 
 Monthly report is sent to all administrators defined in [realm_admins](#realm_admins).
 It contains 100 most users with most failed logins from corresponding realm.
+Limit of 100 users is defined in [cron.js](https://github.com/CESNET/etlog/blob/master/cron.js#L15).
 
 ### Application structure
 
