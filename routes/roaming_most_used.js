@@ -23,7 +23,7 @@ router.get('/', function(req, res, next) {
 // --------------------------------------------------------------------------------------
 function respond(err, items, res) {
   if(err) {
-    console.log(err);
+    console.error(err);
     res.send(err);
     return;
   }

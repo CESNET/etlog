@@ -59,7 +59,7 @@ exp.process_old_data = function (database, callback) {
     },
     function(err) {
       if(err)
-        console.log(err);
+        console.error(err);
       else
         console.log("cron task roaming finished processing old data");
       callback(null, null);
@@ -154,7 +154,7 @@ function get_most_provided(database, min_date, max_date, done)
           save_to_db(database, transform_provided(items, min_date));
       }
       else
-        console.log(err);
+        console.error(err);
   });
 }
 // --------------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ function save_to_db(database, items)
     database.roaming.update(items[item], items[item], { upsert : true },
     function(err, result) {
       if(err)
-        console.log(err);
+        console.error(err);
     });
   }
 }
@@ -178,12 +178,12 @@ function save_to_db_callback(database, items, done) {
     database.roaming.update(items[key], items[key], { upsert : true },
     function(err, result) {
       if(err)
-        console.log(err);
+        console.error(err);
       callback(null);   // save next item
     });
   }, function (err) {
     if (err)
-      console.log(err);
+      console.error(err);
     done(null, null);   // all items are saved
   });
 }
@@ -283,7 +283,7 @@ function get_most_used(database, min_date, max_date, done)
           save_to_db(database, transform_used(items, min_date));
       }
       else
-        console.log(err);
+        console.error(err);
   });
 }
 // --------------------------------------------------------------------------------------

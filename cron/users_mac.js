@@ -60,7 +60,7 @@ exp.process_old_data = function (database, callback) {
     },
     function(err) {
       if(err)
-        console.log(err);
+        console.error(err);
       else
         console.log("cron task users_mac finished processing old data");
       callback(null, null);
@@ -149,7 +149,7 @@ function process_data(database, min_date, max_date, done)
           transform(items, database);
       }
       else
-        console.log(err);
+        console.error(err);
     });
 }
 // --------------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ function transform(items, database)
       }, 
       function (err, result) {
         if(err)
-          console.log(err);
+          console.error(err);
         // nothing more to do here
     });
   }
@@ -218,12 +218,12 @@ function transform_callback(items, database, done)
       },
       function (err, result) {
         if(err)
-          console.log(err);
+          console.error(err);
         callback(null);   // process next item
     });
   }, function (err) {
     if (err)
-      console.log(err);
+      console.error(err);
     done(null, null);   // all items are saved
   });
 }

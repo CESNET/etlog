@@ -36,7 +36,7 @@ module.exports.send_mail = function (subject, recipients, data)
   // send mail with defined transport object
   mailer.transporter.sendMail(mailer.mail_options, function(error, info) {
     if(error) {
-      return console.log(error);
+      return console.error(error);
     }
     console.log('Message sent: ' + info.response);
   });

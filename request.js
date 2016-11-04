@@ -40,7 +40,7 @@ exp.get_failed_logins_monthly = function(realm, limit)
     url: url_base + url + query     // use query string here for simple usage
   }, function (error, response, body) {
     if(error)
-      console.log(error);
+      console.error(error);
     fail = JSON.parse(body);
     done = true;
   });
@@ -103,7 +103,7 @@ exp.get_failed_logins_daily = function(date, realm, callback)
     url: url_base + url + query     // use query string here for simple usage
   }, function (error, response, body) {
     if(error)
-      console.log(error);
+      console.error(error);
     else {
       callback(null, JSON.parse(body));   // return response to caller
     }
@@ -135,7 +135,7 @@ exp.get_succ_logins_daily = function(date, realm)
     url: url_base + url + query     // use query string here for simple usage
   }, function (error, response, body) {
     if(error)
-      console.log(error);
+      console.error(error);
     else {
       ret = JSON.parse(body);
       done = true;
@@ -173,7 +173,7 @@ exp.get_succ_logins_monthly = function(realm)
     url: url_base + url + query     // use query string here for simple usage
   }, function (error, response, body) {
     if(error)
-      console.log(error);
+      console.error(error);
     ret = JSON.parse(body);
     done = true;
   });
@@ -216,7 +216,7 @@ exp.get_all_failed_logins_monthly = function(realm)
     url: url_base + url + query     // use query string here for simple usage
   }, function (error, response, body) {
     if(error)
-      console.log(error);
+      console.error(error);
     ret = JSON.parse(body);
     done = true;
   });

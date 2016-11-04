@@ -58,7 +58,7 @@ exp.process_old_data = function (database, callback) {
     },
     function(err) {
       if(err)
-        console.log(err);
+        console.error(err);
       else
         console.log("cron task shared_mac finished processing old data");
       callback(null, null);
@@ -102,7 +102,7 @@ function search(database, min, max, done) {
           save_to_db(database, transform(items, min));    // add timestamp in transform
       }
       else
-        console.log(err);
+        console.error(err);
   });
 }
 // --------------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ function save_to_db(database, items) {
     database.shared_mac.update(items[item], items[item], { upsert : true },
     function(err, result) {
       if(err)  
-        console.log(err);
+        console.error(err);
     });
   }
 }
@@ -125,12 +125,12 @@ function save_to_db_callback(database, items, done) {
     database.shared_mac.update(items[key], items[key], { upsert : true },
     function(err, result) {
       if(err)
-        console.log(err);
+        console.error(err);
       callback(null);   // save next item
     });
   }, function (err) {
     if (err)
-      console.log(err);
+      console.error(err);
     done(null, null);   // all items are saved
   });
 }

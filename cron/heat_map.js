@@ -76,7 +76,7 @@ exp.process_old_data = function (database, callback) {
       },
       function(err) {
         if(err)
-          console.log(err);
+          console.error(err);
         else
           console.log("cron task heat map finished processing old data");
         callback(null, null);
@@ -138,20 +138,20 @@ function search(database, realms, min, max, done)
       });
     }, function (err) {
       if (err)
-        console.log(err);
+        console.error(err);
       else {
         // save item
         database.heat_map.update({ inst_name : item.inst_name, timestamp: item.timestamp }, item, { upsert : true },
         function(err, result) {
           if(err)  
-            console.log(err);
+            console.error(err);
           callback_src(null);       // continue when record is saved
         });
       }
     });
   }, function (err) {
     if (err)
-      console.log(err);
+      console.error(err);
     if(done) {      // callback is defined
       done(null, null);
     }
@@ -180,7 +180,7 @@ function generate_realms(database)
         database.realms.update({ realm : realm_list[realm] }, { realm : realm_list[realm] }, { upsert : true },
         function(err, result) {
           if(err)  
-            console.log(err);
+            console.error(err);
         });
 
       }

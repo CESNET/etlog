@@ -171,7 +171,7 @@ function search_days(req, res, query) {
 // --------------------------------------------------------------------------------------
 function respond(err, items, res) {
   if(err) {
-    console.log(err);
+    console.error(err);
     res.send(err);
     return;
   }
