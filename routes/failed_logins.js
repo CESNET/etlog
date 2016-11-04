@@ -17,13 +17,13 @@ router.get('/', function(req, res, next) {
     return;
   }
 
-  search_days(req, res, query);     // perform search with constructed mongo query
+  search_days(req, res, next, query);     // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // search database for specified data
 // timestamp matches specific day or range of days
 // --------------------------------------------------------------------------------------
-function search_interval(req, res, query) {
+function search_interval(req, res, next, query) {
   username = query.filter.username || { $ne : "" };     // specific username or no empty one
 
   dict = {
@@ -85,14 +85,21 @@ function search_interval(req, res, query) {
     }  
   }
   ], function(err, items) {
-    respond(err, transform(items), res)
+    if(err) {
+      console.error(err);
+      var err = new Error(err);
+      next(err);
+      return;
+    }
+
+    respond(transform(items), res)
   });
 }
 // --------------------------------------------------------------------------------------
 // search database for specified data
 // timestamp matches specific day or range of days
 // --------------------------------------------------------------------------------------
-function search_days(req, res, query) {
+function search_days(req, res, next, query) {
   // query for username with records for multiple days
   // gets results separated for each day !
   // this is defined by the query -> needs to be computed on the fly
@@ -165,20 +172,20 @@ function search_days(req, res, query) {
 
   req.db.failed_logins.aggregate(aggregate_query,
   function(err, items) {
-    respond(err, round_ratio(items), res);
+    if(err) {
+      console.error(err);
+      var err = new Error(err);
+      next(err);
+      return;
+    }
+
+    respond(round_ratio(items), res);
   });
 }
 // --------------------------------------------------------------------------------------
 // send data to user
 // --------------------------------------------------------------------------------------
-function respond(err, items, res) {
-  if(err) {
-    console.error(err);
-    var err = new Error(err);
-    next(err);
-    return;
-  }
-  
+function respond(items, res) {
   res.json(items);
 }
 // --------------------------------------------------------------------------------------

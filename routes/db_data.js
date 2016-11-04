@@ -101,7 +101,14 @@ router.get('/', function(req, res, next) {
     },
     ],
     function(err, results) {
-      respond(err, ret, res);
+      if(err) {
+        console.error(err);
+        var err = new Error(err);
+        next(err);
+        return;
+      }
+
+      respond(ret, res);
   });
 });
 // --------------------------------------------------------------------------------------
@@ -116,14 +123,7 @@ function convert(date)
 // --------------------------------------------------------------------------------------
 // send data to user
 // --------------------------------------------------------------------------------------
-function respond(err, items, res) {
-  if(err) {
-    console.error(err);
-    var err = new Error(err);
-    next(err);
-    return;
-  }
-  
+function respond(items, res) {
   res.json(items);
 }
 // --------------------------------------------------------------------------------------
