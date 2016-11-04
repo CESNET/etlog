@@ -17,7 +17,7 @@ exp.parse_query_string = function(url, whitelist, validate, date_req) {
   var qs = url.match(/\?.*$/);  // try to match query string if present
 
   if(!qs)
-    throw { error : "no query string present!"};
+    throw { error : "V dotazu není přítomen query string!"};
 
   qs = qs[0];           // extract query string part from request url
   qs = qs.substr(1);   // remove '?'
@@ -41,17 +41,17 @@ exp.validate_days = function(query) {
     for(var key in keys) {
       if(!(query.filter.timestamp[keys[key]].getHours() == 0 && query.filter.timestamp[keys[key]].getMinutes() == 0
         && query.filter.timestamp[keys[key]].getSeconds() == 0 && query.filter.timestamp[keys[key]].getMilliseconds() == 0))
-        throw { error : "incorrect interval specification!" };  // some part is set incorrectly
+        throw { error : "nesprávná specifikace intervalu!" };  // some part is set incorrectly
     }
   }
   else if(query.filter.timestamp.constructor == Object && Object.keys(query.filter.timestamp).length != 2)   // more or less values
   {
-    throw { error : "bad number of timestamp values for interval!" };
+    throw { error : "nesprávný počet hodnot proměnné timestamp pro interval!" };
   }
   else {    // one day only
     if(!(query.filter.timestamp.getHours() == 0 && query.filter.timestamp.getMinutes() == 0 
       && query.filter.timestamp.getSeconds() == 0 && query.filter.timestamp.getMilliseconds() == 0))
-      throw { error : "incorrect date!" };  // some part is set incorrectly
+      throw { error : "nesprávné datum!" };  // some part is set incorrectly
   }
 }
 // --------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ exp.validate_interval = function(query, date_req) {
       // TODO
     }
     else {
-      throw { error : "end timestamp not defined!" };
+      throw { error : "koncový timestamp musí být definován!" };
     }
   }
 
@@ -82,13 +82,13 @@ function valid_timestamp(query)
 
   for(var key in keys)
     if(isNaN(Date.parse(keys[key])))    // invalid date
-      throw { error : "invalid date: " + keys[key]};
+      throw { error : "neplatné datum: " + keys[key]};
 }
 // --------------------------------------------------------------------------------------
 function check_timestamp(query)
 {
   if(query.filter.timestamp == undefined)
-    throw { error : "timestamp must be defined!"};
+    throw { error : "timestamp musí být definován!"};
 }
 // --------------------------------------------------------------------------------------
 module.exports = exp;
