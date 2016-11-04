@@ -122,8 +122,8 @@ For details see [reports](#reports).
 
 Mail is handled by postfix mail server. 
 Postfix configuration type is set up as Internet site.
-Listeting only on localhost address is done with 
-`inet_interfaces = 127.0.0.1` in /etc/postfix/main.cf
+Listeting only on localhost address (for both ipv4 and ipv6) is done with
+`inet_interfaces = 127.0.0.1, [::1` in /etc/postfix/main.cf
 
 
 #### Node.js
