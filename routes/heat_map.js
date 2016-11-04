@@ -10,8 +10,10 @@ router.get('/', function(req, res, next) {
       ['timestamp', 'realm', 'institutions.realm', 'institutions.count'],
       qp.validate_days);
   }
-  catch(err) {
-    res.status(400).send(err.error);
+  catch(error) {
+    var err = new Error(error.error);
+    err.status = 400;
+    next(err);
     return;
   }
 
@@ -87,7 +89,8 @@ function search_days(req, res, query) {
 function respond(err, items, res) {
   if(err) {
     console.error(err);
-    res.send(err);
+    var err = new Error(err);
+    next(err);
     return;
   }
   

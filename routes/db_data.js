@@ -119,7 +119,8 @@ function convert(date)
 function respond(err, items, res) {
   if(err) {
     console.error(err);
-    res.send(err);
+    var err = new Error(err);
+    next(err);
     return;
   }
   
