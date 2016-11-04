@@ -13,7 +13,7 @@ function set_up_mailer()
   
   // setup e-mail data with unicode symbols
   var mail_options = {
-    from: 'etlog <etlog@etlog.cesnet.cz>', // sender address
+    from: 'etlog@etlog.cesnet.cz <etlog@etlog.cesnet.cz>', // sender address
     to: 'jan.tomasek@cesnet.cz', // list of receivers
     cc: 'vac.mach@sh.cvut.cz',  // copy
   };
