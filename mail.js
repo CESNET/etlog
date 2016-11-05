@@ -66,6 +66,6 @@ module.exports.send_error_report = function (data)
   var subj = "hlášení o chybě";
   recipients = [ 'vac.mach@sh.cvut.cz' ];
 
-  module.exports.send_mail(subj, recipients, data);
+  module.exports.send_mail(subj, recipients, String(data));
 }
 // --------------------------------------------------------------------------------------
