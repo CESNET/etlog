@@ -35,8 +35,9 @@ Jak filtrovat?
 
 - Dostupnost pouze v souborech nebo nějakým způsobem skrze aplikaci?
 - Dostupnost pro správce všech zapojených institucí?
+  - Pouze data pro daný realm?
 
-# Zálohování
+# Zálohování DB
 
 - Co zálohovat?
 - Jak často?
@@ -64,8 +65,20 @@ TODO
 # Ostatní
 
 - specifikovat licenci v repozitáři?
+- nějakou logiku, která zapne aplikaci po pádu/restartu serveru.
+- ze 404 stranky neni zadny odkaz zpet klikatelny
+- systemd -> logování stdout a stderr
+  - pouzit syslog a na zaklade velikosti rotovat?
+  - informativni hlasky jdou na stdout
+  - chyby jdou na stderr
+  - updatovat konfiguraci syslogu
+
 
 # TODO list
 1. Autentizace
 2. Webové rozhraní
-3. ...
+3. sshguard
+4. zálohování
+5. zálohování DB
+6. ...
+7. ...
