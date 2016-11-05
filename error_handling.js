@@ -36,6 +36,7 @@ const mail = require( './mail' );
     if(err.status == undefined) {       // server failure
       msg = "V aplikaci došlo k chybě. Hlášení o chybě bylo odesláno vývojářům.";
       mail.send_error_report(err);    // send error report to developers
+      res.end(msg);
     }
     else if(err.status == 404) {
       res.render('error', {
