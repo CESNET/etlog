@@ -130,6 +130,11 @@ exp.get_succ_logins_daily = function(date, realm)
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
   query += "&realm=" + realm;   // limit by realm
   query += "&result=OK";        // only successful logins
+  query += "&fields=username";  // limit output to limit size of response
+
+  // possible clean solution other than limiting output to specific fields:
+  // https://github.com/Automattic/mongoose/issues/2964
+  // http://mongoosejs.com/docs/api.html#aggregate_Aggregate-cursor
 
   request.get({
     url: url_base + url + query     // use query string here for simple usage
