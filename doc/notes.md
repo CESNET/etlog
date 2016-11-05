@@ -836,3 +836,31 @@ When not specified, values for hours, minutes, seconds and milliseconds are set 
 | %Y-%m-%d          | 2016-10-06                |
 
 
+### System intergation
+
+Application is intergated in system with the use of systemd.
+systemd is an init system used in Linux distributions.
+
+Service configuration is in `/etc/systemd/system/etlog.service`.
+File contents:
+
+```
+[Service]
+ExecStart=/usr/bin/npm --prefix /home/etlog/etlog/ start
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=etlog
+User=etlog
+Group=etlog
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Service is enabled by `systemctl enable etlog`.
+Service is launched by `systemctl start etlog`.
+In case the application crashes for some reason, systemd automatically restarts it.
+
+
+
