@@ -627,6 +627,7 @@ Everything related to log files is located in /home/etlog/logs.
       `-- err-*              - file containing line numbers of invalid records
       `-- last_*             - file containing number of last processed line of corresponding log file
   |-- invalid_records        - directory with files containing invalid records for every day
+  |-- access                 - webserver access log files for every day
 ```
 
 #### New data
