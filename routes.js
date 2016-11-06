@@ -21,6 +21,7 @@ module.exports = function(app, database) {
   app.use('/api/shared_mac', require('./routes/shared_mac'));                        // generic api for shared mac
   app.use('/api/heat_map', require('./routes/heat_map'));                            // generic api for heat map
   app.use('/api/db_data', require('./routes/db_data'));                              // api for db data
+  app.use('/api/realms', require('./routes/realms'));                                // api for realms
   // TODO
   // app.use('/api/stats', require('./routes/stats'));   // TODO
 
