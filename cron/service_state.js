@@ -5,15 +5,9 @@ const deasync = require('deasync');
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-exp.process_old_data = function (database) {
-  // TODO
-};
-// --------------------------------------------------------------------------------------
-// TODO
-// process data for previous day -> all data for that day are gathered
-// 
+// process current data
+// check connection stats and notify administrators
+// about possible problems
 // --------------------------------------------------------------------------------------
 exp.process_current_data = function (database) {
   var realms = [];
@@ -84,62 +78,46 @@ function compare_data(data)
   var keys = Object.keys(data);
 
   for(var key in keys) {
-    // ratio > 1 could signalize some problems
-    if(data[keys[key]].avg_ratio > 1.8) {   
-      // if close to 2, these possibility is higher
-      // do some further checking
+      console.log(keys[key]);
+      console.log(data[keys[key]]);
 
-      var cnt = 0;
-      // check how many of individual values is lower than current value
-      for(var item in data[keys[key]].old_stats) {
-        if(data[keys[key]].current_stats > data[keys[key]].old_stats[item])
-          cnt++
-      }
-     
-      // 3 or 4 values of 4 are lower than current stats 
-      if(cnt >= 3) {
-        // TODO - check how much the the value differ from highest values
-        
-
-        var highest = data[keys[key]].old_stats.sort(function(a, b) { return a - b; });
-        //console.log(highest);
-
-        // check how much the the value differ from highest values
-        if(data[keys[key]].current_stats >= (highest[0] * 2)) {   // at least twice as high as highest value
-          
-          var curr = new Date();        // current day
-          curr.setHours(0);
-          curr.setMinutes(0);
-          curr.setSeconds(0);
-          curr.setMilliseconds(0);
-          var prev_min = new Date(curr); 
-          prev_min.setDate(prev_min.getDate() - 1);     // previous day hh:mm:ss:ms set to 00:00:00:000
-          
-          // check count of successfull logins for previous day
-          var succ = request.get_succ_logins_daily(prev_min, keys[key]);
-          //console.log(succ.length);
-          if(succ.length == 0) {     // no successful loging exist
-            console.log("possible problem");
-            console.log(keys[key]);
-            console.log(data[keys[key]]);
-          }
-        }
-      }
+    if(data[keys[key]].avg_ratio_current_to_old.fail > 1.8) {
+      //console.log(keys[key]);
+      //console.log(data[keys[key]]);
     }
   }
+}
+// --------------------------------------------------------------------------------------
+// compute standard deviation
+// parameters:
+// avg  = average value for data set
+// data = data set
+// --------------------------------------------------------------------------------------
+function compute_sd(avg, data)
+{
+  var res = 0;
+  for(var item in data) {
+    // First, calculate the deviations of each data point from the mean, and square the result of each
+    res += Math.pow(data[item] - avg, 2);
+  }
+
+  return Math.sqrt(res / data.length);
 }
 // --------------------------------------------------------------------------------------
 // get data for all realms
 //
 // one realm could produce for example:
-// { 'flu.cas.cz':
-//   { current_stats: { fail: [Object], ok: [Object] },
-//     current_avg_stats: { ok: 55, fail: 2 },
-//     current_day_stats: { ok: 52, fail: 0 },
-//     old_stats: { fail: [Object], ok: [Object] },
-//     old_avg_stats: { ok: 59.5, fail: 2 },
-//     avg_ratio: { ok: 0.9243697478991597, fail: 1 } } }
-//
+//  { 'ibt.cas.cz':
+//  { current_stats: { fail: [ 0, 0, 0, 3 ], ok: [ 242, 198, 312, 277 ] },
+//    current_avg_stats: { ok: 257.25, fail: 0.75 },
+//    current_day_stats: { ok: [ 277 ], fail: [ 3 ] },
+//    old_stats: { fail: [ 0, 4, 0, 0 ], ok: [ 312, 103, 242, 198 ] },
+//    old_avg_stats: { ok: 213.75, fail: 1 },
+//    avg_ratio_current_to_old: { ok: 1.2035087719298245, fail: 0.75 },
+//    old_ok_fail_ratio: [ 0.038834951456310676, 0, 0, 0 ],
+//    current_ok_fail_ratio: [ 0.010830324909747292 ],
+//    old_fail_sd: 1.7320508075688772,
+//    current_fail_sd: 1.299038105676658 } }
 // --------------------------------------------------------------------------------------
 function get_data(realms)
 {
@@ -163,11 +141,15 @@ function get_data(realms)
     prev_min.setDate(prev_min.getDate() - 7);                                         // 8 days before current day
     ret[realms[key]].old_stats = compute_month_stats(realms[key], prev_min);          // stats or past month excluding previous day
     ret[realms[key]].old_avg_stats = compute_avg(ret[realms[key]].old_stats);         // average
-    ret[realms[key]].avg_ratio = get_avg_ratio(ret[realms[key]].current_avg_stats, ret[realms[key]].old_avg_stats);
+    ret[realms[key]].avg_ratio_current_to_old = get_avg_ratio(ret[realms[key]].current_avg_stats, ret[realms[key]].old_avg_stats);
+    ret[realms[key]].old_ok_fail_ratio = get_ok_fail_ratio(ret[realms[key]].old_stats);
+    ret[realms[key]].current_ok_fail_ratio = get_ok_fail_ratio(ret[realms[key]].current_day_stats);
+    ret[realms[key]].old_fail_sd = compute_sd(ret[realms[key]].old_avg_stats.fail, ret[realms[key]].old_stats.fail); // compute SD for old data
+    ret[realms[key]].current_fail_sd = compute_sd(ret[realms[key]].current_avg_stats.fail, ret[realms[key]].current_stats.fail); // compute SD for current data
     callback(null);
   }, function (err) {
     if (err)
-      console.log(err);
+      console.error(err);
     done = true;  
   });
 
@@ -207,7 +189,7 @@ function compute_month_stats(realm, prev_min)
     });
   }, function (err) {
     if (err)
-      console.log(err);
+      console.error(err);
     done = true;  
   });
 
@@ -216,6 +198,26 @@ function compute_month_stats(realm, prev_min)
   });
 
   return res; // return dict
+}
+// --------------------------------------------------------------------------------------
+// compute ratio of fail to ok count for each item
+// --------------------------------------------------------------------------------------
+function get_ok_fail_ratio(data)
+{
+  var ret = [];
+
+  for(var i = 0; i < data.fail.length; i++) {  // same as ok
+    if(data.ok[i] == 0)             // sth / 0
+      ret.push(data.fail[i]);
+
+    else if(data.fail[i] == 0 && data.ok[i] != 0)   // 0 / sth
+      ret.push(0);
+
+    else
+      ret.push(data.fail[i] / data.ok[i]);
+  }
+
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 // compute ratio of both ok and fail average values
@@ -251,12 +253,12 @@ function get_day_stats(date, realm)
       request.get_failed_logins_daily(date, realm, done);
     },
     function(done) {
-      res.ok = request.get_succ_logins_daily(date, realm).length;
+      res.ok = [ request.get_succ_logins_daily(date, realm).length ];
       done(null);
     },
     ],
     function(err, results) {
-      res.fail = sum_fail_count(results[0]);
+      res.fail = [ sum_fail_count(results[0]) ];
       done = true;
   });
  
