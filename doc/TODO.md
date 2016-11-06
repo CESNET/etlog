@@ -274,7 +274,7 @@ asu.cas.cz
 
 ## Filtrování
 
-- povolit import záznamů s prázdnými jmény?
+- zakázat import záznamů s prázdnými jmény?
 - nějakou další logiku, která bude analyzovat/zobrazovat prázdné mac adresy a jména? (prázdné mac adresy tvoří zhruba 5 %, prázdná username zhruba 20 %)
 
 # Archivace
