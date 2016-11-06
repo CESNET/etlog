@@ -745,6 +745,7 @@ Application api:
 | /api/heat\_map/                 |        | timestamp, [ realm, institutions.realm, institutions.count  |         |
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
+| /api/realms/                    |        |                                                        | url returning list of realms from realms collection |
 
 
 ### Routes
