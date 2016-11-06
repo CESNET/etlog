@@ -87,6 +87,8 @@ Jednotlivé položky mají tento význam:
 |  old\_fail\_sd                | směrodatná odchylka neúspěšných přihlášení za poslední měsíc kromě předchozího dne                        |           |
 |  current\_fail\_sd            | směrodatná odchylka neúspěšných přihlášení za poslední měsíc včetně předchozího dne                       |           |
 
+- Jaká data má email obsahovat? (ukázka existujícího)
+
 ## Detekce
 
 - využít `avg_ratio_current_to_old: { fail: }` ?
@@ -264,6 +266,9 @@ asu.cas.cz
   current_fail_sd: 35.50704155516198 }
 </pre>
 
+## Dostupnost
+
+- Má být při detekci problému konkrétní instituce notifikován její správce? (kolekce realm\_admins)
 
 # Import dat
 
@@ -292,6 +297,7 @@ asu.cas.cz
   - updatovat konfiguraci syslogu
 - Na webu rozhraní, kde bude možné se dotazovat kdo a kam roamuje? (data z heat mapy)
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel
+- přidat robots.txt?
 
 # TODO list
 1. Autentizace
