@@ -54,7 +54,7 @@ function main()
   # mail text
   text="50 invalidních záznamů za poslední týden: \n"
   text+="==========================================================================================\n\n"
-  text+="$(head -50 "$etlog_log_root/invalid_records/invalid-$(date --date="yesterday" "+%Y-%m-%d")")\n\n\n"
+  text+="$(cat "$etlog_log_root/invalid_records/invalid-$(date --date="yesterday" "+%Y-%m-%d")" | sed "s/.*: //" | sort -u | head -50)\n\n\n"
 
   text+="kompletní záznamy za poslední týden jsou dostupné v následujících souborech:\n"
 
