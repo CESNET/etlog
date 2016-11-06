@@ -167,7 +167,7 @@ function generate_realms(database)
   // possible TODO - remove limitation just to .cz
 
   database.logs.aggregate([ 
-    { $match : { realm : /.*\.cz$/ } }, 
+    { $match : { realm : /.*\.cz$/, result : "OK" } },
     { $project : { realm : { $toLower : "$realm" } } },   // use lower case to match all possible realm forms
     { $group : { _id : { realm : "$realm" } } }, 
     { $project : { realm : "$_id.realm", _id : 0 } } 
