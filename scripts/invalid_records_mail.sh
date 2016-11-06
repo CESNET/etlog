@@ -20,12 +20,23 @@ function count_imported()
   echo "$count"
 }
 # ==========================================================================================
+# function
+# set recipients for national radius from database
+# ==========================================================================================
+function set_recipients()
+{
+  out="$(mongo etlog -quiet -eval 'db.realm_admins.find({ realm : "cz" }, { admins : 1, _id : 0 })')"    # get data from db
+  # $out may look like:
+  # '{ "admins" : [ "jan.tomasek@cesnet.cz" ] }'
+  to=$(echo "$out" | sed 's/.*\[ //; s/\].*$//; s/[",]//g')
+}
+# ==========================================================================================
 # main function
 # ==========================================================================================
 function main()
 {
   # recipient
-  to="jan.tomasek@cesnet.cz"
+  set_recipients
 
   # copy for testing purposes
   cc="vac.mach@sh.cvut.cz"
