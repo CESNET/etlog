@@ -285,6 +285,15 @@ asu.cas.cz
 
 - Vyhovuje to takto?
 
+# Grafy
+
+- Heat mapa - možnosti:
+  - http://amp.pharm.mssm.edu/clustergrammer/
+  - http://bl.ocks.org/oyyd/859fafc8122977a3afd6
+  - http://bl.ocks.org/ianyfchang/8119685
+  - http://bl.ocks.org/tjdecke/5558084
+  - http://tmroyal.github.io/Chart.HeatMap/
+
 # Ostatní
 
 - specifikovat licenci v repozitáři?
