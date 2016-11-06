@@ -74,3 +74,17 @@ module.exports.send_error_report = function (data)
   module.exports.send_mail(subj, recipients, mail_data);
 }
 // --------------------------------------------------------------------------------------
+// send error report about detected service problem
+// --------------------------------------------------------------------------------------
+module.exports.send_service_problem_notification = function(database, realm, data)
+{
+  var subj = "problém fungování služby eduroam";
+
+  database.realm_admins.find({ realm : realm  }, { admins : 1, _id : 0 },
+  function(err, items) {
+    for(var dict in items) {
+      module.exports.send_mail(subj, items[dict].admins, data);
+    }
+  });
+}
+// --------------------------------------------------------------------------------------
