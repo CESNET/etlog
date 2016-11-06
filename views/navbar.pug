@@ -1,7 +1,7 @@
 //- taken from https://github.com/ALT-F1/bootstrap3-jade-node-express-grunt/blob/master/app/views/bootstrap3-templates/navbar-fixed-top.jade
 
--var menu = {'Obecné Vyhledávání': 'search', 'Mac adresy': 'mac_count', 'Přihlášení': 'failed_logins'};
--var roaming = { 'Organizace nejvíce poskytující roaming' : 'roaming_most_provided', 'Organizace nejvíce využívající roaming' : 'roaming_most_used' };
+-var menu = {'obecné vyhledávání': 'search', 'počet MAC adres': 'mac_count', 'neúspěšná přihlášení': 'failed_logins'};
+-var roaming = { 'organizace nejvíce poskytující roaming' : 'roaming_most_provided', 'organizace nejvíce využívající roaming' : 'roaming_most_used' };
 
 mixin active(val, key)
   li.active
@@ -25,7 +25,7 @@ mixin inactive(val, key)
             +inactive(val, key)
         li#roaming
           a.dropdown-toggle(href='#', data-toggle='dropdown')
-            | Roaming
+            | roaming
             span.caret
           ul.dropdown-menu(role='menu')
             each val, key in roaming
@@ -33,6 +33,6 @@ mixin inactive(val, key)
                 a(ui-sref=val)= key
       ul.nav.navbar-nav.navbar-right
         li.active
-          a(href='./') prihlaseny uzivatel
+          a(href='./') přihlášený uživatel
       .nav-collapse
 
