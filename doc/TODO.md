@@ -312,10 +312,13 @@ asu.cas.cz
 1. Autentizace
   - použít rozcestník
 2. Webové rozhraní
-3. sshguard
+3. sshguard + FW -> semik
 4. zálohování
+  - nastaveno; konfigurace /etc/duply/system - podstatny predevsim exclude file
+  - co je /home/etlog/backup ?
 5. zálohování DB
 6. grafy - statistiky
   - (grafy negenerovat na kliknuti ale nejak v noci)
 7. přstupová práva
-8. ...
+8. co s radlog.cesnet.cz - tim starym virtualem
+9. ...
