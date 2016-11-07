@@ -119,7 +119,7 @@ function search(database, realms, min, max, done)
 {
   async.forEachOf(realms, function (value_src, key_src, callback_src) {         // loop realms as source
     var item = {};              // database item
-    item.inst_name = realms[key_src];
+    item.realm = realms[key_src];
     item.timestamp = min;
     item.institutions = [];
   
@@ -132,7 +132,7 @@ function search(database, realms, min, max, done)
       ],
         function(err, items) {
           if(items.length != 0) {  // non empty result
-            item.institutions.push({ inst_name : realms[key_dst], count : items[0].count}); // add to array
+            item.institutions.push({ realm : realms[key_dst], count : items[0].count}); // add to array
           }
           callback_dst(null);
       });
@@ -141,7 +141,7 @@ function search(database, realms, min, max, done)
         console.error(err);
       else {
         // save item
-        database.heat_map.update({ inst_name : item.inst_name, timestamp: item.timestamp }, item, { upsert : true },
+        database.heat_map.update({ realm : item.realm, timestamp: item.timestamp }, item, { upsert : true },
         function(err, result) {
           if(err)  
             console.error(err);
