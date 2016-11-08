@@ -218,7 +218,7 @@
       # check username
       # empty value is permitted
       # bad values are reported for statistics
-      if(length([pn2]) == 0) {
+      if(length(pn[2]) == 0) {
         printf("%s:%d: záznam přeskočen, prázdné uživatelské jméno\n", filename, FNR + last_line) > "/dev/stderr"
       }
 
