@@ -318,6 +318,7 @@ asu.cas.cz
 - Na webu rozhraní, kde bude možné se dotazovat kdo a kam roamuje? (data z heat mapy)
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel
 - přidat robots.txt?
+- Dokumentace zálohování - OK?
 
 # TODO list
 1. Autentizace
