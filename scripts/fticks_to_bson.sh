@@ -189,14 +189,14 @@
       # check realm value
       # attribute is separated by "=" from its value (2 fields), value must not be empty
       if(length(realm) != 2 || length(realm[2]) == 0) {
-        printf("%s:%d: skipped, bad realm value\n", filename, FNR + last_line) > "/dev/stderr"
+        printf("%s:%d: záznam přeskočen, neplatná hodnota atributu realm\n", filename, FNR + last_line) > "/dev/stderr"
         next
       }
 
       # check viscountry value
       # attribute is separated by "=" from its value (2 fields), value must not be empty
       if(length(viscountry) != 2 || length(viscountry[2]) == 0) {
-        printf("%s:%d: skipped, bad viscountry value\n", filename, FNR + last_line) > "/dev/stderr"
+        printf("%s:%d: záznam přeskočen, neplatná hodnota atributu viscountry\n", filename, FNR + last_line) > "/dev/stderr"
         next
       }
 
@@ -204,22 +204,27 @@
       # attribute is separated by "=" from its value (2 fields), value must not be empty
       # visinst must begin with "1"
       if(length(visinst) != 2 || length(visinst[2]) == 0 || visinst[2] ~ /^[^1]/) {
-        printf("%s:%d: skipped, bad visinst value\n", filename, FNR + last_line) > "/dev/stderr"
+        printf("%s:%d: záznam přeskočen, neplatná hodnota atributu visinst\n", filename, FNR + last_line) > "/dev/stderr"
         next
       }
 
       # check result value
       # attribute is separated by "=" from its value (2 fields), value must not be empty
       if(length(result) != 2 || length(result[2]) == 0) {
-        printf("%s:%d: skipped, bad result value\n", filename, FNR + last_line) > "/dev/stderr"
+        printf("%s:%d: záznam přeskočen, neplatná hodnota atributu result\n", filename, FNR + last_line) > "/dev/stderr"
         next
       }
 
-      # username checking is not required
+      # check username
+      # empty value is permitted
+      # bad values are reported for statistics
+      if(length([pn2]) == 0) {
+        printf("%s:%d: záznam přeskočen, prázdné uživatelské jméno\n", filename, FNR + last_line) > "/dev/stderr"
+      }
 
       # mac address has bad value
       if(length(csi[2]) != 12) {
-        printf("%s:%d: skipped, invalid mac address\n", filename, FNR + last_line) > "/dev/stderr"
+        printf("%s:%d: záznam přeskočen, neplatná mac adresa\n", filename, FNR + last_line) > "/dev/stderr"
         next
       }
 
