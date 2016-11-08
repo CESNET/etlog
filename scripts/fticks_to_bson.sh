@@ -150,7 +150,7 @@
       # each record must contain exactly 7 fields - REALM, VISCOUNTRY, VISINST, CSI, PN, RESULT + (inital log part)
       # may contain more or less
       if(length(fields) != num_fields) {
-        printf("%s:%d: skipped, record is malformed\n", filename, FNR + last_line) > "/dev/stderr"
+        printf("%s:%d: záznam přeskočen, záznam je deformovaný\n", filename, FNR + last_line) > "/dev/stderr"
         next
       }
 
