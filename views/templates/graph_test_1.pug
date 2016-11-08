@@ -76,20 +76,20 @@ style.
 
 div(ng-controller="graph_test_1_controller")
   div
-    pre.
-      {{realms}}
-    pre.
-      {{db_data}}
-    pre.
-      {{failed_logins}}
-    pre.
-      {{heat_map}}
+    //pre.
+    //  {{realms}}
+    //pre.
+    //  {{db_data}}
+    //pre.
+    //  {{failed_logins}}
+    //pre.
+    //  {{heat_map}}
 
   div
-    #test
+    #chart(style='overflow:auto; width:1000px; height:600px;')
 
   div
-    #chart(style='overflow:auto; width:1900px; height:1900px;')
+    #legend
 
   div
     pre.
