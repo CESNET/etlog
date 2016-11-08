@@ -2,6 +2,9 @@
 
 - Sjednotit české a anglické popisky v emailech? (použít cz nebo en?)
 
+> pouzit template pro oba reporty, oba v cestine
+> pro pripadne upravy amdinem
+
 ## Neúspěsná přihlášení
 
 Celkovým počtem je míněno:
@@ -12,8 +15,10 @@ Celkovým počtem je míněno:
   5. ... ?
 
 Aktuálně je použito 1.
+> ok
 
 Je nový formát emailu s poměrem celkového počtu autentizací OK?
+> ok
 
 ## Invalidní záznamy
 
@@ -28,6 +33,11 @@ cut -d "," -f2 ~/logs/transform/err-2016-11-04 | sort | uniq -c
    2212  record is malformed
 ```
 
+> pridat do mailu, 
+> pres data za cely tyden
+> pridat pomer vsech importovanych a nevalidnich za tyden
+
+
 ### Unikátnost
 
 Řešit/neřešit?
@@ -38,6 +48,8 @@ Jak filtrovat?
 - pomocí ingorování monitoring prefixu pro csi?
 - ...?
 
+> neni potreba resit
+
 ### Dostupnost
 
 Řešit/neřešit?
@@ -46,11 +58,18 @@ Jak filtrovat?
 - Dostupnost pro správce všech zapojených institucí?
   - Pouze data pro daný realm?
 
+> neresit
+
 # Zálohování DB
 
 - Co zálohovat?
+> zalohovat celou db
+> udelat skript, ktery bude zalohovat na stejne misto
+> `/etc/duply/system/pre` - spusti pred zalohovanim
 - Jak často?
+> neni treba resit
 - Kolik záloh uchovávat?
+> neni treba resit
 
 # Detekce problémů funkčnosti služby
 
@@ -266,16 +285,25 @@ asu.cas.cz
   current_fail_sd: 35.50704155516198 }
 </pre>
 
+> kazde failnute zarizeni zapocitat pouze jednou - jak ok tak fail
+
 ## Dostupnost
 
 - Má být při detekci problému konkrétní instituce notifikován její správce? (kolekce realm\_admins)
+
+> zatim neresit
 
 # Import dat
 
 ## Filtrování
 
 - zakázat import záznamů s prázdnými jmény?
+> nezakazovat
+
 - nějakou další logiku, která bude analyzovat/zobrazovat prázdné mac adresy a jména? (prázdné mac adresy tvoří zhruba 5 %, prázdná username zhruba 20 %)
+> do importovace pridat logiku, ktera vypise zaznam z kazdym prazdnym jmenem
+> jen pro nova data
+> pridat do reportu s invalidnimi daty
 
 # Archivace
 
@@ -284,6 +312,8 @@ asu.cas.cz
 - Žádná data nejsou mazána.
 
 - Vyhovuje to takto?
+
+> ok
 
 # Grafy
 
@@ -305,20 +335,52 @@ asu.cas.cz
   - [2](https://etlog.cesnet.cz/#/graph_test_2)
   - [3](https://etlog.cesnet.cz/#/graph_test_3)
 
+> neni problem brat data ze souboru
+
+> heat mapa by mela umet vyhledavat dle nazvu
+> moznost nejakeho razeni podle vzajmene souvislosti (hodnoty)?
+
+> sloupce pro ostatni grafy
+> pokud bude generovani rychle, neni treba data predgenerovavat
+> pro roaming -> nejvice poskytovany a nejvice vyuzivany
+> prepinatelne pro ruzne hodnoty -> mesic, 3 mesice, rok, 5 let
+
+> pro kterou instituci chce uzivatel grafy videt
+
+> do jednoho grafu uspesne a neuspesne zaroven
+> (pripadne uspesne primarne, neuspesne na klikatko)
+
+> graf pro mac count
+
 # Ostatní
 
 - specifikovat licenci v repozitáři?
+
+> pridat
+> poslat vsechna ruzna prohlaseni dostupna v diplomce
+
 - nějakou logiku, která zapne aplikaci po pádu/restartu serveru.
+> systemd
+> zkontrolovat, jak budou formatovany zpravy
+> definovat facilitu v samotnem konfigru sluzby a dodat konfiguraci syslogu
+> vysledne logy cpat nekam do homu
+
 - ze 404 stranky neni zadny odkaz zpet klikatelny
 - systemd -> logování stdout a stderr
   - pouzit syslog a na zaklade velikosti rotovat?
+> rotovani pomoci logrotatu
+
   - informativni hlasky jdou na stdout
   - chyby jdou na stderr
   - updatovat konfiguraci syslogu
 - Na webu rozhraní, kde bude možné se dotazovat kdo a kam roamuje? (data z heat mapy)
-- syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel
+> nebude potreba
+- syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
 - přidat robots.txt?
+> pridat, sem nechodit
 - Dokumentace zálohování - OK?
+> pridat info o cronu
+> pridat info o zalohovani db
 
 # TODO list
 1. Autentizace
