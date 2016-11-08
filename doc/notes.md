@@ -149,9 +149,16 @@ logtail
 postfix
 mailutils
 bc
+duply
+ncftp
+lftp
 
 Other special packages along with installation are listed below.
   
+### Backup
+
+Duply package is used to system backup. Configuration is in `/etc/duply/system/conf`.
+Files which should be backed up are defined in `/etc/duply/system/exclude`.
   
 ### MongoDB
 
