@@ -293,6 +293,12 @@ asu.cas.cz
   - http://bl.ocks.org/ianyfchang/8119685
   - http://bl.ocks.org/tjdecke/5558084
   - http://tmroyal.github.io/Chart.HeatMap/
+  - https://www.trulia.com/vis/tru247/
+
+- ostatní - možnosti:
+  - https://d3js.org/ - https://github.com/d3/d3/wiki/Gallery
+  - http://bl.ocks.org/d3noob/b3ff6ae1c120eea654b5
+  - https://bl.ocks.org/mbostock/3883245
 
 # Ostatní
 
