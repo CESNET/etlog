@@ -300,6 +300,11 @@ asu.cas.cz
   - http://bl.ocks.org/d3noob/b3ff6ae1c120eea654b5
   - https://bl.ocks.org/mbostock/3883245
 
+- Ukázky
+  - [1](https://etlog.cesnet.cz/#/graph_test_1)
+  - [2](https://etlog.cesnet.cz/#/graph_test_2)
+  - [3](https://etlog.cesnet.cz/#/graph_test_3)
+
 # Ostatní
 
 - specifikovat licenci v repozitáři?
