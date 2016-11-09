@@ -22,14 +22,7 @@
 
 # Zálohování DB
 
-- Co zálohovat?
-> zalohovat celou db
-> udelat skript, ktery bude zalohovat na stejne misto
-> `/etc/duply/system/pre` - spusti pred zalohovanim
-- Jak často?
-> neni treba resit
-- Kolik záloh uchovávat?
-> neni treba resit
+- Zkontrolovat, zda jsou zalohy dostupne.
 
 # Detekce problémů funkčnosti služby
 
