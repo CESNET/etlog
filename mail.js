@@ -52,7 +52,7 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
 {
   var subj = "měsíční report - neúspěšná přihlášení";
 
-  database.realm_admins.find({ query : {} } , { realm : 1, admins : 1, _id : 0 },
+  database.realm_admins.find({}, { realm : 1, admins : 1, _id : 0 },
   function(err, items) {
     for(var dict in items) {
       // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
