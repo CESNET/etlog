@@ -52,30 +52,52 @@ exp.get_failed_logins_monthly = function(realm, limit)
   return failed_to_human_readable(fail, sum_fail_count(exp.get_all_failed_logins_monthly(realm)));
 }
 // --------------------------------------------------------------------------------------
-// convert failed logins structure to human readable text
-// parameters:
-// data - failed data to transform
-// sum - sum of all failed logins
+// return longest username in data
 // --------------------------------------------------------------------------------------
-function failed_to_human_readable(data, sum)
+function get_longest(data)
 {
-  var ret = "";
   var longest = 0;
-
-  // fancy version
-  // =======================
-
   for(var item in data) {
     if(data[item].username.length > longest)
       longest = data[item].username.length;
   }
+  return longest;
+}
+// --------------------------------------------------------------------------------------
+// convert failed logins structure to human readable text
+// parameters:
+// data - failed data to transform
+// sum  - sum of all failed logins
+//
+// data[item]:
+// { ok_count: 0,
+//   fail_count: 1640,
+//   ratio: 1,
+//   username: '1230024700532434@wlan.mnc024.mcc230.3gppnetwork.org' }
+// --------------------------------------------------------------------------------------
+function failed_to_human_readable(data, sum)
+{
+  var ret = "";
+  var longest = get_longest(data);  // longest username found
+  // data are already sorted - first one contains highest count
+  var num_size = data[0].fail_count.toString().length; // longest failed count length
 
+  // iterate all input items
   for(var item in data) {
-    ret += data[item].username;
-    for(var i = data[item].username.length; i < longest; i++)   // insert space padding
-      ret+= " ";
+    ret += data[item].username;     // set username
 
-    ret += " | fail_count: " + data[item].fail_count + ", ok_count: " + data[item].ok_count + ", ratio : " + data[item].ratio + ", ratio to all : "            + Number(data[item].fail_count / sum).toFixed(4) + "\n";
+    for(var i = data[item].username.length; i < longest; i++)   // insert space padding after username
+      ret += " ";
+
+    ret += " | neúspěšná přihlášení: " + data[item].fail_count;
+    ret += ", ";
+
+    for(var i = data[item].fail_count.toString().length; i < num_size; i++)   // insert space padding after failed count
+      ret += " ";
+
+    ret += "úspěšná přihlášení: " + data[item].ok_count;
+    ret += ", poměr: " + data[item].ratio;
+    ret += ", celkový poměr: "  + Number(data[item].fail_count / sum).toFixed(4) + "\n";
   }
 
   return ret;
