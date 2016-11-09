@@ -223,35 +223,6 @@ oalib.cz
   current_fail_sd: 1.5 }
 </pre>
 
-> kazde failnute zarizeni zapocitat pouze jednou - jak ok tak fail
-
-## Dostupnost
-
-- Má být při detekci problému konkrétní instituce notifikován její správce? (kolekce realm\_admins)
-
-> zatim neresit
-
-# Import dat
-
-## Filtrování
-
-- zakázat import záznamů s prázdnými jmény?
-> nezakazovat
-
-- nějakou další logiku, která bude analyzovat/zobrazovat prázdné mac adresy a jména? (prázdné mac adresy tvoří zhruba 5 %, prázdná username zhruba 20 %)
-> do importovace pridat logiku, ktera vypise zaznam z kazdym prazdnym jmenem
-> jen pro nova data
-> pridat do reportu s invalidnimi daty
-
-# Archivace
-
-- Archivace jednou za týden.
-- Archivována data stará 14 dní až týden.
-- Žádná data nejsou mazána.
-
-- Vyhovuje to takto?
-
-> ok
 
 # Grafy
 
