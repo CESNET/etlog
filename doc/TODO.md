@@ -1,64 +1,23 @@
 # Reporty
 
-- Sjednotit české a anglické popisky v emailech? (použít cz nebo en?)
+## Templaty
 
-> pouzit template pro oba reporty, oba v cestine
-> pro pripadne upravy amdinem
+### Neúspěsná přihlášení
 
-## Neúspěsná přihlášení
+[github](https://github.com/CESNET/etlog/blob/master/request.js#L78)
 
-Celkovým počtem je míněno:
-  1. počet neúspěšných přihlášení za poslední měsíc, i uživatelé, kteří se úspěsně přihlásili?
-  2. počet neúspěšných přihlášení za poslední měsíc, pouze uživatelé, kteří se za poslední měsíc nepřihlásili ani jednou úspěšně?
-  3. počet neúspěšných přihlášení za poslední měsíc, i uživatelé, kteří se úspěsně přihlásili, omezení na realm?
-  4. počet neúspěšných přihlášení za poslední měsíc, pouze uživatelé, kteří se za poslední měsíc nepřihlásili ani jednou úspěšně, omezení na realm?
-  5. ... ?
+- Javascript nema heredoc, tudiz je problematicke napsat telo jako souvislou cast textu
+- předmět emailu je nastaven [github](https://github.com/CESNET/etlog/blob/master/mail.js#L53)
+- limit počtu výsledků je nastaven [github](https://github.com/CESNET/etlog/blob/master/cron.js#L15)
+- Vyhovuje takto?
 
-Aktuálně je použito 1.
-> ok
+### Invalidní záznamy
 
-Je nový formát emailu s poměrem celkového počtu autentizací OK?
-> ok
+[github](https://github.com/CESNET/etlog/blob/master/scripts/invalid_records_mail.sh#L43)
 
-## Invalidní záznamy
+- Prazdna uzivatelska jmena nebudou pro data v tomto tydnu (7 - 13.11.) kompletni (nasazeno az v ut vecer)
+- Vyhovuje takto?
 
-Je nový formát emailu s procentuálním poměrem ke všem importovaným záznamům OK?
-
-- Ještě by bylo možné přidat ke každému záznamu informaci o počtech různých problémových záznamů:
-```
-cut -d "," -f2 ~/logs/transform/err-2016-11-04 | sort | uniq -c
-    165  bad viscountry value
-  26779  bad visinst value
-  24742  invalid mac address
-   2212  record is malformed
-```
-
-> pridat do mailu, 
-> pres data za cely tyden
-> pridat pomer vsech importovanych a nevalidnich za tyden
-
-
-### Unikátnost
-
-Řešit/neřešit?
-
-Jak filtrovat?
-- pomocí dvojice pn,csi v rámci jednoho souboru?
-- pomocí dvojice pn,csi v rámci všech souborů?
-- pomocí ingorování monitoring prefixu pro csi?
-- ...?
-
-> neni potreba resit
-
-### Dostupnost
-
-Řešit/neřešit?
-
-- Dostupnost pouze v souborech nebo nějakým způsobem skrze aplikaci?
-- Dostupnost pro správce všech zapojených institucí?
-  - Pouze data pro daný realm?
-
-> neresit
 
 # Zálohování DB
 
@@ -111,7 +70,7 @@ Jednotlivé položky mají tento význam:
 ## Detekce
 
 - využít `avg_ratio_current_to_old: { fail: }` ?
-- využít `current\_ok\_fail\_ratio` ? Hodnota je relativní vůči hodnotám old\_ok\_fail\_ratio.
+- využít `current_ok_fail_ratio` ? Hodnota je relativní vůči hodnotám old\_ok\_fail\_ratio.
 - dynamická hodnota pro určení meze existence problému?
 - použít více kritérií zároveň?
 - počet úspěšných přihlášení musí být > 0? (co když nastane problém v průběhu dne?)
@@ -121,168 +80,147 @@ Jednotlivé položky mají tento význam:
 **I při použití vhodné detekce bude pravděpodobně každý den reportováno několik oblastí jako problémových,
 což pro správce zřejmě bude zbytečná zátež při false-positive**
 
-Potenciálně problémová data:
+Potenciálně problémová data (data jsou filtrovana v ramci dnu pomoci mac adres):
 
 <pre>
-ftvs.cuni.cz
-{ current_stats: { fail: [ 0, 8, 1, 0 ], ok: [ 0, 0, 0, 0 ] },
-  current_avg_stats: { ok: 0, fail: 2.25 },
-  current_day_stats: { ok: [ 0 ], fail: [ 8 ] },
-  old_stats: { fail: [ 0, 1, 0, 0 ], ok: [ 0, 0, 0, 0 ] },
-  old_avg_stats: { ok: 0, fail: 0.25 },
-  avg_ratio_current_to_old: { ok: 0, fail: <b>9</b> },
-  old_ok_fail_ratio: [ 0, 1, 0, 0 ],
-  current_ok_fail_ratio: [ <b>8</b> ],
-  old_fail_sd: 0.4330127018922193,
-  current_fail_sd: 3.344772040064913 }
-
-ssinfis.cz
-{ current_stats: { fail: [ 3, 266, 2, 1 ], ok: [ 347, 395, 238, 62 ] },
-  current_avg_stats: { ok: 260.5, fail: 68 },
-  current_day_stats: { ok: [ 395 ], fail: [ 266 ] },
-  old_stats: { fail: [ 3, 33, 2, 1 ], ok: [ 347, 285, 238, 62 ] },
-  old_avg_stats: { ok: 233, fail: 9.75 },
-  avg_ratio_current_to_old: { ok: 1.1180257510729614, fail: <b>6.9743589743589745</b> },
-  old_ok_fail_ratio:
-  [ 0.008645533141210375,
-  0.11578947368421053,
-  0.008403361344537815,
-  0.016129032258064516 ],
-  current_ok_fail_ratio: [ <b>0.6734177215189874</b> ],
-  old_fail_sd: 13.442005058770064,
-  current_fail_sd: 114.31754021146536 }
-
-slu.cz
-{ current_stats: { fail: [ 317, 27, 87, 116 ], ok: [ 964, 251, 454, 700 ] },
-  current_avg_stats: { ok: 592.25, fail: 136.75 },
-  current_day_stats: { ok: [ 964 ], fail: [ 317 ] },
-  old_stats: { fail: [ 12, 87, 116, 27 ], ok: [ 581, 454, 700, 251 ] },
-  old_avg_stats: { ok: 496.5, fail: 60.5 },
-  avg_ratio_current_to_old: { ok: 1.1928499496475327, fail: <b>2.260330578512397</b> },
-  old_ok_fail_ratio:
-  [ 0.020654044750430294,
-  0.19162995594713655,
-  0.1657142857142857,
-  0.10756972111553785 ],
-  current_ok_fail_ratio: [ <b>0.3288381742738589</b> ],
-  old_fail_sd: 42.59401366389413,
-  current_fail_sd: 108.90448796996385 }
-
-fpf.slu.cz
-{ current_stats: { fail: [ 5, 12, 5, 2 ], ok: [ 63, 45, 107, 27 ] },
-  current_avg_stats: { ok: 60.5, fail: 6 },
-  current_day_stats: { ok: [ 45 ], fail: [ 12 ] },
-  old_stats: { fail: [ 5, 1, 5, 2 ], ok: [ 63, 147, 107, 27 ] },
-  old_avg_stats: { ok: 86, fail: 3.25 },
-  avg_ratio_current_to_old: { ok: 0.7034883720930233, fail: <b>1.8461538461538463</b> },
-  old_ok_fail_ratio:
-  [ 0.07936507936507936,
-  0.006802721088435374,
-  0.04672897196261682,
-  0.07407407407407407 ],
-  current_ok_fail_ratio: [ <b>0.26666666666666666</b> ],
+studenti.mvso.cz
+{ current_stats: { fail: [ 5, 0, 4, 0 ], ok: [ 17, 17, 19, 22 ] },
+  current_avg_stats: { ok: 18.75, fail: 2.25 },
+  current_day_stats: { fail: [ 5 ], ok: [ 17 ] },
+  old_stats: { fail: [ 0, 4, 0, 3 ], ok: [ 17, 19, 22, 15 ] },
+  old_avg_stats: { ok: 18.25, fail: 1.75 },
+  avg_ratio_current_to_old: { ok: 1.0273972602739727, fail: <b>1.2857142857142858</b> },
+  old_ok_fail_ratio: [ 0, 0.21052631578947367, 0, 0.2 ],
+  current_ok_fail_ratio: [ <b>0.29411764705882354</b> ],
   old_fail_sd: 1.7853571071357126,
-  current_fail_sd: 3.6742346141747673 }
-
-gymzr.cz
-{ current_stats: { fail: [ 1, 0, 1, 0 ], ok: [ 9, 18, 3, 0 ] },
-  current_avg_stats: { ok: 7.5, fail: 0.5 },
-  current_day_stats: { ok: [ 3 ], fail: [ 1 ] },
-  old_stats: { fail: [ 0, 1, 0, 0 ], ok: [ 24, 9, 18, 0 ] },
-  old_avg_stats: { ok: 12.75, fail: 0.25 },
-  avg_ratio_current_to_old: { ok: 0.5882352941176471, fail: <b>2</b> },
-  old_ok_fail_ratio: [ 0, 0.1111111111111111, 0, 0 ],
-  current_ok_fail_ratio: [ <b>0.3333333333333333</b> ],
+  current_fail_sd: 2.277608394786075 }
+vscht.cz
+{ current_stats: { fail: [ 54, 36, 34, 36 ], ok: [ 336, 338, 319, 333 ] },
+  current_avg_stats: { ok: 331.5, fail: 40 },
+  current_day_stats: { fail: [ 54 ], ok: [ 336 ] },
+  old_stats: { fail: [ 36, 34, 36, 26 ], ok: [ 338, 319, 333, 261 ] },
+  old_avg_stats: { ok: 312.75, fail: 33 },
+  avg_ratio_current_to_old: { ok: 1.0599520383693046, fail: <b>1.2121212121212122</b> },
+  old_ok_fail_ratio: 
+   [ 0.10650887573964497,
+     0.10658307210031348,
+     0.10810810810810811,
+     0.09961685823754789 ],
+  current_ok_fail_ratio: [ <b>0.16071428571428573</b> ],
+  old_fail_sd: 4.123105625617661,
+  current_fail_sd: 8.12403840463596 }
+ujf.cas.cz
+{ current_stats: { fail: [ 1, 0, 1, 2 ], ok: [ 9, 6, 7, 5 ] },
+  current_avg_stats: { ok: 6.75, fail: 1 },
+  current_day_stats: { fail: [ 1 ], ok: [ 9 ] },
+  old_stats: { fail: [ 0, 1, 2, 0 ], ok: [ 6, 7, 5, 6 ] },
+  old_avg_stats: { ok: 6, fail: 0.75 },
+  avg_ratio_current_to_old: { ok: 1.125, fail: <b>1.3333333333333333</b> },
+  old_ok_fail_ratio: [ 0, 0.14285714285714285, 0.4, 0 ],
+  current_ok_fail_ratio: [ <b>0.1111111111111111</b> ],
+  old_fail_sd: 0.82915619758885,
+  current_fail_sd: 0.7071067811865476 }
+cs.cas.cz
+{ current_stats: { fail: [ 4, 1, 2, 2 ], ok: [ 25, 15, 20, 21 ] },
+  current_avg_stats: { ok: 20.25, fail: 2.25 },
+  current_day_stats: { fail: [ 4 ], ok: [ 25 ] },
+  old_stats: { fail: [ 1, 2, 2, 2 ], ok: [ 15, 20, 21, 22 ] },
+  old_avg_stats: { ok: 19.5, fail: 1.75 },
+  avg_ratio_current_to_old: { ok: 1.0384615384615385, fail: <b>1.2857142857142858</b> },
+  old_ok_fail_ratio: 
+   [ 0.06666666666666667,
+     0.1,
+     0.09523809523809523,
+     0.09090909090909091 ],
+  current_ok_fail_ratio: [ <b>0.16</b> ],
   old_fail_sd: 0.4330127018922193,
-  current_fail_sd: 0.5 }
-
-asuch.cas.cz
-{ current_stats: { fail: [ 16, 0, 3, 2 ], ok: [ 395, 210, 674, 233 ] },
-  current_avg_stats: { ok: 378, fail: 5.25 },
-  current_day_stats: { ok: [ 395 ], fail: [ 16 ] },
-  old_stats: { fail: [ 1, 3, 2, 0 ], ok: [ 379, 674, 233, 210 ] },
-  old_avg_stats: { ok: 374, fail: 1.5 },
-  avg_ratio_current_to_old: { ok: 1.0106951871657754, fail: <b>3.5</b> },
-  old_ok_fail_ratio:
-  [ 0.002638522427440633,
-  0.004451038575667656,
-  0.008583690987124463,
-  0 ],
-  current_ok_fail_ratio: [ <b>0.04050632911392405</b> ],
-  old_fail_sd: 1.118033988749895,
-  current_fail_sd: 6.299801584177076 }
-
-pslib.cz
-{ current_stats: { fail: [ 15, 141, 10, 0 ], ok: [ 33, 19, 46, 0 ] },
-  current_avg_stats: { ok: 24.5, fail: 41.5 },
-  current_day_stats: { ok: [ 19 ], fail: [ 141 ] },
-  old_stats: { fail: [ 0, 15, 10, 0 ], ok: [ 3, 33, 46, 0 ] },
-  old_avg_stats: { ok: 20.5, fail: 6.25 },
-  avg_ratio_current_to_old: { ok: 1.1951219512195121, fail: <b>6.64</b> },
-  old_ok_fail_ratio: [ 0, 0.45454545454545453, 0.21739130434782608, 0 ],
-  current_ok_fail_ratio: [ <b>7.421052631578948</b> ],
-  old_fail_sd: 6.49519052838329,
-  current_fail_sd: 57.699653378508266 }
-
-htf.cuni.cz
-{ current_stats: { fail: [ 0, 1, 6, 5 ], ok: [ 36, 20, 25, 18 ] },
-  current_avg_stats: { ok: 24.75, fail: 3 },
-  current_day_stats: { ok: [ 25 ], fail: [ 6 ] },
-  old_stats: { fail: [ 0, 1, 0, 5 ], ok: [ 36, 20, 24, 18 ] },
-  old_avg_stats: { ok: 24.5, fail: 1.5 },
-  avg_ratio_current_to_old: { ok: 1.010204081632653, fail: <b>2</b> },
-  old_ok_fail_ratio: [ 0, 0.05, 0, 0.2777777777777778 ],
-  current_ok_fail_ratio: [ <b>0.24</b> ],
-  old_fail_sd: 2.0615528128088303,
-  current_fail_sd: 2.5495097567963922 }
-
-img.cas.cz
-{ current_stats: { fail: [ 54, 2, 70, 1 ], ok: [ 286, 456, 207, 15 ] },
-  current_avg_stats: { ok: 241, fail: 31.75 },
-  current_day_stats: { ok: [ 207 ], fail: [ 70 ] },
-  old_stats: { fail: [ 3, 2, 54, 1 ], ok: [ 295, 456, 286, 15 ] },
-  old_avg_stats: { ok: 263, fail: 15 },
-  avg_ratio_current_to_old: { ok: 0.9163498098859315, fail: <b>2.1166666666666667</b> },
-  old_ok_fail_ratio:
-  [ 0.010169491525423728,
-  0.0043859649122807015,
-  0.1888111888111888,
-  0.06666666666666667 ],
-  current_ok_fail_ratio: [ <b>0.33816425120772947</b> ],
-  old_fail_sd: 22.52776065213762,
-  current_fail_sd: 30.776411421736615 }
-
-jergym.cz
-{ current_stats: { fail: [ 19, 257, 26, 11 ], ok: [ 39, 70, 17, 28 ] },
-  current_avg_stats: { ok: 38.5, fail: 78.25 },
-  current_day_stats: { ok: [ 70 ], fail: [ 257 ] },
-  old_stats: { fail: [ 0, 19, 26, 11 ], ok: [ 0, 39, 17, 28 ] },
-  old_avg_stats: { ok: 21, fail: 14 },
-  avg_ratio_current_to_old: { ok: 1.8333333333333333, fail: <b>5.589285714285714</b> },
-  old_ok_fail_ratio:
-  [ 0,
-  0.48717948717948717,
-  1.5294117647058822,
-  0.39285714285714285 ],
-  current_ok_fail_ratio: [ <b>3.6714285714285713</b> ],
-  old_fail_sd: 9.669539802906858,
-  current_fail_sd: 103.3377351213002 }
-
-asu.cas.cz
-{ current_stats: { fail: [ 2, 2, 84, 2 ], ok: [ 36, 65, 87, 91 ] },
-  current_avg_stats: { ok: 69.75, fail: 22.5 },
-  current_day_stats: { ok: [ 87 ], fail: [ 84 ] },
-  old_stats: { fail: [ 7, 2, 2, 2 ], ok: [ 42, 36, 65, 91 ] },
-  old_avg_stats: { ok: 58.5, fail: 3.25 },
-  avg_ratio_current_to_old: { ok: 1.1923076923076923, fail: <b>6.923076923076923</b> },
-  old_ok_fail_ratio:
-  [ 0.16666666666666666,
-  0.05555555555555555,
-  0.03076923076923077,
-  0.02197802197802198 ],
-  current_ok_fail_ratio: [ <b>0.9655172413793104</b> ],
-  old_fail_sd: 2.165063509461097,
-  current_fail_sd: 35.50704155516198 }
+  current_fail_sd: 1.0897247358851685 }
+jamu.cz
+{ current_stats: { fail: [ 71, 26, 31, 40 ], ok: [ 42, 102, 93, 117 ] },
+  current_avg_stats: { ok: 88.5, fail: 42 },
+  current_day_stats: { fail: [ 71 ], ok: [ 42 ] },
+  old_stats: { fail: [ 26, 31, 40, 31 ], ok: [ 102, 93, 117, 89 ] },
+  old_avg_stats: { ok: 100.25, fail: 32 },
+  avg_ratio_current_to_old: { ok: 0.8827930174563591, fail: <b>1.3125</b> },
+  old_ok_fail_ratio: 
+   [ 0.2549019607843137,
+     0.3333333333333333,
+     0.3418803418803419,
+     0.34831460674157305 ],
+  current_ok_fail_ratio: [ <b>1.6904761904761905</b> ],
+  old_fail_sd: 5.049752469181039,
+  current_fail_sd: 17.478558292948534 }
+lf1.cuni.cz
+{ current_stats: { fail: [ 3, 3, 4, 1 ], ok: [ 67, 64, 62, 71 ] },
+  current_avg_stats: { ok: 66, fail: 2.75 },
+  current_day_stats: { fail: [ 3 ], ok: [ 67 ] },
+  old_stats: { fail: [ 3, 4, 1, 1 ], ok: [ 64, 62, 71, 59 ] },
+  old_avg_stats: { ok: 64, fail: 2.25 },
+  avg_ratio_current_to_old: { ok: 1.03125, fail: <b>1.2222222222222223</b> },
+  old_ok_fail_ratio: 
+   [ 0.046875,
+     0.06451612903225806,
+     0.014084507042253521,
+     0.01694915254237288 ],
+  current_ok_fail_ratio: [ <b>0.04477611940298507</b> ],
+  old_fail_sd: 1.299038105676658,
+  current_fail_sd: 1.0897247358851685 }
+jinonice.cuni.cz
+{ current_stats: { fail: [ 6, 2, 1, 4 ], ok: [ 27, 22, 17, 17 ] },
+  current_avg_stats: { ok: 20.75, fail: 3.25 },
+  current_day_stats: { fail: [ 6 ], ok: [ 27 ] },
+  old_stats: { fail: [ 2, 1, 4, 2 ], ok: [ 22, 17, 17, 21 ] },
+  old_avg_stats: { ok: 19.25, fail: 2.25 },
+  avg_ratio_current_to_old: { ok: 1.077922077922078, fail: <b>1.4444444444444444</b> },
+  old_ok_fail_ratio: 
+   [ 0.09090909090909091,
+     0.058823529411764705,
+     0.23529411764705882,
+     0.09523809523809523 ],
+  current_ok_fail_ratio: [ <b>0.2222222222222222</b> ],
+  old_fail_sd: 1.0897247358851685,
+  current_fail_sd: 1.920286436967152 }
+vsb.cz
+{ current_stats: { fail: [ 170, 115, 90, 92 ], ok: [ 449, 653, 696, 644 ] },
+  current_avg_stats: { ok: 610.5, fail: 116.75 },
+  current_day_stats: { fail: [ 170 ], ok: [ 449 ] },
+  old_stats: { fail: [ 115, 90, 92, 88 ], ok: [ 653, 696, 644, 641 ] },
+  old_avg_stats: { ok: 658.5, fail: 96.25 },
+  avg_ratio_current_to_old: { ok: 0.9271070615034168, fail: <b>1.212987012987013</b> },
+  old_ok_fail_ratio: 
+   [ 0.17611026033690658,
+     0.12931034482758622,
+     0.14285714285714285,
+     0.1372854914196568 ],
+  current_ok_fail_ratio: [ <b>0.37861915367483295</b> ],
+  old_fail_sd: 10.917302780449024,
+  current_fail_sd: 32.275183965393595 }
+gymlit.cz
+{ current_stats: { fail: [ 1, 0, 4, 0 ], ok: [ 8, 11, 54, 6 ] },
+  current_avg_stats: { ok: 19.75, fail: 1.25 },
+  current_day_stats: { fail: [ 1 ], ok: [ 8 ] },
+  old_stats: { fail: [ 0, 4, 0, 0 ], ok: [ 11, 54, 6, 9 ] },
+  old_avg_stats: { ok: 20, fail: 1 },
+  avg_ratio_current_to_old: { ok: 0.9875, fail: <b>1.25</b> },
+  old_ok_fail_ratio: [ 0, 0.07407407407407407, 0, 0 ],
+  current_ok_fail_ratio: [ <b>0.125</b> ],
+  old_fail_sd: 1.7320508075688772,
+  current_fail_sd: 1.6393596310755 }
+oalib.cz
+{ current_stats: { fail: [ 4, 3, 0, 3 ], ok: [ 52, 45, 36, 43 ] },
+  current_avg_stats: { ok: 44, fail: 2.5 },
+  current_day_stats: { fail: [ 4 ], ok: [ 52 ] },
+  old_stats: { fail: [ 3, 0, 3, 2 ], ok: [ 45, 36, 43, 47 ] },
+  old_avg_stats: { ok: 42.75, fail: 2 },
+  avg_ratio_current_to_old: { ok: 1.0292397660818713, fail: <b>1.25</b> },
+  old_ok_fail_ratio: 
+   [ 0.06666666666666667,
+     0,
+     0.06976744186046512,
+     0.0425531914893617 ],
+  current_ok_fail_ratio: [ <b>0.07692307692307693</b> ],
+  old_fail_sd: 1.224744871391589,
+  current_fail_sd: 1.5 }
 </pre>
 
 > kazde failnute zarizeni zapocitat pouze jednou - jak ok tak fail
@@ -381,6 +319,9 @@ asu.cas.cz
 - Dokumentace zálohování - OK?
 > pridat info o cronu
 > pridat info o zalohovani db
+
+
+- Pri prochazeni dat k detekci funkcnosti sluzby jsem narazil na zvlastni realm `ldap.cuni.cz`.
 
 # TODO list
 1. Autentizace
