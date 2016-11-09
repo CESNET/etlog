@@ -159,7 +159,18 @@ Other special packages along with installation are listed below.
 
 Duply package is used to system backup. Configuration is in `/etc/duply/system/conf`.
 Files which should be backed up are defined in `/etc/duply/system/exclude`.
-  
+
+Backup is executed by root's crontab file. Backup script is run every day.
+For details see root's crontab file.
+
+#### Database
+
+mongodump is used for database backup.
+mongodump is a utility for creating a binary export of the contents of a database.
+Script `/etc/duply/system/pre` is launched before every system backup and does the database backup using mongodump.
+Binary export of database is located in `/home/etlog/backup/dump`.
+
+
 ### MongoDB
 
 MongoDB is document oriented database.
