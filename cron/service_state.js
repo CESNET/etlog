@@ -175,16 +175,16 @@ function compute_month_stats(realm, prev_min)
     async.series([
       function(done) {
         month_day = new Date(prev_min.getTime() - (month[key] * 86400000)); // correct time adjusting
-        request.get_failed_logins_daily(month_day, realm, done);
+        res.fail.push(filter_by_mac(request.get_failed_logins_daily(month_day, realm)));
+        done(null);
       },
       function(done) {
         month_day = new Date(prev_min.getTime() - (month[key] * 86400000)); // correct time adjusting
-        res.ok.push(request.get_succ_logins_daily(month_day, realm).length);
+        res.ok.push(filter_by_mac(request.get_succ_logins_daily(month_day, realm)));
         done(null);
       },
       ],
       function(err, results) {
-        res.fail.push(sum_fail_count(results[0]));
         callback(null);
     });
   }, function (err) {
@@ -198,6 +198,23 @@ function compute_month_stats(realm, prev_min)
   });
 
   return res; // return dict
+}
+// --------------------------------------------------------------------------------------
+// filter data by mac address
+// --------------------------------------------------------------------------------------
+function filter_by_mac(data)
+{
+  var cnt = 0;
+  var list = [];
+
+  for(var item in data) {
+    if(list.indexOf(data[item].mac_address) == -1) {
+      list.push(data[item].mac_address);
+      cnt++;
+    }
+  }
+
+  return cnt;
 }
 // --------------------------------------------------------------------------------------
 // compute ratio of fail to ok count for each item
@@ -250,15 +267,15 @@ function get_day_stats(date, realm)
 
   async.series([
     function(done) {
-      request.get_failed_logins_daily(date, realm, done);
+      res.fail = [ filter_by_mac(request.get_failed_logins_daily(date, realm)) ];
+      done(null);
     },
     function(done) {
-      res.ok = [ request.get_succ_logins_daily(date, realm).length ];
+      res.ok = [ filter_by_mac(request.get_succ_logins_daily(date, realm)) ];
       done(null);
     },
     ],
     function(err, results) {
-      res.fail = [ sum_fail_count(results[0]) ];
       done = true;
   });
  
