@@ -16,6 +16,7 @@
 [github](https://github.com/CESNET/etlog/blob/master/scripts/invalid_records_mail.sh#L43)
 
 - Prazdna uzivatelska jmena nebudou pro data v tomto tydnu (7 - 13.11.) kompletni (nasazeno az v ut vecer)
+- Pridat rozliseni prazdnych a neplatnych mac adres?
 - Vyhovuje takto?
 
 
