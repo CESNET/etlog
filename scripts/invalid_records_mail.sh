@@ -34,11 +34,12 @@ function set_recipients()
 # email template function
 # function output is used as mail input
 # variables used:
-# $sample   = sample of 50 invalid records from past week
-# $files    = array of files containing invalid records from past week
-# $count    = array containing count of invalid records for each day of past week
-# $percent  = array containing ratio of invalid records to all records for each day expressed in percent
-# $stats    = specific information about types of invalid records from past week
+# $sample      = sample of 50 invalid records from past week
+# $files       = array of files containing invalid records from past week
+# $count       = array containing count of invalid records for each day of past week
+# $percent     = array containing ratio of invalid records to all records for each day expressed in percent
+# $stats       = specific information about types of invalid records from past week
+# $all_percent = ratio of all invalid records to all imported records of past week expressed in percent
 # ==========================================================================================
 function template()
 {
