@@ -83,9 +83,15 @@ function failed_to_human_readable(data, sum)
 // --------------------------------------------------------------------------------------
 // returns failed logins for given date and realm
 // --------------------------------------------------------------------------------------
-exp.get_failed_logins_daily = function(date, realm, callback)
+exp.get_failed_logins_daily = function(date, realm)
 {
-  var url = "/failed_logins/";
+  // this has to be used to enable normalization by mac address
+  // if /failed_logins/ api is used
+  // some user could generate a lot of failed autentizations which would be counted !
+
+  var url = "/search/";
+  var done = false;
+  var ret;
 
   var max = new Date(date);
   max.setHours(0);
@@ -97,7 +103,13 @@ exp.get_failed_logins_daily = function(date, realm, callback)
   min.setDate(max.getDate() - 1);  // 1 day before
 
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
-  query += "&username=/.*@" + realm + "$/";          // limit by domain part uf username => realm
+  query += "&realm=" + realm;   // limit by realm
+  query += "&result=FAIL";        // only failed logins
+  query += "&fields=mac_address";  // limit output to limit size of response - mac address may me used for normalization, may not be empty !
+
+  // possible clean solution other than limiting output to specific fields:
+  // https://github.com/Automattic/mongoose/issues/2964
+  // http://mongoosejs.com/docs/api.html#aggregate_Aggregate-cursor
 
   request.get({
     url: url_base + url + query     // use query string here for simple usage
@@ -105,9 +117,16 @@ exp.get_failed_logins_daily = function(date, realm, callback)
     if(error)
       console.error(error);
     else {
-      callback(null, JSON.parse(body));   // return response to caller
+      ret = JSON.parse(body);
+      done = true;
     }
   });
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
+
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 // returns successful logins for given date and realm
@@ -130,7 +149,7 @@ exp.get_succ_logins_daily = function(date, realm)
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
   query += "&realm=" + realm;   // limit by realm
   query += "&result=OK";        // only successful logins
-  query += "&fields=username";  // limit output to limit size of response
+  query += "&fields=mac_address";  // limit output to limit size of response - mac address may me used for normalization, may not be empty !
 
   // possible clean solution other than limiting output to specific fields:
   // https://github.com/Automattic/mongoose/issues/2964
