@@ -1,0 +1,107 @@
+//- navbar selected item
+-var selected = 'počet MAC adres';
+
+link(rel='stylesheet', href='/stylesheets/flatpickr.min.css')
+script(src='/javascripts/flatpickr.js')
+script(src='/javascripts/d3.v3.js')
+
+//-style.
+//-  body {
+//-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+//-  margin: auto;
+//-  position: relative;
+//-  width: 960px;
+//-  }
+//-  text {
+//-  font: 10px sans-serif;
+//-  }
+//-  .axis path,
+//-  .axis line {
+//-  fill: none;
+//-  stroke: #000;
+//-  shape-rendering: crispEdges;
+//-  }
+//-  form {
+//-  position: absolute;
+//-  right: 10px;
+//-  top: 10px;
+//-  }
+
+div(ng-controller="mac_count_graph_controller")
+  div
+    md-content(layout-padding='')
+      form.form-horizontal#main_form(ng-submit="submit()")
+        .form-group
+          label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.flatpickr#min_date(type='text', placeholder='Vyberte datum', ng-model='form_data[min_date]')
+
+        .form-group
+          label.col-sm-2.control-label(for = 'max_date') Koncové datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.flatpickr#max_date(type='text', placeholder='Vyberte datum', ng-model='form_data[max_date]')
+ 
+        //- TODO - stylovani
+        //- TODO - naseptavani - instituce
+
+        .form-group(ng-repeat='option in options track by $index', ng-show='options_added')
+          label.col-sm-2.control-label {{option.val}}
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input(type='text', ng-model='form_data[option.key]')
+              div(ng-repeat='subopt in option.subopts')
+                input(type='radio', name='{{option.val}}', ng-model="option.sel", ng-value='subopt.key')
+                | {{subopt.val}}
+                
+        .form-group(ng-show='!options_added')
+          label.col-sm-2.control-label Další možnosti
+          .col-xs-2
+            div(layout-gt-xs='row')
+              button.btn.btn-default.addButton(type='button', ng-click='add_options()')
+                i.fa.fa-plus
+
+
+          
+        
+
+
+        
+
+        //// tohle udelat jako pridavne pole
+        //.form-group
+        //  label.col-sm-2.control-label(for = 'realm') Instituce:
+        //  .col-xs-3
+        //    input.form-control(type = 'email', placeholder = 'příklad.cz', ng-model="form_data['realm']")
+ 
+        ////.form-group
+        ////  label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
+        ////  .col-xs-3
+        ////    input.form-control(type = 'email', placeholder = 'user@example.com', ng-model="form_data['username']")
+
+        //.form-group
+        //  label.col-sm-2.control-label(for = 'count') Počet:
+        //  .col-xs-3
+        //    input.form-control(type = 'email', placeholder = '5', ng-model="form_data['count']")
+
+
+        .form-group
+          .col-sm-offset-2.col-sm-10
+            button.btn.btn-default(type="submit") Hledej
+
+  //div
+  //  //#graph
+  //  md-content(layout-padding='')
+  //    form.form-horizontal
+  //      label
+  //        input(type='radio', name='mode', value='grouped')
+  //        |  Grouped
+  //      label
+  //        input(type='radio', name='mode', value='stacked', checked='')
+  //        |  Stacked
+
+
+
+
+
