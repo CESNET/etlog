@@ -34,7 +34,8 @@ function set_recipients()
 # email template function
 # function output is used as mail input
 # variables used:
-# $sample      = sample of 50 invalid records from past week
+# $sample_size = number of records, which will be shown as sample for past week
+# $sample      = sample of $sample_size invalid records from past week
 # $files       = array of files containing invalid records from past week
 # $count       = array containing count of invalid records for each day of past week
 # $percent     = array containing ratio of invalid records to all records for each day expressed in percent
@@ -44,7 +45,7 @@ function set_recipients()
 function template()
 {
   cat << EOF
-50 invalidních záznamů za poslední týden:
+$sample_size invalidních záznamů za poslední týden:
 ==========================================================================================
 
 $sample
@@ -76,15 +77,8 @@ function setup_mail()
   # recipient
   set_recipients
 
-  # copy for testing purposes
-  cc="vac.mach@sh.cvut.cz"
-
-  # sender
-  sender="etlog@etlog.cesnet.cz"
-
-  # mail subject
-  subj="týdenní report - invalidní záznamy"
-  subj=$(echo "=?utf-8?B?$(echo $subj | base64)?=")   # utf-8 must be encoded
+  # utf-8 mail subject must be encoded
+  subj=$(echo "=?utf-8?B?$(echo $subj | base64)?=")
 }
 # ==========================================================================================
 # get stats
@@ -140,11 +134,8 @@ function get_stats()
 # ==========================================================================================
 function setup_template()
 {
-  # etlog log root
-  etlog_log_root="/home/etlog/logs"
-
-  # sample 50 of 50 invalid lines
-  sample="$(cat "$etlog_log_root/invalid_records/invalid-$(date --date="yesterday" "+%Y-%m-%d")" | sed "s/.*: //" | sort -u | head -50)"
+  # sample of $sample_size invalid lines
+  sample="$(cat "$etlog_log_root/invalid_records/invalid-$(date --date="yesterday" "+%Y-%m-%d")" | sed "s/.*: //" | sort -u | head -$sample_size)"
 
   # arrays for mail template
   declare -ga files
@@ -179,10 +170,33 @@ function send_mail()
   template | base64 | mail -a "Content-Type: text/plain; charset=\"utf-8\"" -a "Content-Transfer-Encoding: base64" -s "$subj" -r "$sender" "$to" "$cc"
 }
 # ==========================================================================================
+# read configuration
+# ==========================================================================================
+function read_config()
+{
+  # configuration file location
+  local config_location="/home/etlog/etlog/config"
+
+  if [[ ! -e $config_location ]]
+  then
+    echo "config file '$config_location' does not exist!"
+    exit 1;
+  fi
+
+  if [[ ! -r $config_location ]]
+  then
+    echo "config file '$config_location' is not readable!"
+    exit 1;
+  fi
+
+  source $config_location
+}
+# ==========================================================================================
 # main function
 # ==========================================================================================
 function main()
 {
+  read_config
   setup_mail
   setup_template
   send_mail

@@ -1,0 +1,19 @@
+# etlog confoguration file
+# ==========================================================================================
+# invalid_records_mail.sh variables
+# ==========================================================================================
+# sample size - number of records, which should be sent to the administrator
+sample_size=50
+
+# where to send copy of the report - just for testing purposes
+cc="vac.mach@sh.cvut.cz"
+
+# sender of report
+sender="etlog@etlog.cesnet.cz"
+
+# email subject
+subj="týdenní report - invalidní záznamy"
+
+# etlog log root
+etlog_log_root="/home/etlog/logs"
+# ==========================================================================================
