@@ -87,6 +87,55 @@ function setup_mail()
   subj=$(echo "=?utf-8?B?$(echo $subj | base64)?=")   # utf-8 must be encoded
 }
 # ==========================================================================================
+# get stats
+# ==========================================================================================
+function get_stats()
+{
+  stats=$(cut -d "," -f2 ${err_files[@]} | sort | uniq -c)  # get stats
+  stats=$(echo "$stats" | awk '
+  BEGIN {
+    max_len = 0
+    line = ""
+  }
+  {
+    # initial substitution
+    gsub("neplatná hodnota", "neplatné hodnoty", $0);
+    gsub("neplatná mac adresa", "neplatné mac adresy", $0);
+    gsub("prázdné uživatelské jméno", "prázdná uživatelská jména", $0);
+    gsub("záznam je deformovaný", "deformované záznamy", $0);
+
+    # reverse line order
+    for(i = 2; i <= NF; i++) {
+      if(length(line) == 0)
+        line = $i
+      else
+        line = line" "$i
+    }
+
+    line = line": "
+
+    # determine max line length
+    if(length(line) > max_len)
+      max_len = length(line)
+
+    count[FNR]=$1   # assing count
+    out[FNR] = line # assign to output
+    line = ""       # clear variable for next processing
+  }
+  END {
+    for(i in out) {
+      line = out[i]
+
+      # add indentation
+      while(length(line) < max_len)
+        line = line" "
+
+      printf("%s%d\n",  line, count[i])     # print result
+    }
+  }
+  ')
+}
+# ==========================================================================================
 # set up template contents
 # ==========================================================================================
 function setup_template()
@@ -119,7 +168,7 @@ function setup_template()
     ((idx++))
   done
 
-  stats=$(cut -d "," -f2 ${err_files[@]} | sort | uniq -c)  # get stats
+  get_stats
   all_percent=$(printf "%2.1f" $(echo "($all_invalid_cnt / $all_cnt) * 100" | bc -l))     # count percent for all records of past week
 }
 # ==========================================================================================
