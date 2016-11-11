@@ -7,15 +7,16 @@
 [github](https://github.com/CESNET/etlog/blob/master/request.js#L78)
 
 - Javascript nema heredoc, tudiz je problematicke napsat telo jako souvislou cast textu
-- předmět emailu je nastaven [github](https://github.com/CESNET/etlog/blob/master/mail.js#L53)
-- limit počtu výsledků je nastaven [github](https://github.com/CESNET/etlog/blob/master/cron.js#L15)
+- předmět emailu je nastaven [v konfiguraci](https://github.com/CESNET/etlog/blob/master/config/config.js#L9)
+- limit počtu výsledků je nastaven [v konfiguraci](https://github.com/CESNET/etlog/blob/master/config/config.js#L7)
 - Vyhovuje takto?
 
 ### Invalidní záznamy
 
-[github](https://github.com/CESNET/etlog/blob/master/scripts/invalid_records_mail.sh#L43)
+[github](https://github.com/CESNET/etlog/blob/master/scripts/invalid_records_mail.sh#L45)
 
 - Prazdna uzivatelska jmena nebudou pro data v tomto tydnu (7 - 13.11.) kompletni (nasazeno az v ut vecer)
+- Skript je možné [konfigurovat](https://github.com/CESNET/etlog/blob/master/config/invalid_records_mail)
 - Pridat rozliseni prazdnych a neplatnych mac adres?
 - Vyhovuje takto?
 
