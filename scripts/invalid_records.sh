@@ -26,7 +26,9 @@ output="$etlog_log_root/invalid_records/invalid-$date"
 temp="/tmp/numbers"
 
 # ==========================================================================================
-numbers=$(cut -d ":" -f2 < $errlog) # get numbers
+# delete records with empty username - those are valid records
+# empty username is reported just for statistics
+numbers=$(sed '/prázdné uživatelské jméno/d' $errlog | cut -d ":" -f2) # get numbers
 
 echo "$numbers" > $temp               # temporary file for awk
 
