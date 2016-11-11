@@ -49,10 +49,10 @@ Jednotlivé položky mají tento význam:
 
 | atribut                       | význam                                                                                                    | poznámka  |
 |-------------------------------|-----------------------------------------------------------------------------------------------------------|-----------|
-|  current\_stats               | počet úspěšných a neúspěšných přihlášení předchozího dne v týdnu (například pondělí) za poslední měsíc včetně předchozího dne |           |
+|  current\_stats               | počet úspěšných a neúspěšných přihlášení předchozího dne v týdnu (například pondělí) za poslední měsíc včetně předchozího dne | například data pro: 11.11, 4.11. 28.10. 21.10          |
 |  current\_avg\_stats          | průměrná hodnota pro úspěšná a neúspěsná přihlášení proměnné current\_stats                               |           |
 |  current\_day\_stats          | počet úspěšných a neúspěšných přihlášení pro předchozí den                                                |           |
-|  old\_stats                   | počet úspěšných a neúspěšných přihlášení předchozího dne v týdnu za poslední měsíc kromě předchozího dne  |           |
+|  old\_stats                   | počet úspěšných a neúspěšných přihlášení předchozího dne v týdnu za poslední měsíc kromě předchozího dne  | například data pro: 4.11. 28.10. 21.10 14.10.         |
 |  old\_avg\_stats              | průměrná hodnota pro úspěšná a neúspěsná přihlášení proměnné current\_stats                               |           |
 |  avg\_ratio\_current\_to\_old | poměr hodnot current\_avg\_stats a old\_avg\_stats                                                        | klíč fail signalizuje n-násobnost nárůstu průměrného počtu neúspěsných přihlášení          |
 |  old\_ok\_fail\_ratio         | poměr neúspěsných a úspěšných přihlášení pro promměnou old\_stats                                         |           |
