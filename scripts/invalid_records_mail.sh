@@ -175,7 +175,7 @@ function send_mail()
 function read_config()
 {
   # configuration file location
-  local config_location="/home/etlog/etlog/config"
+  local config_location="/home/etlog/etlog/config/invalid_records_mail"
 
   if [[ ! -e $config_location ]]
   then

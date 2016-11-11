@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const config = require('./config/config.js');
 // --------------------------------------------------------------------------------------
 function set_up_mailer()
 {
@@ -50,13 +51,11 @@ module.exports.send_mail = function (subject, recipients, data)
 // --------------------------------------------------------------------------------------
 module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
 {
-  var subj = "měsíční report - neúspěšná přihlášení";
-
   database.realm_admins.find({}, { realm : 1, admins : 1, _id : 0 },
   function(err, items) {
     for(var dict in items) {
       // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
-      module.exports.send_mail(subj, items[dict].admins, data_func(items[dict].realm, limit));
+      module.exports.send_mail(config.failed_logins_subj, items[dict].admins, data_func(items[dict].realm, limit));
     }
   });
 }
