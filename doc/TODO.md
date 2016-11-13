@@ -256,6 +256,54 @@ oalib.cz
 
 > graf pro mac count
 
+
+
+
+## pocet zarizeni > 2 na jednoho uzivatele (mac count)
+
+- Co ma vlastne graf zobrazovat?
+  - pocet zarizeni pro vsechny dny v zadanem intervalu?
+  - pocet uzivatelu, kteri maji pocet zarizeni > 2 pro vsechny dny v zadanem intervalu?
+  - ... ?
+
+
+## nejvice vyuzivany roaming
+
+- Co ma vlastne graf zobrazovat?
+  - pocet vyuzititi sluzby (pro vsechny instituce) pro vsechny dny v zadanem intervalu?
+  - pocet vyuzititi sluzby pro danou insituci pro vsechny dny v zadanem intervalu?
+  - ... ?
+- povinne instituce, pro kterou ma byt roaming zobrazen?
+
+
+## nejvice poskytovany roaming
+
+- Co ma vlastne graf zobrazovat?
+  - pocet poskytnuti sluzby (pro vsechny instituce) pro vsechny dny v zadanem intervalu?
+  - pocet poskytnuti sluzby pro danou insituci pro vsechny dny v zadanem intervalu?
+  - ... ?
+- povinne instituce, pro kterou ma byt roaming zobrazen?
+
+
+## neuspesna prihlaseni
+
+- Co ma vlastne graf zobrazovat?
+  - pocet neuspesnych prihlaseni pro vsechny dny v zadanem intervalu?
+  - pocet neuspesnych prihlaseni pro danou instituci pro vsechny dny v zadanem intervalu?
+  - pocet neuspesnych prihlaseni pro daneho uzivatele pro vsechny dny v zadanem intervalu?
+  - ... ?
+- povinne instituce, pro kterou maji byt data zobrazena?
+- povinne uzivate, pro ktereho maji byt data zobrazena?
+
+
+## sdilene mac adresy (shared mac)
+
+- Co ma vlastne graf zobrazovat?
+  - pocet uzivatelu sdilejicich adresy pro vsechny dny v zadanem intervalu?
+  - pocet sdilenych adres pro vsechny dny v zadanem intervalu?
+  - ... ?
+
+
 # Ostatní
 
 - specifikovat licenci v repozitáři?
