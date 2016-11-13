@@ -304,6 +304,13 @@ oalib.cz
   - ... ?
 
 
+## Element pro vyber datumu
+
+- momentalne nelze omezovat vybirana data v zavislosti na jiz zvolenem minimu/maximu.
+- Vyhovuje takto?
+
+
+
 # Ostatní
 
 - specifikovat licenci v repozitáři?
