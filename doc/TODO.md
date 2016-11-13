@@ -269,6 +269,7 @@ oalib.cz
     - napr 2. uroven pocet zarizeni na uzivatele
     - ... ?
   - ... ?
+- ukazkovy [graf](https://etlog.cesnet.cz/#/mac_count_graph) jiz funguje
 
 
 ## nejvice vyuzivany roaming
