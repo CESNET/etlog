@@ -264,6 +264,10 @@ oalib.cz
 - Co ma vlastne graf zobrazovat?
   - pocet zarizeni pro vsechny dny v zadanem intervalu?
   - pocet uzivatelu, kteri maji pocet zarizeni > 2 pro vsechny dny v zadanem intervalu?
+  - vyuzit https://bl.ocks.org/mbostock/1283663 pro zobrazeni nekolika ruznych sad dat?
+    - napr 1. uroven pocet zarizeni
+    - napr 2. uroven pocet zarizeni na uzivatele
+    - ... ?
   - ... ?
 
 
