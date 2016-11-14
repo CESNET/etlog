@@ -411,16 +411,6 @@ Collection has following structure:
 | ok\_count    |   Number  |  count of successful login attempts |
 | ratio        |   Number  |  ratio of fail\_count to (ok\_count + fail\_count) |
 
-##### stats
-
-TODO
-
-Collection has following structure:
-
-| field name | data type |               note                  |
-|------------|-----------|-------------------------------------|
-| timestamp  |   Date    |         timestamp                   |
-
 
 ##### realm\_admins
 
