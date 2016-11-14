@@ -258,6 +258,26 @@ oalib.cz
 > graf pro mac count
 
 
+potencialni inspirace:
+
+- http://bl.ocks.org/benjchristensen/2657838
+- https://run.plnkr.co/EgVCkjg68c59Jdtv/
+- http://nvd3.org/examples/multiBar.html
+- http://nvd3.org/examples/multiBar.html
+- http://bl.ocks.org/mbostock/1283663 
+- http://bl.ocks.org/mstanaland/6100713
+- https://gist.github.com/benjchristensen/1488375
+- http://bl.ocks.org/benjchristensen/1488375
+- https://plnkr.co/edit/JUaLXmeCvHh0zUmrKClQ?p=preview
+- https://plnkr.co/edit/gMa09b2jO9shxCbXDaFD?p=preview
+- http://stackoverflow.com/questions/35980068/d3-js-bar-chart-show-hide-bars-on-legend-click-how-to-filter-correctly
+- http://bl.ocks.org/mbostock/3943967 
+- https://bl.ocks.org/mbostock/1283663 - pouzit jako sloupcovy graf pro nejaka komplexnejsi data ?
+- http://www.chartjs.org/docs/#bar-chart
+- http://bl.ocks.org/biovisualize/5372077
+- https://bl.ocks.org/mbostock/3885705 - checkbox
+- pridat moznost razeni (https://bl.ocks.org/mbostock/3885705)?
+- https://codepen.io/Rastikko/pen/GqNbqM
 
 
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
