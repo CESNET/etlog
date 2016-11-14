@@ -271,6 +271,7 @@ oalib.cz
     - ... ?
   - ... ?
 - ukazkovy [graf](https://etlog.cesnet.cz/#/mac_count_graph) jiz funguje
+
 > Já si myslím že v případě většího počtu MAC adres na uživatele není potřeba z toho dělat graf. Užitečnější/dostatečná by mi přišla tabulka. Pěkné jsou ty dodatečné podmínky na uid a min počet.
 
 ## nejvice vyuzivany roaming
