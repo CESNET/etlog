@@ -104,18 +104,6 @@ exports.realms_schema = realms_schema;
 var realms = mongoose.model('realms', realms_schema, 'realms');
 exports.realms = realms;
 // --------------------------------------------------------------------------------------
-
-// TODO
-
-//var stats_schema = mongoose.Schema({
-//  timestamp   : Date,
-//});
-//// --------------------------------------------------------------------------------------
-//exports.stats_schema = stats_schema;
-//var stats = mongoose.model('stats', stats_schema, 'stats');
-//exports.stats = stats;
-
-// --------------------------------------------------------------------------------------
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
   console.log("sucesfully connected do mongodb database on localhost");
