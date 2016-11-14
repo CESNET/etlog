@@ -274,6 +274,16 @@ oalib.cz
 
 > Já si myslím že v případě většího počtu MAC adres na uživatele není potřeba z toho dělat graf. Užitečnější/dostatečná by mi přišla tabulka. Pěkné jsou ty dodatečné podmínky na uid a min počet.
 
+
+## sdilene mac adresy (shared mac)
+
+- Co ma vlastne graf zobrazovat?
+  - pocet uzivatelu sdilejicich adresy pro vsechny dny v zadanem intervalu?
+  - pocet sdilenych adres pro vsechny dny v zadanem intervalu?
+  - ... ?
+
+> tady taky graf nema smysl. Je to zrcadlovy pripad predchozi sekce. Postaci tabulka s moznosti filtrace jako v predchoz. bodu.
+
 ## nejvice vyuzivany roaming
 
 - Co ma vlastne graf zobrazovat?
@@ -310,12 +320,6 @@ oalib.cz
 - povinne uzivate, pro ktereho maji byt data zobrazena?
 
 
-## sdilene mac adresy (shared mac)
-
-- Co ma vlastne graf zobrazovat?
-  - pocet uzivatelu sdilejicich adresy pro vsechny dny v zadanem intervalu?
-  - pocet sdilenych adres pro vsechny dny v zadanem intervalu?
-  - ... ?
 
 
 ## Element pro vyber datumu
