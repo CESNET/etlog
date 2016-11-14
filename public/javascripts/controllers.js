@@ -902,9 +902,9 @@ function graph($scope)
   var col_length = 40;  // column length
   
   // dynamically determine graph width by size of data
-  var width = $scope.mac_count.length * col_length - margin.left - margin.right;    
+  var width = $scope.data.length * col_length - margin.left - margin.right;
   var height = 520 - margin.top - margin.bottom;
-  var data = $scope.mac_count;
+  var data = $scope.data;
 
   // ensure minimal width
   var min_width = 200;
