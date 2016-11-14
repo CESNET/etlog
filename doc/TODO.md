@@ -274,6 +274,16 @@ oalib.cz
 
 > Já si myslím že v případě většího počtu MAC adres na uživatele není potřeba z toho dělat graf. Užitečnější/dostatečná by mi přišla tabulka. Pěkné jsou ty dodatečné podmínky na uid a min počet.
 
+
+## sdilene mac adresy (shared mac)
+
+- Co ma vlastne graf zobrazovat?
+  - pocet uzivatelu sdilejicich adresy pro vsechny dny v zadanem intervalu?
+  - pocet sdilenych adres pro vsechny dny v zadanem intervalu?
+  - ... ?
+
+> tady taky graf nema smysl. Je to zrcadlovy pripad predchozi sekce. Postaci tabulka s moznosti filtrace jako v predchoz. bodu.
+
 ## nejvice vyuzivany roaming
 
 - Co ma vlastne graf zobrazovat?
@@ -281,6 +291,8 @@ oalib.cz
   - pocet vyuzititi sluzby pro danou insituci pro vsechny dny v zadanem intervalu?
   - ... ?
 - povinne instituce, pro kterou ma byt roaming zobrazen?
+
+> Ve smyslu které instituce=REALM (prostřednctvím svých uživatelú) nejvíce využívají eduroamu. Zase grupováno přes MAC/den. Časový interval by bylo pěkné mít volitelný + nějakou předvolbu 1/3/12měs. Úplně nevím co mislíte těmi "povinnými institucemi". Množství polože na ose X by mohla regulovat parametrem, tj. zvolit si že chci nakreslit graf s max 25 institucemi. I tady mi přijde užitečné mít data k dispozici ve formě tabulky. Také by bylo zajímavé vidět grafy pro každý jednotlivý REALM v čase. Viz následující bod.
 
 
 ## nejvice poskytovany roaming
@@ -291,6 +303,11 @@ oalib.cz
   - ... ?
 - povinne instituce, pro kterou ma byt roaming zobrazen?
 
+> Instituce=VISINST které nejvíce poskytují konektivitu, loginy grupovány MAC=CSI/den. Opět užitečná tabulka a graf pro X nej více využívaných. Tuhle funkcionalitu dnes nemám. Mám grafy toho jak jsou jednotlivé instituce využívány v čase, to je zde: https://ermon.cesnet.cz/roaming/ tohle je určitě také zajímavé.
+
+## aktivita CZ eduroamu
+
+> Nová sekce bez rozlišení VISINST/REALM jen grupováno přes MAC/CSI/den.
 
 ## neuspesna prihlaseni
 
@@ -303,12 +320,6 @@ oalib.cz
 - povinne uzivate, pro ktereho maji byt data zobrazena?
 
 
-## sdilene mac adresy (shared mac)
-
-- Co ma vlastne graf zobrazovat?
-  - pocet uzivatelu sdilejicich adresy pro vsechny dny v zadanem intervalu?
-  - pocet sdilenych adres pro vsechny dny v zadanem intervalu?
-  - ... ?
 
 
 ## Element pro vyber datumu
