@@ -817,49 +817,6 @@ function get_days($scope)
   }
 }
 // --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-//function qs_mac_count_graph(data)
-//{
-//  ret = "?";
-//  var items = [ "realm", "username", "count" ];
-//
-//  for(var item in items) {
-//    if(data[items[item]] && data[items[item] + "_sel"]) {  // both defined
-//
-//     if(data[items[item] + "_sel"] == "eq") {
-//       if(ret.length == 1)
-//         ret += items[item] + "=" + data[items[item]];
-//       else
-//         ret += "&" + items[item] + "=" + data[items[item]];
-//     }
-//
-//     else if(data[items[item] + "_sel"] == "like") {
-//       if(ret.length == 1)
-//         ret += items[item] + "=/" + data[items[item]] + "/";   // TODO - escaping ?
-//       else
-//         ret += "&" + items[item] + "=/" + data[items[item]] + "/";   // TODO - escaping ?
-//     }
-//
-//     else if(data[items[item] + "_sel"] == "gt") {
-//       if(ret.length == 1)
-//         ret += items[item] + ">" + data[items[item]];
-//       else
-//         ret += "&" + items[item] + ">" + data[items[item]];
-//     }
-//
-//     else if(data[items[item] + "_sel"] == "lt") {
-//       if(ret.length == 1)
-//         ret += items[item] + "<" + data[items[item]];
-//       else
-//         ret += "&" + items[item] + "<" + data[items[item]];
-//     }
-//    }
-//  }
-//
-//  return ret;
-//}
-// --------------------------------------------------------------------------------------
 // intialize flatpicker
 // --------------------------------------------------------------------------------------
 function setup_calendars($scope)
@@ -1052,6 +1009,26 @@ function graph($scope)
     .style("font-size", "16px") 
     .style("text-decoration", "underline")  
     .text("Titulek grafu");
+
+
+  // TODO
+  //if($scope.grouped) {
+  //  console.log("grouped");
+
+  //  d3.select('#show_failed').on('change', function() {
+  //    console.log('func');
+  //    //var x = d3.select('#show_failed').selectAll('.category:checked');
+  //    ////var ids = x[0].map(function(category) {
+  //    ////  return category.id;
+  //    ////});
+
+  //    //console.log(x);
+
+  //    ////updateGraph(ids);
+  //  });
+  //  //renderGraph();
+  //
+  //}
 }
 // --------------------------------------------------------------------------------------
 // compute sum mac count for given data
@@ -1069,181 +1046,11 @@ function sum_count(data)
   return cnt;
 }
 // --------------------------------------------------------------------------------------
-// draw graph with data from api
-// --------------------------------------------------------------------------------------
-function graph_test($scope)
-{
-  // taken from
-  // https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
-  // http://bl.ocks.org/Caged/6476579
-  // http://bl.ocks.org/biovisualize/5372077
-
-  // http://stackoverflow.com/questions/21639305/d3js-take-data-from-an-array-instead-of-a-file
-  // ============================================================================
-
-  // set the dimensions and margins of the graph
-  var margin = {top: 40, right: 20, bottom: 100, left: 80};
-  var col_length = 40;  // column length
-  
-  // dynamically determine graph width by size of data
-  var width = $scope.mac_count.length * col_length - margin.left - margin.right;    
-  var height = 520 - margin.top - margin.bottom;
-  var data = $scope.mac_count;
-
-  // ensure minimal width
-  var min_width = 200;
-
-  if(width < 100)
-    width = min_width;
-
-  // ==========================================================
-
-  // set the ranges
-  var x = d3.scaleBand()
-            .range([0, width])
-            .padding(0.1);
-  var y = d3.scaleLinear()
-            .range([height, 0]);
- 
-  // ==========================================================
-            
-  var svg = d3.select("#graph");
-
-  if(svg.html() == "") {    // no graph present yet
-    svg = svg.append("svg");
-  }
-  else {    // graph already present
-    // TODO - transition / animation ?
-    svg = svg.selectAll("div > svg").remove("svg"); // delete it
-    svg = d3.select("#graph").append("svg");        // and create again
-  }
- 
-  // append the svg object to the body of the page
-  // append a 'group' element to 'svg'
-  // moves the 'group' element to the top left margin
-  svg = svg
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform", 
-            "translate(" + margin.left + "," + margin.top + ")");
-
-  // ==========================================================
-
-  // tooltip
-  var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-10, 0])
-    .html(function(d) {
-    return "<strong>počet:</strong> <span style='color:red'>" + d.value + "</span>";
-  })
-
-  svg.call(tip);
-
-  // ==========================================================
- 
-  // is actually needed ?
-  //// format the data
-  //data.forEach(function(d) {
-  //  d.value = +d.value;
-  //});
-
-  // Scale the range of the data in the domains
-  x.domain(data.map(function(d) { return d.timestamp; }));
-  y.domain([0, d3.max(data, function(d) { return d.value; })]);
-
-  // TODO - dynamic data update -> http://bl.ocks.org/biovisualize/5372077 ?
-
-  // append the rectangles for the bar chart
-  svg.selectAll(".bar")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.timestamp); })
-      .attr("width", x.bandwidth())
-      .attr("y", function(d) { return y(d.value); })
-      .attr("height", function(d) { return height - y(d.value); })
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide);
-
-  // ==========================================================
-
-  // add the x Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
-      // rotate text by 60 degrees
-      .selectAll("text")
-      .attr("y", 0)
-      .attr("x", 9)
-      .attr("dy", ".35em")
-      .attr("transform", "rotate(60)")
-      .style("text-anchor", "start");
-
-  // add the y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y)
-      .tickFormat(d3.format("d"))); // custom format - disable comma for thousands
-
-  // set graph title
-  svg.append("text")
-    .attr("x", (width / 2))             
-    .attr("y", 0 - (margin.top / 2))
-    .attr("text-anchor", "middle")  
-    .style("font-size", "16px") 
-    .style("text-decoration", "underline")  
-    .text("Titulek grafu");
-
-
-  if($scope.grouped) {
-    console.log("grouped");
-
-    d3.select('#show_failed').on('change', function() {
-      console.log('func');
-      //var x = d3.select('#show_failed').selectAll('.category:checked');
-      ////var ids = x[0].map(function(category) {
-      ////  return category.id;
-      ////});
-
-      //console.log(x);
-
-      ////updateGraph(ids);
-    });
-    //renderGraph();
-  
-  }
-}
-// --------------------------------------------------------------------------------------
 angular.module('etlog').controller('mac_count_graph_controller_test', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
   addiational_fields($scope);   // set up additional form fields
-
-  // TODO - validation
- 
   handle_submit_test($scope, $http, $q);
 }]);
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-function handle_submit_test($scope, $http, $q)
-{
-  $scope.submit = function () {
-
-    // add radio selection to form data
-    for(var item in $scope.options) {
-      if($scope.form_data[$scope.options[item].key]) {
-        $scope.form_data[$scope.options[item].key + "_sel"] = $scope.options[item].sel;
-      }
-    }
-    
-    get_days($scope);                           // get array of days in specified interval
-    qs = qs_mac_count_graph($scope.form_data);  // create query string
-    get_mac_count($scope, $http, qs, $q, function ($scope) { // get data from api
-      //console.log($scope.mac_count);
-      graph_test($scope);    // draw graph
-    });
-  }
-}
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
