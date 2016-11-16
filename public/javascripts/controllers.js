@@ -699,11 +699,31 @@ angular.module('etlog').controller('graph_test_3_controller', ['$scope', '$http'
   });
 }]);
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('mac_count_graph_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+// TODO
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('mac_count_table_controller', ['$scope', '$http', 'Resource', function ($scope, $http, service) {
+  // table controller "template"
   init($scope, $http);
   addiational_fields_mac_count($scope);   // set up additional form fields
-  $scope.graph_title = "titulek";
-  handle_submit($scope, $http, $q, get_mac_count, graph, [ "realm", "username", "count" ]);
+  var items_by_page = 10;
+  handle_table_submit($scope, $http, get_mac_count, table, [ "realm", "username", "count" ]);
+
+  var ctrl = this;
+  this.displayed = [];
+  this.callServer = function callServer(tableState) {
+    ctrl.isLoading = true;
+    
+    var pagination = tableState.pagination;
+    var start = pagination.start || 0;     // This is NOT the page number, but the index of item in the list that you want to use to display the table.
+    var number = pagination.number || 10;  // Number of entries showed per page.
+    
+    service.getPage(start, number, tableState).then(function (result) {
+      ctrl.displayed = result.data;
+      console.log(ctrl.displayed);
+      tableState.pagination.numberOfPages = result.numberOfPages;//set the number of pages so the pagination can update
+      ctrl.isLoading = false;
+    });
+  };
 }]);
 // --------------------------------------------------------------------------------------
 // initialize
@@ -724,6 +744,31 @@ function init($scope, $http)
     $scope.db_data = response.data;
     setup_calendars($scope);
   });
+}
+// --------------------------------------------------------------------------------------
+// logic on form submit
+// params: 
+// $scope
+// $http
+// data_func - function which retrieves data for graph
+// table_func - function which builds table
+// form_items - array of form fields
+// --------------------------------------------------------------------------------------
+function handle_table_submit($scope, $http, data_func, table_func, form_items)
+{
+  $scope.submit = function () {
+
+    // add radio selection to form data
+    for(var item in $scope.options) {
+      if($scope.form_data[$scope.options[item].key]) {
+        $scope.form_data[$scope.options[item].key + "_sel"] = $scope.options[item].sel;
+      }
+    }
+    
+    qs = build_qs($scope.form_data, form_items);  // create query string
+    data_func($scope, $http, qs, function ($scope) { // get data from api
+    });
+  }
 }
 // --------------------------------------------------------------------------------------
 // logic on form submit
@@ -751,7 +796,7 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
 
     qs = build_qs($scope.form_data, form_items);  // create query string
     data_func($scope, $http, qs, $q, function ($scope) { // get data from api
-      console.log($scope.data);
+      //console.log($scope.data);
       graph_func($scope);    // draw graph
     });
   }
@@ -759,42 +804,23 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
 // --------------------------------------------------------------------------------------
 // get mac count data
 // --------------------------------------------------------------------------------------
-function get_mac_count($scope, $http, qs, $q, callback)
+function get_mac_count($scope, $http, qs, callback)
 {
-  var chain = $q.when();
   $scope.data = [];
 
-  var ts = "timestamp=";    // timestamp
+  var ts = "timestamp>=";    // timestamp
   if(qs.length != 1)
-    ts = "&timestamp=";
+    ts = "&timestamp>=";
 
-  $scope.days.forEach(function (day, index) {
-    chain = chain.then(function(){
-      return $http({
-        method  : 'GET',
-        url     : '/api/mac_count/' + qs + ts + day
-      })
-      .then(function(response) {
-        //// config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
-        var ts;
-        var arr = response.config.url.split("?")[1].split("&");
+  ts += $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;
+  // TODO - add sort ?
 
-        for(var item in arr) {  // find timestamp in query string variables
-          if(arr[item].indexOf("timestamp") != -1) {
-            ts = arr[item].split("=")[1].split("-");
-            break;
-          }
-        }
-        
-        ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
-        $scope.data.push({ timestamp : ts, 
-                                value : sum_count(response.data)});
-      });
-    });
-  });
-
-  // the final chain object will resolve once all the posts have completed.
-  chain.then(function() {
+  return $http({
+    method  : 'GET',
+    url     : '/api/mac_count/' + qs + ts
+  })
+  .then(function(response) {
+    $scope.data = response.data;
     callback($scope);
   });
 }
@@ -883,6 +909,19 @@ function addiational_fields_mac_count($scope)
   $scope.add_options = function() {
     $scope.options_added = true;
   };
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function table($scope)
+{
+  //console.log($scope.data);
+
+  //$scope.rowCollection = [
+  //  {firstName: 'Laurent', lastName: 'Renard', birthDate: new Date('1987-05-21'), balance: 102, email: 'whatever@gmail.com'},
+  //  {firstName: 'Blandine', lastName: 'Faivre', birthDate: new Date('1987-04-25'), balance: -2323.22, email: 'oufblandou@gmail.com'},
+  //  {firstName: 'Francoise', lastName: 'Frere', birthDate: new Date('1955-08-27'), balance: 42343, email: 'raymondef@gmail.com'}
+  //];
 }
 // --------------------------------------------------------------------------------------
 // draw graph with data from api
@@ -1008,7 +1047,7 @@ function graph($scope)
     .attr("text-anchor", "middle")  
     .style("font-size", "16px") 
     .style("text-decoration", "underline")  
-    .text("Titulek grafu");
+    .text($scope.graph_title);
 
 
   // TODO
@@ -1031,21 +1070,6 @@ function graph($scope)
   //}
 }
 // --------------------------------------------------------------------------------------
-// compute sum mac count for given data
-// --------------------------------------------------------------------------------------
-function sum_count(data)
-{
-  var cnt = 0;
-
-  // TODO - tohle dava uplne nesmyslna data
-
-  for(var item in data) {
-    cnt += data[item].count;
-  }
-
-  return cnt;
-}
-// --------------------------------------------------------------------------------------
 angular.module('etlog').controller('mac_count_graph_controller_test', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
   addiational_fields($scope);   // set up additional form fields
@@ -1058,7 +1082,8 @@ angular.module('etlog').controller('failed_logins_graph_controller', ['$scope', 
   init($scope, $http);
   addiational_fields_failed_logins($scope);   // set up additional form fields
   $scope.grouped = true;
-  handle_submit_failed_logins($scope, $http, $q);
+  $scope.graph_title = "neúspěšná přihlášení";
+  handle_submit($scope, $http, $q, get_failed_logins, graph, [ "username", "fail_count", "ok_count", "ratio_count" ]);
 }]);
 // --------------------------------------------------------------------------------------
 // TODO
@@ -1125,29 +1150,6 @@ function addiational_fields_failed_logins($scope)
   };
 }
 // --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-function handle_submit_failed_logins($scope, $http, $q)
-{
-  $scope.submit = function () {
-
-    // add radio selection to form data
-    for(var item in $scope.options) {
-      if($scope.form_data[$scope.options[item].key]) {
-        $scope.form_data[$scope.options[item].key + "_sel"] = $scope.options[item].sel;
-      }
-    }
-    
-    get_days($scope);                           // get array of days in specified interval
-    qs = qs_failed_logins($scope.form_data);  // create query string
-    get_failed_logins($scope, $http, qs, $q, function ($scope) { // get data from api
-      //console.log($scope.mac_count);
-      graph_test($scope);    // draw graph
-    });
-  }
-}
-// --------------------------------------------------------------------------------------
-// TODO
 // build query string based on input:
 // data: dict -> form_data
 // items: array of form fields
@@ -1155,8 +1157,6 @@ function handle_submit_failed_logins($scope, $http, $q)
 function build_qs(data, items)
 {
   ret = "?";
-  var items = [ "username", "fail_count", "ok_count", "ratio_count"];
-
   for(var item in items) {
     if(data[items[item]] && data[items[item] + "_sel"]) {  // both defined
 
@@ -1198,7 +1198,7 @@ function build_qs(data, items)
 function get_failed_logins($scope, $http, qs, $q, callback)
 {
   var chain = $q.when();
-  $scope.mac_count = [];
+  $scope.data = [];
 
   var ts = "timestamp=";    // timestamp
   if(qs.length != 1)
@@ -1212,11 +1212,19 @@ function get_failed_logins($scope, $http, qs, $q, callback)
       })
       .then(function(response) {
         //// config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
-        var ts = response.config.url.split("?")[1].split("&")[0].split("=")[1].split("-");
-        ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
+        var ts;
+        var arr = response.config.url.split("?")[1].split("&");
+
+        for(var item in arr) {  // find timestamp in query string variables
+          if(arr[item].indexOf("timestamp") != -1) {
+            ts = arr[item].split("=")[1].split("-");
+            break;
+          }
+        }
         
-        $scope.mac_count.push({ timestamp : ts, 
-                                value : sum_fail_count(response.data)});       // TODO - is order defined here ?
+        ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
+        $scope.data.push({ timestamp : ts, 
+                           value : sum_fail_count(response.data)});
       });
     });
   });
@@ -1437,6 +1445,87 @@ function test_graph_mult()
 
 
 
+
+
+
+
+
+
+
+// --------------------------------------------------------------------------------------
+angular.module('etlog').factory('Resource', ['$q', '$filter', '$timeout', '$http', function ($q, $filter, $timeout, $http) {
+
+	//this would be the service to call your server, a standard bridge between your model an $http
+
+	// the database (normally on your server)
+	var randomsItems = [];
+
+	//function createRandomItem(id) {
+	//	var heroes = ['Batman', 'Superman', 'Robin', 'Thor', 'Hulk', 'Niki Larson', 'Stark', 'Bob Leponge'];
+	//	return {
+	//		id: id,
+	//		username: heroes[Math.floor(Math.random() * 7)],
+	//		age: Math.floor(Math.random() * 1000),
+	//		saved: Math.floor(Math.random() * 10000)
+	//	};
+
+	//}
+
+	//for (var i = 0; i < 1000; i++) {
+	//	randomsItems.push(createRandomItem(i));
+	//}
+
+
+    function createRandomItems($http)
+    {
+      return $http({
+        method  : 'GET',
+        url     : '/api/mac_count/?timestamp=2016-10-07&count>5&sort=-count'
+      })
+      .then(function(response) {
+        randomsItems = response.data;
+        console.log(randomsItems);
+      });
+    }
+
+    createRandomItems($http);
+
+
+	//fake call to the server, normally this service would serialize table state to send it to the server (with query parameters for example) and parse the response
+	//in our case, it actually performs the logic which would happened in the server
+	function getPage(start, number, params) {
+
+		var deferred = $q.defer();
+
+		var filtered = params.search.predicateObject ? $filter('filter')(randomsItems, params.search.predicateObject) : randomsItems;
+
+		if (params.sort.predicate) {
+			filtered = $filter('orderBy')(filtered, params.sort.predicate, params.sort.reverse);
+		}
+
+		var result = filtered.slice(start, start + number);
+
+		//$timeout(function () {
+		//	//note, the server passes the information about the data set size
+		//	deferred.resolve({
+		//		data: result,
+		//		numberOfPages: Math.ceil(filtered.length / number)
+		//	});
+		//}, 1500);
+        
+        deferred.resolve({
+            data: result,
+            numberOfPages: Math.ceil(filtered.length / number)
+        })
+
+		return deferred.promise;
+	}
+	
+    return {
+		getPage: getPage
+	};
+}]);
+// --------------------------------------------------------------------------------------
 
 
 
