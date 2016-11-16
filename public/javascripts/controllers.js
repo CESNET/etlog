@@ -948,7 +948,7 @@ function graph($scope)
   // ensure minimal width
   var min_width = 200;
 
-  if(width < 100)
+  if(width < min_width)
     width = min_width;
 
   // ==========================================================
@@ -990,24 +990,32 @@ function graph($scope)
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-    return "<strong>počet:</strong> <span style='color:red'>" + d.value + "</span>";
+    return "<strong>počet:</strong> <span style='color:red'>" + d.value + "</span>";    // TODO - generic tooltip text ?
   })
 
   svg.call(tip);
 
   // ==========================================================
  
-  // is actually needed ?
-  //// format the data
-  //data.forEach(function(d) {
-  //  d.value = +d.value;
-  //});
-
   // Scale the range of the data in the domains
   x.domain(data.map(function(d) { return d.timestamp; }));
   y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
   // TODO - dynamic data update -> http://bl.ocks.org/biovisualize/5372077 ?
+
+
+  // ==========================================================
+
+  var formatter = function(d){
+    var format = d3.format("d")
+    return format(d);
+  }
+
+  function get_unique(value, index, self) { return self.indexOf(value) === index; }
+
+  var y_unique = y.ticks().map(formatter).filter(get_unique);
+
+  // ==========================================================
 
   // append the rectangles for the bar chart
   svg.selectAll(".bar")
@@ -1038,7 +1046,8 @@ function graph($scope)
   // add the y Axis
   svg.append("g")
       .call(d3.axisLeft(y)
-      .tickFormat(d3.format("d"))); // custom format - disable comma for thousands
+      .tickFormat(d3.format("d")) // custom format - disable comma for thousands
+      .tickValues(y_unique));     // unique y values
 
   // set graph title
   svg.append("text")
