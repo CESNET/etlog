@@ -350,41 +350,15 @@ potencialni inspirace:
 
 # Ostatní
 
-- specifikovat licenci v repozitáři?
-
-> pridat
-> poslat vsechna ruzna prohlaseni dostupna v diplomce
-
+- licence v repozitari/diplomce
 - nějakou logiku, která zapne aplikaci po pádu/restartu serveru.
-> systemd
+  - Logovani je nastaveno, ale zadne soubory nejsou vytvareny !
+    - V zurnalu nejaky vystup sice je, ale do logu se nedostane. Je tudiz problem v tom, ze zurnal se nezapisuje na disk? (`/etc/systemd/journald.conf` - #SystemMaxUse=)
+    - pomoci loggeru lze do souboru zapsat bez problemu : `logger -p local0.info test`
+    - je treba resit rotovani logu? syslog sam zajisti novy soubor pro kazdy den.
 > zkontrolovat, jak budou formatovany zpravy
-> definovat facilitu v samotnem konfigru sluzby a dodat konfiguraci syslogu
-> vysledne logy cpat nekam do homu
 
-- ze 404 stranky neni zadny odkaz zpet klikatelny
-- systemd -> logování stdout a stderr
-  - pouzit syslog a na zaklade velikosti rotovat?
-> rotovani pomoci logrotatu
-
-  - informativni hlasky jdou na stdout
-  - chyby jdou na stderr
-  - updatovat konfiguraci syslogu
-
-- Logovani je nastaveno, ale zadne soubory nejsou vytvareny !
-  - V zurnalu nejaky vystup sice je, ale do logu se nedostane. Je tudiz problem v tom, ze zurnal se nezapisuje na disk? (`/etc/systemd/journald.conf` - #SystemMaxUse=)
-  - pomoci loggeru lze do souboru zapsat bez problemu : `logger -p local0.info test`
-
-
-- Na webu rozhraní, kde bude možné se dotazovat kdo a kam roamuje? (data z heat mapy)
-> nebude potreba
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
-- přidat robots.txt?
-> pridat, sem nechodit
-- Dokumentace zálohování - OK?
-> pridat info o cronu
-> pridat info o zalohovani db
-
-
 - Pri prochazeni dat k detekci funkcnosti sluzby jsem narazil na zvlastni realm `ldap.cuni.cz`.
 
 # TODO list
@@ -392,10 +366,8 @@ potencialni inspirace:
   - použít rozcestník
 2. Webové rozhraní
 3. sshguard + FW -> semik
-4. zálohování
-  - nastaveno; konfigurace /etc/duply/system - podstatny predevsim exclude file
-  - co je /home/etlog/backup ?
 5. zálohování DB
+  - zkontrolovat dostupnost zaloh db
 6. grafy - statistiky
   - (grafy negenerovat na kliknuti ale nejak v noci)
 7. přstupová práva
