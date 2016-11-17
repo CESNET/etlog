@@ -64,7 +64,7 @@ log { source(net); destination(fticks); };
 service syslog-ng restart
 
 su - etlog
-mkdir -p ~/logs/{fticks,transform,mongo,invalid_records}
+mkdir -p ~/logs/{fticks,transform,mongo,invalid_records,systemd}
 ```
 
 The code above installs certificates required for syslog tls connection.
@@ -72,6 +72,23 @@ Next part installs syslog-ng and creates it's configuration.
 last part creates directories `/home/etlog/logs/fticks`, `/home/etlog/logs/transform`,
 `/home/etlog/logs/mongo` and .`/home/etlog/logs/invalid_records`
 Log files created by syslog are located in `/home/etlog/logs/fticks`.
+
+
+#### Systemd log files
+
+Systemd is used for integration of application within the system.
+Logging needs to be configured to acquire output to log files:
+
+```
+cat >> /etc/syslog-ng/conf.d/etlog-logs.conf
+
+filter f_etlog { facility(local0); };
+
+destination etlog_logs { file("/home/etlog/logs/systemd/log-$YEAR-$MONTH-$DAY" owner("etlog") group("etlog") perm(0600)); };
+
+log { source(s_src); filter(f_etlog); destination(etlog_logs); };
+```
+Application log files are located in `/home/etlog/logs/systemd/`.
 
 ### Cron setup
 
