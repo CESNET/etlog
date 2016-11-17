@@ -369,6 +369,12 @@ potencialni inspirace:
   - informativni hlasky jdou na stdout
   - chyby jdou na stderr
   - updatovat konfiguraci syslogu
+
+- Logovani je nastaveno, ale zadne soubory nejsou vytvareny !
+  - V zurnalu nejaky vystup sice je, ale do logu se nedostane. Je tudiz problem v tom, ze zurnal se nezapisuje na disk? (`/etc/systemd/journald.conf` - #SystemMaxUse=)
+  - pomoci loggeru lze do souboru zapsat bez problemu : `logger -p local0.info test`
+
+
 - Na webu rozhraní, kde bude možné se dotazovat kdo a kam roamuje? (data z heat mapy)
 > nebude potreba
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
