@@ -1,6 +1,6 @@
 # Reporty
 
-## Templaty
+## Sablony
 
 ### Neúspěsná přihlášení
 
@@ -16,9 +16,8 @@
 
 [github](https://github.com/CESNET/etlog/blob/master/scripts/invalid_records_mail.sh#L45)
 
-- Prazdna uzivatelska jmena nebudou pro data v tomto tydnu (7 - 13.11.) kompletni (nasazeno az v ut vecer)
 - Skript je možné [konfigurovat](https://github.com/CESNET/etlog/blob/master/config/invalid_records_mail)
-- Pridat rozliseni prazdnych a neplatnych mac adres?
+- Pridat rozliseni prazdnych a neplatnych mac adres? (pripadne jako TODO dobudoucna?)
 - Vyhovuje takto?
 
 
@@ -396,3 +395,5 @@ potencialni inspirace:
 7. přstupová práva
 8. co s radlog.cesnet.cz - tim starym virtualem
 9. ...
+
+# TODO dobudoucna
