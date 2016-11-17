@@ -1092,7 +1092,7 @@ angular.module('etlog').controller('failed_logins_graph_controller', ['$scope', 
   addiational_fields_failed_logins($scope);   // set up additional form fields
   $scope.grouped = true;
   $scope.graph_title = "neúspěšná přihlášení";
-  handle_submit($scope, $http, $q, get_failed_logins, graph, [ "username", "fail_count", "ok_count", "ratio_count" ]);
+  handle_submit($scope, $http, $q, get_failed_logins, graph, [ "username", "fail_count", "ok_count", "ratio" ]);
 }]);
 // --------------------------------------------------------------------------------------
 // TODO
@@ -1217,7 +1217,7 @@ function get_failed_logins($scope, $http, qs, $q, callback)
     chain = chain.then(function(){
       return $http({
         method  : 'GET',
-        url     : '/api/failed_logins/' + qs + ts + day
+        url     : '/api/failed_logins/' + qs + ts + day     // TODO - limit on fields to speed up ?
       })
       .then(function(response) {
         //// config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
