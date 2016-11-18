@@ -29,6 +29,13 @@ function search_days(req, res, next, query) {
   // this is defined by the query -> needs to be computed on the fly
 
   // ===================================================
+  // exact matching of single value against array does not make sense
+  // transform to $in
+  if(query.filter.addrs && ! (query.filter.addrs.constructor === Object)) {
+    query.filter.addrs = { $in : [ String(query.filter.addrs) ] };      // aqp returns mac as Number so casting to String is necessarry
+  }
+
+  // ===================================================
   // construct base query
   var aggregate_query = [
     {
