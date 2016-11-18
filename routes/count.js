@@ -20,7 +20,7 @@ router.get('/mac_count', function(req, res, next) {
   // exact matching of single value against array does not make sense
   // transform to $in
   if(query.filter.addrs && ! (query.filter.addrs.constructor === Object)) {
-    query.filter.addrs = { $in : [ String(query.filter.addrs) ] };      // aqp returns mac as Number so casting to String is necessarry
+    query.filter.addrs = { $in : [ query.filter.addrs ] };      // frontend uses regex, so no conversion to String here!
   }
 
   var aggregate_query = [
