@@ -715,9 +715,58 @@ angular.module('etlog').controller('mac_count_table_controller', ['$scope', '$ht
     loading : false,
     total_items : 0
   };
+  $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_table_submit($scope, $http, get_mac_count, $scope.paging, [ "username", "count" ], "mac_count");
   handle_pagination($scope, $http, get_mac_count);
+  setup_filters($scope, $http, "mac_count");
 }]);
+// --------------------------------------------------------------------------------------
+// TODO
+// params:
+// $scope
+// $http
+// coll_name  - name of the collection in api
+// --------------------------------------------------------------------------------------
+function setup_filters($scope, $http, coll_name)
+{
+  $scope.filter_username = function () {
+    set_filter($scope, $scope.paging.filters.username, "username");
+    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    $scope.paging.current_page = 1;                   // set to first page
+    $scope.get_page($http, $scope.paging.current_page, get_mac_count);
+  }
+
+  $scope.filter_addrs = function () {
+    set_filter($scope, $scope.paging.filters.addrs, "addrs");
+    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    $scope.paging.current_page = 1;                   // set to first page
+    $scope.get_page($http, $scope.paging.current_page, get_mac_count);
+  }
+
+  $scope.filter = "";   // filter is empty
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function set_filter($scope, filter, var_name)
+{
+  // TODO - possible param to distinct regex or exact match
+
+  if(filter) {      // filter not empty
+    if($scope.filter.indexOf(var_name) == -1) { // filter not present in qs yet
+      $scope.filter += var_name + "=/" + filter + "/&"; // add to final filter
+    }
+    else {      // filter present
+      $scope.filter = $scope.filter.replace(new RegExp(var_name + "=\/[^=]*\/&"), var_name + "=/" + filter + "/&"); // replace value
+    }
+  }
+  else {        // filter is empty
+    // no '=' inside filter value permitted
+    $scope.filter = $scope.filter.replace(new RegExp(var_name + "=\/[^=]*\/&"), '');   // delete filter
+  }
+
+  $scope.qs = $scope.base_qs + $scope.filter;   // set final qs with filters
+}
 // --------------------------------------------------------------------------------------
 // TODO
 // params:
@@ -728,32 +777,17 @@ angular.module('etlog').controller('mac_count_table_controller', ['$scope', '$ht
 function handle_pagination($scope, $http, data_func)
 {
   $scope.page_changed = function(newPageNumber) {
-    $scope.paging.loading = true;
-    
-    //// debug
-    //console.log("page_changed");
-    //console.log($scope);
-    //console.log($http);
-    //console.log(newPageNumber);
-    //console.log(data_func);
-    //console.log("-------------------");
-
     get_page($http, newPageNumber, data_func);
   };
 
   function get_page($http, page_number, data_func) {
+    // set loading
+    $scope.paging.loading = true;
     $scope.paging.current_page = page_number;   // set current page
     var qs = $scope.add_paging($scope.qs, $scope.paging);    // save qs to $scope
 
-    //console.log($scope.qs);
-    console.log(qs);
-    //console.log("get_page");
-    //console.log($http);
-    //console.log(page_number);
-    //console.log(data_func);
-    //console.log("===================");
-
     data_func($scope, $http, qs, function ($scope) { // get data from api
+    // unset loading
       $scope.paging.loading = false;
     });
   }
@@ -818,9 +852,6 @@ function init($scope, $http)
 function handle_table_submit($scope, $http, data_func, paging, form_items, coll_name)
 {
   $scope.submit = function () {
-    // set loading
-    $scope.paging.loading = true;
-
     // add radio selection to form data
     for(var item in $scope.options) {
       if($scope.form_data[$scope.options[item].key]) {
@@ -828,17 +859,10 @@ function handle_table_submit($scope, $http, data_func, paging, form_items, coll_
       }
     }
     
+    $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
+    $scope.qs = $scope.base_qs;
     get_total_items($scope, $http, coll_name);        // set number of total items for paging
-    $scope.qs = build_qs($scope.form_data, form_items);  // create query string
     $scope.get_page($http, $scope.paging.current_page, data_func);
-    //data_func($scope, $http, $scope.qs, function ($scope) { // get data from api
-    //  // debug
-    //  //console.log($scope.data);
-    //  //console.log($scope.paging.total_items);
-
-    //  // unset loading
-    //  $scope.paging.loading = false;
-    //});
   }
 }
 // --------------------------------------------------------------------------------------
@@ -850,9 +874,11 @@ function handle_table_submit($scope, $http, data_func, paging, form_items, coll_
 // --------------------------------------------------------------------------------------
 function get_total_items($scope, $http, coll_name)
 {
+//  console.log("get_total_items: " + $scope.qs);
+
   $http({
     method  : 'GET',
-    url     : '/api/count/' + coll_name + "/?timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date
+    url     : '/api/count/' + coll_name + "/" + $scope.qs + "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date
   })
   .then(function(response) {
     $scope.paging.total_items = response.data;
@@ -879,14 +905,16 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
       }
     }
     
-    // TODO ?
-    get_days($scope);                           // get array of days in specified interval
+    //// TODO ?
+    //get_days($scope);                           // get array of days in specified interval
 
-    qs = build_qs($scope.form_data, form_items);  // create query string
-    data_func($scope, $http, qs, $q, function ($scope) { // get data from api
-      //console.log($scope.data);
-      graph_func($scope);    // draw graph
-    });
+    // TODO - toto dodelat - zmena v build_qs
+    //qs = build_qs($scope.form_data, form_items);  // create query string
+    
+    //data_func($scope, $http, qs, $q, function ($scope) { // get data from api
+    //  //console.log($scope.data);
+    //  graph_func($scope);    // draw graph
+    //});
   }
 }
 // --------------------------------------------------------------------------------------
@@ -897,9 +925,12 @@ function get_mac_count($scope, $http, qs, callback)
   $scope.data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
+  //console.log("get_mac_count: " + $scope.qs);
+
   return $http({
     method  : 'GET',
-    url     : '/api/mac_count/' + qs + ts
+    //url     : '/api/mac_count/' + qs + ts
+    url     : '/api/mac_count/' + qs + ts + "&sort=-count"      // always sort by mac address count
   })
   .then(function(response) {
     $scope.data = response.data;
@@ -1281,7 +1312,10 @@ function build_qs(data, items)
     }
   }
 
-  return ret;
+  if(ret.length > 1)
+    ret += "&";
+
+  return ret;       // returned value is '?' or '?.*&'
 }
 // --------------------------------------------------------------------------------------
 // get mac count data
@@ -1290,6 +1324,9 @@ function get_failed_logins($scope, $http, qs, $q, callback)
 {
   var chain = $q.when();
   $scope.data = [];
+
+  // TODO - prepsat
+  // predany qs bude vzdy koncit & pokud je delsi nez 1 -- ('?')
 
   var ts = "timestamp=";    // timestamp
   if(qs.length != 1)
