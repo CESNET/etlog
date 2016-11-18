@@ -1,24 +1,104 @@
-block content
-  //- navbar selected item
-  -var selected = 'Přihlášení';
-  
-  //- input - search parameters
-  //- "empty" action to prevent redirection
-  form.form-horizontal(method = 'get' action="javascript:void(0);", id = "main_form")
-    
-    .form-group
-      label.col-sm-2.control-label(for = 'percent') Minimální procento neúspěšných přihlášení:
-      .col-xs-3
-        input.form-control(type = 'text', placeholder = '10', id = "percent", name = "percent")
-    
-    .form-group
-      .col-sm-offset-2.col-sm-10
-        button.btn.btn-default(type = 'submit', id = "failed_logins_search") Hledej
+//- navbar selected item
+-var selected = 'počet MAC adres';
 
+link(rel='stylesheet', href='/stylesheets/flatpickr.min.css')
+script(src='/javascripts/flatpickr.js')
+script(src='/javascripts/flatpickr.l10n.cs.js') //- localization
+script(src='/javascripts/d3.v4.min.js')
+script(src='/javascripts/d3-tip.js')
+
+style.
+  .bar { 
+    fill: steelblue; 
+    -webkit-transition: fill 0.5s ease;
+    -moz-transition: fill 0.5s ease;
+    -o-transition: fill 0.5s ease;
+    transition: fill 0.5s ease;
+  }
+  .axis path,
+  .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+  }
+  .bar:hover {
+  fill: orangered ;
+  }
+  .x.axis path {
+  display: none;
+  }
+  .d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  }
+  /* Creates a small triangle extender for the tooltip */
+  .d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+  }
+  /* Style northward tooltips differently */
+  .d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+  }
+
+div(ng-controller="failed_logins_graph_controller")
+  div
+    md-content(layout-padding='')
+      form.form-horizontal#main_form(ng-submit="submit()" novalidate)
+        .form-group
+          label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.flatpickr#min_date(type='text', ng-model='form_data.min_date')
+
+        .form-group
+          label.col-sm-2.control-label(for = 'max_date') Koncové datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.flatpickr#max_date(type='text', ng-model='form_data.max_date')
+ 
+        .form-group(ng-repeat='option in options track by $index', ng-show='options_added')
+          label.col-sm-2.control-label {{option.val}}
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.form-control(type='text', ng-model='form_data[option.key]')
+              span(ng-show='form.size.$error.integer') The value is not a valid integer!
+              .radio(ng-repeat='subopt in option.subopts')
+                input(type='radio', name='{{option.val}}', ng-model="option.sel", ng-value='subopt.key')
+                | {{subopt.val}}
+                
+        .form-group(ng-show='!options_added')
+          label.col-sm-2.control-label Další možnosti
+          .col-xs-2
+            div(layout-gt-xs='row')
+              button.btn.btn-default.addButton(type='button', ng-click='add_options()')
+                i.fa.fa-plus
+
+        .form-group
+          .col-sm-offset-2.col-sm-10
+            button.btn.btn-default(type="submit") Vykreslit graf
 
   div
-    h2(id = "results_h")
-    table(id = "results", class = "table table-bordered")
-  
+    form.categories
+      //label.col-xs-1.control-label
+      //.col-xs-4
+      //  div(layout-gt-xs='row')
+      //    input#show_failed(type='checkbox')
+      //    | Zobrazit neúspěšná přihlášení
+    #graph
 
-block includes
+
+
