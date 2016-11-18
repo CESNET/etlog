@@ -281,17 +281,15 @@ potencialni inspirace:
 
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
 
-- Co ma vlastne graf zobrazovat?
-  - pocet zarizeni pro vsechny dny v zadanem intervalu?
-  - pocet uzivatelu, kteri maji pocet zarizeni > 2 pro vsechny dny v zadanem intervalu?
-  - vyuzit https://bl.ocks.org/mbostock/1283663 pro zobrazeni nekolika ruznych sad dat?
-    - napr 1. uroven pocet zarizeni
-    - napr 2. uroven pocet zarizeni na uzivatele
-    - ... ?
-  - ... ?
-- ukazkovy [graf](https://etlog.cesnet.cz/#/mac_count_graph) jiz funguje
+[rozhrani](https://etlog.cesnet.cz/#/mac_count_table)
 
-> Já si myslím že v případě většího počtu MAC adres na uživatele není potřeba z toho dělat graf. Užitečnější/dostatečná by mi přišla tabulka. Pěkné jsou ty dodatečné podmínky na uid a min počet.
+- Data v tabulce jsou razena podle poctu mac adres, razeni nelze bez zasahu do kodu zmenit.
+- Je potreba pridat moznost razeni rizenou uzivatelem?
+- Pridat pevnou delku sloupcu?
+- nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
+- pri dotazu napr na pocet < 10 adres jsou vracena i data, ktera maji vetsi pocet.
+  - Problem je zpusobem tim, ze jednotlive zaznamy skutecne obsahuji < 10 adres, ale vysledek je agregovan do stavu kde uz neni podminka splnena.
+  - Je treba resit?
 
 
 ## sdilene mac adresy (shared mac)
