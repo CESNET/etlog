@@ -24,8 +24,15 @@ router.get('/mac_count', function(req, res, next) {
     { $project : { count : 1, _id : 0 } }
   ];
 
-  get_record_count(req.db.mac_count, res, next, aggregate_query);       // perform search with constructed mongo query
+  get_record_count(req.db.mac_count, res, next, aggregate_query, transform);       // perform search with constructed mongo query
 });
+// --------------------------------------------------------------------------------------
+// transform array containing dict just to number itself
+// --------------------------------------------------------------------------------------
+function transform(data)
+{
+  return data[0].count;
+}
 // --------------------------------------------------------------------------------------
 // get mongo query from timestamp values
 // --------------------------------------------------------------------------------------
@@ -40,7 +47,7 @@ function get_timestamp(req, filters)
 // --------------------------------------------------------------------------------------
 // return count of record for specified timestamp interval
 // --------------------------------------------------------------------------------------
-function get_record_count(collection, res, next, aggregate_query)
+function get_record_count(collection, res, next, aggregate_query, transform_fn)
 {
   collection.aggregate(aggregate_query,
   function(err1, items) {
@@ -52,7 +59,7 @@ function get_record_count(collection, res, next, aggregate_query)
       return;
     };
 
-    respond(items, res)
+    respond(transform_fn(items), res)
   });
 }
 // --------------------------------------------------------------------------------------
