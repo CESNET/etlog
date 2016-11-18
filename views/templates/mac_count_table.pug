@@ -2,52 +2,10 @@
 -var selected = 'počet MAC adres';
 
 link(rel='stylesheet', href='/stylesheets/flatpickr.min.css')
+link(rel='stylesheet', href='/stylesheets/loading.css')
 script(src='/javascripts/flatpickr.js')
 script(src='/javascripts/flatpickr.l10n.cs.js') //- localization
-//script(src='/javascripts/dirPagination.js')
 
-//- css just for loading-indicator
-
-style.
-  .loading-indicator {
-    box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    width: 100%;
-    text-align: center;
-    padding: 0.7em; 
-  }
-  .loading-indicator:before {
-    display: inline-block;
-    margin: 0 0.4em;
-    min-width: 1em;
-    min-height: 1em;
-    border-top: 4px solid #646464;
-    border-right: 4px solid #e6e6e6;
-    border-left: 4px solid #e6e6e6;
-    border-bottom: 4px solid #646464;
-    content: "";
-    -webkit-animation: halfspin 1s ease infinite;
-    -moz-animation: halfspin 1s ease infinite;
-    -o-animation: halfspin 1s ease infinite;
-    animation: halfspin 1s ease infinite;
-    border-radius: 100%; 
-  }
-  @-webkit-keyframes halfspin {
-      to {
-          -webkit-transform: rotate(180deg);
-          -moz-transform: rotate(180deg);
-          transform: rotate(180deg); } }
-  @-moz-keyframes halfspin {
-      to {
-          -webkit-transform: rotate(180deg);
-          -moz-transform: rotate(180deg);
-          transform: rotate(180deg); } }
-  @keyframes halfspin {
-      to {
-          -webkit-transform: rotate(180deg);
-          -moz-transform: rotate(180deg);
-          transform: rotate(180deg); } }
 
 div(ng-controller="mac_count_table_controller")
   div
@@ -117,11 +75,7 @@ div(ng-controller="mac_count_table_controller")
     .form-group
       .col-xs-2
       label záznamů na stránku:
-        select.form-control(ng-model='paging.items_by_page')
-          option 10
-          option 20
-          option 50
-          option 100
+        select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes')
 
     table.table.table-bordered.table-responsive
       thead
@@ -131,11 +85,11 @@ div(ng-controller="mac_count_table_controller")
           th MAC adresy
         tr
           th
-            input.input-sm.form-control(ng-model='paging.filters.username', placeholder='uživatelské jméno', type='search')
+            input.input-sm.form-control(ng-model='paging.filters.username', placeholder='uživatelské jméno', type='search', ng-change='filter_username()', ng-model-options='{ debounce: 250 }')
           th(colspan='4')
-            input.input-sm.form-control(ng-model='paging.filters.addrs', placeholder='MAC adresa', type='search')
+            input.input-sm.form-control(ng-model='paging.filters.addrs', placeholder='MAC adresa', type='search', ng-change='filter_addrs()', ng-model-options='{ debounce: 250 }')
       tbody(ng-show='!paging.loading')
-        tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page', total-items='paging.total_items')
+        tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
           td {{row.username}}
           td {{row.count}}
           td
@@ -147,32 +101,4 @@ div(ng-controller="mac_count_table_controller")
 
     .text-center
     dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='dirPagination.tpl.html')
-    // TODO - razeni
-    //    tr(ng-repeat='row in data')
-
-
-
-
-
-
-//- TODO - <td><a ng-href="mailto:{{row.email}}">email</a></td>
-//- TODO - pevna delka posledniho sloupce ?
-
-
-    //-label.col-sm-2.control-label(for='items') záznamů na stránku
-    //-  div(layout-gt-xs='row')
-    //-    input.input-sm.form-control(name='items', type='number', ng-model='items_by_page')
-
-//- TODO
-//select.ng-valid.ng-dirty(ng-model='$parent.perPage', ng-options='p for p in perPagePresets')
-//  option(value='0', selected='selected') 5
-//    option(value='1') 10
-//      option(value='2') 25
-//        option(value='3') 50
-//          option(value='4') 100
-//            option(value='5') 250
-
-
-
-                                          
 
