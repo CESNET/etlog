@@ -6,13 +6,21 @@ const qp = require('./query_parser');
 // --------------------------------------------------------------------------------------
 router.get('/mac_count', function(req, res, next) {
   try {
-    var query = get_timestamp(req, [ 'timestamp', 'username', 'count' ]); // array of valid filters
+    var query = get_timestamp(req, [ 'timestamp', 'username', 'addrs' ]); // array of valid filters
   }
   catch(error) {
     var err = new Error(error.error);
     err.status = 400;
     next(err);
     return;
+  }
+
+  // ===================================================
+
+  // exact matching of single value against array does not make sense
+  // transform to $in
+  if(query.filter.addrs && ! (query.filter.addrs.constructor === Object)) {
+    query.filter.addrs = { $in : [ String(query.filter.addrs) ] };      // aqp returns mac as Number so casting to String is necessarry
   }
 
   var aggregate_query = [
