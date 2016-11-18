@@ -771,6 +771,7 @@ Application api:
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
 | /api/realms/                    |        |                                                        | url returning list of realms from realms collection |
+| /api/count/mac_count            |        | timestamp, [ username, count, addrs ]                  | url returning count of records for given query string |
 
 
 ### Routes
