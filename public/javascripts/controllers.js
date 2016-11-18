@@ -699,7 +699,7 @@ angular.module('etlog').controller('graph_test_3_controller', ['$scope', '$http'
   });
 }]);
 // --------------------------------------------------------------------------------------
-// TODO
+// mac count table controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('mac_count_table_controller', ['$scope', '$http', function ($scope, $http) {
   // table controller "template"
@@ -721,7 +721,7 @@ angular.module('etlog').controller('mac_count_table_controller', ['$scope', '$ht
   setup_filters($scope, $http, "mac_count");
 }]);
 // --------------------------------------------------------------------------------------
-// TODO
+// setup filtering fields
 // params:
 // $scope
 // $http
@@ -746,7 +746,11 @@ function setup_filters($scope, $http, coll_name)
   $scope.filter = "";   // filter is empty
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// add filtering to query string
+// params:
+// $scope
+// filter   - current value of filtering field
+// var_name - name of filtering variable in query string
 // --------------------------------------------------------------------------------------
 function set_filter($scope, filter, var_name)
 {
@@ -768,7 +772,7 @@ function set_filter($scope, filter, var_name)
   $scope.qs = $scope.base_qs + $scope.filter;   // set final qs with filters
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// set pagination handlers
 // params:
 // $scope
 // $http
@@ -794,12 +798,13 @@ function handle_pagination($scope, $http, data_func)
 
   $scope.get_page = get_page;
 
-// --------------------------------------------------------------------------------------
+// ==========================================
 // add paging to query string
 // params: 
 // qs     - query string
 // paging - paging information
-// --------------------------------------------------------------------------------------
+// ==========================================
+
   $scope.add_paging = function (qs, paging) {
     var ret = qs;
     
