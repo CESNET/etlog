@@ -767,7 +767,7 @@ Application api:
 | /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
 | /api/roaming/most\_used/        |        | timestamp, [ inst\_name, used\_count ]                 |                        |
 | /api/shared\_mac/               |        | timestamp, [ count, mac\_address, users ]              |                        |
-| /api/heat\_map/                 |        | timestamp, [ realm, institutions.realm, institutions.count  |         |
+| /api/heat\_map/                 |        | timestamp, [ realm, institutions.realm, institutions.count ] |         |
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
 | /api/realms/                    |        |                                                        | url returning list of realms from realms collection |
