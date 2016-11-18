@@ -701,30 +701,90 @@ angular.module('etlog').controller('graph_test_3_controller', ['$scope', '$http'
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('mac_count_table_controller', ['$scope', '$http', 'Resource', function ($scope, $http, service) {
+angular.module('etlog').controller('mac_count_table_controller', ['$scope', '$http', function ($scope, $http) {
   // table controller "template"
   init($scope, $http);
   addiational_fields_mac_count($scope);   // set up additional form fields
-  var items_by_page = 10;
-  handle_table_submit($scope, $http, get_mac_count, table, [ "realm", "username", "count" ]);
-
-  var ctrl = this;
-  this.displayed = [];
-  this.callServer = function callServer(tableState) {
-    ctrl.isLoading = true;
-    
-    var pagination = tableState.pagination;
-    var start = pagination.start || 0;     // This is NOT the page number, but the index of item in the list that you want to use to display the table.
-    var number = pagination.number || 10;  // Number of entries showed per page.
-    
-    service.getPage(start, number, tableState).then(function (result) {
-      ctrl.displayed = result.data;
-      console.log(ctrl.displayed);
-      tableState.pagination.numberOfPages = result.numberOfPages;//set the number of pages so the pagination can update
-      ctrl.isLoading = false;
-    });
+  $scope.paging = {
+    items_by_page : 10,
+    current_page : 1,
+    filters : {         // must match route qs names
+      username : "",
+      addrs : ""
+    },
+    loading : false,
+    total_items : 0
   };
+  handle_table_submit($scope, $http, get_mac_count, $scope.paging, [ "username", "count" ], "mac_count");
+  handle_pagination($scope, $http, get_mac_count);
 }]);
+// --------------------------------------------------------------------------------------
+// TODO
+// params:
+// $scope
+// $http
+// data_func - function which retrieves data by url
+// --------------------------------------------------------------------------------------
+function handle_pagination($scope, $http, data_func)
+{
+  $scope.page_changed = function(newPageNumber) {
+    $scope.paging.loading = true;
+    
+    //// debug
+    //console.log("page_changed");
+    //console.log($scope);
+    //console.log($http);
+    //console.log(newPageNumber);
+    //console.log(data_func);
+    //console.log("-------------------");
+
+    get_page($http, newPageNumber, data_func);
+  };
+
+  function get_page($http, page_number, data_func) {
+    $scope.paging.current_page = page_number;   // set current page
+    var qs = $scope.add_paging($scope.qs, $scope.paging);    // save qs to $scope
+
+    //console.log($scope.qs);
+    console.log(qs);
+    //console.log("get_page");
+    //console.log($http);
+    //console.log(page_number);
+    //console.log(data_func);
+    //console.log("===================");
+
+    data_func($scope, $http, qs, function ($scope) { // get data from api
+      $scope.paging.loading = false;
+    });
+  }
+
+  $scope.get_page = get_page;
+
+// --------------------------------------------------------------------------------------
+// add paging to query string
+// params: 
+// qs     - query string
+// paging - paging information
+// --------------------------------------------------------------------------------------
+  $scope.add_paging = function (qs, paging) {
+    var ret = qs;
+    
+    if(paging.current_page > 1) {
+      ret += "skip=" + ((paging.current_page - 1) *  paging.items_by_page) + "&";
+    }
+
+    ret += "limit=" + paging.items_by_page + "&";
+    
+    var filter_keys = Object.keys(paging.filters);
+    for(var key in filter_keys) {
+      if(paging.filters[filter_keys[key]]) {
+        ret += filter_keys[key] + "=" + paging.filters[filter_keys[key]] + "&";
+      }
+    }
+
+    return ret;
+  }
+}
 // --------------------------------------------------------------------------------------
 // initialize
 // --------------------------------------------------------------------------------------
@@ -750,13 +810,16 @@ function init($scope, $http)
 // params: 
 // $scope
 // $http
-// data_func - function which retrieves data for graph
-// table_func - function which builds table
+// data_func  - function which retrieves data for graph
+// paging     - paging information
 // form_items - array of form fields
+// coll_name  - name of the collection in api
 // --------------------------------------------------------------------------------------
-function handle_table_submit($scope, $http, data_func, table_func, form_items)
+function handle_table_submit($scope, $http, data_func, paging, form_items, coll_name)
 {
   $scope.submit = function () {
+    // set loading
+    $scope.paging.loading = true;
 
     // add radio selection to form data
     for(var item in $scope.options) {
@@ -765,10 +828,35 @@ function handle_table_submit($scope, $http, data_func, table_func, form_items)
       }
     }
     
-    qs = build_qs($scope.form_data, form_items);  // create query string
-    data_func($scope, $http, qs, function ($scope) { // get data from api
-    });
+    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    $scope.qs = build_qs($scope.form_data, form_items);  // create query string
+    $scope.get_page($http, $scope.paging.current_page, data_func);
+    //data_func($scope, $http, $scope.qs, function ($scope) { // get data from api
+    //  // debug
+    //  //console.log($scope.data);
+    //  //console.log($scope.paging.total_items);
+
+    //  // unset loading
+    //  $scope.paging.loading = false;
+    //});
   }
+}
+// --------------------------------------------------------------------------------------
+// generic function to get total items for given timestamp interval
+// params: 
+// $scope
+// $http
+// coll_name - name of the collection for which the count should be returned
+// --------------------------------------------------------------------------------------
+function get_total_items($scope, $http, coll_name)
+{
+  $http({
+    method  : 'GET',
+    url     : '/api/count/' + coll_name + "/?timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date
+  })
+  .then(function(response) {
+    $scope.paging.total_items = response.data;
+  });
 }
 // --------------------------------------------------------------------------------------
 // logic on form submit
@@ -807,13 +895,7 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
 function get_mac_count($scope, $http, qs, callback)
 {
   $scope.data = [];
-
-  var ts = "timestamp>=";    // timestamp
-  if(qs.length != 1)
-    ts = "&timestamp>=";
-
-  ts += $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;
-  // TODO - add sort ?
+  var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
   return $http({
     method  : 'GET',

@@ -1,0 +1,178 @@
+//- navbar selected item
+-var selected = 'počet MAC adres';
+
+link(rel='stylesheet', href='/stylesheets/flatpickr.min.css')
+script(src='/javascripts/flatpickr.js')
+script(src='/javascripts/flatpickr.l10n.cs.js') //- localization
+//script(src='/javascripts/dirPagination.js')
+
+//- css just for loading-indicator
+
+style.
+  .loading-indicator {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+    padding: 0.7em; 
+  }
+  .loading-indicator:before {
+    display: inline-block;
+    margin: 0 0.4em;
+    min-width: 1em;
+    min-height: 1em;
+    border-top: 4px solid #646464;
+    border-right: 4px solid #e6e6e6;
+    border-left: 4px solid #e6e6e6;
+    border-bottom: 4px solid #646464;
+    content: "";
+    -webkit-animation: halfspin 1s ease infinite;
+    -moz-animation: halfspin 1s ease infinite;
+    -o-animation: halfspin 1s ease infinite;
+    animation: halfspin 1s ease infinite;
+    border-radius: 100%; 
+  }
+  @-webkit-keyframes halfspin {
+      to {
+          -webkit-transform: rotate(180deg);
+          -moz-transform: rotate(180deg);
+          transform: rotate(180deg); } }
+  @-moz-keyframes halfspin {
+      to {
+          -webkit-transform: rotate(180deg);
+          -moz-transform: rotate(180deg);
+          transform: rotate(180deg); } }
+  @keyframes halfspin {
+      to {
+          -webkit-transform: rotate(180deg);
+          -moz-transform: rotate(180deg);
+          transform: rotate(180deg); } }
+
+div(ng-controller="mac_count_table_controller")
+  div
+    md-content(layout-padding='')
+      form.form-horizontal#main_form(ng-submit="submit()" novalidate)
+        .form-group
+          label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.flatpickr#min_date(type='text', ng-model='form_data.min_date')
+
+        .form-group
+          label.col-sm-2.control-label(for = 'max_date') Koncové datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.flatpickr#max_date(type='text', ng-model='form_data.max_date')
+ 
+        //- TODO - static version for better custom validation
+        //-  .form-group
+        //-    label.col-sm-2.control-label uživatelské jméno
+        //-    .col-xs-2
+        //-      div(layout-gt-xs='row')
+        //-        input.form-control(type='text', ng-model='form_data[username]')
+        //-        .radio
+        //-          input(type='radio', name='username', ng-model="form_data[username_type]", value='eq')
+        //-          | přesně odpovídá
+        //-        .radio
+        //-          input(type='radio', name='username', ng-model="form_data[username_type]", value='like')
+        //-          | obsahuje
+
+        //-  .form-group
+        //-    label.col-sm-2.control-label počet
+        //-    .col-xs-2
+        //-      div(layout-gt-xs='row')
+        //-        input.form-control(type='text', ng-model='form_data[count]')
+        //-        .radio
+        //-          input(type='radio', name='count', ng-model="form_data[count_type]", value='eq')
+        //-          | je roven
+        //-        .radio
+        //-          input(type='radio', name='count', ng-model="form_data[count_type]", value='gt')
+        //-          | je větší
+        //-        .radio
+        //-          input(type='radio', name='count', ng-model="form_data[count_type]", value='lt')
+        //-          | je menší
+
+        .form-group(ng-repeat='option in options track by $index', ng-show='options_added')
+          label.col-sm-2.control-label {{option.val}}
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.form-control(type='text', ng-model='form_data[option.key]')
+              .radio(ng-repeat='subopt in option.subopts')
+                input(type='radio', name='{{option.val}}', ng-model="option.sel", ng-value='subopt.key')
+                | {{subopt.val}}
+                
+        .form-group(ng-show='!options_added')
+          label.col-sm-2.control-label Další možnosti
+          .col-xs-2
+            div(layout-gt-xs='row')
+              button.btn.btn-default.addButton(type='button', ng-click='add_options()')
+                i.fa.fa-plus
+
+        .form-group
+          .col-sm-offset-2.col-sm-10
+            button.btn.btn-default(type="submit") Hledej
+
+  div
+    .form-group
+      .col-xs-2
+      label záznamů na stránku:
+        select.form-control(ng-model='paging.items_by_page')
+          option 10
+          option 20
+          option 50
+          option 100
+
+    table.table.table-bordered.table-responsive
+      thead
+        tr
+          th uživatelské jméno
+          th počet zařízení
+          th MAC adresy
+        tr
+          th
+            input.input-sm.form-control(ng-model='paging.filters.username', placeholder='uživatelské jméno', type='search')
+          th(colspan='4')
+            input.input-sm.form-control(ng-model='paging.filters.addrs', placeholder='MAC adresa', type='search')
+      tbody(ng-show='!paging.loading')
+        tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page', total-items='paging.total_items')
+          td {{row.username}}
+          td {{row.count}}
+          td
+            a(ng-repeat='addr in row.addrs') {{addr}} 
+      tbody(ng-show='paging.loading')
+        tr
+          td.text-center(colspan='4')
+            .loading-indicator
+
+    .text-center
+    dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='dirPagination.tpl.html')
+    // TODO - razeni
+    //    tr(ng-repeat='row in data')
+
+
+
+
+
+
+//- TODO - <td><a ng-href="mailto:{{row.email}}">email</a></td>
+//- TODO - pevna delka posledniho sloupce ?
+
+
+    //-label.col-sm-2.control-label(for='items') záznamů na stránku
+    //-  div(layout-gt-xs='row')
+    //-    input.input-sm.form-control(name='items', type='number', ng-model='items_by_page')
+
+//- TODO
+//select.ng-valid.ng-dirty(ng-model='$parent.perPage', ng-options='p for p in perPagePresets')
+//  option(value='0', selected='selected') 5
+//    option(value='1') 10
+//      option(value='2') 25
+//        option(value='3') 50
+//          option(value='4') 100
+//            option(value='5') 250
+
+
+
+                                          
+
