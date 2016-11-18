@@ -281,7 +281,7 @@ potencialni inspirace:
 
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
 
-[rozhrani](https://etlog.cesnet.cz/#/mac_count_table)
+[rozhrani](https://etlog.cesnet.cz/#/mac_count)
 
 - Data v tabulce jsou razena podle poctu mac adres, razeni nelze bez zasahu do kodu zmenit.
 - Je potreba pridat moznost razeni rizenou uzivatelem?
@@ -290,6 +290,7 @@ potencialni inspirace:
 - pri dotazu napr na pocet < 10 adres jsou vracena i data, ktera maji vetsi pocet.
   - Problem je zpusobem tim, ze jednotlive zaznamy skutecne obsahuji < 10 adres, ale vysledek je agregovan do stavu kde uz neni podminka splnena.
   - Je treba resit?
+  - (Pokud bude treba resit, tak resit v backendu v obou castech)
 
 
 ## sdilene mac adresy (shared mac)
