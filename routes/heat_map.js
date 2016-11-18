@@ -64,15 +64,19 @@ function search_days(req, res, next, query) {
   // add other operators, if defined in query
 
   if(query.sort) {
-   aggregate_query.push({ $sort : query.sort });   // sort
+    aggregate_query.push({ $sort : query.sort });   // sort
   }
 
-  if(query.limit) {
-   aggregate_query.push({ $limit : query.limit }); // limit
+  if(query.skip && query.limit) {   // both skip and limit
+    aggregate_query.push({ $limit : query.limit + query.skip });   // limit to limit + skip
   }
 
   if(query.skip) {
-   aggregate_query.push({ $skip : query.skip });   // skip
+    aggregate_query.push({ $skip : query.skip });   // skip
+  }
+
+  if(query.limit) {
+    aggregate_query.push({ $limit : query.limit }); // limit
   }
 
   // ===================================================
