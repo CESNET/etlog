@@ -307,6 +307,17 @@ potencialni inspirace:
   - (Pokud bude treba resit, tak resit v backendu v obou castech)
 
 
+## Obecne vyhledavani
+
+[rozhrani](https://etlog.cesnet.cz/#/search)
+
+- Data nejsou nijak razena.
+- Pridat razeni?
+  - Jak radit?
+  - Rizene uzivatelem?
+- nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
+
+
 ## nejvice vyuzivany roaming
 
 - Co ma vlastne graf zobrazovat?
