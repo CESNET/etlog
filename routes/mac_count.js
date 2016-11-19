@@ -31,8 +31,11 @@ function search_days(req, res, next, query) {
   // ===================================================
   // exact matching of single value against array does not make sense
   // transform to $in
-  if(query.filter.addrs && ! (query.filter.addrs.constructor === Object)) {
-    query.filter.addrs = { $in : [ String(query.filter.addrs) ] };      // aqp returns mac as Number so casting to String is necessarry
+  if(query.filter.addrs && !(query.filter.addrs.constructor === Object)) {
+    if(query.filter.addrs.constructor === RegExp || query.filter.addrs.constructor === String)  // string or regex added without typecasting
+      query.filter.addrs = { $in : [ query.filter.addrs ] };
+    else
+      query.filter.addrs = { $in : [ String(query.filter.addrs) ] };    // number is converted to string
   }
 
   // ===================================================
