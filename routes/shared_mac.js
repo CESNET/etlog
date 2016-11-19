@@ -29,6 +29,16 @@ function search_days(req, res, next, query) {
   // this is defined by the query -> needs to be computed on the fly
 
   // ===================================================
+  // exact matching of single value against array does not make sense
+  // transform to $in
+  if(query.filter.users && !(query.filter.users.constructor === Object)) {
+    if(query.filter.users.constructor === RegExp || query.filter.users.constructor === String)  // string or regex added without typecasting
+      query.filter.users = { $in : [ query.filter.users ] };
+    else
+      query.filter.users = { $in : [ String(query.filter.users) ] };    // number is converted to string
+  }
+
+  // ===================================================
   // construct base query
   var aggregate_query = [
     {
