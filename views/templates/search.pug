@@ -1,75 +1,82 @@
 //- navbar selected item
 -var selected = 'Obecné Vyhledávání';
 
-//- TODO - https://material.angularjs.org/latest/demo/autocomplete
 
-//- TODO
-//- animace pri vyhledavani
-//-#myModal.modal.fade.modal-white
-//-  .modal-dialog
-//-    #loader
-//-      .diamond
-//-      .diamond
-//-      .diamond
+link(rel='stylesheet', href='/stylesheets/flatpickr.min.css')
+link(rel='stylesheet', href='/stylesheets/loading.css')
+link(rel='stylesheet', href='/stylesheets/table.css')
+script(src='/javascripts/flatpickr.js')
+script(src='/javascripts/flatpickr.l10n.cs.js') //- localization
 
-//- TODO
-//- input - search parameters
-//- "empty" action to prevent redirection
 
-div(ng-controller="search_contoller")
+div(ng-controller="search_controller")
   div
-    form.form-horizontal(ng-submit="submit()")
-      
-      .form-group
-        label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
-        .col-xs-3
-          input.form-control(type = 'email', placeholder = 'user@example.com', ng-model="formData['username']")
-      
-      .form-group
-        label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
-        .col-xs-2
-          input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model="formData['mac_address']")
+    md-content(layout-padding='')
+      form.form-horizontal#main_form(ng-submit="submit()" novalidate)
+        .form-group
+          label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
+          .col-xs-3
+            input.form-control(type = 'email', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn')
+        
+        .form-group
+          label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
+          .col-xs-2
+            input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model='form_data.csi')
 
-      .form-group
-        label.col-sm-2.control-label(for = 'auth_result') Výsledek autentizace:
-        .col-xs-2
-          select.form-control(id = "auth_result", ng-model="formData['auth_result']")
-            each key, val in {"nezadáno" : "", "OK" : "OK", "FAIL" : "FAIL", "TIMEOUT" : "TIMEOUT"}
-              option(value = key) #{val}
+        .form-group
+          label.col-sm-2.control-label(for = 'result') Výsledek autentizace:
+          .col-xs-2
+            select.form-control(ng-model='form_data.result')
+              each key, val in {"nezadáno" : "", "OK" : "OK", "FAIL" : "FAIL", "TIMEOUT" : "TIMEOUT"}
+                option(value = key) #{val}
 
-      // TODO - set default value
-      // TODO - unset auth result
+        .form-group
+          label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.flatpickr#min_date(type='text', ng-model='form_data.min_date')
 
-      //.form-group
-      //  label.col-sm-2.control-label(for = 'date_from') Datum od:
-      //  .col-xs-2
-      //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_from", name = "date_from" onkeydown="return false")
-
-      //.form-group
-      //  label.col-sm-2.control-label(for = 'date_to') Datum do:
-      //  .col-xs-2
-      //    input.form-control(type = 'text', placeholder = "DD.MM.RRRR hh:mm", id = "date_to", name = "date_to" onkeydown="return false")
-
-      .form-group
-        .col-sm-offset-2.col-sm-10
-          button.btn.btn-default(type="submit") Hledej
-  div
-    p.
-      message: {{message}}
-
-// TODO
-  
-//h2(id = "results_h")
-//table(id = "results", class = "table table-bordered")
-  
-block includes
-    //-link(rel='stylesheet', href='/stylesheets/bootstrap-datetimepicker.css')
-    //-link(rel='stylesheet', href='/stylesheets/formValidation.min.css')
-    //-link(rel='stylesheet', href='/stylesheets/search.css')
+        .form-group
+          label.col-sm-2.control-label(for = 'max_date') Koncové datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.flatpickr#max_date(type='text', ng-model='form_data.max_date')
  
-    //-script(src='/javascripts/formValidation.min.js')
-    //-script(src='/javascripts/formvalidation_bootstrap.min.js')
-    //-script(src='/javascripts/moment-with-locales.js')
-    //-script(src='/javascripts/bootstrap-datetimepicker.js')
-    
-    //-script(src='/javascripts/datatables.min.js')
+        .form-group
+          .col-sm-offset-2.col-sm-10
+            button.btn.btn-default(type="submit") Hledej
+
+  div
+    .form-group
+      .col-xs-2
+      label záznamů na stránku:
+        select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes')
+
+    table.table.table-bordered.table-responsive
+      thead
+        tr
+          th datum a čas
+          th uživatelské jméno
+          th MAC adresa
+          th realm
+          th navštívená insituce
+          th výsledek autentizace
+      tbody(ng-show='!paging.loading')
+        tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
+          td {{row.timestamp}}
+          td {{row.username}}
+          td {{row.mac_address}}
+          td {{row.realm}}
+          td {{row.visinst}}
+          td.bg-success(ng-if='row.result == "OK"') {{row.result}}
+          td.bg-warning(ng-if='row.result == "TIMEOUT"') {{row.result}}
+          td.bg-danger(ng-if='row.result == "FAIL"') {{row.result}}
+      tbody(ng-show='paging.loading')
+        tr
+          td.text-center(colspan='4')
+            .loading-indicator
+
+    .text-center
+      dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='dirPagination.tpl.html')
+
+
