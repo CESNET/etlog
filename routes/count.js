@@ -6,7 +6,7 @@ const qp = require('./query_parser');
 // --------------------------------------------------------------------------------------
 router.get('/mac_count', function(req, res, next) {
   try {
-    var query = get_timestamp(req, [ 'timestamp', 'username', 'addrs' ]); // array of valid filters
+    var query = get_timestamp(req, [ 'timestamp', 'username', 'addrs', 'count' ]); // array of valid filters
   }
   catch(error) {
     var err = new Error(error.error);
@@ -16,11 +16,13 @@ router.get('/mac_count', function(req, res, next) {
   }
 
   // ===================================================
-
-  // exact matching of single value against array does not make sense
+  // matching of single value against array does not make sense
   // transform to $in
-  if(query.filter.addrs && ! (query.filter.addrs.constructor === Object)) {
-    query.filter.addrs = { $in : [ query.filter.addrs ] };      // frontend uses regex, so no conversion to String here!
+  if(query.filter.addrs && !(query.filter.addrs.constructor === Object)) {
+    if(query.filter.addrs.constructor === RegExp || query.filter.addrs.constructor === String)  // string or regex added without typecasting
+      query.filter.addrs = { $in : [ query.filter.addrs ] };
+    else
+      query.filter.addrs = { $in : [ String(query.filter.addrs) ] };    // number is converted to string
   }
 
   var aggregate_query = [
@@ -33,6 +35,41 @@ router.get('/mac_count', function(req, res, next) {
   ];
 
   get_record_count(req.db.mac_count, res, next, aggregate_query, transform);       // perform search with constructed mongo query
+});
+// --------------------------------------------------------------------------------------
+// get count for shared mac
+// --------------------------------------------------------------------------------------
+router.get('/shared_mac', function(req, res, next) {
+  try {
+    var query = get_timestamp(req, ['timestamp', 'count', 'mac_address', 'users']); // array of valid filters
+  }
+  catch(error) {
+    var err = new Error(error.error);
+    err.status = 400;
+    next(err);
+    return;
+  }
+
+  // ===================================================
+  // matching of single value against array does not make sense
+  // transform to $in
+  if(query.filter.users && !(query.filter.users.constructor === Object)) {
+    if(query.filter.users.constructor === RegExp || query.filter.users.constructor === String)  // string or regex added without typecasting
+      query.filter.users = { $in : [ query.filter.users ] };
+    else
+      query.filter.users = { $in : [ String(query.filter.users) ] };    // number is converted to string
+  }
+
+  var aggregate_query = [
+    {
+      $match : query.filter       // filter by query
+    },
+    { $group : { _id : { mac_address : "$mac_address" } } },   // group by mac_address
+    { $group: { _id: null, count: { $sum: 1 } } },       // group just to count number of records
+    { $project : { count : 1, _id : 0 } }
+  ];
+
+  get_record_count(req.db.shared_mac, res, next, aggregate_query, transform);       // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // transform array containing dict just to number itself
