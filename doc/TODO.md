@@ -295,12 +295,17 @@ potencialni inspirace:
 
 ## sdilene mac adresy (shared mac)
 
-- Co ma vlastne graf zobrazovat?
-  - pocet uzivatelu sdilejicich adresy pro vsechny dny v zadanem intervalu?
-  - pocet sdilenych adres pro vsechny dny v zadanem intervalu?
-  - ... ?
+[rozhrani](https://etlog.cesnet.cz/#/shared_mac)
 
-> tady taky graf nema smysl. Je to zrcadlovy pripad predchozi sekce. Postaci tabulka s moznosti filtrace jako v predchoz. bodu.
+- Data v tabulce jsou razena podle poctu uzivatelu, razeni nelze bez zasahu do kodu zmenit.
+- Je potreba pridat moznost razeni rizenou uzivatelem?
+- Pridat pevnou delku sloupcu?
+- nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
+- pri dotazu napr na pocet < 10 uzivatelu jsou vracena i data, ktera maji vetsi pocet.
+  - Problem je zpusobem tim, ze jednotlive zaznamy skutecne obsahuji < 10 uzivatelu, ale vysledek je agregovan do stavu kde uz neni podminka splnena.
+  - Je treba resit?
+  - (Pokud bude treba resit, tak resit v backendu v obou castech)
+
 
 ## nejvice vyuzivany roaming
 
