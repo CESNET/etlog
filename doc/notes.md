@@ -169,6 +169,7 @@ bc
 duply
 ncftp
 lftp
+libkrb5-dev
 
 Other special packages along with installation are listed below.
   
