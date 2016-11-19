@@ -701,8 +701,7 @@ angular.module('etlog').controller('graph_test_3_controller', ['$scope', '$http'
 // --------------------------------------------------------------------------------------
 // mac count table controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('mac_count_table_controller', ['$scope', '$http', function ($scope, $http) {
-  // table controller "template"
+angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', function ($scope, $http) {
   init($scope, $http);
   addiational_fields_mac_count($scope);   // set up additional form fields
   $scope.paging = {
@@ -741,6 +740,20 @@ function setup_filters($scope, $http, coll_name)
     get_total_items($scope, $http, coll_name);        // set number of total items for paging
     $scope.paging.current_page = 1;                   // set to first page
     $scope.get_page($http, $scope.paging.current_page, get_mac_count);
+  }
+
+  $scope.filter_mac_address = function() {
+    set_filter($scope, $scope.paging.filters.mac_address, "mac_address");
+    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    $scope.paging.current_page = 1;                   // set to first page
+    $scope.get_page($http, $scope.paging.current_page, get_shared_mac);
+  }
+
+  $scope.filter_users = function() {
+    set_filter($scope, $scope.paging.filters.users, "users");
+    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    $scope.paging.current_page = 1;                   // set to first page
+    $scope.get_page($http, $scope.paging.current_page, get_shared_mac);
   }
 
   $scope.filter = "";   // filter is empty
@@ -879,8 +892,6 @@ function handle_table_submit($scope, $http, data_func, paging, form_items, coll_
 // --------------------------------------------------------------------------------------
 function get_total_items($scope, $http, coll_name)
 {
-//  console.log("get_total_items: " + $scope.qs);
-
   $http({
     method  : 'GET',
     url     : '/api/count/' + coll_name + "/" + $scope.qs + "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date
@@ -929,8 +940,6 @@ function get_mac_count($scope, $http, qs, callback)
 {
   $scope.data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
-
-  //console.log("get_mac_count: " + $scope.qs);
 
   return $http({
     method  : 'GET',
@@ -1573,79 +1582,82 @@ function test_graph_mult()
 
 
 // --------------------------------------------------------------------------------------
-angular.module('etlog').factory('Resource', ['$q', '$filter', '$timeout', '$http', function ($q, $filter, $timeout, $http) {
 
-	//this would be the service to call your server, a standard bridge between your model an $http
-
-	// the database (normally on your server)
-	var randomsItems = [];
-
-	//function createRandomItem(id) {
-	//	var heroes = ['Batman', 'Superman', 'Robin', 'Thor', 'Hulk', 'Niki Larson', 'Stark', 'Bob Leponge'];
-	//	return {
-	//		id: id,
-	//		username: heroes[Math.floor(Math.random() * 7)],
-	//		age: Math.floor(Math.random() * 1000),
-	//		saved: Math.floor(Math.random() * 10000)
-	//	};
-
-	//}
-
-	//for (var i = 0; i < 1000; i++) {
-	//	randomsItems.push(createRandomItem(i));
-	//}
-
-
-    function createRandomItems($http)
-    {
-      return $http({
-        method  : 'GET',
-        url     : '/api/mac_count/?timestamp=2016-10-07&count>5&sort=-count'
-      })
-      .then(function(response) {
-        randomsItems = response.data;
-        console.log(randomsItems);
-      });
-    }
-
-    createRandomItems($http);
-
-
-	//fake call to the server, normally this service would serialize table state to send it to the server (with query parameters for example) and parse the response
-	//in our case, it actually performs the logic which would happened in the server
-	function getPage(start, number, params) {
-
-		var deferred = $q.defer();
-
-		var filtered = params.search.predicateObject ? $filter('filter')(randomsItems, params.search.predicateObject) : randomsItems;
-
-		if (params.sort.predicate) {
-			filtered = $filter('orderBy')(filtered, params.sort.predicate, params.sort.reverse);
-		}
-
-		var result = filtered.slice(start, start + number);
-
-		//$timeout(function () {
-		//	//note, the server passes the information about the data set size
-		//	deferred.resolve({
-		//		data: result,
-		//		numberOfPages: Math.ceil(filtered.length / number)
-		//	});
-		//}, 1500);
-        
-        deferred.resolve({
-            data: result,
-            numberOfPages: Math.ceil(filtered.length / number)
-        })
-
-		return deferred.promise;
-	}
-	
-    return {
-		getPage: getPage
-	};
+// --------------------------------------------------------------------------------------
+// shared mac table controller
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', function ($scope, $http) {
+  init($scope, $http);
+  addiational_fields_shared_mac($scope);   // set up additional form fields
+  $scope.paging = {
+    items_by_page : 10,
+    current_page : 1,
+    filters : {         // must match route qs names
+      mac_address : "",
+      users : ""
+    },
+    loading : false,
+    total_items : 0
+  };
+  $scope.page_sizes = [ 10, 20, 50, 100 ];
+  handle_table_submit($scope, $http, get_shared_mac, $scope.paging, [ "mac_address", "count" ], "shared_mac");
+  handle_pagination($scope, $http, get_shared_mac);
+  setup_filters($scope, $http, "shared_mac");
 }]);
 // --------------------------------------------------------------------------------------
+// set up additional fields for form
+// --------------------------------------------------------------------------------------
+function addiational_fields_shared_mac($scope)
+{
+  $scope.options_added = false;
+  $scope.options = [
+    {
+      key : "mac_address",
+      val : "MAC adresa",
+      subopts : [
+        { key: "eq",
+          val : "přesně odpovídá" },
+        { key : "like",
+          val : "obsahuje" },
+      ],
+      sel : "eq",
+    },
+    {
+      key : "count",
+      val : "počet",
+      subopts : [
+        { key : "eq",
+          val : "je roven" },
+        { key : "gt",
+          val : "je větší" },
+        { key : "lt",
+          val : "je menší" },
+      ],
+      sel : "eq",
+    },
+  ];
 
+  $scope.add_options = function() {
+    $scope.options_added = true;
+  };
+}
+// --------------------------------------------------------------------------------------
+// get shared mac data
+// --------------------------------------------------------------------------------------
+function get_shared_mac($scope, $http, qs, callback)
+{
+  $scope.data = [];
+  var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
+
+  return $http({
+    method  : 'GET',
+    url     : '/api/shared_mac/' + qs + ts + "&sort=-count"      // always sort by mac address count
+  })
+  .then(function(response) {
+    $scope.data = response.data;
+    callback($scope);
+  });
+}
+// --------------------------------------------------------------------------------------
 
 
