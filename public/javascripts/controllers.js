@@ -2,49 +2,67 @@
 angular.module('etlog').controller('index_controller', ['$scope', '$http', function ($scope, $http) {
 }]);
 // --------------------------------------------------------------------------------------
+// search controller
+// --------------------------------------------------------------------------------------
 angular.module('etlog').controller('search_controller', ['$scope', '$http', function ($scope, $http) {
-    //// create a blank object to hold our form information
-    //// $scope will allow this to pass between controller and view
-    
-    $scope.message = "initial state";
-    $scope.submit = function () {
-      qs = construct_query_string_search($scope.form_data);
-      console.log(qs);
-      console.log($scope.form_data);
-
-      $http({
-        method  : 'GET',
-        url     : '/api/search' + qs
-        //params    : $scope.form_data,  // send form data
-      })
-      .then(function(response) {
-        // TODO
-        //console.log(data);
-        //console.log(status);
-        //console.log(headers);
-        //console.log(config);
-
-
-        //if (!data.success) {
-        //  //// if not successful, bind errors to error variables
-        //  //$scope.error_username = data.errors.username;
-        //  //$scope.error_mac_address = data.errors.mac_address;
-        //  //$scope.error_result = data.errors.result;
-        //  console.log(data);
-        //} else {
-        //  // if successful, bind success message to message
-        //  $scope.message = data.message;
-        //}
-        $scope.message = response.data;
-      });
-    }
+  init($scope, $http);
+  $scope.paging = {
+    items_by_page : 10,
+    current_page : 1,
+    filters : {         // must match route qs names
+    },
+    loading : false,
+    total_items : 0
+  };
+  $scope.page_sizes = [ 10, 20, 50, 100 ];
+  handle_search_submit($scope, $http, get_logs, $scope.paging, "logs");
+  handle_pagination($scope, $http, get_logs);
+  setup_filters($scope, $http, "logs");
 }]);
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('mac_controller', ['$scope', '$http', function ($scope, $http) {
-}]);
+// get logs collection data
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('failed_logins_controller', ['$scope', '$http', function ($scope, $http) {
-}]);
+function get_logs($scope, $http, qs, callback)
+{
+  $scope.data = [];
+  var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
+
+  return $http({
+    method  : 'GET',
+    url     : '/api/search/' + qs + ts
+  })
+  .then(function(response) {
+    $scope.data = response.data;
+    callback($scope);
+  });
+}
+// --------------------------------------------------------------------------------------
+// handle sumbit for form only with input fields
+// --------------------------------------------------------------------------------------
+function handle_search_submit($scope, $http, data_func, paging, coll_name)
+{
+  $scope.submit = function () {
+    $scope.base_qs = build_qs_search($scope.form_data);  // create query string
+    $scope.qs = $scope.base_qs;
+    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    $scope.get_page($http, $scope.paging.current_page, data_func);
+  }
+}
+// --------------------------------------------------------------------------------------
+// build query string based form data
+// add all defined form field values to query string
+// --------------------------------------------------------------------------------------
+function build_qs_search(data)
+{
+  ret = "?";
+  var keys = Object.keys(data);
+
+  for(var key in keys) {
+    ret += keys[key] + "=" + data[keys[key]] + "&";
+  }
+
+  return ret;       // returned value is '?' or '?.*&'
+}
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('roaming_most_provided_controller', ['$scope', '$http', function ($scope, $http) {
 }]);
@@ -1584,7 +1602,7 @@ function test_graph_mult()
 // --------------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------------
-// shared mac table controller
+// shared mac controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', function ($scope, $http) {
   init($scope, $http);
