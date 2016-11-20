@@ -772,7 +772,9 @@ Application api:
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
 | /api/realms/                    |        |                                                        | url returning list of realms from realms collection |
-| /api/count/mac\_count            |        | timestamp, [ username, count, addrs ]                  | url returning count of records for given query string |
+| /api/count/mac\_count           |        | timestamp, [ username, count, addrs ]                  | return count of records for mac\_count collection |
+| /api/count/shared\_mac          |        | timestamp, [ count, mac\_address, users ]              | return count of records for shared\_mac collection |
+| /api/count/logs                 |        | timestamp, [ 'pn', 'csi', 'realm', 'visinst', 'result' ] | return count of records for logs collection |
 
 
 ### Routes
