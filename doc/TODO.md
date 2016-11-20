@@ -316,26 +316,22 @@ potencialni inspirace:
   - Jak radit?
   - Rizene uzivatelem?
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
+- Konverze timestampu? (zobrazovana data jsou v UTC)
 
 
 ## nejvice vyuzivany roaming
 
-- Co ma vlastne graf zobrazovat?
-  - pocet vyuzititi sluzby (pro vsechny instituce) pro vsechny dny v zadanem intervalu?
-  - pocet vyuzititi sluzby pro danou insituci pro vsechny dny v zadanem intervalu?
-  - ... ?
-- povinne instituce, pro kterou ma byt roaming zobrazen?
-
 > Ve smyslu které instituce=REALM (prostřednctvím svých uživatelú) nejvíce využívají eduroamu. Zase grupováno přes MAC/den. Časový interval by bylo pěkné mít volitelný + nějakou předvolbu 1/3/12měs. Úplně nevím co mislíte těmi "povinnými institucemi". Množství polože na ose X by mohla regulovat parametrem, tj. zvolit si že chci nakreslit graf s max 25 institucemi. I tady mi přijde užitečné mít data k dispozici ve formě tabulky. Také by bylo zajímavé vidět grafy pro každý jednotlivý REALM v čase. Viz následující bod.
 
 
-## nejvice poskytovany roaming
+- Aktualni [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used) , [rozhrani](https://etlog.cesnet.cz/#/roaming_most_provided)
+- Stejne pripominky plati pro poskytovany roaming
+- Osa x ma tedy zobrazovat x (kde x je volitelne) instituci, ktere nejvice vyuzivaji roaming ve zvolenem casovem obdobi?
+- Volitelne konkretni instituce, pro kterou by mela byt data zobrazena?
+  - Tohle by podle me davalo smysl jako samostatne rozhrani
 
-- Co ma vlastne graf zobrazovat?
-  - pocet poskytnuti sluzby (pro vsechny instituce) pro vsechny dny v zadanem intervalu?
-  - pocet poskytnuti sluzby pro danou insituci pro vsechny dny v zadanem intervalu?
-  - ... ?
-- povinne instituce, pro kterou ma byt roaming zobrazen?
+
+## nejvice poskytovany roaming
 
 > Instituce=VISINST které nejvíce poskytují konektivitu, loginy grupovány MAC=CSI/den. Opět užitečná tabulka a graf pro X nej více využívaných. Tuhle funkcionalitu dnes nemám. Mám grafy toho jak jsou jednotlivé instituce využívány v čase, to je zde: https://ermon.cesnet.cz/roaming/ tohle je určitě také zajímavé.
 
