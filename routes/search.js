@@ -1,95 +1,130 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const qp = require('./query_parser');
+// --------------------------------------------------------------------------------------
+// get data based on query
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
-  // if query string empty
-  if (Object.keys(req.query).length === 0) {
-    console.log("query string empty");
-    res.render('search', { title: 'Ukazkove rozhrani pro vyhledavani nad radius logy' });
+  try {
+    var query = qp.parse_query_string(req.url,
+      ['pn', 'timestamp', 'csi', 'result', 'realm', 'visinst'],
+      qp.validate_interval,
+      false);       // no timestamp may be present in valid query
   }
-  else {
-    console.log("query string not empty");
-    search(req, res, respond);
-    //res.render('search', { title: 'Ukazkove rozhrani pro vyhledavani nad radius logy' });
+  catch(error) {
+    var err = new Error(error.error);
+    err.status = 400;
+    next(err);
+    return;
   }
-  // else
-  // angular -> request na stejnou url bez reloadu ?
-  // po odeslani formu nastaveni query stringu
-  // query string na zaklade obsahu formu
-  // http://stackoverflow.com/questions/17491054/append-url-parameters-dynamically-angularjs
-  //
-  //
-  //
-
-});
-// --------------------------------------------------------------------------------------
-// TODO
-//router.post('/', function(req, res, next) {
-//  search(req, res, next, respond);
-//});
-// --------------------------------------------------------------------------------------
-function search(req, res, next) {
-  var dict = {};
-
-  // TODO - keys validation
-
-  // debug
-  console.log("req.query:");
-  console.log(req.query);
-
 
   // TODO
-  //if(req.query.username == "" && req.query.mac == "")   /* no main search key was entered */
-  //  return res.json([]);     // do not search database 
+  // permissions must be set that way, so the user can search only his mac adress and username
+  // TODO - username must be always set in frontend !
 
-  console.log(req.query.username);
+  if(Object.keys(query.filter).length == 0) {   // empty filter
+    var err = new Error("Neplatný dotaz!");
+    next(err);
+    return;
+  }
 
-  //if(req.query.username != "")
-  //  dict["pn"] = req.query.username;
-  
-  if(req.query.mac_address != "")
-    dict["csi"] = req.query.mac_address;
-  
-  //if(req.query.result != "nezadáno")
-  //  dict["result"] = req.query.result;
- 
-  //
-  //// TODO
-  //if(req.query.from != undefined) {
-  //  dict["timestamp"] = {};
-  //  dict["timestamp"]["$gte"] = req.query.from;
-  //}
-  //
-  //if(req.query.to != undefined) {
-  //  if(dict["timestamp"] == undefined)
-  //    dict["timestamp"] = {};
-  //  dict["timestamp"]["$lt"] = req.query.to;
-  //}
-  
-  // TODO - pridat razeni dle data od nejstarsiho po nejnovejsi ?
+  search(req, res, next, query);
+});
+// --------------------------------------------------------------------------------------
+// search for given query
+// --------------------------------------------------------------------------------------
+function search(req, res, next, query) {
+  // ===================================================
+  // construct base query
+  var aggregate_query = [
+    {
+      $match : query.filter       // filter by query
+    },
+    {
+      $project :
+        {
+          timestamp : 1,
+          realm : 1,
+          viscountry : 1,
+          visinst : 1,
+          mac_address : "$csi",
+          username : "$pn",
+          result : 1,
+          _id : 0
+        }
+    }
+  ];
 
-  // debug
-  console.log("dict:");
-  console.log(dict);
+  // ===================================================
+  // add other operators, if defined in query
 
-  req.db.logs.find(dict, { _id: 0 }, function (err, items) {      // do not display object id in result
-    respond(err, items, res)
+  if(query.sort) {
+    aggregate_query.push({ $sort : query.sort });   // sort
+  }
+
+  if(query.skip && query.limit) {   // both skip and limit
+    aggregate_query.push({ $limit : query.limit + query.skip });   // limit to limit + skip
+  }
+
+  if(query.skip) {
+    aggregate_query.push({ $skip : query.skip });   // skip
+  }
+
+  if(query.limit) {
+    aggregate_query.push({ $limit : query.limit }); // limit
+  }
+
+  if(query.projection) {
+    aggregate_query.push({ $project : query.projection });   // limit output to specific fields
+  }
+
+  // ===================================================
+  // search
+
+  req.db.logs.aggregate(aggregate_query,
+  function(err1, items) {
+    if(err1) {
+      var err2 = new Error();      // just to detect where the original error happened
+      console.error(err1);
+      console.error(err2);
+      next([err2, err1]);
+      return;
+    }
+
+    respond(items, res);
   });
 }
 // --------------------------------------------------------------------------------------
-function respond(err, items, res) {
-  if(err) {
-    console.log(err);
-    res.send(err);
-    return;
-  }
-  
-  // debug
-  //console.log(items);
+// convert timestamp in data
+// --------------------------------------------------------------------------------------
+function convert(data)
+{
+  var ret = [];
 
+  if(data.length != 0 && !data[0].timestamp)   // output is limited to fields
+    return data;
+
+  for(var item in data) {
+    data[item].timestamp = convert_time(data[item].timestamp);
+    ret.push(data[item]);
+  }
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// convert UTC to localtime based on input
+// --------------------------------------------------------------------------------------
+function convert_time(date)
+{
+  d = new Date(date);
+  d.setTime(d.getTime() + (-1 * d.getTimezoneOffset() * 60 * 1000));
+  return d;
+}
+// --------------------------------------------------------------------------------------
+// send data to user
+// --------------------------------------------------------------------------------------
+function respond(items, res) {
   res.json(items);
 }
 // --------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------
-
 module.exports = router;
