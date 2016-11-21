@@ -325,6 +325,7 @@ potencialni inspirace:
 
 
 - Aktualni [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used) , [rozhrani](https://etlog.cesnet.cz/#/roaming_most_provided)
+- Nove [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used_test)
 - Stejne pripominky plati pro poskytovany roaming
 - Osa x ma tedy zobrazovat x (kde x je volitelne) instituci, ktere nejvice vyuzivaji roaming ve zvolenem casovem obdobi?
 - Volitelne konkretni instituce, pro kterou by mela byt data zobrazena?
