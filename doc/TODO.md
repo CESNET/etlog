@@ -340,6 +340,9 @@ potencialni inspirace:
 
 > Nová sekce bez rozlišení VISINST/REALM jen grupováno přes MAC/CSI/den.
 
+- Jak ma vysledny graf vypadat?
+- vyuzit napr https://bl.ocks.org/mbostock/3887051 ?
+
 ## neuspesna prihlaseni
 
 - Co ma vlastne graf zobrazovat?
