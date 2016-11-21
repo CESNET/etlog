@@ -345,6 +345,8 @@ potencialni inspirace:
 
 ## neuspesna prihlaseni
 
+[rozhrani](https://etlog.cesnet.cz/#/failed_logins)
+
 - Co ma vlastne graf zobrazovat?
   - pocet neuspesnych prihlaseni pro vsechny dny v zadanem intervalu?
   - pocet neuspesnych prihlaseni pro danou instituci pro vsechny dny v zadanem intervalu?
