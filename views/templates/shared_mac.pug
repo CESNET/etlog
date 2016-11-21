@@ -66,7 +66,8 @@ div(ng-controller="shared_mac_controller")
           td {{row.mac_address}}
           td {{row.count}}
           td
-            a(ng-repeat='user in row.users') {{user}} 
+            a(ng-repeat='user in row.users' ui-sref='search({pn : user, csi: row.mac_address})')
+              | {{user}} 
       tbody(ng-show='paging.loading')
         tr
           td.text-center(colspan='4')

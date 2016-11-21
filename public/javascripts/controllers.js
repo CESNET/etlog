@@ -4,8 +4,9 @@ angular.module('etlog').controller('index_controller', ['$scope', '$http', funct
 // --------------------------------------------------------------------------------------
 // search controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('search_controller', ['$scope', '$http', function ($scope, $http) {
+angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', function ($scope, $http, $stateParams) {
   init($scope, $http);
+  set_params($scope, $stateParams); // set params passed from other views
   $scope.paging = {
     items_by_page : 10,
     current_page : 1,
@@ -19,6 +20,18 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', func
   handle_pagination($scope, $http, get_logs);
   setup_filters($scope, $http, "logs");
 }]);
+// --------------------------------------------------------------------------------------
+// set form field values from another view
+// --------------------------------------------------------------------------------------
+function set_params($scope, $stateParams)
+{
+  var keys = Object.keys($stateParams);
+
+  for(var key in keys) {
+    if($stateParams[keys[key]])
+      $scope.form_data[keys[key]] = $stateParams[keys[key]];
+  }
+}
 // --------------------------------------------------------------------------------------
 // get logs collection data
 // --------------------------------------------------------------------------------------
