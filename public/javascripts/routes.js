@@ -21,6 +21,11 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
     templateUrl: '/partials/failed_logins.html'
   })
 
+  .state('shared_mac', {
+    url: '/shared_mac',
+    templateUrl: '/partials/shared_mac.html'
+  })
+
   .state('roaming_most_provided', {
     url: '/roaming_most_provided',
     templateUrl: '/partials/roaming_most_provided.html'
@@ -29,6 +34,21 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   .state('roaming_most_used', {
     url: '/roaming_most_used',
     templateUrl: '/partials/roaming_most_used.html'
+  })
+
+  .state('roaming_most_used_test', {
+    url: '/roaming_most_used_test',
+    templateUrl: '/partials/roaming_most_used_test.html'
+  })
+
+  .state('roaming_most_provided_test', {
+    url: '/roaming_most_provided_test',
+    templateUrl: '/partials/roaming_most_provided_test.html'
+  })
+
+  .state('roaming_activity', {
+    url: '/roaming_activity',
+    templateUrl: '/partials/roaming_activity.html'
   })
 });
 // --------------------------------------------------------------------------------------
