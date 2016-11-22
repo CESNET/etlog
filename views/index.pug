@@ -5,10 +5,17 @@ block content
     div(ui-view)
 
 block includes
-  script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js')
-  script(src='/javascripts/angular-ui-router.js')
   // TODO include minified
+
+  script(src='/javascripts/angular_1.5.8.js')
+  script(src='/javascripts/dirPagination.js')
+  script(src='/javascripts/angular-ui-router.js')
+
+  // TODO include minified
+
   script(src='/javascripts/main.js')
   script(src='/javascripts/controllers.js')
   script(src='/javascripts/routes.js')
+
+  link(rel='stylesheet', href='/stylesheets/font-awesome.min.css')
 
