@@ -318,6 +318,7 @@ potencialni inspirace:
   - Rizene uzivatelem?
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
 - Konverze timestampu? (zobrazovana data jsou v UTC)
+- Pridat moznost specifikace casu v elementu pro vyber data?
 
 
 ## nejvice vyuzivany roaming
