@@ -256,6 +256,7 @@ oalib.cz
 
 > graf pro mac count
 
+Pokud by generovani grafu trvalo prilis dlouho, tak generovat svg a pouze ho vkladat do stranky?
 
 potencialni inspirace:
 
@@ -377,6 +378,7 @@ potencialni inspirace:
 
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
 - Pri prochazeni dat k detekci funkcnosti sluzby jsem narazil na zvlastni realm `ldap.cuni.cz`.
+- Dokumentace frontendu - co a jak popsat?
 
 # TODO list
 1. Autentizace
@@ -389,6 +391,7 @@ potencialni inspirace:
   - (grafy negenerovat na kliknuti ale nejak v noci)
 7. přstupová práva
 8. co s radlog.cesnet.cz - tim starym virtualem
-9. ...
+9. velke <> u kalendaru pri nacitani stranky
+10. ...
 
 # TODO dobudoucna
