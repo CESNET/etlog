@@ -44,7 +44,7 @@ div(ng-controller="mac_count_controller")
           .col-sm-offset-2.col-sm-10
             button.btn.btn-default(type="submit") Hledej
 
-  div
+  div(ng-show='submitted')
     .form-group
       .col-xs-2
       label záznamů na stránku:
@@ -57,13 +57,15 @@ div(ng-controller="mac_count_controller")
           th počet zařízení
           th MAC adresy
         tr
-          th
+          th(colspan='2')
             input.input-sm.form-control(ng-model='paging.filters.username', placeholder='uživatelské jméno', type='search', ng-change='filter_username()', ng-model-options='{ debounce: 250 }')
-          th(colspan='4')
+          th
             input.input-sm.form-control(ng-model='paging.filters.addrs', placeholder='MAC adresa', type='search', ng-change='filter_addrs()', ng-model-options='{ debounce: 250 }')
       tbody(ng-show='!paging.loading')
         tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
-          td {{row.username}}
+          td
+            a(ui-sref='search({pn : row.username})')
+              | {{row.username}}
           td {{row.count}}
           td
             a(ng-repeat='addr in row.addrs' ui-sref='search({pn : row.username, csi: addr})')

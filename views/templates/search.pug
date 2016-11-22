@@ -46,7 +46,7 @@ div(ng-controller="search_controller")
           .col-sm-offset-2.col-sm-10
             button.btn.btn-default(type="submit") Hledej
 
-  div
+  div(ng-show='submitted')
     .form-group
       .col-xs-2
       label záznamů na stránku:
