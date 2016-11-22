@@ -1,31 +1,16 @@
-# Reporty
-
-## Sablony
-
-### Neúspěsná přihlášení
-
-[github](https://github.com/CESNET/etlog/blob/master/request.js#L78)
-
-- Javascript nema heredoc, tudiz je problematicke napsat telo jako souvislou cast textu
-- předmět emailu je nastaven [v konfiguraci](https://github.com/CESNET/etlog/blob/master/config/config.js#L9)
-- limit počtu výsledků je nastaven [v konfiguraci](https://github.com/CESNET/etlog/blob/master/config/config.js#L7)
-- Vyhovuje takto?
-
-
-### Invalidní záznamy
-
-[github](https://github.com/CESNET/etlog/blob/master/scripts/invalid_records_mail.sh#L45)
-
-- Skript je možné [konfigurovat](https://github.com/CESNET/etlog/blob/master/config/invalid_records_mail)
-- Pridat rozliseni prazdnych a neplatnych mac adres? (pripadne jako TODO dobudoucna?)
-- Vyhovuje takto?
-
-
-# Zálohování DB
-
-- Zkontrolovat, zda jsou zalohy dostupne.
-
 # Detekce problémů funkčnosti služby
+
+- Grafy
+1. pocty uspesnych autentizaci
+2. pocty neuspesnych autentizaci
+3. jejich pomer
+
+pro vsechny grafy po dnech mesic zpet
+
+vysypat na jednu stranku pro vsechny instituce
+Pro jednu instituce idealne vedle sebe
+
+staci uplne jednoducha staticka stranka
 
 ## Data
 
@@ -279,6 +264,15 @@ potencialni inspirace:
 - pridat moznost razeni (https://bl.ocks.org/mbostock/3885705)?
 - https://codepen.io/Rastikko/pen/GqNbqM
 
+### Obecne ke grafum
+
+> vyresit x-ovou osu
+> zkusit pridat nejakou mrizku -> oddeleni tydnu(mesicu ... ) na ose x
+
+> vsude schovat zahlavi i strankovani dokud nebude odkliknute hledani
+> hotovo pro mac count
+> pridat tlacitko na schovani dalsich moznosti
+
 
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
 
@@ -286,12 +280,22 @@ potencialni inspirace:
 
 - Data v tabulce jsou razena podle poctu mac adres, razeni nelze bez zasahu do kodu zmenit.
 - Je potreba pridat moznost razeni rizenou uzivatelem?
+> Neni treba resit
 - Pridat pevnou delku sloupcu?
+> Neni treba resit
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
+> skocit na zahlavi tabulky
 - pri dotazu napr na pocet < 10 adres jsou vracena i data, ktera maji vetsi pocet.
   - Problem je zpusobem tim, ze jednotlive zaznamy skutecne obsahuji < 10 adres, ale vysledek je agregovan do stavu kde uz neni podminka splnena.
   - Je treba resit?
   - (Pokud bude treba resit, tak resit v backendu v obou castech)
+  > Resit - zmenit tak, aby to odpovidalo podmince
+
+> pridat radio button - vyradit anonymni uzivatele (^[^anon|^@])
+> default => obsahuje
+
+> Pri prokliknuti na hledani automaticky vyhledat
+> bud otevrit na nove karte s daty nebo moznost prokliknout zpet na stejna data
 
 
 ## sdilene mac adresy (shared mac)
@@ -300,13 +304,22 @@ potencialni inspirace:
 
 - Data v tabulce jsou razena podle poctu uzivatelu, razeni nelze bez zasahu do kodu zmenit.
 - Je potreba pridat moznost razeni rizenou uzivatelem?
+> Neni treba resit
 - Pridat pevnou delku sloupcu?
+> Neni treba resit
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
+> skocit na zahlavi tabulky
 - pri dotazu napr na pocet < 10 uzivatelu jsou vracena i data, ktera maji vetsi pocet.
   - Problem je zpusobem tim, ze jednotlive zaznamy skutecne obsahuji < 10 uzivatelu, ale vysledek je agregovan do stavu kde uz neni podminka splnena.
   - Je treba resit?
   - (Pokud bude treba resit, tak resit v backendu v obou castech)
+  > Resit - zmenit tak, aby to odpovidalo podmince
 
+> default => obsahuje
+
+> Pri prokliknuti na hledani automaticky vyhledat
+> bud otevrit na nove karte s daty nebo moznost prokliknout zpet na stejna data
+ 
 
 ## Obecne vyhledavani
 
@@ -316,12 +329,20 @@ potencialni inspirace:
 - Pridat razeni?
   - Jak radit?
   - Rizene uzivatelem?
+  > razeni dle casu, rizene uzivatelem
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
+> skocit na zahlavi tabulky
 - Konverze timestampu? (zobrazovana data jsou v UTC)
+> konvertovat na ceske datum
 - Pridat moznost specifikace casu v elementu pro vyber data?
+> pridat
 
+> pridat vyhledavaci pole realm a visinst
 
 ## nejvice vyuzivany roaming
+
+> Data jsou obracene -> prejmenovat nejvice vyuzivany a poskytovany
+> Kdyz je jednou nastaveno manualne datum, uz nefunguje prepinani pomoci radio buttonu
 
 > Ve smyslu které instituce=REALM (prostřednctvím svých uživatelú) nejvíce využívají eduroamu. Zase grupováno přes MAC/den. Časový interval by bylo pěkné mít volitelný + nějakou předvolbu 1/3/12měs. Úplně nevím co mislíte těmi "povinnými institucemi". Množství polože na ose X by mohla regulovat parametrem, tj. zvolit si že chci nakreslit graf s max 25 institucemi. I tady mi přijde užitečné mít data k dispozici ve formě tabulky. Také by bylo zajímavé vidět grafy pro každý jednotlivý REALM v čase. Viz následující bod.
 
