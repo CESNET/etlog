@@ -40,6 +40,13 @@ div(ng-controller="shared_mac_controller")
               button.btn.btn-default.addButton(type='button', ng-click='add_options()')
                 i.fa.fa-plus
 
+        .form-group(ng-show='options_added')
+          label.col-sm-2.control-label Skrýt možnosti
+          .col-xs-2
+            div(layout-gt-xs='row')
+              button.btn.btn-default.addButton(type='button', ng-click='delete_options()')
+                i.fa.fa-minus
+
         .form-group
           .col-sm-offset-2.col-sm-10
             button.btn.btn-default(type="submit") Hledej

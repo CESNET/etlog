@@ -33,13 +33,20 @@ div(ng-controller="roaming_most_used_controller")
               .radio(ng-repeat='subopt in option.subopts')
                 input(type='radio', name='{{option.val}}', ng-model="option.sel", ng-value='subopt.key')
                 | {{subopt.val}}
-                
+
         .form-group(ng-show='!options_added')
           label.col-sm-2.control-label Další možnosti
           .col-xs-2
             div(layout-gt-xs='row')
               button.btn.btn-default.addButton(type='button', ng-click='add_options()')
                 i.fa.fa-plus
+
+        .form-group(ng-show='options_added')
+          label.col-sm-2.control-label Skrýt možnosti
+          .col-xs-2
+            div(layout-gt-xs='row')
+              button.btn.btn-default.addButton(type='button', ng-click='delete_options()')
+                i.fa.fa-minus
 
         .form-group
           .col-sm-offset-2.col-sm-10
