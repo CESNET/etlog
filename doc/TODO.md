@@ -379,6 +379,7 @@ potencialni inspirace:
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
 - Pri prochazeni dat k detekci funkcnosti sluzby jsem narazil na zvlastni realm `ldap.cuni.cz`.
 - Dokumentace frontendu - co a jak popsat?
+- Momentalne neni nijak validovan/omezovan vstup formularu. Pridat nejakou validaci?
 
 # TODO list
 1. Autentizace
