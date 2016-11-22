@@ -28,6 +28,12 @@ router.get('/', function(req, res, next) {
     return;
   }
 
+  if(!query.filter.pn) {   // no username present
+    var err = new Error("Nebylo zádáno uživatelské jméno!");
+    next(err);
+    return;
+  }
+
   search(req, res, next, query);
 });
 // --------------------------------------------------------------------------------------
