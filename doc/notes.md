@@ -763,6 +763,7 @@ Application api:
 
 | URL                             | params | query string variables                                 | note                   |
 |---------------------------------|--------|--------------------------------------------------------|------------------------|
+| /api/search/                    |        | timestamp, pn, [ 'csi', 'result', 'realm', 'visinst']  ] |                      |
 | /api/failed\_logins/            |        | timestamp, [ username, fail\_count, ok\_count, ratio ] |                        |
 | /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |                        |
 | /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
