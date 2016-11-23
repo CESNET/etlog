@@ -105,9 +105,20 @@ function get_logs($scope, $http, qs, callback)
     url     : '/api/search/' + qs + ts
   })
   .then(function(response) {
-    $scope.data = response.data;
+    $scope.data = transform_timestamp(response.data);
     callback($scope);
   });
+}
+// --------------------------------------------------------------------------------------
+// transform iso timestamp to czech format
+// --------------------------------------------------------------------------------------
+function transform_timestamp(data)
+{
+  for(var item in data) {
+    data[item].timestamp = data[item].timestamp.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp.replace(/^.*T/, '').split(':')[1] + " "+ data[item].timestamp.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp.replace(/T.*$/, '').split('-')[0];
+  }
+
+  return data;
 }
 // --------------------------------------------------------------------------------------
 // handle sumbit for form only with input fields

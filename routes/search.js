@@ -97,7 +97,7 @@ function search(req, res, next, query) {
       return;
     }
 
-    respond(items, res);
+    respond(convert(items), res);
   });
 }
 // --------------------------------------------------------------------------------------
