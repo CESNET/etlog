@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const qp = require('./query_parser');
+const agg = require('./aggregation');
 // --------------------------------------------------------------------------------------
 // get count for mac count
 // --------------------------------------------------------------------------------------
@@ -25,14 +26,57 @@ router.get('/mac_count', function(req, res, next) {
       query.filter.addrs = { $in : [ String(query.filter.addrs) ] };    // number is converted to string
   }
 
+  // ===================================================
+  // if query.filter contains some conditions for data eg. count,
+  // the condition must be applied to result of all records aggregated across given timestamps
+  // -> the condition must be applied after aggregation !
+
+  var cond = agg.check_filter(query.filter, [ "count" ]);
+
+  // ===================================================
+
   var aggregate_query = [
     {
       $match : query.filter       // filter by query
     },
-    { $group : { _id : { username : "$username" } } },   // group by username
-    { $group: { _id: null, count: { $sum: 1 } } },       // group just to count number of records
-    { $project : { count : 1, _id : 0 } }
+    {
+      $unwind : "$addrs"          // deconstruct addrs array
+    },
+    {
+      $group :
+        {
+          _id :
+            {
+              username : "$username"  // group by username -> query on multiple records, we want only on record on the output
+            },
+          addrs :
+            {
+              $addToSet : "$addrs"   // add arrays
+            }
+        }
+    },
+    {
+      $project :
+        {
+          username : "$_id.username",   // id.username -> username
+          count :
+            {
+              $size : "$addrs"          // number of addresses
+            },
+          addrs : 1,
+          _id : 0
+        }
+    }
   ];
+
+  // ===================================================
+  // add condition from original filter if defined
+  agg.add_cond(aggregate_query, cond);
+
+  // ===================================================
+
+  aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
+  aggregate_query.push({ $project : { count : 1, _id : 0 } });
 
   get_record_count(req.db.mac_count, res, next, aggregate_query, transform);       // perform search with constructed mongo query
 });
@@ -60,14 +104,57 @@ router.get('/shared_mac', function(req, res, next) {
       query.filter.users = { $in : [ String(query.filter.users) ] };    // number is converted to string
   }
 
+  // ===================================================
+  // if query.filter contains some conditions for data eg. count,
+  // the condition must be applied to result of all records aggregated across given timestamps
+  // -> the condition must be applied after aggregation !
+
+  var cond = agg.check_filter(query.filter, [ "count" ]);
+
+  // ===================================================
+
   var aggregate_query = [
     {
       $match : query.filter       // filter by query
     },
-    { $group : { _id : { mac_address : "$mac_address" } } },   // group by mac_address
-    { $group: { _id: null, count: { $sum: 1 } } },       // group just to count number of records
-    { $project : { count : 1, _id : 0 } }
+    {
+      $unwind : "$users"          // deconstruct users array
+    },
+    {
+      $group :
+        {
+          _id :
+            {
+              mac_address : "$mac_address"      // group by mac address
+            },
+          users :       // add users
+            {
+              $addToSet : "$users"
+            }
+        }
+    },
+    {
+      $project :
+        {
+          mac_address : "$_id.mac_address",
+          users : 1,
+          count :
+            {
+              $size : "$users"          // number of users
+            },
+          _id : 0
+        }
+    }
   ];
+
+  // ===================================================
+  // add condition from original filter if defined
+  agg.add_cond(aggregate_query, cond);
+
+  // ===================================================
+
+  aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
+  aggregate_query.push({ $project : { count : 1, _id : 0 } });
 
   get_record_count(req.db.shared_mac, res, next, aggregate_query, transform);       // perform search with constructed mongo query
 });
