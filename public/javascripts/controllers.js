@@ -5,8 +5,7 @@ angular.module('etlog').controller('index_controller', ['$scope', '$http', funct
 // search controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', function ($scope, $http, $stateParams) {
-  init($scope, $http);
-  set_params($scope, $stateParams); // set params passed from other views
+  init_search($scope, $http);
   $scope.paging = {
     items_by_page : 10,
     current_page : 1,
@@ -19,18 +18,75 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   handle_search_submit($scope, $http, get_logs, $scope.paging, "logs");
   handle_pagination($scope, $http, get_logs);
   setup_filters($scope, $http, "logs");
+  set_params($scope, $stateParams); // set params passed from other views
 }]);
+// --------------------------------------------------------------------------------------
+// TODO 
+// --------------------------------------------------------------------------------------
+function init_search($scope, $http)
+{
+  $scope.submitted = false; // form has not been submitted yet
+
+  $scope.form_data = {
+    min_date : new Date(new Date() - 30 * 86400000).toISOString(),                          // 30 days ago
+    max_date : new Date().toISOString(),                                                    // today
+  };
+  
+  // get db_data
+  $http({
+    method  : 'GET',
+    url     : '/api/db_data'
+  })
+  .then(function(response) {
+    $scope.db_data = response.data;
+    //setup_calendars_time($scope);
+    setup_calendars($scope);
+  });
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+//function setup_calendars_time($scope)
+//{
+//  var calendars = document.getElementsByClassName("flatpickr").flatpickr({
+//    altInputClass : "form-control",
+//    altInput: true,
+//    altFormat: "H:i d.m.Y",
+//    maxDate: new Date(),                    // today
+//    minDate: $scope.db_data.mac_count.min,   // min from db
+//    enableTime: true,
+//    time_24hr : true
+//  });
+//
+//  console.log($scope.form_data.min_date);
+//  console.log($scope.form_data.max_date);
+//
+//  // alternative hand solution
+//  var min_date = document.getElementById("min_date");
+//  var next = min_date.nextElementSibling;
+//  next.setAttribute("value", $scope.form_data.min_date);
+//
+//  var max_date = document.getElementById("max_date");
+//  var next = max_date.nextElementSibling;
+//  next.setAttribute("value", $scope.form_data.max_date);
+//}
 // --------------------------------------------------------------------------------------
 // set form field values from another view
 // --------------------------------------------------------------------------------------
 function set_params($scope, $stateParams)
 {
   var keys = Object.keys($stateParams);
+  var empty = true;
 
   for(var key in keys) {
-    if($stateParams[keys[key]])
+    if($stateParams[keys[key]]) {
+      empty = false;
       $scope.form_data[keys[key]] = $stateParams[keys[key]];
+    }
   }
+
+  if(!empty)    // params not empty
+    $scope.submit();  // automatically click search button
 }
 // --------------------------------------------------------------------------------------
 // get logs collection data
@@ -59,6 +115,7 @@ function handle_search_submit($scope, $http, data_func, paging, coll_name)
     $scope.qs = $scope.base_qs;
     get_total_items($scope, $http, coll_name);        // set number of total items for paging
     $scope.get_page($http, $scope.paging.current_page, data_func);
+    $scope.submitted = true;
   }
 }
 // --------------------------------------------------------------------------------------
@@ -872,6 +929,8 @@ function handle_pagination($scope, $http, data_func)
 // --------------------------------------------------------------------------------------
 function init($scope, $http)
 {
+  $scope.submitted = false; // form has not been submitted yet
+
   $scope.form_data = {
     min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
@@ -911,6 +970,7 @@ function handle_table_submit($scope, $http, data_func, paging, form_items, coll_
     $scope.qs = $scope.base_qs;
     get_total_items($scope, $http, coll_name);        // set number of total items for paging
     $scope.get_page($http, $scope.paging.current_page, data_func);
+    $scope.submitted = true;
   }
 }
 // --------------------------------------------------------------------------------------
@@ -943,6 +1003,8 @@ function get_total_items($scope, $http, coll_name)
 function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
 {
   $scope.submit = function () {
+    // set loading animation
+    $scope.loading = true;
 
     // add radio selection to form data
     for(var item in $scope.options) {
@@ -951,13 +1013,12 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
       }
     }
     
-    // TODO ?
     get_days($scope);                           // get array of days in specified interval
-
     qs = build_qs($scope.form_data, form_items);  // create query string
     data_func($scope, $http, qs, $q, function ($scope) { // get data from api
-      //console.log($scope.data);
       graph_func($scope);    // draw graph
+      // unset loading animation
+      $scope.loading = false;
     });
   }
 }
@@ -1041,8 +1102,7 @@ function addiational_fields_mac_count($scope)
         { key : "like",
           val : "obsahuje" },
       ],
-      sel : "eq",
-      validation : "^.*$"
+      sel : "like",
     },
     {
       key : "count",
@@ -1056,12 +1116,15 @@ function addiational_fields_mac_count($scope)
           val : "je menší" },
       ],
       sel : "eq",
-      validation : "\\d+"
     },
   ];
 
   $scope.add_options = function() {
     $scope.options_added = true;
+  };
+
+  $scope.delete_options = function() {
+    $scope.options_added = false;
   };
 }
 // --------------------------------------------------------------------------------------
@@ -1161,6 +1224,19 @@ function graph($scope)
   function get_unique(value, index, self) { return self.indexOf(value) === index; }
 
   var y_unique = y.ticks().map(formatter).filter(get_unique);
+  //console.log(y.ticks());
+  //console.log(x);
+
+  // ==========================================================
+  
+  //if(data.length > 15)
+  //  x.domain(data.filter(function(value, index) { return index % 2 == 0; }).map(function(d) { return d.timestamp; }));
+
+  //else if(data.length > 30)
+  //  x.domain(data.filter(function(value, index) { return index % 3 == 0; }).map(function(d) { return d.timestamp; }));
+  ////aconsole.log(data.length);
+  
+  //var x_ticks = get_x_ticks(x.ticks(), $scope.data.length); 
 
   // ==========================================================
 
@@ -1224,6 +1300,21 @@ function graph($scope)
   //  //renderGraph();
   //
   //}
+
+
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function get_x_ticks(ticks, data_length)
+{
+  if(data_length > 15) {
+
+  }
+
+  console.log(ticks);
+
+  return ticks;
 }
 // --------------------------------------------------------------------------------------
 // TODO
@@ -1297,6 +1388,10 @@ function addiational_fields_failed_logins($scope)
 
   $scope.add_options = function() {
     $scope.options_added = true;
+  };
+  
+  $scope.delete_options = function() {
+    $scope.options_added = false;
   };
 }
 // --------------------------------------------------------------------------------------
@@ -1646,7 +1741,7 @@ function addiational_fields_shared_mac($scope)
         { key : "like",
           val : "obsahuje" },
       ],
-      sel : "eq",
+      sel : "like",
     },
     {
       key : "count",
@@ -1665,6 +1760,10 @@ function addiational_fields_shared_mac($scope)
 
   $scope.add_options = function() {
     $scope.options_added = true;
+  };
+
+  $scope.delete_options = function() {
+    $scope.options_added = false;
   };
 }
 // --------------------------------------------------------------------------------------
@@ -1685,9 +1784,38 @@ function get_shared_mac($scope, $http, qs, callback)
   });
 }
 // --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function get_interval($scope)
+{
+  // TODO
 
 
 
+  // TODO - fix db data UTC offset
+  // TODO - fix iteration when overcoming DST
+
+  $scope.days = [];
+
+  var min = new Date($scope.form_data.min_date);
+  var max = new Date($scope.form_data.max_date);
+
+  var diff = (max - min) / 86400000;        // number of days between dates
+  var step = 1;
+
+  if(diff > 15)
+    step = 2;
+
+  if(diff > 30)
+    step = 3;
+
+  // iterate from min to max by days
+  for(var i = min; i < max; i.setTime(i.getTime() + step * 86400000)) {
+    $scope.days.push(i.toISOString().replace(/T.*$/, ''));
+  }
+
+
+}
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
@@ -1759,6 +1887,10 @@ function addiational_fields_roaming_most($scope)
 
   $scope.add_options = function() {
     $scope.options_added = true;
+  };
+  
+  $scope.delete_options = function() {
+    $scope.options_added = false;
   };
 }
 // --------------------------------------------------------------------------------------
@@ -1950,15 +2082,18 @@ angular.module('etlog').controller('roaming_most_used_test_controller', ['$scope
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
     inst_count : 25
   };
+  $scope.graph_title = "Nejvvíce využívaný roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
-  handle_common_submit($scope, $http, $q, get_roaming_most_used_count, graph, "roaming_most_used");
+  handle_common_submit($scope, $http, $q, get_roaming_most_used_count, graph, "roaming_most_used", "used_count");
 }]);
 // --------------------------------------------------------------------------------------
 // initialize calendars
 // --------------------------------------------------------------------------------------
 function init_calendar($scope, $http)
 {
+  $scope.submitted = false; // form has not been submitted yet
+  
   // setup
   // no min set
   var calendars = document.getElementsByClassName("flatpickr").flatpickr({
@@ -1980,15 +2115,17 @@ function build_sorted_qs(sort_key, inst_count)
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
-function handle_common_submit($scope, $http, $q, data_func, graph_func, coll_name)
+function handle_common_submit($scope, $http, $q, data_func, graph_func, coll_name, sort_key)
 {
-
   $scope.submit = function () {
-    $scope.base_qs = build_sorted_qs("used_count", $scope.form_data.inst_count);
+    $scope.loading = true;
+    get_days($scope);                           // get array of days in specified interval
+    $scope.base_qs = build_sorted_qs(sort_key, $scope.form_data.inst_count);//
     $scope.qs = $scope.base_qs;
     data_func($scope, $http, $scope.qs, $q, function ($scope) { // get data from api
-      //console.log($scope.data);
       graph_func($scope);    // draw graph
+      $scope.loading = false;
+      $scope.submitted = true; // form has not been submitted yet
     });
   }
 }
@@ -2077,24 +2214,11 @@ angular.module('etlog').controller('roaming_most_provided_test_controller', ['$s
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
     inst_count : 25
   };
+  $scope.graph_title = "Nejvvíce poskytovaný roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
-  handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, graph, "roaming_most_provided");
+  handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, graph, "roaming_most_provided", "provided_count");
 }]);
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-function handle_common_submit($scope, $http, $q, data_func, graph_func, coll_name)
-{
-  $scope.submit = function () {
-    get_days($scope);                           // get array of days in specified interval
-    $scope.base_qs = build_sorted_qs("provided_count", $scope.form_data.inst_count);//
-    $scope.qs = $scope.base_qs;
-    data_func($scope, $http, $scope.qs, $q, function ($scope) { // get data from api
-      graph_func($scope);    // draw graph
-    });
-  }
-}
 // --------------------------------------------------------------------------------------
 function create_graph_data_provided($scope, data)
 {
@@ -2122,6 +2246,10 @@ function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
   });
 }
 // --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('test_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+ 
+}]);
 
 
 
