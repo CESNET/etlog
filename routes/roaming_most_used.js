@@ -38,6 +38,13 @@ function search_days(req, res, next, query) {
   query.filter.used_count = query.filter.used_count || { "$exists" : true };   // make sure used count is set
 
   // ===================================================
+  // if query.filter contains some conditions for data eg. count,
+  // the condition must be applied to result of all records aggregated across given timestamps
+  // -> the condition must be applied after aggregation !
+
+  var cond = agg.check_filter(query.filter, [ "provided_count", "used_count" ]);
+
+  // ===================================================
   // construct base query
   var aggregate_query = [
     {
@@ -67,23 +74,12 @@ function search_days(req, res, next, query) {
   ];
 
   // ===================================================
+  // add condition from original filter if defined
+  agg.add_cond(aggregate_query, cond);
+
+  // ===================================================
   // add other operators, if defined in query
-
-  if(query.sort) {
-    aggregate_query.push({ $sort : query.sort });   // sort
-  }
-
-  if(query.skip && query.limit) {   // both skip and limit
-    aggregate_query.push({ $limit : query.limit + query.skip });   // limit to limit + skip
-  }
-
-  if(query.skip) {
-    aggregate_query.push({ $skip : query.skip });   // skip
-  }
-
-  if(query.limit) {
-    aggregate_query.push({ $limit : query.limit }); // limit
-  }
+  agg.add_ops(aggregate_query, query);
 
   // ===================================================
   // search
