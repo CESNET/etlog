@@ -6,7 +6,7 @@ const qp = require('./query_parser');
 // --------------------------------------------------------------------------------------
 router.get('/mac_count', function(req, res, next) {
   try {
-    var query = get_timestamp(req, [ 'timestamp', 'username', 'addrs', 'count' ]); // array of valid filters
+    var query = get_qs(req, [ 'timestamp', 'username', 'addrs', 'count' ]); // array of valid filters
   }
   catch(error) {
     var err = new Error(error.error);
@@ -41,7 +41,7 @@ router.get('/mac_count', function(req, res, next) {
 // --------------------------------------------------------------------------------------
 router.get('/shared_mac', function(req, res, next) {
   try {
-    var query = get_timestamp(req, ['timestamp', 'count', 'mac_address', 'users']); // array of valid filters
+    var query = get_qs(req, ['timestamp', 'count', 'mac_address', 'users']); // array of valid filters
   }
   catch(error) {
     var err = new Error(error.error);
@@ -72,6 +72,40 @@ router.get('/shared_mac', function(req, res, next) {
   get_record_count(req.db.shared_mac, res, next, aggregate_query, transform);       // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
+// get count for logs
+// --------------------------------------------------------------------------------------
+router.get('/logs', function(req, res, next) {
+  try {
+    var query = get_qs_interval(req, [ 'timestamp', 'pn', 'csi', 'realm', 'visinst', 'result' ]); // array of valid filters
+  }
+  catch(error) {
+    var err = new Error(error.error);
+    err.status = 400;
+    next(err);
+    return;
+  }
+
+  if(!query.filter.pn) {
+    var err = new Error("Uživatelské jméno musí být zadáno!");
+    err.status = 400;
+    next(err);
+    return;
+  }
+
+  req.db.logs.count(query.filter,
+  function(err1, items) {
+    if(err1) {
+      var err2 = new Error();      // just to detect where the original error happened
+      console.error(err1);
+      console.error(err2);
+      next([err2, err1]);
+      return;
+    };
+
+    respond(items, res)
+  });
+});
+// --------------------------------------------------------------------------------------
 // transform array containing dict just to number itself
 // --------------------------------------------------------------------------------------
 function transform(data)
@@ -82,13 +116,25 @@ function transform(data)
   return data[0].count;
 }
 // --------------------------------------------------------------------------------------
-// get mongo query from timestamp values
+// get mongo query from url
 // --------------------------------------------------------------------------------------
-function get_timestamp(req, filters)
+function get_qs(req, filters)
 {
   var query = qp.parse_query_string(req.url,
     filters,
     qp.validate_days);
+
+  return query;
+}
+// --------------------------------------------------------------------------------------
+// get mongo query from url
+// time specification allowed
+// --------------------------------------------------------------------------------------
+function get_qs_interval(req, filters)
+{
+  var query = qp.parse_query_string(req.url,
+    filters,
+    qp.validate_interval);
 
   return query;
 }
