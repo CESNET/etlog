@@ -1,5 +1,7 @@
 // --------------------------------------------------------------------------------------
-// TODO
+// check if any of fileds is present in query
+// if so, delete it and return as dict for
+// further processing
 // --------------------------------------------------------------------------------------
 exp.check_filter = function(query, fields)
 {
@@ -38,19 +40,12 @@ exp.add_ops = function(aggregate_query, query)
   return aggregate_query;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// add initial removed condition to aggregation query
 // --------------------------------------------------------------------------------------
 exp.add_cond = function(aggregate_query, cond)
 {
-  //console.log("before");
-  //console.log(aggregate_query);
-
   if(Object.keys(cond).length > 0)
     aggregate_query.push({ $match : cond });    // check
-
-
-  //console.log("after");
-  //console.log(aggregate_query);
 
   return aggregate_query;
 }
