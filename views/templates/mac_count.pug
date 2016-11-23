@@ -32,7 +32,7 @@ div(ng-controller="mac_count_controller")
               .radio(ng-repeat='subopt in option.subopts')
                 input(type='radio', name='{{option.val}}', ng-model="option.sel", ng-value='subopt.key')
                 | {{subopt.val}}
-                
+
         .form-group(ng-show='!options_added')
           label.col-sm-2.control-label Další možnosti
           .col-xs-2
@@ -71,11 +71,11 @@ div(ng-controller="mac_count_controller")
       tbody(ng-show='!paging.loading')
         tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
           td
-            a(ui-sref='search({pn : row.username})')
+            a(ui-sref='search({pn : row.username})' target='_blank')
               | {{row.username}}
           td {{row.count}}
           td
-            a(ng-repeat='addr in row.addrs' ui-sref='search({pn : row.username, csi: addr})')
+            a(ng-repeat='addr in row.addrs' ui-sref='search({pn : row.username, csi: addr})' target='_blank')
               | {{addr}} 
       tbody(ng-show='paging.loading')
         tr

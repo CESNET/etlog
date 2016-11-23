@@ -3,12 +3,8 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
 
   .state('search', {
-    url: '/search',
+    url: '/search?pn&csi',
     templateUrl: '/partials/search.html',
-    params: {
-      pn : null,
-      csi: null
-    }
   })
 
   .state('mac_count', {
