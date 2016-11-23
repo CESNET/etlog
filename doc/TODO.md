@@ -269,20 +269,11 @@ potencialni inspirace:
 > vyresit x-ovou osu
 > zkusit pridat nejakou mrizku -> oddeleni tydnu(mesicu ... ) na ose x
 
-> vsude schovat zahlavi i strankovani dokud nebude odkliknute hledani
-> hotovo pro mac count
-> pridat tlacitko na schovani dalsich moznosti
-
 
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
 
 [rozhrani](https://etlog.cesnet.cz/#/mac_count)
 
-- Data v tabulce jsou razena podle poctu mac adres, razeni nelze bez zasahu do kodu zmenit.
-- Je potreba pridat moznost razeni rizenou uzivatelem?
-> Neni treba resit
-- Pridat pevnou delku sloupcu?
-> Neni treba resit
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
 > skocit na zahlavi tabulky
 - pri dotazu napr na pocet < 10 adres jsou vracena i data, ktera maji vetsi pocet.
@@ -292,7 +283,6 @@ potencialni inspirace:
   > Resit - zmenit tak, aby to odpovidalo podmince
 
 > pridat radio button - vyradit anonymni uzivatele (^[^anon|^@])
-> default => obsahuje
 
 > Pri prokliknuti na hledani automaticky vyhledat
 > bud otevrit na nove karte s daty nebo moznost prokliknout zpet na stejna data
@@ -302,11 +292,6 @@ potencialni inspirace:
 
 [rozhrani](https://etlog.cesnet.cz/#/shared_mac)
 
-- Data v tabulce jsou razena podle poctu uzivatelu, razeni nelze bez zasahu do kodu zmenit.
-- Je potreba pridat moznost razeni rizenou uzivatelem?
-> Neni treba resit
-- Pridat pevnou delku sloupcu?
-> Neni treba resit
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
 > skocit na zahlavi tabulky
 - pri dotazu napr na pocet < 10 uzivatelu jsou vracena i data, ktera maji vetsi pocet.
@@ -315,10 +300,6 @@ potencialni inspirace:
   - (Pokud bude treba resit, tak resit v backendu v obou castech)
   > Resit - zmenit tak, aby to odpovidalo podmince
 
-> default => obsahuje
-
-> Pri prokliknuti na hledani automaticky vyhledat
-> bud otevrit na nove karte s daty nebo moznost prokliknout zpet na stejna data
  
 
 ## Obecne vyhledavani
@@ -385,6 +366,8 @@ potencialni inspirace:
 
 - momentalne nelze omezovat vybirana data v zavislosti na jiz zvolenem minimu/maximu.
 - Vyhovuje takto?
+- Resit nejak intuitivneji napr vyber jednoho dne?
+  - Soucasny stav data data krome vybraneho maxima.
 
 
 
