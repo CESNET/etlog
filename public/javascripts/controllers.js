@@ -32,6 +32,9 @@ function init_search($scope, $http)
     max_date : new Date().toISOString(),                                                    // today
   };
   
+  $scope.min_date = new Date(new Date() - 30 * 86400000);
+  $scope.max_date = new Date();
+
   // get db_data
   $http({
     method  : 'GET',
@@ -39,37 +42,38 @@ function init_search($scope, $http)
   })
   .then(function(response) {
     $scope.db_data = response.data;
-    //setup_calendars_time($scope);
-    setup_calendars($scope);
+    setup_calendars_time($scope);
   });
 }
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
-//function setup_calendars_time($scope)
-//{
-//  var calendars = document.getElementsByClassName("flatpickr").flatpickr({
-//    altInputClass : "form-control",
-//    altInput: true,
-//    altFormat: "H:i d.m.Y",
-//    maxDate: new Date(),                    // today
-//    minDate: $scope.db_data.mac_count.min,   // min from db
-//    enableTime: true,
-//    time_24hr : true
-//  });
-//
-//  console.log($scope.form_data.min_date);
-//  console.log($scope.form_data.max_date);
-//
-//  // alternative hand solution
-//  var min_date = document.getElementById("min_date");
-//  var next = min_date.nextElementSibling;
-//  next.setAttribute("value", $scope.form_data.min_date);
-//
-//  var max_date = document.getElementById("max_date");
-//  var next = max_date.nextElementSibling;
-//  next.setAttribute("value", $scope.form_data.max_date);
-//}
+function setup_calendars_time($scope)
+{
+  var calendars = document.getElementsByClassName("flatpickr").flatpickr({
+    altInputClass : "form-control",
+    altInput: true,
+    altFormat: "H:i d.m.Y",
+    maxDate: new Date(),                    // today
+    minDate: $scope.db_data.mac_count.min,   // min from db
+    enableTime: true,
+    time_24hr : true
+  });
+
+  // czech format of dates
+  var min = $scope.min_date.getHours() + ":" + $scope.min_date.getMinutes() + " " + $scope.min_date.getDate() + "." + Number($scope.min_date.getMonth() + 1) + "." + $scope.min_date.getFullYear();
+
+  var max = $scope.max_date.getHours() + ":" + $scope.max_date.getMinutes() + " " + $scope.max_date.getDate() + "." + Number($scope.max_date.getMonth() + 1) + "." + $scope.max_date.getFullYear();
+
+  // alternative hand solution
+  var min_date = document.getElementById("min_date");
+  var next = min_date.nextElementSibling;
+  next.setAttribute("value", min);
+
+  var max_date = document.getElementById("max_date");
+  var next = max_date.nextElementSibling;
+  next.setAttribute("value", max);
+}
 // --------------------------------------------------------------------------------------
 // set form field values from another view
 // --------------------------------------------------------------------------------------
