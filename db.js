@@ -104,6 +104,16 @@ exports.realms_schema = realms_schema;
 var realms = mongoose.model('realms', realms_schema, 'realms');
 exports.realms = realms;
 // --------------------------------------------------------------------------------------
+var succ_logins_schema = mongoose.Schema({
+  timestamp     : Date,
+  username      : String,
+  count         : Number
+});
+// --------------------------------------------------------------------------------------
+exports.succ_logins_schema = succ_logins_schema;
+var succ_logins = mongoose.model('succ_logins', succ_logins_schema, 'succ_logins');
+exports.succ_logins = succ_logins;
+// --------------------------------------------------------------------------------------
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
   console.log("sucesfully connected do mongodb database on localhost");
