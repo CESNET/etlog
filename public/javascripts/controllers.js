@@ -908,6 +908,11 @@ function handle_pagination($scope, $http, data_func)
     data_func($scope, $http, qs, function ($scope) { // get data from api
     // unset loading
       $scope.paging.loading = false;
+
+      // scroll to table
+      $('html, body').animate({
+        scrollTop: $("#out").offset().top
+      });
     });
   }
 
