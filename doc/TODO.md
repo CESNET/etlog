@@ -274,8 +274,6 @@ potencialni inspirace:
 
 [rozhrani](https://etlog.cesnet.cz/#/mac_count)
 
-- nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
-> skocit na zahlavi tabulky
 > pridat radio button - vyradit anonymni uzivatele (^[^anon|^@])
 
 
@@ -284,22 +282,15 @@ potencialni inspirace:
 
 [rozhrani](https://etlog.cesnet.cz/#/shared_mac)
 
-- nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
-> skocit na zahlavi tabulky
-
+- nejake pripominky?
  
 
 ## Obecne vyhledavani
 
 [rozhrani](https://etlog.cesnet.cz/#/search)
 
-- Data nejsou nijak razena.
-- Pridat razeni?
-  - Jak radit?
-  - Rizene uzivatelem?
-  > razeni dle casu, rizene uzivatelem
-- nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
-> skocit na zahlavi tabulky
+- nejake pripominky?
+
 
 ## nejvice vyuzivany roaming
 
