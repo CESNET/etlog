@@ -345,7 +345,6 @@ potencialni inspirace:
 
 # Ostatní
 
-- licence v repozitari/diplomce
 - nějakou logiku, která zapne aplikaci po pádu/restartu serveru.
   - Logovani je nastaveno, ale zadne soubory nejsou vytvareny !
     - V zurnalu nejaky vystup sice je, ale do logu se nedostane. Je tudiz problem v tom, ze zurnal se nezapisuje na disk? (`/etc/systemd/journald.conf` - #SystemMaxUse=)
@@ -359,6 +358,13 @@ potencialni inspirace:
 - Zmenit popisky v navigaci? (Nevim, zda je dostatecne jasne, co ktera stranka zobrazuje)
 
 
+## Nove rozhrani
+
+- nove [rozhrani](link na DOC) pro uspesna prihlaseni
+- udelat k nemu webovou cast?
+  - backend je hotovy, frontend je prace na 15 minut
+
+
 # TODO list
 1. Autentizace
   - použít rozcestník
@@ -370,7 +376,8 @@ potencialni inspirace:
   - (grafy negenerovat na kliknuti ale nejak v noci)
 7. přstupová práva
 8. co s radlog.cesnet.cz - tim starym virtualem
-9. velke <> u kalendaru pri nacitani stranky
-10. ...
+  - ponechat nez bude napsany text prace
+10. navbar - nastavit aktualne vybrany pohled
+11. ...
 
 # TODO dobudoucna
