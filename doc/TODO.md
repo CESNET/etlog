@@ -284,8 +284,6 @@ potencialni inspirace:
 
 > pridat radio button - vyradit anonymni uzivatele (^[^anon|^@])
 
-> Pri prokliknuti na hledani automaticky vyhledat
-> bud otevrit na nove karte s daty nebo moznost prokliknout zpet na stejna data
 
 
 ## sdilene mac adresy (shared mac)
@@ -313,12 +311,6 @@ potencialni inspirace:
   > razeni dle casu, rizene uzivatelem
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
 > skocit na zahlavi tabulky
-- Konverze timestampu? (zobrazovana data jsou v UTC)
-> konvertovat na ceske datum
-- Pridat moznost specifikace casu v elementu pro vyber data?
-> pridat
-
-> pridat vyhledavaci pole realm a visinst
 
 ## nejvice vyuzivany roaming
 
@@ -367,7 +359,7 @@ potencialni inspirace:
 - momentalne nelze omezovat vybirana data v zavislosti na jiz zvolenem minimu/maximu.
 - Vyhovuje takto?
 - Resit nejak intuitivneji napr vyber jednoho dne?
-  - Soucasny stav data data krome vybraneho maxima.
+  - Soucasny stav posktuje data krome vybraneho maxima.
 
 
 
