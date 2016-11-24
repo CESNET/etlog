@@ -9,6 +9,7 @@ module.exports = function(database) {
   const users_mac = require('./cron/users_mac.js');
   const heat_map = require('./cron/heat_map.js');
   const shared_mac = require('./cron/shared_mac.js');
+  const succ_logins = require('./cron/succ_logins.js');
   const request = require('./request');
   const config = require('./config/config.js');
 // --------------------------------------------------------------------------------------
@@ -37,6 +38,10 @@ module.exports = function(database) {
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 35 02 * * *', function() {     // run at 02:35:00
+    succ_logins.process_current_data(database);
+  }, null, true, 'Europe/Prague');
+
+  new CronJob('0 40 02 * * *', function() {     // run at 02:40:00
     heat_map.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
