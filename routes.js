@@ -23,15 +23,11 @@ module.exports = function(app, database) {
   app.use('/api/db_data', require('./routes/db_data'));                              // api for db data
   app.use('/api/realms', require('./routes/realms'));                                // api for realms
   app.use('/api/count', require('./routes/count'));                                  // api to count records for pagination purposes
-  // TODO
-  // app.use('/api/stats', require('./routes/stats'));   // TODO
-
+  app.use('/api/succ_logins', require('./routes/succ_logins'));                      // generic api for successful logins
 
 // -----------------------------------------------------------
   // login routing is defined separately
   // see auth.js
-  // TODO
-  // metadata url
 
   // saml test
   app.use('/auth_fail', require('./routes/auth_fail'));
