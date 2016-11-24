@@ -23,6 +23,16 @@ div(ng-controller="search_controller")
                 option(value = key) #{val}
 
         .form-group
+          label.col-sm-2.control-label(for = 'realm') Domácí instituce:
+          .col-xs-2
+            input.form-control(type = 'text', placeholder = 'příklad.cz', ng-model='form_data.realm')
+
+        .form-group
+          label.col-sm-2.control-label(for = 'visinst') Navštívená instituce:
+          .col-xs-2
+            input.form-control(type = 'text', placeholder = 'příklad.cz', ng-model='form_data.visinst')
+
+        .form-group
           label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
           .col-xs-2
             div(layout-gt-xs='row')
