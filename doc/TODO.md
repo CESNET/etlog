@@ -276,12 +276,6 @@ potencialni inspirace:
 
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
 > skocit na zahlavi tabulky
-- pri dotazu napr na pocet < 10 adres jsou vracena i data, ktera maji vetsi pocet.
-  - Problem je zpusobem tim, ze jednotlive zaznamy skutecne obsahuji < 10 adres, ale vysledek je agregovan do stavu kde uz neni podminka splnena.
-  - Je treba resit?
-  - (Pokud bude treba resit, tak resit v backendu v obou castech)
-  > Resit - zmenit tak, aby to odpovidalo podmince
-
 > pridat radio button - vyradit anonymni uzivatele (^[^anon|^@])
 
 
@@ -292,11 +286,6 @@ potencialni inspirace:
 
 - nescrollovat nahoru pri kliknuti na dalsi stranku seznamu?
 > skocit na zahlavi tabulky
-- pri dotazu napr na pocet < 10 uzivatelu jsou vracena i data, ktera maji vetsi pocet.
-  - Problem je zpusobem tim, ze jednotlive zaznamy skutecne obsahuji < 10 uzivatelu, ale vysledek je agregovan do stavu kde uz neni podminka splnena.
-  - Je treba resit?
-  - (Pokud bude treba resit, tak resit v backendu v obou castech)
-  > Resit - zmenit tak, aby to odpovidalo podmince
 
  
 
