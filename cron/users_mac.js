@@ -13,7 +13,7 @@ exp.process_old_data = function (database, callback) {
   var curr_min = new Date(current.getFullYear(), current.getMonth(), current.getUTCDate(), 0, 0, 0, 0);   // current day hh:mm:ss:ms set to 00:00:00:000
 
   // find all, sort by timestamp, display only timestamp, display one document only
-  database.logs.find({ query : {}, $orderby : { timestamp : 1 } } , { timestamp : 1, _id : 0 }, { limit : 1 },
+  database.logs.find({}).sort({"timestamp" : 1}).limit(1).select({"timestamp" : 1, "_id" : 0}).exec(
   function(err, doc) {
     var date = doc;
 
