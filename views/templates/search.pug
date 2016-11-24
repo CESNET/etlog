@@ -57,14 +57,18 @@ div(ng-controller="search_controller")
     table.table.table-bordered.table-responsive#out
       thead
         tr
-          th datum a čas
+          th
+            b datum a čas 
+              a
+                i.fa.fa-chevron-down(ng-if='sort_dir', ng-show='sort_dir' ng-click='change_sort()')
+                i.fa.fa-chevron-up(ng-if='!sort_dir', ng-show='!sort_dir' ng-click='change_sort()')
           th uživatelské jméno
           th MAC adresa
           th realm
           th navštívená insituce
           th výsledek autentizace
       tbody(ng-show='!paging.loading')
-        tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
+        tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page', total-items='paging.total_items')
           td {{row.timestamp}}
           td {{row.username}}
           td {{row.mac_address}}

@@ -19,6 +19,7 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   handle_pagination($scope, $http, get_logs);
   setup_filters($scope, $http, "logs");
   set_params($scope, $stateParams); // set params passed from other views
+  handle_sort($scope, $http, get_logs);
 }]);
 // --------------------------------------------------------------------------------------
 // TODO 
@@ -44,6 +45,24 @@ function init_search($scope, $http)
     $scope.db_data = response.data;
     setup_calendars_time($scope);
   });
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function handle_sort($scope, $http, data_func)
+{
+  $scope.sort = "&sort=+timestamp";     // sort descending by timestamp
+  $scope.sort_dir = true;   // just for frontend icons
+
+  $scope.change_sort = function() {
+    if($scope.sort == "&sort=-timestamp")
+      $scope.sort = "&sort=+timestamp";
+    else
+      $scope.sort = "&sort=-timestamp";
+
+    $scope.sort_dir = !$scope.sort_dir;     // negate sort direction
+    $scope.get_page($http, $scope.paging.current_page, data_func);  // get page for with new sorting
+  }
 }
 // --------------------------------------------------------------------------------------
 // TODO
@@ -102,7 +121,7 @@ function get_logs($scope, $http, qs, callback)
 
   return $http({
     method  : 'GET',
-    url     : '/api/search/' + qs + ts
+    url     : '/api/search/' + qs + ts + $scope.sort
   })
   .then(function(response) {
     $scope.data = transform_timestamp(response.data);
