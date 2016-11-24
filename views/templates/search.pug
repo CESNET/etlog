@@ -54,7 +54,7 @@ div(ng-controller="search_controller")
       label záznamů na stránku:
         select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes')
 
-    table.table.table-bordered.table-responsive
+    table.table.table-bordered.table-responsive#out
       thead
         tr
           th datum a čas
