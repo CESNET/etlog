@@ -129,7 +129,8 @@ Every task in the table below generates data for collection of the same name.
 | mac\_count       |      every day at 02:15:00       |
 | roaming          |      every day at 02:20:00       |
 | shared\_mac      |      every day at 02:25:00       |
-| heat\_map        |      every day at 02:35:00       |
+| succ\_logins     |      every day at 02:35:00       |
+| heat\_map        |      every day at 02:40:00       |
 | users\_mac       |      every 15 minutes            |
 
 Monthly report about failed logins is sent at 6:00 every first day of month.
@@ -428,6 +429,25 @@ Collection has following structure:
 | fail\_count  |   Number  |    count of failed login attempts   |
 | ok\_count    |   Number  |  count of successful login attempts |
 | ratio        |   Number  |  ratio of fail\_count to (ok\_count + fail\_count) |
+
+
+##### succ\_logins
+
+Collection contains information about users, which have successfully authenticated, for every day.
+Any user which has successfully authenticated at least once is inserted.
+
+Timestamp field is populated with artificial data, just to
+distint in which interval the record belongs.
+Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
+Lowest distinction interval for timestamp is 24 hours.
+
+Collection has following structure:
+
+| field name   | data type |               note                  |
+|--------------|-----------|-------------------------------------|
+| username     |   String  |         username                    |
+| timestamp    |   Date    |         timestamp                   |
+| count        |   Number  |    count of successful logins       |
 
 
 ##### realm\_admins
@@ -763,19 +783,21 @@ Application api:
 
 | URL                             | params | query string variables                                 | note                   |
 |---------------------------------|--------|--------------------------------------------------------|------------------------|
-| /api/search/                    |        | timestamp, pn, [ 'csi', 'result', 'realm', 'visinst']  |                      |
+| /api/search/                    |        | timestamp, pn, [ 'csi', 'result', 'realm', 'visinst']  |                        |
 | /api/failed\_logins/            |        | timestamp, [ username, fail\_count, ok\_count, ratio ] |                        |
 | /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |                        |
 | /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
 | /api/roaming/most\_used/        |        | timestamp, [ inst\_name, used\_count ]                 |                        |
 | /api/shared\_mac/               |        | timestamp, [ count, mac\_address, users ]              |                        |
-| /api/heat\_map/                 |        | timestamp, [ realm, institutions.realm, institutions.count ] |         |
+| /api/heat\_map/                 |        | timestamp, [ realm, institutions.realm, institutions.count ] |                  |
+| /api/succ\_logins/              |        | timestamp, [ username, count ]                         |                        |
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
 | /api/realms/                    |        |                                                        | url returning list of realms from realms collection |
-| /api/count/mac\_count           |        | timestamp, [ username, count, addrs ]                  | return count of records for mac\_count collection |
-| /api/count/shared\_mac          |        | timestamp, [ count, mac\_address, users ]              | return count of records for shared\_mac collection |
-| /api/count/logs                 |        | timestamp, [ 'pn', 'csi', 'realm', 'visinst', 'result' ] | return count of records for logs collection |
+| /api/count/mac\_count           |        | timestamp, [ username, count, addrs ]                  | returns count of records for mac\_count collection |
+| /api/count/shared\_mac          |        | timestamp, [ count, mac\_address, users ]              | returns count of records for shared\_mac collection |
+| /api/count/logs                 |        | timestamp, [ 'pn', 'csi', 'realm', 'visinst', 'result' ] | returns count of records for logs collection |
+| /api/count/succ\_logins         |        | timestamp, [ 'username', 'count' ]                     | returns count of records for succ logins collection |
 
 
 ### Routes
