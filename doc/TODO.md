@@ -363,9 +363,10 @@ potencialni inspirace:
 > zkontrolovat, jak budou formatovany zpravy
 
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
-- Pri prochazeni dat k detekci funkcnosti sluzby jsem narazil na zvlastni realm `ldap.cuni.cz`.
 - Dokumentace frontendu - co a jak popsat?
 - Momentalne neni nijak validovan/omezovan vstup formularu. Pridat nejakou validaci?
+- Zmenit popisky v navigaci? (Nevim, zda je dostatecne jasne, co ktera stranka zobrazuje)
+
 
 # TODO list
 1. Autentizace
