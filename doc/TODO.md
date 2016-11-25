@@ -323,6 +323,10 @@ potencialni inspirace:
 
 ## nejvice vyuzivany roaming
 
+> Mam velky problem s nazvem tehle sekci - nevim co je co. Prejmenujte ty nadpisy na "Instituce nejvice poskytujici roaming" a na "Institiuce nejvice cerpajici roaming", tady i v aplikaci.
+
+> Nadpisy grafu by mohly byt trosku vetsi a pod nimi rozsah datumu, bez toho neni jasne k cemu to je a kdyz by si to clovek okopiroval tak nevi nic.
+
 > Data jsou obracene -> prejmenovat nejvice vyuzivany a poskytovany
 > Kdyz je jednou nastaveno manualne datum, uz nefunguje prepinani pomoci radio buttonu
 
