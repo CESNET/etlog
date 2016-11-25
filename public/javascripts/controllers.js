@@ -2121,7 +2121,7 @@ angular.module('etlog').controller('roaming_most_used_test_controller', ['$scope
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
     inst_count : 25
   };
-  $scope.graph_title = "Nejvvíce využívaný roaming";
+  $scope.graph_title = "Nejvíce využívaný roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_used_count, graph, "roaming_most_used", "used_count");
