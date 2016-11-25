@@ -18,8 +18,8 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   handle_search_submit($scope, $http, get_logs, $scope.paging, "logs");
   handle_pagination($scope, $http, get_logs);
   setup_filters($scope, $http, "logs");
-  set_params($scope, $stateParams); // set params passed from other views
   handle_sort($scope, $http, get_logs);
+  set_params($scope, $stateParams); // set params passed from other views
 }]);
 // --------------------------------------------------------------------------------------
 // TODO 
@@ -930,7 +930,7 @@ function handle_pagination($scope, $http, data_func)
 
       // scroll to table
       $('html, body').animate({
-        scrollTop: $("#out").offset().top
+        scrollTop: ($("#out").offset().top - 55)     // compensate for navbar
       });
     });
   }
@@ -1134,7 +1134,7 @@ function addiational_fields_mac_count($scope)
   $scope.options = [ 
     {
       key : "username",
-      val : "uživatelské jméno",
+      val : "Uživatelské jméno",
       subopts : [ 
         { key: "eq",
           val : "přesně odpovídá" },
@@ -1145,7 +1145,7 @@ function addiational_fields_mac_count($scope)
     },
     {
       key : "count",
-      val : "počet",
+      val : "Počet",
       subopts : [ 
         { key : "eq",
           val : "je roven" },
@@ -1374,7 +1374,7 @@ function addiational_fields_failed_logins($scope)
   $scope.options = [ 
     {
       key : "username",
-      val : "uživatelské jméno",
+      val : "Uživatelské jméno",
       subopts : [ 
         { key: "eq",
           val : "přesně odpovídá" },
@@ -1385,7 +1385,7 @@ function addiational_fields_failed_logins($scope)
     },
     {
       key : "fail_count",
-      val : "počet neúspěšných přihlášení",
+      val : "Počet neúspěšných přihlášení",
       subopts : [ 
         { key : "eq",
           val : "je roven" },
@@ -1398,7 +1398,7 @@ function addiational_fields_failed_logins($scope)
     },
     {
       key : "ok_count",
-      val : "počet úspěšných přihlášení",
+      val : "Počet úspěšných přihlášení",
       subopts : [ 
         { key : "eq",
           val : "je roven" },
@@ -1411,7 +1411,7 @@ function addiational_fields_failed_logins($scope)
     },
     {
       key : "ratio",
-      val : "poměr",
+      val : "Poměr",
       subopts : [ 
         { key : "eq",
           val : "je roven" },
@@ -1784,7 +1784,7 @@ function addiational_fields_shared_mac($scope)
     },
     {
       key : "count",
-      val : "počet",
+      val : "Počet",
       subopts : [
         { key : "eq",
           val : "je roven" },
@@ -1874,7 +1874,7 @@ function addiational_fields_roaming_most($scope)
   $scope.options = [ 
     {
       key : "inst_name",
-      val : "jméno instituce",
+      val : "Jméno instituce",
       subopts : [ 
         { key: "eq",
           val : "přesně odpovídá" },
@@ -1885,7 +1885,7 @@ function addiational_fields_roaming_most($scope)
     },
     {
       key : "used_count",
-      val : "počet využití",
+      val : "Počet využití",
       subopts : [ 
         { key : "eq",
           val : "je roven" },
@@ -1898,7 +1898,7 @@ function addiational_fields_roaming_most($scope)
     },
     {
       key : "provided_count",
-      val : "počet poskytnutí",
+      val : "Počet poskytnutí",
       subopts : [ 
         { key : "eq",
           val : "je roven" },
