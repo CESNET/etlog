@@ -272,18 +272,6 @@ potencialni inspirace:
 
 > prizpusobvani sirky strance
 
-## Obecne ke rozhrani
-
-> kazda stranka by mela menit titulek, napr. etlog: počet zařízení; etlog: sdílené mac adresy
-
-> v tom menu nahore zvyraznete ktera fce je zvolena ted se od sebe nedaji poznat [a](https://etlog.cesnet.cz/#/mac_count] a [b]https://etlog.cesnet.cz/#/shared_mac
-
-> Kdyz pisete u lejblu velky pismeno tak by to chtelo psat vsude, podobne s dvojteckou
-
-### Obecne k tabulkam
-
-> bylo by pekne mit mozst si nalezena data stahnout v CSV formatu
-
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
 
 [rozhrani](https://etlog.cesnet.cz/#/mac_count)
@@ -296,13 +284,6 @@ potencialni inspirace:
 [rozhrani](https://etlog.cesnet.cz/#/shared_mac)
 
 - nejake pripominky?
-
-> dvojtecky za MAC adresa a počet
-
-> počet s velkym P
-
-> nefunguji odkazy pri kliknuti na uzivatelske jmeno / heslo toci se kolecko a nehleda to
- 
 
 ## Obecne vyhledavani
 
