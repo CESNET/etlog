@@ -597,6 +597,15 @@ Monthly report is sent to all administrators defined in [realm_admins](#realm_ad
 It contains 100 most users with most failed logins from corresponding realm.
 Limit of 100 users is defined in [cron.js](https://github.com/CESNET/etlog/blob/master/cron.js#L15).
 
+#### Configuration
+
+Report configuration is located in config directory.
+Weekly reports configuration is located in `config/invalid_records_mail`.
+[Link](https://github.com/CESNET/etlog/blob/master/scripts/invalid_records_mail.sh#L45) to the code generating the report content.
+Monthly reports configuration is located in `config/config.js`.
+[Link](https://github.com/CESNET/etlog/blob/master/request.js#L78) to the code generating the report content.
+
+
 ### Application structure
 
 ```
