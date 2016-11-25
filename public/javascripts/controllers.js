@@ -1,4 +1,19 @@
 // --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('header_controller', ['$scope', '$location', function ($scope, $location) {
+  $scope.is_active = function(navbar_path) {
+    for(var item in navbar_path) {
+      if(navbar_path[item] === $location.path())
+        return true;
+    }
+
+    return false;
+  }
+}]);
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
 angular.module('etlog').controller('index_controller', ['$scope', '$http', function ($scope, $http) {
 }]);
 // --------------------------------------------------------------------------------------
