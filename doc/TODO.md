@@ -269,6 +269,13 @@ potencialni inspirace:
 > vyresit x-ovou osu
 > zkusit pridat nejakou mrizku -> oddeleni tydnu(mesicu ... ) na ose x
 
+## Obecne ke rozhrani
+
+> kazda stranka by mela menit titulek, napr. etlog: počet zařízení; etlog: sdílené mac adresy
+
+> v tom menu nahore zvyraznete ktera fce je zvolena ted se od sebe nedaji poznat [a](https://etlog.cesnet.cz/#/mac_count] a [b]https://etlog.cesnet.cz/#/shared_mac
+
+> Kdyz pisete u lejblu velky pismeno tak by to chtelo psat vsude, podobne s dvojteckou
 
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
 
