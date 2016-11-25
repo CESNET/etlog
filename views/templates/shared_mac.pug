@@ -1,6 +1,3 @@
-//- navbar selected item
--var selected = 'počet MAC adres';
-
 div(ng-controller="shared_mac_controller")
   div
     md-content(layout-padding='')
@@ -53,16 +50,16 @@ div(ng-controller="shared_mac_controller")
     table.table.table-bordered.table-responsive#out
       thead
         tr
-          th MAC adresa
-          th počet uživatelů
-          th uživatelé
+          th MAC adresa:
+          th Počet uživatelů:
+          th Uživatelé:
         tr
           th
             input.input-sm.form-control(ng-model='paging.filters.mac_address', placeholder='MAC adresa', type='search', ng-change='filter_mac_address()', ng-model-options='{ debounce: 250 }')
           th(colspan='4')
             input.input-sm.form-control(ng-model='paging.filters.users', placeholder='uživatelské jméno', type='search', ng-change='filter_users()', ng-model-options='{ debounce: 250 }')
       tbody(ng-show='!paging.loading')
-        tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
+        tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
           td
             a(ui-sref='search({csi : row.mac_address})', target='_blank')
               | {{row.mac_address}}
@@ -74,6 +71,10 @@ div(ng-controller="shared_mac_controller")
         tr
           td.text-center(colspan='4')
             .loading-indicator
+
+    .form-group
+      .col-xs-2
+        button.btn.btn-default(type='button' ng-click='download_data()') Uložit data
 
     .text-center
       dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='dirPagination.tpl.html')

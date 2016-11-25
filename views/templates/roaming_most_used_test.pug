@@ -1,6 +1,3 @@
-//- navbar selected item
--var selected = 'počet MAC adres';
-
 div(ng-controller="roaming_most_used_test_controller")
   div
     md-content(layout-padding='')
@@ -35,7 +32,7 @@ div(ng-controller="roaming_most_used_test_controller")
                 | {{subopt.val}}
                 
         .form-group(ng-show='!options_added')
-          label.col-sm-2.control-label Počet institucí
+          label.col-sm-2.control-label Počet institucí:
           .col-xs-2
             div(layout-gt-xs='row')
               input.form-control(type='number', ng-model='form_data.inst_count', value="25")
@@ -52,8 +49,8 @@ div(ng-controller="roaming_most_used_test_controller")
       table.table.table-bordered.table-responsive
         thead
           tr
-            th název instituce
-            th počet využití
+            th Název instituce:
+            th Počet využití:
         tbody(ng-show='!paging.loading')
           tr(dir-paginate='row in table_data | itemsPerPage: form_data.inst_count')
             td {{row.inst_name}}
@@ -62,6 +59,10 @@ div(ng-controller="roaming_most_used_test_controller")
           tr
             td.text-center(colspan='4')
               .loading-indicator
+
+    .form-group
+      .col-xs-2
+        button.btn.btn-default(type='button' ng-click='download_data()') Uložit data
 
       .text-center
         dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='dirPagination.tpl.html')

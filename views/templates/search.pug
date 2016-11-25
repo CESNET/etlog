@@ -1,6 +1,3 @@
-//- navbar selected item
--var selected = 'Obecné Vyhledávání';
-
 div(ng-controller="search_controller")
   div
     md-content(layout-padding='')
@@ -57,18 +54,18 @@ div(ng-controller="search_controller")
     table.table.table-bordered.table-responsive#out
       thead
         tr
-          th výsledek autentizace
+          th Výsledek autentizace:
           th
-            b čas a datum 
-              a
-                i.fa.fa-chevron-down(ng-if='sort_dir', ng-show='sort_dir' ng-click='change_sort()')
-                i.fa.fa-chevron-up(ng-if='!sort_dir', ng-show='!sort_dir' ng-click='change_sort()')
-          th uživatelské jméno
-          th MAC adresa
-          th realm
-          th navštívená insituce
+            a
+              i.fa.fa-chevron-down(ng-if='sort_dir', ng-show='sort_dir' ng-click='change_sort()')
+              i.fa.fa-chevron-up(ng-if='!sort_dir', ng-show='!sort_dir' ng-click='change_sort()')
+            b Čas a datum:
+          th Uživatelské jméno:
+          th MAC adresa:
+          th Realm:
+          th Navštívená insituce:
       tbody(ng-show='!paging.loading')
-        tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page', total-items='paging.total_items')
+        tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page', total-items='paging.total_items')
           td.bg-success(ng-if='row.result == "OK"') {{row.result}}
           td.bg-warning(ng-if='row.result == "TIMEOUT"') {{row.result}}
           td.bg-danger(ng-if='row.result == "FAIL"') {{row.result}}
@@ -81,6 +78,10 @@ div(ng-controller="search_controller")
         tr
           td.text-center(colspan='6')
             .loading-indicator
+
+    .form-group
+      .col-xs-2
+        button.btn.btn-default(type='button' ng-click='download_data()') Uložit data
 
     .text-center
       dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='dirPagination.tpl.html')
