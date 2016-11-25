@@ -283,6 +283,9 @@ potencialni inspirace:
 [rozhrani](https://etlog.cesnet.cz/#/shared_mac)
 
 - nejake pripominky?
+> dvojtecky za MAC adresa a počet
+> počet s velkym P
+> nefunguji odkazy pri kliknuti na uzivatelske jmeno / heslo toci se kolecko a nehleda to
  
 
 ## Obecne vyhledavani
