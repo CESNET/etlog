@@ -1911,7 +1911,7 @@ function addiational_fields_roaming_most($scope)
     },
     {
       key : "ratio",
-      val : "poměr",
+      val : "Poměr",
       subopts : [ 
         { key : "eq",
           val : "je roven" },
