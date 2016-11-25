@@ -267,7 +267,10 @@ potencialni inspirace:
 ### Obecne ke grafum
 
 > vyresit x-ovou osu
+
 > zkusit pridat nejakou mrizku -> oddeleni tydnu(mesicu ... ) na ose x
+
+> prizpusobvani sirky strance
 
 ## Obecne ke rozhrani
 
