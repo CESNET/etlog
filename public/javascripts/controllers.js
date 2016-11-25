@@ -29,12 +29,14 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
     loading : false,
     total_items : 0
   };
+  $scope.title = "etlog: obecné vyhledávání";
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_search_submit($scope, $http, get_logs, $scope.paging, "logs");
   handle_pagination($scope, $http, get_logs);
   setup_filters($scope, $http, "logs");
   handle_sort($scope, $http, get_logs);
   set_params($scope, $stateParams); // set params passed from other views
+  handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
 // TODO 
@@ -131,7 +133,7 @@ function set_params($scope, $stateParams)
 // --------------------------------------------------------------------------------------
 function get_logs($scope, $http, qs, callback)
 {
-  $scope.data = [];
+  $scope.table_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
   return $http({
@@ -139,7 +141,7 @@ function get_logs($scope, $http, qs, callback)
     url     : '/api/search/' + qs + ts + $scope.sort
   })
   .then(function(response) {
-    $scope.data = transform_timestamp(response.data);
+    $scope.table_data = transform_timestamp(response.data);
     callback($scope);
   });
 }
@@ -182,12 +184,6 @@ function build_qs_search(data)
 
   return ret;       // returned value is '?' or '?.*&'
 }
-// --------------------------------------------------------------------------------------
-angular.module('etlog').controller('roaming_most_provided_controller', ['$scope', '$http', function ($scope, $http) {
-}]);
-// --------------------------------------------------------------------------------------
-angular.module('etlog').controller('roaming_most_used_controller', ['$scope', '$http', function ($scope, $http) {
-}]);
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('graph_test_1_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
     get_data($scope, $http, $q);
@@ -850,10 +846,12 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
     loading : false,
     total_items : 0
   };
+  $scope.title = "etlog: počet zařízení";
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_table_submit($scope, $http, get_mac_count, $scope.paging, [ "username", "count" ], "mac_count");
   handle_pagination($scope, $http, get_mac_count);
   setup_filters($scope, $http, "mac_count");
+  handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
 // setup filtering fields
@@ -1081,7 +1079,7 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
 // --------------------------------------------------------------------------------------
 function get_mac_count($scope, $http, qs, callback)
 {
-  $scope.data = [];
+  $scope.table_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
   return $http({
@@ -1089,7 +1087,7 @@ function get_mac_count($scope, $http, qs, callback)
     url     : '/api/mac_count/' + qs + ts + "&sort=-count"      // always sort by mac address count
   })
   .then(function(response) {
-    $scope.data = response.data;
+    $scope.table_data = response.data;
     callback($scope);
   });
 }
@@ -1199,9 +1197,9 @@ function graph($scope)
   var col_length = 40;  // column length
   
   // dynamically determine graph width by size of data
-  var width = $scope.data.length * col_length - margin.left - margin.right;
+  var width = $scope.graph_data.length * col_length - margin.left - margin.right;
   var height = 520 - margin.top - margin.bottom;
-  var data = $scope.data;
+  var data = $scope.graph_data;
 
   // ensure minimal width
   var min_width = 200;
@@ -1290,7 +1288,7 @@ function graph($scope)
   //  x.domain(data.filter(function(value, index) { return index % 3 == 0; }).map(function(d) { return d.timestamp; }));
   ////aconsole.log(data.length);
   
-  //var x_ticks = get_x_ticks(x.ticks(), $scope.data.length); 
+  //var x_ticks = get_x_ticks(x.ticks(), $scope.graph_data.length);
 
   // ==========================================================
 
@@ -1378,6 +1376,7 @@ angular.module('etlog').controller('failed_logins_controller', ['$scope', '$http
   addiational_fields_failed_logins($scope);   // set up additional form fields
   $scope.grouped = true;
   $scope.graph_title = "neúspěšná přihlášení";
+  $scope.title = "etlog: neúspěšná přihlášení";
   handle_submit($scope, $http, $q, get_failed_logins, graph, [ "username", "fail_count", "ok_count", "ratio" ]);
 }]);
 // --------------------------------------------------------------------------------------
@@ -1500,7 +1499,7 @@ function build_qs(data, items)
 function get_failed_logins($scope, $http, qs, $q, callback)
 {
   var chain = $q.when();
-  $scope.data = [];
+  $scope.graph_data = [];
 
   var ts = "timestamp=";    // timestamp
 
@@ -1515,7 +1514,7 @@ function get_failed_logins($scope, $http, qs, $q, callback)
         url     : '/api/failed_logins/' + qs + ts + day     // TODO - limit on fields to speed up ?
       })
       .then(function(response) {
-        //// config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
+        // config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
         var ts;
         var arr = response.config.url.split("?")[1].split("&");
 
@@ -1527,7 +1526,7 @@ function get_failed_logins($scope, $http, qs, $q, callback)
         }
         
         ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
-        $scope.data.push({ timestamp : ts, 
+        $scope.graph_data.push({ timestamp : ts,
                            value : sum_fail_count(response.data)});
       });
     });
@@ -1774,10 +1773,12 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
     loading : false,
     total_items : 0
   };
+  $scope.title = "etlog: sdílená zařízení";
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_table_submit($scope, $http, get_shared_mac, $scope.paging, [ "mac_address", "count" ], "shared_mac");
   handle_pagination($scope, $http, get_shared_mac);
   setup_filters($scope, $http, "shared_mac");
+  handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
@@ -1825,7 +1826,7 @@ function addiational_fields_shared_mac($scope)
 // --------------------------------------------------------------------------------------
 function get_shared_mac($scope, $http, qs, callback)
 {
-  $scope.data = [];
+  $scope.table_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
   return $http({
@@ -1833,7 +1834,7 @@ function get_shared_mac($scope, $http, qs, callback)
     url     : '/api/shared_mac/' + qs + ts + "&sort=-count"      // always sort by mac address count
   })
   .then(function(response) {
-    $scope.data = response.data;
+    $scope.table_data = response.data;
     callback($scope);
   });
 }
@@ -1877,6 +1878,7 @@ angular.module('etlog').controller('roaming_most_used_controller', ['$scope', '$
   init($scope, $http);
   addiational_fields_roaming_most($scope);   // set up additional form fields
   $scope.graph_title = "organizace nejvíce využívající roaming";
+  $scope.title = "etlog: organizace nejvíce využívající roaming";
   handle_submit($scope, $http, $q, get_roaming_most_used, graph, [ 'inst_name', 'provided_count', 'used_count' ]);
 }]);
 // --------------------------------------------------------------------------------------
@@ -1953,7 +1955,7 @@ function addiational_fields_roaming_most($scope)
 function get_roaming_most_used($scope, $http, qs, $q, callback)
 {
   var chain = $q.when();
-  $scope.data = [];
+  $scope.graph_data = [];
 
   var ts = "timestamp=";    // timestamp
 
@@ -1976,7 +1978,7 @@ function get_roaming_most_used($scope, $http, qs, $q, callback)
         }
         
         ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
-        $scope.data.push({ timestamp : ts, 
+        $scope.graph_data.push({ timestamp : ts,
                            value : sum_used_count(response.data)});
       });
     });
@@ -2007,6 +2009,7 @@ angular.module('etlog').controller('roaming_most_provided_controller', ['$scope'
   init($scope, $http);
   addiational_fields_roaming_most($scope);   // set up additional form fields
   $scope.graph_title = "organizace nejvíce poskytující roaming";
+  $scope.title = "etlog: organizace nejvíce poskytující roaming";
   handle_submit($scope, $http, $q, get_roaming_most_provided, graph, [ 'inst_name', 'provided_count', 'used_count' ]);
 }]);
 // --------------------------------------------------------------------------------------
@@ -2015,7 +2018,7 @@ angular.module('etlog').controller('roaming_most_provided_controller', ['$scope'
 function get_roaming_most_provided($scope, $http, qs, $q, callback)
 {
   var chain = $q.when();
-  $scope.data = [];
+  $scope.graph_data = [];
 
   var ts = "timestamp=";    // timestamp
 
@@ -2038,7 +2041,7 @@ function get_roaming_most_provided($scope, $http, qs, $q, callback)
         }
         
         ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
-        $scope.data.push({ timestamp : ts, 
+        $scope.graph_data.push({ timestamp : ts,
                            value : sum_provided_count(response.data)});
       });
     });
@@ -2069,6 +2072,7 @@ angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$h
   init($scope, $http);
   //addiational_fields_roaming_most($scope);   // set up additional form fields
   $scope.graph_title = "aktivita eduroamu";
+  $scope.title = "etlog: aktivita eduroamu";
   //handle_submit($scope, $http, $q, get_roaming, graph, []);
 }]);
 // --------------------------------------------------------------------------------------
@@ -2077,9 +2081,11 @@ angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$h
 function get_roaming($scope, $http, qs, $q, callback)
 {
   var chain = $q.when();
-  $scope.data = [];
+  $scope.graph_data = [];
 
   var ts = "timestamp=";    // timestamp
+
+  // TODO
 
   $scope.days.forEach(function (day, index) {
     chain = chain.then(function(){
@@ -2100,7 +2106,7 @@ function get_roaming($scope, $http, qs, $q, callback)
         }
         
         ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
-        $scope.data.push({ timestamp : ts, 
+        $scope.graph_data.push({ timestamp : ts,
                            value : sum_provided_count(response.data)});
       });
     });
@@ -2137,9 +2143,11 @@ angular.module('etlog').controller('roaming_most_used_test_controller', ['$scope
     inst_count : 25
   };
   $scope.graph_title = "Nejvíce využívaný roaming";
+  $scope.title = "etlog: organizace nejvíce využívající roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_used_count, graph, "roaming_most_used", "used_count");
+  handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
 // initialize calendars
@@ -2231,7 +2239,7 @@ function setup_calendars_minmax($scope)
 function create_graph_data_used($scope, data)
 {
   for(var item in data) {
-    $scope.data.push({ timestamp : data[item].inst_name,     /// TODO ???
+    $scope.graph_data.push({ timestamp : data[item].inst_name,     /// TODO ???
                        value : data[item].used_count });
   }
 }
@@ -2240,7 +2248,7 @@ function create_graph_data_used($scope, data)
 // --------------------------------------------------------------------------------------
 function get_roaming_most_used_count($scope, $http, qs, $q, callback)
 {
-  $scope.data = [];
+  $scope.graph_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
   return $http({
@@ -2269,15 +2277,17 @@ angular.module('etlog').controller('roaming_most_provided_test_controller', ['$s
     inst_count : 25
   };
   $scope.graph_title = "Nejvvíce poskytovaný roaming";
+  $scope.title = "etlog: organizace nejvíce poskytující roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, graph, "roaming_most_provided", "provided_count");
+  handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
 function create_graph_data_provided($scope, data)
 {
   for(var item in data) {
-    $scope.data.push({ timestamp : data[item].inst_name,     /// TODO ???
+    $scope.graph_data.push({ timestamp : data[item].inst_name,     /// TODO ???
                        value : data[item].provided_count });
   }
 }
@@ -2286,7 +2296,7 @@ function create_graph_data_provided($scope, data)
 // --------------------------------------------------------------------------------------
 function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
 {
-  $scope.data = [];
+  $scope.graph_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
   return $http({
@@ -2300,10 +2310,68 @@ function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
   });
 }
 // --------------------------------------------------------------------------------------
+// TODO
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('test_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
- 
+  $scope.title = "etlog: testovací datepicker";
 }]);
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('detection_data_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+  $scope.title = "etlog: data k detekci";
+}]);
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function handle_download($scope)
+{
+  $scope.download_data = function() {
+    var text = get_text($scope);
+    // taken from https://codepen.io/YuvarajTana/pen/yNoNdZ
+    var a = $('<a/>', {
+      style:'display:none',
+      href:'data:application/octet-stream;base64,' + btoa(text),
+      download:'data.csv'
+    }).appendTo('body')
+    a[0].click()
+    a.remove();
+  }
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function get_text($scope)
+{
+  var text = "";
+  var data = $scope.table_data;
+
+  if(!data) { // no data present, do nothing
+    return;
+  }
+
+  var keys = Object.keys(data[0]);
+
+  // filter keys
+  for(var key in keys) {
+    if(keys[key] == "$$hashKey")
+      keys.splice(key, 1)
+  }
+
+  for(var item in data) {
+    for(var key in keys) {
+      if(text.length > 0 && text[text.length - 1] != "\n")   // continue
+        text += "," + keys[key] + "," + data[item][keys[key]];
+
+      else    // beginning of line
+        text += keys[key] + "," + data[item][keys[key]];
+    }
+    text += "\n";
+  }
+
+  return text;
+}
+// --------------------------------------------------------------------------------------
 
 
 
