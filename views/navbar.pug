@@ -1,36 +1,48 @@
 //- taken from https://github.com/ALT-F1/bootstrap3-jade-node-express-grunt/blob/master/app/views/bootstrap3-templates/navbar-fixed-top.jade
 
--var menu = {'obecné vyhledávání': 'search', 'počet zařízení na uživatele': 'mac_count', 'neúspěšná přihlášení': 'failed_logins', 'sdílená zařízení': 'shared_mac' };
--var roaming = { 'organizace nejvíce poskytující roaming' : 'roaming_most_provided', 'organizace nejvíce využívající roaming' : 'roaming_most_used', 'mapa roamingu' : 'heat_map' };
-
-mixin active(val, key)
-  li.active
-    a(ui-sref=val)= key
-
-mixin inactive(val, key)
-  li
-    a(ui-sref=val)= key
-
 .navbar.navbar-default.navbar-fixed-top(role='navigation')
   .container
     .navbar-header
       button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
         span.sr-only Toggle navigation
-    .navbar-collapse.collapse
+    .navbar-collapse.collapse.ng-scope(ng-controller='header_controller')
       ul.nav.navbar-nav
-        each val, key in menu
-          if (selected === key)
-            +active(val, key)
-          else
-            +inactive(val, key)
-        li#roaming
+
+        li(ng-class='{ active: is_active(["/search"])}')
+          a(ui-sref='search') obecné vyhledávání
+
+        li(ng-class='{ active: is_active(["/mac_count"])}')
+          a(ui-sref='mac_count') počet zařízení na uživatele
+
+        li(ng-class='{ active: is_active(["/failed_logins"])}')
+          a(ui-sref='failed_logins') neúspěšná přihlášení
+
+        li(ng-class='{ active: is_active(["/shared_mac"])}')
+          a(ui-sref='shared_mac') sdílená zařízení
+
+        li(ng-class='{ active: is_active(["/detection_data"])}')
+          a(ui-sref='detection_data') data k detekci
+
+        li(ng-class='{ active: is_active(["/test"])}')
+          a(ui-sref='test') datepicker test
+
+        li#roaming(ng-class='{ active: is_active(["/roaming_activity", "/roaming_most_provided", "/roaming_most_provided", "/roaming_most_used", "/roaming_most_provided_test", "/heat_map"])}')
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             | roaming
             span.caret
           ul.dropdown-menu(role='menu')
-            each val, key in roaming
-              li
-                a(ui-sref=val)= key
+            li
+              a(ui-sref='roaming_activity') aktivita eduroamu
+            li
+              a(ui-sref='roaming_most_provided') organizace nejvíce poskytující roaming
+            li
+              a(ui-sref='roaming_most_used') organizace nejvíce využívající roaming
+            li
+              a(ui-sref='heat_map') mapa roamingu
+            li
+              a(ui-sref='roaming_most_used_test') test
+            li
+              a(ui-sref='roaming_most_provided_test') test 2
       ul.nav.navbar-nav.navbar-right
         li.active
           a(href='./') přihlášený uživatel
