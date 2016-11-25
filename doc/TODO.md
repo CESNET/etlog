@@ -352,6 +352,20 @@ potencialni inspirace:
 - Jak ma vysledny graf vypadat?
 - vyuzit napr https://bl.ocks.org/mbostock/3887051 ?
 
+> Ja bych si představoval že vezmete tohle: https://etlog.cesnet.cz/#/roaming_most_provided 
+
+> vyhodíte Počet využití:, Počet poskytnutí:, Poměr:, Jméno instituce:
+
+> bude tam Realm: a Navštívená institiuce, casovy interval + rychla volba mesic/3/rok
+
+> kdyz nevypnite ani realm ani vis inst tak získáme graf jak moc naši lidé roamují v čase
+
+> kdyz vyplnime realm = cesnet.cz tak získáme graf jak moc lidé z CESNETu roamují v čase
+
+> kdyz vyplnime vis.inst = cesnet.cz tak získáme graf jak moc ostatní uživatelé využívají eduroam na CESNETu.
+
+> je potreba vyresit tu osu X aby to bylo prehlednejsi
+
 ## neuspesna prihlaseni
 
 [rozhrani](https://etlog.cesnet.cz/#/failed_logins)
