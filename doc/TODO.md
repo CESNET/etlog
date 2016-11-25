@@ -285,7 +285,9 @@ potencialni inspirace:
 - nejake pripominky?
 
 > dvojtecky za MAC adresa a počet
+
 > počet s velkym P
+
 > nefunguji odkazy pri kliknuti na uzivatelske jmeno / heslo toci se kolecko a nehleda to
  
 
