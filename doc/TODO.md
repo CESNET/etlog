@@ -277,6 +277,10 @@ potencialni inspirace:
 
 > Kdyz pisete u lejblu velky pismeno tak by to chtelo psat vsude, podobne s dvojteckou
 
+### Obecne k tabulkam
+
+> bylo by pekne mit mozst si nalezena data stahnout v CSV formatu
+
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
 
 [rozhrani](https://etlog.cesnet.cz/#/mac_count)
