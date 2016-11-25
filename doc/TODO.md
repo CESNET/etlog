@@ -284,7 +284,6 @@ potencialni inspirace:
 > pridat radio button - vyradit anonymni uzivatele (^[^anon|^@])
 
 
-
 ## sdilene mac adresy (shared mac)
 
 [rozhrani](https://etlog.cesnet.cz/#/shared_mac)
@@ -304,6 +303,19 @@ potencialni inspirace:
 
 - nejake pripominky?
 
+> jde odkliknout hledej bez jakekoli vyplnene hodnoty - kolecko se toci a toci a asi nikdy nedotoci
+
+> popojizdeni stranky k vysledkm bych poprosil na hlavicku tabulky, nikoli hodnoty. takhle mam pocit ze se neco schovalo a scrooluju trosku nahoru
+
+> chtel jsem psat ze nechodilo hledani podle domaci/navstivene instituce, ale nejak se to rozjelo, tak nevim... 
+
+> neslo by v uzivatelskem jmene hledani podle reg vyrazu?
+
+> v hlavicce tabulky mate datum a cas a v hodnotach obracene
+
+> v hledani mate domaci insitituce a v tabulce realm, sjednotit na realm
+
+> vysledek autentizace ve formulari presunte az pred datumy
 
 ## nejvice vyuzivany roaming
 
