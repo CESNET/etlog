@@ -26,7 +26,7 @@ div(ng-controller="roaming_most_provided_test_controller")
                 | {{opt}}
 
         .form-group(ng-repeat='option in options track by $index', ng-show='options_added')
-          label.col-sm-2.control-label {{option.val}}
+          label.col-sm-2.control-label {{option.val}}:
           .col-xs-2
             div(layout-gt-xs='row')
               input.form-control(type='text', ng-model='form_data[option.key]')

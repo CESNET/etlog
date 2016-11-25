@@ -23,7 +23,7 @@ div(ng-controller="search_controller")
                 option(value = key) #{val}
 
         .form-group
-          label.col-sm-2.control-label(for = 'realm') Domácí instituce:
+          label.col-sm-2.control-label(for = 'realm') Realm:
           .col-xs-2
             input.form-control(type = 'text', placeholder = 'příklad.cz', ng-model='form_data.realm')
 
@@ -57,8 +57,9 @@ div(ng-controller="search_controller")
     table.table.table-bordered.table-responsive#out
       thead
         tr
+          th výsledek autentizace
           th
-            b datum a čas 
+            b čas a datum 
               a
                 i.fa.fa-chevron-down(ng-if='sort_dir', ng-show='sort_dir' ng-click='change_sort()')
                 i.fa.fa-chevron-up(ng-if='!sort_dir', ng-show='!sort_dir' ng-click='change_sort()')
@@ -66,17 +67,16 @@ div(ng-controller="search_controller")
           th MAC adresa
           th realm
           th navštívená insituce
-          th výsledek autentizace
       tbody(ng-show='!paging.loading')
         tr(dir-paginate='row in data | itemsPerPage: paging.items_by_page', total-items='paging.total_items')
+          td.bg-success(ng-if='row.result == "OK"') {{row.result}}
+          td.bg-warning(ng-if='row.result == "TIMEOUT"') {{row.result}}
+          td.bg-danger(ng-if='row.result == "FAIL"') {{row.result}}
           td {{row.timestamp}}
           td {{row.username}}
           td {{row.mac_address}}
           td {{row.realm}}
           td {{row.visinst}}
-          td.bg-success(ng-if='row.result == "OK"') {{row.result}}
-          td.bg-warning(ng-if='row.result == "TIMEOUT"') {{row.result}}
-          td.bg-danger(ng-if='row.result == "FAIL"') {{row.result}}
       tbody(ng-show='paging.loading')
         tr
           td.text-center(colspan='6')
