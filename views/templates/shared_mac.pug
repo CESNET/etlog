@@ -14,15 +14,25 @@ div(ng-controller="shared_mac_controller")
             div(layout-gt-xs='row')
               input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
  
-        .form-group(ng-repeat='option in options track by $index', ng-show='options_added')
-          label.col-sm-2.control-label {{option.val}}:
-          .col-xs-2
-            div(layout-gt-xs='row')
-              input.form-control(type='text', ng-model='form_data[option.key]')
-              .radio(ng-repeat='subopt in option.subopts')
-                input(type='radio', name='{{option.val}}', ng-model="option.sel", ng-value='subopt.key')
-                | {{subopt.val}}
-                
+        div(ng-show='options_added')
+          .form-group
+            label.col-sm-2.control-label MAC adresa:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                input.form-control(type='text', ng-model='options.mac_address.val')
+                .radio(ng-repeat='type in options.mac_address.types track by $index')
+                  input(type='radio', name='mac_address', ng-model='options.mac_address.sel', ng-value='type')
+                  | {{options.mac_address.type_names[$index]}}
+ 
+          .form-group
+            label.col-sm-2.control-label Počet:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                input.form-control(type='text', ng-model='options.count.val')
+                .radio(ng-repeat='type in options.count.types track by $index')
+                  input(type='radio', name='count', ng-model='options.count.sel', ng-value='type')
+                  | {{options.count.type_names[$index]}}
+
         .form-group(ng-show='!options_added')
           label.col-sm-2.control-label Další možnosti
           .col-xs-2

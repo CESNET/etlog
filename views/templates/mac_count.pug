@@ -14,14 +14,24 @@ div(ng-controller="mac_count_controller")
             div(layout-gt-xs='row')
               input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
  
-        .form-group(ng-repeat='option in options track by $index', ng-show='options_added')
-          label.col-sm-2.control-label {{option.val}}:
-          .col-xs-2
-            div(layout-gt-xs='row')
-              input.form-control(type='text', ng-model='form_data[option.key]')
-              .radio(ng-repeat='subopt in option.subopts')
-                input(type='radio', name='{{option.val}}', ng-model="option.sel", ng-value='subopt.key')
-                | {{subopt.val}}
+        div(ng-show='options_added')
+          .form-group
+            label.col-sm-2.control-label Uživatelské jméno:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                input.form-control(type='text', ng-model='options.username.val')
+                .radio(ng-repeat='type in options.username.types track by $index')
+                  input(type='radio', name='username', ng-model='options.username.sel', ng-value='type')
+                  | {{options.username.type_names[$index]}}
+
+          .form-group
+            label.col-sm-2.control-label Počet:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                input.form-control(type='text', ng-model='options.count.val')
+                .radio(ng-repeat='type in options.count.types track by $index')
+                  input(type='radio', name='count', ng-model='options.count.sel', ng-value='type')
+                  | {{options.count.type_names[$index]}}
 
         .form-group(ng-show='!options_added')
           label.col-sm-2.control-label Další možnosti
@@ -29,17 +39,17 @@ div(ng-controller="mac_count_controller")
             div(layout-gt-xs='row')
               button.btn.btn-default.addButton(type='button', ng-click='add_options()')
                 i.fa.fa-plus
-
-        .form-group(ng-show='options_added')
+        
+        .form-group.ng-hide(ng-show='options_added')
           label.col-sm-2.control-label Skrýt možnosti
           .col-xs-2
             div(layout-gt-xs='row')
               button.btn.btn-default.addButton(type='button', ng-click='delete_options()')
                 i.fa.fa-minus
-
+        
         .form-group
           .col-sm-offset-2.col-sm-10
-            button.btn.btn-default(type="submit") Hledej
+            button.btn.btn-default(type='submit') Hledej
 
   div(ng-show='submitted')
     .form-group
