@@ -1387,13 +1387,13 @@ function addiational_fields_failed_logins($scope)
       sel : "eq",
       types : [ "eq", "gt", "lt" ],
       type_names : [ "je roven", "je větší", "je menší" ]
-    }
+    },
     ok_count : {
       val : "",
       sel : "eq",
       types : [ "eq", "gt", "lt" ],
       type_names : [ "je roven", "je větší", "je menší" ]
-    }
+    },
     ratio : {
       val : "",
       sel : "eq",
@@ -1857,7 +1857,7 @@ function addiational_fields_roaming_most($scope)
       sel : "eq",
       types : [ "eq", "gt", "lt" ],
       type_names : [ "je roven", "je větší", "je menší" ]
-    }
+    },
     provided_count : {
       val : "",
       sel : "eq",
