@@ -1011,13 +1011,7 @@ function init($scope, $http)
 function handle_table_submit($scope, $http, data_func, paging, form_items, coll_name)
 {
   $scope.submit = function () {
-    // add radio selection to form data
-    for(var item in $scope.options) {
-      if($scope.form_data[$scope.options[item].key]) {
-        $scope.form_data[$scope.options[item].key + "_sel"] = $scope.options[item].sel;
-      }
-    }
-    
+    add_options($scope);        // add optional form fields
     $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
     $scope.qs = $scope.base_qs;
     get_total_items($scope, $http, coll_name);        // set number of total items for paging
@@ -1057,14 +1051,7 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
   $scope.submit = function () {
     // set loading animation
     $scope.loading = true;
-
-    // add radio selection to form data
-    for(var item in $scope.options) {
-      if($scope.form_data[$scope.options[item].key]) {
-        $scope.form_data[$scope.options[item].key + "_sel"] = $scope.options[item].sel;
-      }
-    }
-    
+    add_options($scope);        // add optional form fields
     get_days($scope);                           // get array of days in specified interval
     qs = build_qs($scope.form_data, form_items);  // create query string
     data_func($scope, $http, qs, $q, function ($scope) { // get data from api
@@ -1072,6 +1059,21 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
       // unset loading animation
       $scope.loading = false;
     });
+  }
+}
+// --------------------------------------------------------------------------------------
+// add options to form data
+// --------------------------------------------------------------------------------------
+function add_options($scope)
+{
+  // add optional fields to form data
+  // radio buttons indicate type of value
+  var keys = Object.keys($scope.options);
+
+  for(var key in keys) {
+    if($scope.options[keys[key]].val.length > 0) {    // value is defined
+      $scope.form_data[keys[key]] = $scope.options[keys[key]];    // add dict with current radio selection inside
+    }
   }
 }
 // --------------------------------------------------------------------------------------
@@ -1144,32 +1146,20 @@ function setup_calendars($scope)
 function addiational_fields_mac_count($scope)
 {
   $scope.options_added = false;
-  $scope.options = [ 
-    {
-      key : "username",
-      val : "Uživatelské jméno",
-      subopts : [ 
-        { key: "eq",
-          val : "přesně odpovídá" },
-        { key : "like",
-          val : "obsahuje" },
-      ],
+  $scope.options = {
+    username : {
+      val : "",
       sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
     },
-    {
-      key : "count",
-      val : "Počet",
-      subopts : [ 
-        { key : "eq",
-          val : "je roven" },
-        { key : "gt",
-          val : "je větší" },
-        { key : "lt",
-          val : "je menší" },
-      ],
+    count : {
+      val : "",
       sel : "eq",
-    },
-  ];
+      types : [ "eq", "gt", "lt" ],
+      type_names : [ "je roven", "je větší", "je menší" ]
+    }
+  };
 
   $scope.add_options = function() {
     $scope.options_added = true;
@@ -1385,59 +1375,32 @@ angular.module('etlog').controller('failed_logins_controller', ['$scope', '$http
 function addiational_fields_failed_logins($scope)
 {
   $scope.options_added = false;
-  $scope.options = [ 
-    {
-      key : "username",
-      val : "Uživatelské jméno",
-      subopts : [ 
-        { key: "eq",
-          val : "přesně odpovídá" },
-        { key : "like",
-          val : "obsahuje" },
-      ],
-      sel : "eq"
+  $scope.options = {
+    username : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
     },
-    {
-      key : "fail_count",
-      val : "Počet neúspěšných přihlášení",
-      subopts : [ 
-        { key : "eq",
-          val : "je roven" },
-        { key : "gt",
-          val : "je větší" },
-        { key : "lt",
-          val : "je menší" },
-      ],
-      sel : "eq"
-    },
-    {
-      key : "ok_count",
-      val : "Počet úspěšných přihlášení",
-      subopts : [ 
-        { key : "eq",
-          val : "je roven" },
-        { key : "gt",
-          val : "je větší" },
-        { key : "lt",
-          val : "je menší" },
-      ],
-      sel : "eq"
-    },
-    {
-      key : "ratio",
-      val : "Poměr",
-      subopts : [ 
-        { key : "eq",
-          val : "je roven" },
-        { key : "gt",
-          val : "je větší" },
-        { key : "lt",
-          val : "je menší" },
-      ],
-      sel : "eq"
-    },
-  ];
-
+    fail_count : {
+      val : "",
+      sel : "eq",
+      types : [ "eq", "gt", "lt" ],
+      type_names : [ "je roven", "je větší", "je menší" ]
+    }
+    ok_count : {
+      val : "",
+      sel : "eq",
+      types : [ "eq", "gt", "lt" ],
+      type_names : [ "je roven", "je větší", "je menší" ]
+    }
+    ratio : {
+      val : "",
+      sel : "eq",
+      types : [ "eq", "gt", "lt" ],
+      type_names : [ "je roven", "je větší", "je menší" ]
+    }
+  };
 
   $scope.add_options = function() {
     $scope.options_added = true;
@@ -1455,36 +1418,26 @@ function addiational_fields_failed_logins($scope)
 function build_qs(data, items)
 {
   ret = "?";
+
   for(var item in items) {
-    if(data[items[item]] && data[items[item] + "_sel"]) {  // both defined
+    if(data[items[item]] && data[items[item]].val) {  // item present in form data and value is defined
+      switch(data[items[item]].sel) {   // switch for all possible value types
+        case "eq":
+          ret += build_part(ret, items[item], "=", data[items[item]].val, "");
+          break;
 
-     if(data[items[item] + "_sel"] == "eq") {
-       if(ret.length == 1)
-         ret += items[item] + "=" + data[items[item]];
-       else
-         ret += "&" + items[item] + "=" + data[items[item]];
-     }
+        case "like":
+          ret += build_part(ret, items[item], "=/", data[items[item]].val, "/");  // TODO - escaping ?
+          break;
 
-     else if(data[items[item] + "_sel"] == "like") {
-       if(ret.length == 1)
-         ret += items[item] + "=/" + data[items[item]] + "/";   // TODO - escaping ?
-       else
-         ret += "&" + items[item] + "=/" + data[items[item]] + "/";   // TODO - escaping ?
-     }
+        case "gt":
+          ret += build_part(ret, items[item], ">", data[items[item]].val, "");
+          break;
 
-     else if(data[items[item] + "_sel"] == "gt") {
-       if(ret.length == 1)
-         ret += items[item] + ">" + data[items[item]];
-       else
-         ret += "&" + items[item] + ">" + data[items[item]];
-     }
-
-     else if(data[items[item] + "_sel"] == "lt") {
-       if(ret.length == 1)
-         ret += items[item] + "<" + data[items[item]];
-       else
-         ret += "&" + items[item] + "<" + data[items[item]];
-     }
+        case "lt":
+          ret += build_part(ret, items[item], "<", data[items[item]].val, "");
+          break;
+      }
     }
   }
 
@@ -1492,6 +1445,22 @@ function build_qs(data, items)
     ret += "&";
 
   return ret;       // returned value is '?' or '?.*&'
+}
+// --------------------------------------------------------------------------------------
+// build part of query string from given params
+// params:
+// qs - current query string
+// key - variable name
+// fs - forward separator
+// value - variable value
+// bs - back separator
+// --------------------------------------------------------------------------------------
+function build_part(qs, key, fs, value, bs)
+{
+  if(qs.length == 1)
+    return key + fs + value + bs;
+  else
+    return "&" + key + fs + value + bs;
 }
 // --------------------------------------------------------------------------------------
 // get mac count data
@@ -1786,32 +1755,20 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
 function addiational_fields_shared_mac($scope)
 {
   $scope.options_added = false;
-  $scope.options = [
-    {
-      key : "mac_address",
-      val : "MAC adresa",
-      subopts : [
-        { key: "eq",
-          val : "přesně odpovídá" },
-        { key : "like",
-          val : "obsahuje" },
-      ],
+  $scope.options = {
+    mac_address : {
+      val : "",
       sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
     },
-    {
-      key : "count",
-      val : "Počet",
-      subopts : [
-        { key : "eq",
-          val : "je roven" },
-        { key : "gt",
-          val : "je větší" },
-        { key : "lt",
-          val : "je menší" },
-      ],
+    count : {
+      val : "",
       sel : "eq",
-    },
-  ];
+      types : [ "eq", "gt", "lt" ],
+      type_names : [ "je roven", "je větší", "je menší" ]
+    }
+  };
 
   $scope.add_options = function() {
     $scope.options_added = true;
@@ -1888,58 +1845,26 @@ angular.module('etlog').controller('roaming_most_used_controller', ['$scope', '$
 function addiational_fields_roaming_most($scope)
 {
   $scope.options_added = false;
-  $scope.options = [ 
-    {
-      key : "inst_name",
-      val : "Jméno instituce",
-      subopts : [ 
-        { key: "eq",
-          val : "přesně odpovídá" },
-        { key : "like",
-          val : "obsahuje" },
-      ],
-      sel : "eq"
+  $scope.options = {
+    inst_name : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
     },
-    {
-      key : "used_count",
-      val : "Počet využití",
-      subopts : [ 
-        { key : "eq",
-          val : "je roven" },
-        { key : "gt",
-          val : "je větší" },
-        { key : "lt",
-          val : "je menší" },
-      ],
-      sel : "eq"
-    },
-    {
-      key : "provided_count",
-      val : "Počet poskytnutí",
-      subopts : [ 
-        { key : "eq",
-          val : "je roven" },
-        { key : "gt",
-          val : "je větší" },
-        { key : "lt",
-          val : "je menší" },
-      ],
-      sel : "eq"
-    },
-    {
-      key : "ratio",
-      val : "Poměr",
-      subopts : [ 
-        { key : "eq",
-          val : "je roven" },
-        { key : "gt",
-          val : "je větší" },
-        { key : "lt",
-          val : "je menší" },
-      ],
-      sel : "eq"
-    },
-  ];
+    used_count : {
+      val : "",
+      sel : "eq",
+      types : [ "eq", "gt", "lt" ],
+      type_names : [ "je roven", "je větší", "je menší" ]
+    }
+    provided_count : {
+      val : "",
+      sel : "eq",
+      types : [ "eq", "gt", "lt" ],
+      type_names : [ "je roven", "je větší", "je menší" ]
+    }
+  };
 
   $scope.add_options = function() {
     $scope.options_added = true;
