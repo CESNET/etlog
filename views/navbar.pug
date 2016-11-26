@@ -23,26 +23,33 @@
         li(ng-class='{ active: is_active(["/detection_data"])}')
           a(ui-sref='detection_data') data k detekci
 
-        li(ng-class='{ active: is_active(["/test"])}')
-          a(ui-sref='test') datepicker test
+        //li(ng-class='{ active: is_active(["/test"])}')
+        //  a(ui-sref='test') test
 
         li#roaming(ng-class='{ active: is_active(["/roaming_activity", "/roaming_most_provided", "/roaming_most_provided", "/roaming_most_used", "/roaming_most_provided_test", "/heat_map"])}')
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             | roaming
             span.caret
           ul.dropdown-menu(role='menu')
+
             li
               a(ui-sref='roaming_activity') aktivita eduroamu
+
             li
-              a(ui-sref='roaming_most_provided') organizace nejvíce poskytující roaming
+              a(ui-sref='roaming_most_provided') posktovaný roaming - vyhledávání
+
             li
-              a(ui-sref='roaming_most_used') organizace nejvíce využívající roaming
+              a(ui-sref='roaming_most_used') čerpaný roaming - vyhledávání
+
             li
               a(ui-sref='heat_map') mapa roamingu
+
             li
-              a(ui-sref='roaming_most_used_test') test
+              a(ui-sref='roaming_most_provided_test') Instituce nejvíce poskytující roaming
+
             li
-              a(ui-sref='roaming_most_provided_test') test 2
+              a(ui-sref='roaming_most_used_test') Instituce nejvíce čerpající roaming
+
       ul.nav.navbar-nav.navbar-right
         li.active
           a(href='./') přihlášený uživatel
