@@ -19,10 +19,13 @@ div(ng-controller="mac_count_controller")
             label.col-sm-2.control-label Uživatelské jméno:
             .col-xs-2
               div(layout-gt-xs='row')
-                input.form-control(type='text', ng-model='options.username.val')
+                input.form-control(type='text', ng-model='options.username.val', ng-click='remove_anon()')
                 .radio(ng-repeat='type in options.username.types track by $index')
                   input(type='radio', name='username', ng-model='options.username.sel', ng-value='type')
                   | {{options.username.type_names[$index]}}
+                .checkbox
+                  input(type="checkbox", name='username', ng-click='add_anon()', ng-model='anon_sel')
+                  | Vyřadit anonymní uživatele
 
           .form-group
             label.col-sm-2.control-label Počet:

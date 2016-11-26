@@ -852,7 +852,30 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
   handle_pagination($scope, $http, get_mac_count);
   setup_filters($scope, $http, "mac_count");
   handle_download($scope);
+  handle_anon($scope);
 }]);
+// --------------------------------------------------------------------------------------
+// handle checkbox for anonymous users
+// --------------------------------------------------------------------------------------
+function handle_anon($scope)
+{
+  $scope.anon_sel = false;  // anonymous users not selected
+
+  $scope.add_anon = function() {
+    // $scope.anon_sel is automatically set by user clicking the checkbox by model attribute
+    if($scope.anon_sel) {
+      $scope.options.username.val = '^[^anon|^@]';
+      $scope.options.username.sel = "like";
+    }
+    else {
+      $scope.options.username.val = ''; // clear
+    }
+  }
+
+  $scope.remove_anon = function() {
+    $scope.anon_sel = false;
+  }
+}
 // --------------------------------------------------------------------------------------
 // setup filtering fields
 // params:
