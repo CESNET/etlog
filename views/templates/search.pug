@@ -1,4 +1,4 @@
-div(ng-controller="search_controller")
+div.container-fluid(ng-controller="search_controller")
   div
     md-content(layout-padding='')
       form.form-horizontal(ng-submit="main_form.$valid && submit()" name="main_form", novalidate)
@@ -8,6 +8,9 @@ div(ng-controller="search_controller")
             input.form-control(type = 'email', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', name='username', required)
             p.help-block(ng-show='main_form.username.$invalid && main_form.$submitted')
               | Uživatelské jméno musí být vyplněno ve správném tvaru.
+
+        //- TODO - add check if username matches the current user logged in !
+        //- what if the user spoofs the field?
         
         .form-group
           label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
@@ -42,7 +45,7 @@ div(ng-controller="search_controller")
           .col-xs-2
             div(layout-gt-xs='row')
               input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
- 
+
         .form-group
           .col-sm-offset-2.col-sm-10
             button.btn.btn-default(type="submit") Hledej
