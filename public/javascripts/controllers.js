@@ -1214,17 +1214,21 @@ function graph($scope)
   var height = 520 - margin.top - margin.bottom;
   var data = $scope.graph_data;
 
-  // ensure minimal width
-  var min_width = 200;
+  //// ensure minimal width
+  //var min_width = 200;
 
-  if(width < min_width)
-    width = min_width;
+  //if(width < min_width)
+  //  width = min_width;
 
-  // ensure maximal width
-  var max_width = 800;
+  //// ensure maximal width
+  //var max_width = 800;
 
-  if(width > max_width)
-    width = max_width;
+  //if(width > max_width)
+  //  width = max_width;
+
+  // graph width is set to fit the page width
+  width = $(window).width() - 100;      // compensate for y axis labels
+  // TODO ?
 
   // ==========================================================
 
@@ -1342,9 +1346,23 @@ function graph($scope)
     .attr("x", (width / 2))             
     .attr("y", 0 - (margin.top / 2))
     .attr("text-anchor", "middle")  
-    .style("font-size", "16px") 
+    .style("font-size", "20px")
     .style("text-decoration", "underline")  
     .text($scope.graph_title);
+
+  // determine min and max dates for graph title
+  var min = $scope.form_data.min_date.split('-')[2] + "." + $scope.form_data.min_date.split('-')[1] + "." + $scope.form_data.min_date.split('-')[0];
+  var max = $scope.form_data.max_date.split('-')[2] + "." + $scope.form_data.max_date.split('-')[1] + "." + $scope.form_data.max_date.split('-')[0];
+
+  // set graph dates
+  svg.append("text")
+    .attr("x", (width / 2))
+    .attr("y", 25 - (margin.top / 2))   // place under title
+    .attr("text-anchor", "middle")
+    .style("font-size", "20px")
+    .style("text-decoration", "underline")
+    .text(min + " - " + max);
+
 
 
   // TODO
@@ -2224,7 +2242,7 @@ angular.module('etlog').controller('roaming_most_provided_test_controller', ['$s
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
     inst_count : 25
   };
-  $scope.graph_title = "Nejvvíce poskytovaný roaming";
+  $scope.graph_title = "Nejvíce poskytovaný roaming";
   $scope.title = "etlog: organizace nejvíce poskytující roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
