@@ -41,25 +41,31 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   .state('roaming_most_provided', {
     url: '/roaming_most_provided',
     templateUrl: '/partials/roaming_most_provided.html',
-    title : 'etlog: nejvíce poskytovaný roaming'
+    title : 'etlog: posktovaný roaming - vyhledávání'
   })
 
   .state('roaming_most_used', {
     url: '/roaming_most_used',
     templateUrl: '/partials/roaming_most_used.html',
-    title : 'etlog: nejvíce využívaný roaming'
+    title : 'etlog: čerpaný roaming - vyhledávání'
+  })
+
+  .state('heat_map', {
+    url: '/heat_map',
+    templateUrl: '/partials/heat_map.html',
+    title : 'etlog: mapa roamingu'
   })
 
   .state('roaming_most_used_test', {
     url: '/roaming_most_used_test',
     templateUrl: '/partials/roaming_most_used_test.html',
-    title : 'etlog: roaming test 1'
+    title : 'etlog: Instituce nejvíce čerpající roaming'
   })
 
   .state('roaming_most_provided_test', {
     url: '/roaming_most_provided_test',
     templateUrl: '/partials/roaming_most_provided_test.html',
-    title : 'etlog: roaming test 2'
+    title : 'etlog: Instituce nejvíce poskytující roaming'
   })
 
   .state('roaming_activity', {
