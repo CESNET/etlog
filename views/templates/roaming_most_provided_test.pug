@@ -1,7 +1,7 @@
 div(ng-controller="roaming_most_provided_test_controller")
   div
     md-content(layout-padding='')
-      form.form-horizontal#main_form(ng-submit="submit()" novalidate)
+      form.form-horizontal(ng-submit="submit()" name="main_form", novalidate)
         .form-group
           label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
           .col-xs-2
