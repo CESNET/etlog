@@ -1206,29 +1206,16 @@ function graph($scope)
   // ============================================================================
 
   // set the dimensions and margins of the graph
-  var margin = {top: 40, right: 20, bottom: 100, left: 80};
+  var margin = {top: 50, right: 20, bottom: 100, left: 80};
   var col_length = 40;  // column length
   
   // dynamically determine graph width by size of data
   var width = $scope.graph_data.length * col_length - margin.left - margin.right;
-  var height = 520 - margin.top - margin.bottom;
+  var height = 530 - margin.top - margin.bottom;
   var data = $scope.graph_data;
 
-  //// ensure minimal width
-  //var min_width = 200;
-
-  //if(width < min_width)
-  //  width = min_width;
-
-  //// ensure maximal width
-  //var max_width = 800;
-
-  //if(width > max_width)
-  //  width = max_width;
-
   // graph width is set to fit the page width
-  width = $(window).width() - 100;      // compensate for y axis labels
-  // TODO ?
+  width = $(window).width() - 130;      // compensate for y axis labels
 
   // ==========================================================
 
