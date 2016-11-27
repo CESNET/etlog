@@ -206,7 +206,8 @@ function build_qs_search(data)
   var keys = Object.keys(data);
 
   for(var key in keys) {
-    ret += keys[key] + "=" + data[keys[key]] + "&";
+    if(data[keys[key]])
+      ret += keys[key] + "=" + data[keys[key]] + "&";
   }
 
   return ret;       // returned value is '?' or '?.*&'
@@ -901,6 +902,7 @@ function handle_anon($scope)
 
   $scope.remove_anon = function() {
     $scope.anon_sel = false;
+    $scope.options.username.val = '';
   }
 }
 // --------------------------------------------------------------------------------------
