@@ -333,11 +333,20 @@ potencialni inspirace:
 - Ponechat?
 - Prejmenovat?
 
+> Sloucit v jeden. Viz sekce "aktivita CZ eduroamu"
 
 - [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used_test)
+
+> Prejmenovat na "organizace nejvíce poskytující konektivitu" Ponekud to nesedei s tim URL.
+
 - [rozhrani] (https://etlog.cesnet.cz/#/roaming_most_provided_test)
+
+> Prejmenovat na "organizace nejvíce využívající roaming"
+
 - Ponechat?
 - Prejmenovat?
+
+> Ponechat! Je to pekne.
 
 
 ## Instituce nejvice cerpajici roaming
