@@ -809,21 +809,6 @@ Application api:
 | /api/count/succ\_logins         |        | timestamp, [ 'username', 'count' ]                     | returns count of records for succ logins collection |
 
 
-### Routes
-
-#### Frontend
-
-TODO
-
-#### Backend
-
-| URL             | explanation                                                        | 
-|-----------------|--------------------------------------------------------------------|
-| /               | title page                                                         |
-| /login          | login page                                                         |
-| /login/callback | page where the user is redirected after successful authentication  |
-| /auth\_fail     | page where the user is redirected when authentication fails        |
-
 
 ##### Examples
 
@@ -896,6 +881,56 @@ When not specified, values for hours, minutes, seconds and milliseconds are set 
 | ISO-8601          | 2016-10-06T22:00:00.000Z  |
 | reduced ISO-8601  | 2016-10-06T22:00:00       |
 | %Y-%m-%d          | 2016-10-06                |
+
+
+### Routes
+
+#### Frontend
+
+Frontend is built in Pug (formely Jade) template engine.
+Only the index page is loaded through templating engine.
+All other pages are compiled to html by gulp.
+This is necessary becasuse all other pages are loaded dynamically via angular,
+which is not able to use templating engine.
+
+##### Angular
+
+AngularJS is a complete JavaScript-based open-source front-end web application framework.
+It enables dynamic content manipulation throught html element attributes.
+
+Frontend has followind structure:
+
+| state                          | url                             |     title                                      |
+|--------------------------------|---------------------------------|------------------------------------------------|
+| search                         | /#/search?pn&csi                | etlog: obecné vyhledávání                      |
+| mac_count                      | /#/mac_count                    | etlog: počet zařízení                          |
+| failed_logins                  | /#/failed_logins                | etlog: neúspěšná přihlášení                    |
+| shared_mac                     | /#/shared_mac                   | etlog: sdílená zařízení                        |
+| roaming_most_provided          | /#/roaming_most_provided        | etlog: posktovaný roaming - vyhledávání        |
+| roaming_most_used              | /#/roaming_most_used            | etlog: čerpaný roaming - vyhledávání           |
+| heat_map                       | /#/heat_map                     | etlog: mapa roamingu                           |
+| roaming_most_used_test         | /#/roaming_most_used_test       | etlog: Instituce nejvíce čerpající roaming     |
+| roaming_most_provided_test     | /#/roaming_most_provided_test   | etlog: Instituce nejvíce poskytující roaming   |
+| roaming_activity               | /#/roaming_activity             | etlog: aktivita eduroamu                       |
+| detection_data                 | /#/detection_data               | etlog: data k detekci                          |
+
+
+TODO - rename test states
+TODO - remove test views
+
+
+#### Backend
+
+Application api is described in section [API](#api).
+This section describes classic html pages.
+
+
+| URL             | explanation                                                        |
+|-----------------|--------------------------------------------------------------------|
+| /               | title page                                                         |
+| /login          | login page                                                         |
+| /login/callback | page where the user is redirected after successful authentication  |
+| /auth\_fail     | page where the user is redirected when authentication fails        |
 
 
 ### System intergation
