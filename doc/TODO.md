@@ -282,6 +282,8 @@ potencialni inspirace:
 
 - nejake pripominky?
 
+> pridejte prosim jeste podminku na vysledek autentizace. doslo mi to pri kontrole tech hotel@ wifi@ ted je to plne failu.
+
 ## sdilene mac adresy (shared mac)
 
 [rozhrani](https://etlog.cesnet.cz/#/shared_mac)
