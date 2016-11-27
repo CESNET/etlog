@@ -264,20 +264,23 @@ potencialni inspirace:
 - pridat moznost razeni (https://bl.ocks.org/mbostock/3885705)?
 - https://codepen.io/Rastikko/pen/GqNbqM
 
+### Obecne k webovemu rozhrani
+
+- Je nekde treba dalsi validace?
+
+
 ### Obecne ke grafum
 
 > vyresit x-ovou osu
 
 > zkusit pridat nejakou mrizku -> oddeleni tydnu(mesicu ... ) na ose x
 
-> prizpusobvani sirky strance
 
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
 
 [rozhrani](https://etlog.cesnet.cz/#/mac_count)
 
-> pridat radio button - vyradit anonymni uzivatele (^[^anon|^@])
-
+- nejake pripominky?
 
 ## sdilene mac adresy (shared mac)
 
@@ -291,25 +294,35 @@ potencialni inspirace:
 
 - nejake pripominky?
 
-> jde odkliknout hledej bez jakekoli vyplnene hodnoty - kolecko se toci a toci a asi nikdy nedotoci
+- Jaky vyznam ma hledani podle realmu?
+- Rozhrani je navrzene tak, ze backend neumoznuje hledat, aniz by bylo zadano uzivatelske jmeno.
+- Tudiz realm bude pro vsechny(?) dostupne zaznamy stejny jako domenova cast uzivatelskeho jmena.
 
-> popojizdeni stranky k vysledkm bych poprosil na hlavicku tabulky, nikoli hodnoty. takhle mam pocit ze se neco schovalo a scrooluju trosku nahoru
-
-> chtel jsem psat ze nechodilo hledani podle domaci/navstivene instituce, ale nejak se to rozjelo, tak nevim... 
 
 > neslo by v uzivatelskem jmene hledani podle reg vyrazu?
 
-> v hlavicce tabulky mate datum a cas a v hodnotach obracene
+- Hledani uzivatelskeho jmena podle regularniho vyrazu by bylo mozne, ale nejsem si jisty jake by to melo dusledky:
+  - Uzivatel sam by mel mit moznost vyhledavat pouze sve zaznamy (presna shoda username, ktere bude napevno vyplneno).
+  - Admin by potencialne mohl vyhledavat kohokoliv (vcetne moznosti pouzit reg vyraz).
+  - Pravdepodobne by bylo nutne generovat dve rozdilne stranky pro uzivatele/admina nebo jinym zpusobem zajistit, ze uzivatel nebude mit k takove funkcionalite pristup.
+  - Jak moc je tato funkcionalita dulezita?
 
-> v hledani mate domaci insitituce a v tabulce realm, sjednotit na realm
 
-> vysledek autentizace ve formulari presunte az pred datumy
+## Rozhrani pro roaming
 
-## nejvice vyuzivany roaming
+- [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used)
+- [rozhrani](https://etlog.cesnet.cz/#/roaming_most_provided)
+- Ponechat?
+- Prejmenovat?
 
-> Mam velky problem s nazvem tehle sekci - nevim co je co. Prejmenujte ty nadpisy na "Instituce nejvice poskytujici roaming" a na "Institiuce nejvice cerpajici roaming", tady i v aplikaci.
 
-> Nadpisy grafu by mohly byt trosku vetsi a pod nimi rozsah datumu, bez toho neni jasne k cemu to je a kdyz by si to clovek okopiroval tak nevi nic.
+- [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used_test)
+- [rozhrani] (https://etlog.cesnet.cz/#/roaming_most_provided_test)
+- Ponechat?
+- Prejmenovat?
+
+
+## Instituce nejvice cerpajici roaming
 
 > Data jsou obracene -> prejmenovat nejvice vyuzivany a poskytovany
 > Kdyz je jednou nastaveno manualne datum, uz nefunguje prepinani pomoci radio buttonu
@@ -317,17 +330,15 @@ potencialni inspirace:
 > Ve smyslu které instituce=REALM (prostřednctvím svých uživatelú) nejvíce využívají eduroamu. Zase grupováno přes MAC/den. Časový interval by bylo pěkné mít volitelný + nějakou předvolbu 1/3/12měs. Úplně nevím co mislíte těmi "povinnými institucemi". Množství polože na ose X by mohla regulovat parametrem, tj. zvolit si že chci nakreslit graf s max 25 institucemi. I tady mi přijde užitečné mít data k dispozici ve formě tabulky. Také by bylo zajímavé vidět grafy pro každý jednotlivý REALM v čase. Viz následující bod.
 
 
-- Aktualni [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used) , [rozhrani](https://etlog.cesnet.cz/#/roaming_most_provided)
-- Nove [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used_test), [rozhrani] (https://etlog.cesnet.cz/#/roaming_most_provided_test)
-- Stejne pripominky plati pro poskytovany roaming
-- Osa x ma tedy zobrazovat x (kde x je volitelne) instituci, ktere nejvice vyuzivaji roaming ve zvolenem casovem obdobi?
-- Volitelne konkretni instituce, pro kterou by mela byt data zobrazena?
-  - Tohle by podle me davalo smysl jako samostatne rozhrani
+- Prosim o komentar k rozhranim - jake ponechat, jestli udelat nove (prosim konkretni specifikaci, co a jak ma rozhrani delat), ....
 
 
-## nejvice poskytovany roaming
+## Instituce nejvice poskytujici roaming
 
 > Instituce=VISINST které nejvíce poskytují konektivitu, loginy grupovány MAC=CSI/den. Opět užitečná tabulka a graf pro X nej více využívaných. Tuhle funkcionalitu dnes nemám. Mám grafy toho jak jsou jednotlivé instituce využívány v čase, to je zde: https://ermon.cesnet.cz/roaming/ tohle je určitě také zajímavé.
+
+- Prosim o komentar k rozhranim - jake ponechat, jestli udelat nove (prosim konkretni specifikaci, co a jak ma rozhrani delat), ....
+
 
 ## aktivita CZ eduroamu
 
@@ -363,6 +374,11 @@ potencialni inspirace:
 - povinne uzivate, pro ktereho maji byt data zobrazena?
 
 
+## Uspesna prihlaseni
+
+- nove [rozhrani](https://github.com/CESNET/etlog#succ_logins) pro uspesna prihlaseni
+- udelat k nemu webovou cast?
+  - backend je hotovy, frontend je prace na 15 minut
 
 
 ## Element pro vyber datumu
@@ -387,13 +403,8 @@ potencialni inspirace:
 - Dokumentace frontendu - co a jak popsat?
 - Momentalne neni nijak validovan/omezovan vstup formularu. Pridat nejakou validaci?
 - Zmenit popisky v navigaci? (Nevim, zda je dostatecne jasne, co ktera stranka zobrazuje)
+- Pridana dokumentace k frontendu - vyhovuje takto? ([zde](https://github.com/CESNET/etlog#frontend))
 
-
-## Nove rozhrani
-
-- nove [rozhrani](link na DOC) pro uspesna prihlaseni
-- udelat k nemu webovou cast?
-  - backend je hotovy, frontend je prace na 15 minut
 
 
 # TODO list
@@ -401,14 +412,11 @@ potencialni inspirace:
   - použít rozcestník
 2. Webové rozhraní
 3. sshguard + FW -> semik
-5. zálohování DB
-  - zkontrolovat dostupnost zaloh db
 6. grafy - statistiky
   - (grafy negenerovat na kliknuti ale nejak v noci)
 7. přstupová práva
 8. co s radlog.cesnet.cz - tim starym virtualem
   - ponechat nez bude napsany text prace
-10. navbar - nastavit aktualne vybrany pohled
 11. ...
 
 # TODO dobudoucna
