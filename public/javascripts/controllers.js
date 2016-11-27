@@ -2312,7 +2312,7 @@ function handle_download($scope)
   }
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// generate csv from table data
 // --------------------------------------------------------------------------------------
 function get_text($scope)
 {
@@ -2331,13 +2331,28 @@ function get_text($scope)
       keys.splice(key, 1)
   }
 
+  // create csv header
+  // ============================
+
+  for(var key in keys) {
+    if(key == keys.length - 1)
+      text += keys[key];
+
+    else
+      text += keys[key] + ",";
+  }
+  text += "\n";
+
+  // add data
+  // ============================
+
   for(var item in data) {
     for(var key in keys) {
       if(text.length > 0 && text[text.length - 1] != "\n")   // continue
-        text += "," + keys[key] + "," + data[item][keys[key]];
+        text += "," + data[item][keys[key]];
 
       else    // beginning of line
-        text += keys[key] + "," + data[item][keys[key]];
+        text += data[item][keys[key]];
     }
     text += "\n";
   }
