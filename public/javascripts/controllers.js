@@ -2370,7 +2370,6 @@ function graph_test($scope)
   // https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
   // http://bl.ocks.org/Caged/6476579
   // http://bl.ocks.org/biovisualize/5372077
-
   // http://stackoverflow.com/questions/21639305/d3js-take-data-from-an-array-instead-of-a-file
   // ============================================================================
 
@@ -2383,31 +2382,25 @@ function graph_test($scope)
   var height = 530 - margin.top - margin.bottom;
   var data = $scope.graph_data;
 
+  // ==========================================================
   // graph width is set to fit the page width
   width = $(window).width() - 130;      // compensate for y axis labels
 
   // ==========================================================
 
   // set the ranges
-  //var x = d3.scaleBand()
-  //          .range([0, width])
-  //          .padding(0.1);
-  
- 
-  var x0 = d3.scaleTime()
-      .range([0, width]);
- 
- 
-  // set the ranges
-  var x1 = d3.scaleBand()
-            .range([0, width])
-            .padding(0.1);
-
-  
+  var x = d3.scaleTime().range([width / data.length / 2, width-width / data.length / 2]);
   var y = d3.scaleLinear()
             .range([height, 0]);
  
+  // ==========================================================
+  
   var parseTime = d3.timeParse("%d.%m.%Y");
+
+  data.map(function (d) {
+    d.timestamp = parseTime(d.timestamp);
+    return d;
+  })
 
   // ==========================================================
             
@@ -2417,7 +2410,6 @@ function graph_test($scope)
     svg = svg.append("svg");
   }
   else {    // graph already present
-    // TODO - transition / animation ?
     svg = svg.selectAll("div > svg").remove("svg"); // delete it
     svg = d3.select("#graph").append("svg");        // and create again
   }
@@ -2439,7 +2431,7 @@ function graph_test($scope)
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-    return "<strong>počet:</strong> <span style='color:red'>" + d.value + "</span>";    // TODO - generic tooltip text ?
+    return "<strong>počet:</strong> <span style='color:red'>" + d.value + "</span>";
   })
 
   svg.call(tip);
@@ -2447,13 +2439,8 @@ function graph_test($scope)
   // ==========================================================
  
   // Scale the range of the data in the domains
-  //x.domain(data.map(function(d) { return d.timestamp; }));
-  //x.domain(d3.extent(data, function(d) { return d.timestamp; }));
-  x1.domain(data.map(function(d) { return d.timestamp; }));
-  x0.domain([data[0].timestamp, data[data.length - 1].timestamp]);
+  x.domain(d3.extent(data, function(d) { return d.timestamp; }));
   y.domain([0, d3.max(data, function(d) { return d.value; })]);
-
-  // TODO - dynamic data update -> http://bl.ocks.org/biovisualize/5372077 ?
 
   // ==========================================================
 
@@ -2463,26 +2450,52 @@ function graph_test($scope)
   }
 
   function get_unique(value, index, self) { return self.indexOf(value) === index; }
-
   var y_unique = y.ticks().map(formatter).filter(get_unique);
-  // ==========================================================
-  
-  //data.map(function(d) { 
-  //  d.timestamp = parseTime(d.timestamp);
-  //});
   
   // ==========================================================
+  // set locale
+  var cs_cz = d3.timeFormatDefaultLocale({
+    "decimal": ".",
+    "thousands": "",
+    "grouping": [3],
+    "dateTime": "%d.%d.%Y %h:%m",
+    "date": "%m.%d.%Y",
+    "time": "%H:%M:%S",
+    "periods": ["AM", "PM"],
+    "days": ["Neděle", "Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota"],
+    "shortDays": ["Ne", "Po", "Út", "St", "Čt", "Pá", "So"],
+    "months": ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Řijen", "Listopad", "Prosinec"],
+    "shortMonths": ["Led", "Úno", "Bře", "Dub", "Kvě", "Čvn", "Čvc", "Srp", "Zář", "Říj", "Lis", "Pro"]
+  });
+  
+  var formatMillisecond = d3.timeFormat(".%L"),
+    formatSecond = d3.timeFormat(":%S"),
+    formatMinute = d3.timeFormat("%I:%M"),
+    formatHour = d3.timeFormat("%I %p"),
+    formatDay = d3.timeFormat("%a %d"),
+    formatWeek = d3.timeFormat("%b %d"),
+    formatMonth = d3.timeFormat("%B"),
+    formatYear = d3.timeFormat("%Y");
 
+  function multiFormat(date) {
+    return (d3.timeSecond(date) < date ? formatMillisecond
+    : d3.timeMinute(date) < date ? formatSecond
+    : d3.timeHour(date) < date ? formatMinute
+    : d3.timeDay(date) < date ? formatHour
+    : d3.timeMonth(date) < date ? (d3.timeWeek(date) < date ? formatDay : formatWeek)
+    : d3.timeYear(date) < date ? formatMonth
+    : formatYear)(date);
+  }
 
+  // ==========================================================
 
   // append the rectangles for the bar chart
   svg.selectAll(".bar")
-      .data(data)
-    .enter().append("rect")
+      .data(data, function(d) { return d.timestamp; })
+      .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x1(d.timestamp); })
-      .attr("width", x1.bandwidth())
-      .attr("y", function(d) { return y(d.value); })
+      .attr("x", function(d) { return x(d.timestamp) - width / data.length / 2; })
+      .attr("width", width / data.length - 1)
       .attr("y", function(d) { return y(d.value); })
       .attr("height", function(d) { return height - y(d.value); })
       .on('mouseover', tip.show)
@@ -2493,7 +2506,8 @@ function graph_test($scope)
   // add the x Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x1))
+      .call(d3.axisBottom(x)
+      .tickFormat(multiFormat))
       // rotate text by 60 degrees
       .selectAll("text")
       .attr("y", 0)
