@@ -295,16 +295,21 @@ potencialni inspirace:
 - jak resit prokliknuti na hledani, kdyz je vybran pouze adresa?
   - tento pripad je stale problemovy
 
+> Nevim v cem vidite problem? Kdyz kliknu na uzivatele tak je preneseno do hledaciho formulare jeho jmeno a mac adresa. Kdyz kliknu na mac tak me to sprdne ze chybi uzivatelske jmeno. Jaky je k tomu duvod? Prazdny formular pro hledani ne, ale kdyz je neco vyplneno tak je to ok ne?
+
 ## Obecne vyhledavani
 
 [rozhrani](https://etlog.cesnet.cz/#/search)
 
 - nejake pripominky?
 
+> Bylo by mozne otocit default razeni? tj. zobrazovat na prvni strance nejcerstvejsi informace
+
 - Jaky vyznam ma hledani podle realmu?
 - Rozhrani je navrzene tak, ze backend neumoznuje hledat, aniz by bylo zadano uzivatelske jmeno.
 - Tudiz realm bude pro vsechny(?) dostupne zaznamy stejny jako domenova cast uzivatelskeho jmena.
 
+> Tak tohle souvisi se shared mac, vyse. Tohle omezeni mi nejak uniklo a prilis mi nedava smysl. Muzete rozvest proc je takove omezeni nutne? Hledani podle realmu by umoznilo vypsat si aktualni autentizace uzivatelu z nejake instituce. Hledani podle MAC adresy mi prijde docela prirozeny pozadavek.
 
 > neslo by v uzivatelskem jmene hledani podle reg vyrazu?
 
@@ -314,6 +319,7 @@ potencialni inspirace:
   - Pravdepodobne by bylo nutne generovat dve rozdilne stranky pro uzivatele/admina nebo jinym zpusobem zajistit, ze uzivatel nebude mit k takove funkcionalite pristup.
   - Jak moc je tato funkcionalita dulezita?
 
+> Me to neprijde tak slozite, po odeslani do backendu se podivate na opravneni uzivatele. pokud neni admin a nesedi uzivatelske jmeno tak hledani zamitnete. V cem vidite problem? Prezijem bez toho, ale prijde mi to nekonzistetni se zbytkem aplikace.
 
 ## Rozhrani pro roaming
 
