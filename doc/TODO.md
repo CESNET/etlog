@@ -292,7 +292,7 @@ potencialni inspirace:
 [rozhrani](https://etlog.cesnet.cz/#/shared_mac)
 
 - nejake pripominky?
-- jak resit prokliknuti na hledani, kdyz je vybran pouze uzivatel?
+- jak resit prokliknuti na hledani, kdyz je vybran pouze adresa?
   - tento pripad je stale problemovy
 
 ## Obecne vyhledavani
