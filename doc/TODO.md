@@ -290,6 +290,8 @@ potencialni inspirace:
 - V db jsou pouze data s uspesnymi autentizacemi - myslim, ze narazite na problem casoveho omezeni.
 - kdyz vybereru data za posledni dva dny a vyradim anonymni, uz tam ani jedno nemam.
 
+> To mi nedoslo. Pak v tomhle bode vse OK.
+
 ## sdilene mac adresy (shared mac)
 
 [rozhrani](https://etlog.cesnet.cz/#/shared_mac)
