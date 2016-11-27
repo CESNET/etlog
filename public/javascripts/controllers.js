@@ -68,8 +68,8 @@ function init_search($scope, $http)
 // --------------------------------------------------------------------------------------
 function handle_sort($scope, $http, data_func)
 {
-  $scope.sort = "&sort=+timestamp";     // sort descending by timestamp
-  $scope.sort_dir = true;   // just for frontend icons
+  $scope.sort = "&sort=-timestamp";     // sort asccending by timestamp
+  $scope.sort_dir = false;   // just for frontend icons
 
   $scope.change_sort = function() {
     if($scope.sort == "&sort=-timestamp")
