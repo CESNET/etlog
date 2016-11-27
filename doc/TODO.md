@@ -287,6 +287,8 @@ potencialni inspirace:
 [rozhrani](https://etlog.cesnet.cz/#/shared_mac)
 
 - nejake pripominky?
+- jak resit prokliknuti na hledani, kdyz je vybran pouze uzivatel?
+  - tento pripad je stale problemovy
 
 ## Obecne vyhledavani
 
