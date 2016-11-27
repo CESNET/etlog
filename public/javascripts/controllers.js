@@ -125,8 +125,27 @@ function set_params($scope, $stateParams)
     }
   }
 
-  if(!empty)    // params not empty
-    $scope.submit();  // automatically click search button
+  if(!empty) {    // params not empty
+    $scope.$watch('main_form', function(main_form) {
+      if(main_form)
+        $scope.submit(main_form); // automatically click search button when form is ready
+      //console.log($scope.main_form);
+
+      // TODO
+
+      //console.log(main_form.$valid);
+      //console.log(main_form.$invalid);
+      //console.log(main_form);
+      //console.log(main_form.$valid);
+      //console.log(main_form.$invalid);
+      //console.log(main_form.$valid == true);
+
+      //if(main_form.$valid) {
+      //  console.log("submitting");
+      //  $scope.submit(main_form); // automatically click search button when form is ready
+      //}
+    });
+  }
 }
 // --------------------------------------------------------------------------------------
 // get logs collection data
@@ -143,6 +162,10 @@ function get_logs($scope, $http, qs, callback)
   .then(function(response) {
     $scope.table_data = transform_timestamp(response.data);
     callback($scope);
+  }, function (response) {
+    $scope.error = true;   // error occured
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
   });
 }
 // --------------------------------------------------------------------------------------
@@ -161,12 +184,16 @@ function transform_timestamp(data)
 // --------------------------------------------------------------------------------------
 function handle_search_submit($scope, $http, data_func, paging, coll_name)
 {
-  $scope.submit = function () {
-    $scope.base_qs = build_qs_search($scope.form_data);  // create query string
-    $scope.qs = $scope.base_qs;
-    get_total_items($scope, $http, coll_name);        // set number of total items for paging
-    $scope.get_page($http, $scope.paging.current_page, data_func);
-    $scope.submitted = true;
+  $scope.submit = function (form) {
+    if(form.$valid) {
+      $scope.error = false; // begin submitting - no error yet
+
+      $scope.base_qs = build_qs_search($scope.form_data);  // create query string
+      $scope.qs = $scope.base_qs;
+      get_total_items($scope, $http, coll_name);        // set number of total items for paging
+      $scope.get_page($http, $scope.paging.current_page, data_func);
+      $scope.submitted = true;
+    }
   }
 }
 // --------------------------------------------------------------------------------------
@@ -961,7 +988,7 @@ function handle_pagination($scope, $http, data_func)
     var qs = $scope.add_paging($scope.qs, $scope.paging);    // save qs to $scope
 
     data_func($scope, $http, qs, function ($scope) { // get data from api
-    // unset loading
+      // unset loading
       $scope.paging.loading = false;
 
       // scroll to table
@@ -1033,13 +1060,15 @@ function init($scope, $http)
 // --------------------------------------------------------------------------------------
 function handle_table_submit($scope, $http, data_func, paging, form_items, coll_name)
 {
-  $scope.submit = function () {
-    add_options($scope);        // add optional form fields
-    $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
-    $scope.qs = $scope.base_qs;
-    get_total_items($scope, $http, coll_name);        // set number of total items for paging
-    $scope.get_page($http, $scope.paging.current_page, data_func);
-    $scope.submitted = true;
+  $scope.submit = function (form) {
+    if(form.$valid) {
+      add_options($scope);        // add optional form fields
+      $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
+      $scope.qs = $scope.base_qs;
+      get_total_items($scope, $http, coll_name);        // set number of total items for paging
+      $scope.get_page($http, $scope.paging.current_page, data_func);
+      $scope.submitted = true;
+    }
   }
 }
 // --------------------------------------------------------------------------------------
@@ -1071,17 +1100,19 @@ function get_total_items($scope, $http, coll_name)
 // --------------------------------------------------------------------------------------
 function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
 {
-  $scope.submit = function () {
-    // set loading animation
-    $scope.loading = true;
-    add_options($scope);        // add optional form fields
-    get_days($scope);                           // get array of days in specified interval
-    qs = build_qs($scope.form_data, form_items);  // create query string
-    data_func($scope, $http, qs, $q, function ($scope) { // get data from api
-      graph_func($scope);    // draw graph
-      // unset loading animation
-      $scope.loading = false;
-    });
+  $scope.submit = function (form) {
+    if(form.$valid) {
+      // set loading animation
+      $scope.loading = true;
+      add_options($scope);        // add optional form fields
+      get_days($scope);                           // get array of days in specified interval
+      qs = build_qs($scope.form_data, form_items);  // create query string
+      data_func($scope, $http, qs, $q, function ($scope) { // get data from api
+        graph_func($scope);    // draw graph
+        // unset loading animation
+        $scope.loading = false;
+      });
+    }
   }
 }
 // --------------------------------------------------------------------------------------
@@ -1147,21 +1178,6 @@ function setup_calendars($scope)
     maxDate: new Date(),                    // today
     minDate: $scope.db_data.mac_count.min   // min from db
   });
-
-  // flatpickr should be able to automatically set default date by code below
-  // but it is not working at the moment
-  //flatpickr("#min_date", {
-  //  defaultDate: 1477697199863
-  //});
-
-  // alternative hand solution
-  var min_date = document.getElementById("min_date");
-  var next = min_date.nextElementSibling;
-  next.setAttribute("value", $scope.form_data.min_date);
-
-  var max_date = document.getElementById("max_date");
-  var next = max_date.nextElementSibling;
-  next.setAttribute("value", $scope.form_data.max_date);
 }
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
@@ -1963,7 +1979,7 @@ angular.module('etlog').controller('roaming_most_provided_controller', ['$scope'
   addiational_fields_roaming_most($scope);   // set up additional form fields
   $scope.graph_title = "organizace nejvíce poskytující roaming";
   $scope.title = "etlog: organizace nejvíce poskytující roaming";
-  handle_submit($scope, $http, $q, get_roaming_most_provided, graph, [ 'inst_name', 'provided_count', 'used_count' ]);
+  handle_submit($scope, $http, $q, get_roaming_most_provided, graph_test, [ 'inst_name', 'provided_count', 'used_count' ]);
 }]);
 // --------------------------------------------------------------------------------------
 // TODO
@@ -2132,16 +2148,18 @@ function build_sorted_qs(sort_key, inst_count)
 // --------------------------------------------------------------------------------------
 function handle_common_submit($scope, $http, $q, data_func, graph_func, coll_name, sort_key)
 {
-  $scope.submit = function () {
-    $scope.loading = true;
-    get_days($scope);                           // get array of days in specified interval
-    $scope.base_qs = build_sorted_qs(sort_key, $scope.form_data.inst_count);//
-    $scope.qs = $scope.base_qs;
-    data_func($scope, $http, $scope.qs, $q, function ($scope) { // get data from api
-      graph_func($scope);    // draw graph
-      $scope.loading = false;
-      $scope.submitted = true; // form has not been submitted yet
-    });
+  $scope.submit = function (form) {
+    if(form.$valid) {
+      $scope.loading = true;
+      get_days($scope);                           // get array of days in specified interval
+      $scope.base_qs = build_sorted_qs(sort_key, $scope.form_data.inst_count);//
+      $scope.qs = $scope.base_qs;
+      data_func($scope, $http, $scope.qs, $q, function ($scope) { // get data from api
+        graph_func($scope);    // draw graph
+        $scope.loading = false;
+        $scope.submitted = true; // form has not been submitted yet
+      });
+    }
   }
 }
 // --------------------------------------------------------------------------------------
@@ -2326,6 +2344,176 @@ function get_text($scope)
 }
 // --------------------------------------------------------------------------------------
 
+// --------------------------------------------------------------------------------------
+// draw graph with data from api
+// --------------------------------------------------------------------------------------
+function graph_test($scope)
+{
+  // taken from
+  // https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
+  // http://bl.ocks.org/Caged/6476579
+  // http://bl.ocks.org/biovisualize/5372077
+
+  // http://stackoverflow.com/questions/21639305/d3js-take-data-from-an-array-instead-of-a-file
+  // ============================================================================
+
+  // set the dimensions and margins of the graph
+  var margin = {top: 50, right: 20, bottom: 100, left: 80};
+  var col_length = 40;  // column length
+
+  // dynamically determine graph width by size of data
+  var width = $scope.graph_data.length * col_length - margin.left - margin.right;
+  var height = 530 - margin.top - margin.bottom;
+  var data = $scope.graph_data;
+
+  // graph width is set to fit the page width
+  width = $(window).width() - 130;      // compensate for y axis labels
+
+  // ==========================================================
+
+  // set the ranges
+  //var x = d3.scaleBand()
+  //          .range([0, width])
+  //          .padding(0.1);
+  
+ 
+  var x0 = d3.scaleTime()
+      .range([0, width]);
+ 
+ 
+  // set the ranges
+  var x1 = d3.scaleBand()
+            .range([0, width])
+            .padding(0.1);
+
+  
+  var y = d3.scaleLinear()
+            .range([height, 0]);
+ 
+  var parseTime = d3.timeParse("%d.%m.%Y");
+
+  // ==========================================================
+            
+  var svg = d3.select("#graph");
+
+  if(svg.html() == "") {    // no graph present yet
+    svg = svg.append("svg");
+  }
+  else {    // graph already present
+    // TODO - transition / animation ?
+    svg = svg.selectAll("div > svg").remove("svg"); // delete it
+    svg = d3.select("#graph").append("svg");        // and create again
+  }
+ 
+  // append the svg object to the body of the page
+  // append a 'group' element to 'svg'
+  // moves the 'group' element to the top left margin
+  svg = svg
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", 
+            "translate(" + margin.left + "," + margin.top + ")");
+
+  // ==========================================================
+
+  // tooltip
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+    return "<strong>počet:</strong> <span style='color:red'>" + d.value + "</span>";    // TODO - generic tooltip text ?
+  })
+
+  svg.call(tip);
+
+  // ==========================================================
+ 
+  // Scale the range of the data in the domains
+  //x.domain(data.map(function(d) { return d.timestamp; }));
+  //x.domain(d3.extent(data, function(d) { return d.timestamp; }));
+  x1.domain(data.map(function(d) { return d.timestamp; }));
+  x0.domain([data[0].timestamp, data[data.length - 1].timestamp]);
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+  // TODO - dynamic data update -> http://bl.ocks.org/biovisualize/5372077 ?
+
+  // ==========================================================
+
+  var formatter = function(d){
+    var format = d3.format("d")
+    return format(d);
+  }
+
+  function get_unique(value, index, self) { return self.indexOf(value) === index; }
+
+  var y_unique = y.ticks().map(formatter).filter(get_unique);
+  // ==========================================================
+  
+  //data.map(function(d) { 
+  //  d.timestamp = parseTime(d.timestamp);
+  //});
+  
+  // ==========================================================
+
+
+
+  // append the rectangles for the bar chart
+  svg.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x1(d.timestamp); })
+      .attr("width", x1.bandwidth())
+      .attr("y", function(d) { return y(d.value); })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+  // ==========================================================
+
+  // add the x Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x1))
+      // rotate text by 60 degrees
+      .selectAll("text")
+      .attr("y", 0)
+      .attr("x", 9)
+      .attr("dy", ".35em")
+      .attr("transform", "rotate(60)")
+      .style("text-anchor", "start");
+
+  // add the y Axis
+  svg.append("g")
+      .call(d3.axisLeft(y)
+      .tickFormat(d3.format("d")) // custom format - disable comma for thousands
+      .tickValues(y_unique));     // unique y values
+
+  // set graph title
+  svg.append("text")
+    .attr("x", (width / 2))             
+    .attr("y", 0 - (margin.top / 2))
+    .attr("text-anchor", "middle")  
+    .style("font-size", "20px")
+    .style("text-decoration", "underline")  
+    .text($scope.graph_title);
+
+  // determine min and max dates for graph title
+  var min = $scope.form_data.min_date.split('-')[2] + "." + $scope.form_data.min_date.split('-')[1] + "." + $scope.form_data.min_date.split('-')[0];
+  var max = $scope.form_data.max_date.split('-')[2] + "." + $scope.form_data.max_date.split('-')[1] + "." + $scope.form_data.max_date.split('-')[0];
+
+  // set graph dates
+  svg.append("text")
+    .attr("x", (width / 2))
+    .attr("y", 25 - (margin.top / 2))   // place under title
+    .attr("text-anchor", "middle")
+    .style("font-size", "20px")
+    .style("text-decoration", "underline")
+    .text(min + " - " + max);
+}
+// --------------------------------------------------------------------------------------
 
 
 
