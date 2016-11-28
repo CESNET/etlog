@@ -277,12 +277,20 @@ potencialni inspirace:
 
 - Vyreseno.
 
+- Heat mapa ma byt normalizovana pres mac/den?
+
 
 ### Obecne ke grafum
 
 > vyresit x-ovou osu
 
+- ukazka na https://etlog.cesnet.cz/#/roaming_most_provided
+- vylepsit?
+
 > zkusit pridat nejakou mrizku -> oddeleni tydnu(mesicu ... ) na ose x
+- jak konkretne ma byt mrizka udelana?
+  - pro kazdou vyznacenou hodnotu na ose x?
+  - napevno pro tydny/mesice?
 
 
 ## pocet zarizeni > 2 na jednoho uzivatele (mac count)
@@ -316,6 +324,8 @@ potencialni inspirace:
 
 > Bylo by mozne otocit default razeni? tj. zobrazovat na prvni strance nejcerstvejsi informace
 
+- hotovo.
+
 - Jaky vyznam ma hledani podle realmu?
 - Rozhrani je navrzene tak, ze backend neumoznuje hledat, aniz by bylo zadano uzivatelske jmeno.
 - Tudiz realm bude pro vsechny(?) dostupne zaznamy stejny jako domenova cast uzivatelskeho jmena.
@@ -332,79 +342,33 @@ potencialni inspirace:
 
 > Me to neprijde tak slozite, po odeslani do backendu se podivate na opravneni uzivatele. pokud neni admin a nesedi uzivatelske jmeno tak hledani zamitnete. V cem vidite problem? Prezijem bez toho, ale prijde mi to nekonzistetni se zbytkem aplikace.
 
-## Rozhrani pro roaming
 
-- [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used)
-- [rozhrani](https://etlog.cesnet.cz/#/roaming_most_provided)
-- Ponechat?
-- Prejmenovat?
+## organizace nejvíce využívající roaming
 
-> Sloucit v jeden. Viz sekce "aktivita CZ eduroamu"
+[rozhrani](https://etlog.cesnet.cz/#/orgs_roaming_most_used)
 
-- [rozhrani](https://etlog.cesnet.cz/#/roaming_most_used_test)
-
-> Prejmenovat na "organizace nejvíce poskytující konektivitu" Ponekud to nesedei s tim URL.
-
-- [rozhrani] (https://etlog.cesnet.cz/#/roaming_most_provided_test)
-
-> Prejmenovat na "organizace nejvíce využívající roaming"
-
-- Ponechat?
-- Prejmenovat?
-
-> Ponechat! Je to pekne.
+- nejake pripominky?
 
 
-## Instituce nejvice cerpajici roaming
+## organizace nejvíce poskytující konektivitu
 
-> Data jsou obracene -> prejmenovat nejvice vyuzivany a poskytovany
-> Kdyz je jednou nastaveno manualne datum, uz nefunguje prepinani pomoci radio buttonu
+[rozhrani](https://etlog.cesnet.cz/#/orgs_roaming_most_provided)
 
-> Ve smyslu které instituce=REALM (prostřednctvím svých uživatelú) nejvíce využívají eduroamu. Zase grupováno přes MAC/den. Časový interval by bylo pěkné mít volitelný + nějakou předvolbu 1/3/12měs. Úplně nevím co mislíte těmi "povinnými institucemi". Množství polože na ose X by mohla regulovat parametrem, tj. zvolit si že chci nakreslit graf s max 25 institucemi. I tady mi přijde užitečné mít data k dispozici ve formě tabulky. Také by bylo zajímavé vidět grafy pro každý jednotlivý REALM v čase. Viz následující bod.
-
-
-- Prosim o komentar k rozhranim - jake ponechat, jestli udelat nove (prosim konkretni specifikaci, co a jak ma rozhrani delat), ....
-
-
-## Instituce nejvice poskytujici roaming
-
-> Instituce=VISINST které nejvíce poskytují konektivitu, loginy grupovány MAC=CSI/den. Opět užitečná tabulka a graf pro X nej více využívaných. Tuhle funkcionalitu dnes nemám. Mám grafy toho jak jsou jednotlivé instituce využívány v čase, to je zde: https://ermon.cesnet.cz/roaming/ tohle je určitě také zajímavé.
-
-- Prosim o komentar k rozhranim - jake ponechat, jestli udelat nove (prosim konkretni specifikaci, co a jak ma rozhrani delat), ....
+- nejake pripominky?
 
 
 ## aktivita CZ eduroamu
 
-> Nová sekce bez rozlišení VISINST/REALM jen grupováno přes MAC/CSI/den.
+[rozhrani](https://etlog.cesnet.cz/#/roaming_activity)
 
-- Jak ma vysledny graf vypadat?
-- vyuzit napr https://bl.ocks.org/mbostock/3887051 ?
+- nejake pripominky?
 
-> Ja bych si představoval že vezmete tohle: https://etlog.cesnet.cz/#/roaming_most_provided 
-
-> vyhodíte Počet využití:, Počet poskytnutí:, Poměr:, Jméno instituce:
-
-> bude tam Realm: a Navštívená institiuce, casovy interval + rychla volba mesic/3/rok
-
-> kdyz nevypnite ani realm ani vis inst tak získáme graf jak moc naši lidé roamují v čase
-
-> kdyz vyplnime realm = cesnet.cz tak získáme graf jak moc lidé z CESNETu roamují v čase
-
-> kdyz vyplnime vis.inst = cesnet.cz tak získáme graf jak moc ostatní uživatelé využívají eduroam na CESNETu.
-
-> je potreba vyresit tu osu X aby to bylo prehlednejsi
 
 ## neuspesna prihlaseni
 
 [rozhrani](https://etlog.cesnet.cz/#/failed_logins)
 
-- Co ma vlastne graf zobrazovat?
-  - pocet neuspesnych prihlaseni pro vsechny dny v zadanem intervalu?
-  - pocet neuspesnych prihlaseni pro danou instituci pro vsechny dny v zadanem intervalu?
-  - pocet neuspesnych prihlaseni pro daneho uzivatele pro vsechny dny v zadanem intervalu?
-  - ... ?
-- povinne instituce, pro kterou maji byt data zobrazena?
-- povinne uzivate, pro ktereho maji byt data zobrazena?
+- nejake pripominky?
 
 
 ## Uspesna prihlaseni
