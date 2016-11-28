@@ -91,7 +91,7 @@ function setup_calendars_time($scope)
     defaultDate: $scope.form_data.min_date,
     altInputClass : "form-control",
     altInput: true,
-    altFormat: "d.m.Y",
+    altFormat: "H:i d.m.Y",
     maxDate: new Date(),                    // today
     minDate: $scope.db_data.mac_count.min,   // min from db
     enableTime: true,
@@ -103,7 +103,7 @@ function setup_calendars_time($scope)
     defaultDate: $scope.form_data.max_date,
     altInputClass : "form-control",
     altInput: true,
-    altFormat: "d.m.Y",
+    altFormat: "H:i d.m.Y",
     maxDate: new Date(),                    // today
     minDate: $scope.db_data.mac_count.min,   // min from db
     enableTime: true,
