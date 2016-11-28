@@ -9,7 +9,8 @@ var logs_schema = mongoose.Schema({
   csi : String,
   pn : String,
   result : String
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.logs_schema = logs_schema;
 var logs = mongoose.model('logs', logs_schema, 'logs');
@@ -18,7 +19,8 @@ exports.logs = logs;
 var users_mac_schema = mongoose.Schema({
   username : String,
   addrs : Array
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.users_mac_schema = users_mac_schema;
 var users_mac = mongoose.model('users_mac', users_mac_schema, 'users_mac');
@@ -26,7 +28,8 @@ exports.users_mac = users_mac;
 // --------------------------------------------------------------------------------------
 var privileged_ips_schema = mongoose.Schema({
   ip : String
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.privileged_ips_schema = privileged_ips_schema;
 var privileged_ips = mongoose.model('privileged_ips', privileged_ips_schema, 'privileged_ips');
@@ -37,7 +40,8 @@ var mac_count_schema = mongoose.Schema({
   count     : Number,
   addrs     : Array,
   timestamp : Date
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.mac_count_schema = mac_count_schema;
 var mac_count = mongoose.model('mac_count', mac_count_schema, 'mac_count');
@@ -48,7 +52,8 @@ var roaming_schema = mongoose.Schema({
   used_count     : Number,
   provided_count : Number,
   timestamp      : Date
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.roaming_schema = roaming_schema;
 var roaming = mongoose.model('roaming', roaming_schema, 'roaming');
@@ -69,7 +74,8 @@ exports.failed_logins = failed_logins;
 var realm_admins_schema = mongoose.Schema({
   realm       : String,
   admins      : Array
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.realm_admins_schema = realm_admins_schema;
 var realm_admins = mongoose.model('realm_admins', realm_admins_schema, 'realm_admins');
@@ -80,7 +86,8 @@ var shared_mac_schema = mongoose.Schema({
   mac_address : String,
   users       : Array,
   count       : Number
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.shared_mac_schema = shared_mac_schema;
 var shared_mac = mongoose.model('shared_mac', shared_mac_schema, 'shared_mac');
@@ -88,9 +95,10 @@ exports.shared_mac = shared_mac;
 // --------------------------------------------------------------------------------------
 var heat_map_schema = mongoose.Schema({
   timestamp     : Date,
-  inst_name     : String,
+  realm         : String,
   institutions  : Array
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.heat_map_schema = heat_map_schema;
 var heat_map = mongoose.model('heat_map', heat_map_schema, 'heat_map');
@@ -98,7 +106,8 @@ exports.heat_map = heat_map;
 // --------------------------------------------------------------------------------------
 var realms_schema = mongoose.Schema({
   realm     : String
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.realms_schema = realms_schema;
 var realms = mongoose.model('realms', realms_schema, 'realms');
@@ -108,7 +117,8 @@ var succ_logins_schema = mongoose.Schema({
   timestamp     : Date,
   username      : String,
   count         : Number
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.succ_logins_schema = succ_logins_schema;
 var succ_logins = mongoose.model('succ_logins', succ_logins_schema, 'succ_logins');
