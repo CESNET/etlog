@@ -13,6 +13,7 @@ router.get('/', function(req, res, next) {
   ret.failed_logins = {};
   ret.shared_mac = {};
   ret.heat_map = {};
+  ret.succ_logins = {};
 
   async.series([
     function(done) {
