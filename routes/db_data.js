@@ -99,6 +99,20 @@ router.get('/', function(req, res, next) {
         done(null);
       });
     },
+    function(done) {
+      req.db.succ_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+      { $project : { timestamp : 1, _id : 0 } } ],
+      function(err, doc) {
+        ret.succ_logins.min = convert(doc[0].timestamp).toISOString();
+      });
+
+      req.db.succ_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+      { $project : { timestamp : 1, _id : 0 } } ],
+      function(err, doc) {
+        ret.succ_logins.max = convert(doc[0].timestamp).toISOString();
+        done(null);
+      });
+    },
     ],
     function(err1, items) {
       if(err1) {
