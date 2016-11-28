@@ -56,9 +56,9 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
     title : 'etlog: mapa roamingu'
   })
 
-  .state('org_roaming_most_used', {
-    url: '/org_roaming_most_used',
-    templateUrl: '/partials/org_roaming_most_used.html',
+  .state('orgs_roaming_most_used', {
+    url: '/orgs_roaming_most_used',
+    templateUrl: '/partials/orgs_roaming_most_used.html',
     title : 'etlog: '
   })
 
