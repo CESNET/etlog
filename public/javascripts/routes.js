@@ -59,13 +59,13 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   .state('orgs_roaming_most_used', {
     url: '/orgs_roaming_most_used',
     templateUrl: '/partials/orgs_roaming_most_used.html',
-    title : 'etlog: '
+    title : 'etlog: organizace nejvíce využívající roaming'
   })
 
   .state('orgs_roaming_most_provided', {
     url: '/orgs_roaming_most_provided',
     templateUrl: '/partials/orgs_roaming_most_provided.html',
-    title : 'etlog: '
+    title : 'etlog: organizace nejvíce poskytující konektivitu'
   })
 
   .state('roaming_activity', {

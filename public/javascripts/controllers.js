@@ -2113,7 +2113,7 @@ angular.module('etlog').controller('roaming_most_used_test_controller', ['$scope
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
     inst_count : 25
   };
-  $scope.graph_title = "Nejvíce využívaný roaming";
+  $scope.graph_title = "organizace nejvíce využívající roaming";
   $scope.title = "etlog: organizace nejvíce využívající roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
@@ -2249,8 +2249,8 @@ angular.module('etlog').controller('roaming_most_provided_test_controller', ['$s
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
     inst_count : 25
   };
-  $scope.graph_title = "Nejvíce poskytovaný roaming";
-  $scope.title = "etlog: organizace nejvíce poskytující roaming";
+  $scope.graph_title = "organizace nejvíce poskytující konektivitu";
+  $scope.title = "etlog: organizace nejvíce poskytující konektivitu";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, graph, "roaming_most_provided", "provided_count");
@@ -2500,6 +2500,26 @@ function graph_test($scope)
       .attr("height", function(d) { return height - y(d.value); })
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide);
+
+  // ==========================================================
+  // add grid
+
+  // TODO
+
+  //// gridlines in x axis function
+  //function make_x_gridlines() {
+  //  return d3.axisBottom(x)
+  //    .ticks(5)
+  //}
+
+  //// add the X gridlines
+  //svg.append("g")
+  //    .attr("class", "grid")
+  //    .attr("transform", "translate(0," + height + ")")
+  //    .call(make_x_gridlines()
+  //    .tickSize(-height)
+  //    .tickFormat(""))
+
 
   // ==========================================================
 
