@@ -792,7 +792,7 @@ function transform_data(input, output, realms, callback)
     
     for(var realm in realms) {      // iterate all realms - all data must be defined
 
-      for(var sub in input[item].institutions) {    // iterate all insitutions for current realm
+      for(var sub in input[item].institutions) {    // iterate all institutions for current realm
         var val = 0;
 
         if(input[item].institutions[sub].realm == realms[realm])
@@ -2051,11 +2051,18 @@ function sum_provided_count(data)
 // TODO
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
-  init($scope, $http);
-  addiational_fields_roaming_activity($scope);   // set up additional form fields
+  $scope.timestamp = "1 měsíc";       // one month
+  $scope.timestamp_opts = [ "1 měsíc", "3 měsíce", "12 měsíců" ]; // 1, 3 or 12 months
+  $scope.form_data = {
+    min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
+    max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
+  };
   $scope.graph_title = "aktivita CZ eduroamu";
   $scope.title = "etlog: aktivita CZ eduroamu";
-  //handle_submit($scope, $http, $q, get_roaming, graph, []);
+  init_calendar($scope, $http);
+  set_calendar_opts($scope);
+  addiational_fields_roaming_activity($scope);   // set up additional form fields
+  handle_submit($scope, $http, $q, get_roaming, graph, ["realm", "visinst"]);
 }]);
 // --------------------------------------------------------------------------------------
 // TODO
@@ -2091,18 +2098,60 @@ function addiational_fields_roaming_activity($scope)
 // --------------------------------------------------------------------------------------
 function get_roaming($scope, $http, qs, $q, callback)
 {
+  if(qs.indexOf("realm") == -1 && qs.indexOf("visinst") == -1)
+    get_roaming_all($scope, $http, qs, $q, callback);
+  else if(qs.indexOf("realm") != -1 && qs.indexOf("visinst") == -1) {
+    qs = qs.replace('realm', 'inst_name');  // backend uses inst_name
+    get_roaming_most_used($scope, $http, qs, $q, callback);
+  }
+  else if(qs.indexOf("realm") == -1 && qs.indexOf("visinst") != -1) {
+    qs = qs.replace('visinst', 'inst_name');  // backend uses inst_name
+    get_roaming_most_provided($scope, $http, qs, $q, callback);
+  }
+  else {
+    qs = qs.replace('visinst', 'institutions.realm');  // replace to match backend
+    get_heat_map_realm_visinst($scope, $http, qs, $q, callback);
+  }
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function get_roaming_all($scope, $http, qs, $q, callback)
+{
+  get_roaming_most_provided($scope, $http, qs, $q, function($scope) {
+    $scope.tmp_data = $scope.graph_data;
+
+    get_roaming_most_used($scope, $http, qs, $q, function($scope) {
+      sum_data($scope, $scope.tmp_data);
+      callback($scope);
+    });
+  });
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function sum_data($scope, data)
+{
+  for(var item in data) {
+    $scope.graph_data[item].value += data[item].value;
+  }
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function get_heat_map_realm_visinst($scope, $http, qs, $q, callback)
+{
   var chain = $q.when();
   $scope.graph_data = [];
 
   var ts = "timestamp=";    // timestamp
-
-  // TODO
+  var visinst = get_visinst($scope, qs);
 
   $scope.days.forEach(function (day, index) {
     chain = chain.then(function(){
       return $http({
         method  : 'GET',
-        url     : '/api/roaming/most_provided/' + qs + ts + day     // TODO - limit on fields to speed up ?
+        url     : '/api/heat_map/' + qs + ts + day
       })
       .then(function(response) {
         // config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
@@ -2118,7 +2167,7 @@ function get_roaming($scope, $http, qs, $q, callback)
         
         ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
         $scope.graph_data.push({ timestamp : ts,
-                           value : sum_provided_count(response.data)});
+                           value : sum_heat_map_count(response.data, visinst)});
       });
     });
   });
@@ -2127,6 +2176,54 @@ function get_roaming($scope, $http, qs, $q, callback)
   chain.then(function() {
     callback($scope);
   });
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function sum_heat_map_count(data, visinst)
+{
+  var cnt = 0;
+
+  if(visinst instanceof RegExp) {   // regex
+    for(var item in data) {     // iterate data
+      console.log("iterating data");
+
+      for(var inst in data[item].institutions) {        // iterate institutions
+        if(visinst.test(data[item].institutions[inst].realm) == true)  {   //  visinst matches
+          cnt += data[item].institutions[inst].count;
+        }
+      }
+    }
+  }
+
+  else {    // string
+    for(var item in data) {     // iterate data
+      for(var inst in data[item].institutions) {        // iterate institutions
+        if(visinst == data[item].institutions[inst].realm)  {   //  visinst matches
+          cnt += data[item].institutions[inst].count;
+        }
+      }
+    }
+  }
+
+  //console.log(cnt);
+
+  return cnt;
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function get_visinst($scope, query_string)
+{
+  var ret = query_string.match(/institutions\.realm=[^&]*/)[0].replace('institutions.realm=', '');
+
+  if($scope.options.visinst.sel == "like") {    // regex
+    ret = ret.replace(/\//g, '');
+    return new RegExp(ret);
+  }
+  else {    // string
+    return ret;
+  }
 }
 // --------------------------------------------------------------------------------------
 // TODO
@@ -2276,7 +2373,6 @@ function get_roaming_most_used_count($scope, $http, qs, $q, callback)
 angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
   $scope.timestamp_opts = [ "1 měsíc", "3 měsíce", "12 měsíců" ]; // 1, 3 or 12 months
-  $scope.page_sizes = [ 10, 20, 50, 100 ];
   $scope.form_data = {
     min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
