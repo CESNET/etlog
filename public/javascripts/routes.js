@@ -56,22 +56,22 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
     title : 'etlog: mapa roamingu'
   })
 
-  .state('roaming_most_used_test', {
-    url: '/roaming_most_used_test',
-    templateUrl: '/partials/roaming_most_used_test.html',
-    title : 'etlog: Instituce nejvíce čerpající roaming'
+  .state('org_roaming_most_used', {
+    url: '/org_roaming_most_used',
+    templateUrl: '/partials/org_roaming_most_used.html',
+    title : 'etlog: '
   })
 
-  .state('roaming_most_provided_test', {
-    url: '/roaming_most_provided_test',
-    templateUrl: '/partials/roaming_most_provided_test.html',
-    title : 'etlog: Instituce nejvíce poskytující roaming'
+  .state('orgs_roaming_most_provided', {
+    url: '/orgs_roaming_most_provided',
+    templateUrl: '/partials/orgs_roaming_most_provided.html',
+    title : 'etlog: '
   })
 
   .state('roaming_activity', {
     url: '/roaming_activity',
     templateUrl: '/partials/roaming_activity.html',
-    title : 'etlog: aktivita eduroamu'
+    title : 'etlog: aktivita CZ eduroamu'
   })
 
   .state('test', {
