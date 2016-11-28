@@ -270,7 +270,13 @@ potencialni inspirace:
 
 > Myslim ze CVS format ma mit nadpisy bunek na prvnim radku a na dalsich radcich pak hodnoty. Takhle jak je to udelano to vyzaduje dalsi zpracovani necim sofistikovanejsim nez je tabulkovy procesor.
 
+- Format predelan, potencialni problemu muze ale nastat v rozhrani shared mac nebo mac count.
+- Je treba dal resit?
+
 > V rozhrani mac count & shared mac je v seznamu pravem sloupci klikatelna mezera. myslim ze jste to zminioval uz posledne ze si s tim nevite rady. je to relativne otravne kdyz by jste rad par tech adres zkopiroval. ted to vpodstate neni mozne.
+
+- Vyreseno.
+
 
 ### Obecne ke grafum
 
