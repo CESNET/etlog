@@ -14,6 +14,14 @@ div.container-fluid(ng-controller="roaming_activity_controller")
             div(layout-gt-xs='row')
               input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
  
+        .form-group
+          label.col-sm-2.control-label
+          .col-xs-2
+            div(layout-gt-xs='row')
+              .radio(ng-repeat='opt in timestamp_opts')
+                input(type='radio', name='timestamp', ng-model='$parent.timestamp', ng-value='opt', ng-click='timestamp_changed()')
+                | {{opt}}
+
         div(ng-show='options_added')
           .form-group
             label.col-sm-2.control-label Realm:
