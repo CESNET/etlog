@@ -23,7 +23,7 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
         li(ng-class='{ active: is_active(["/detection_data"])}')
           a(ui-sref='detection_data') data k detekci
 
-        li#roaming(ng-class='{ active: is_active(["/roaming_activity", "/roaming_most_provided", "/roaming_most_provided", "/roaming_most_used", "/roaming_most_provided_test", "/heat_map"])}')
+        li#roaming(ng-class='{ active: is_active(["/roaming_activity", "/heat_map", "/orgs_roaming_most_provided", "/orgs_roaming_most_used" ])}')
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             | roaming
             span.caret
