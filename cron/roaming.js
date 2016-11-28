@@ -99,9 +99,9 @@ function process_data(database, min_date, max_date, done)
   });
 }
 // --------------------------------------------------------------------------------------
-// get data for organisations most providing roaming
+// get data for organisations most using roaming
 // --------------------------------------------------------------------------------------
-function get_most_provided(database, min_date, max_date, done)
+function get_most_used(database, min_date, max_date, done)
 {
   database.logs.aggregate(
   [ 
@@ -144,14 +144,15 @@ function get_most_provided(database, min_date, max_date, done)
             $sum : 1        // count number of records for given realm
           } 
       } 
-  }
+  },
+  { $project : { inst_name : "$_id.realm", used_count : "$count", _id : 0 } }
   ],
     function(err, items) {
       if(err == null) {
         if(done)    // processing older data
-          save_to_db_callback(database, transform_provided(items, min_date), done);
+          save_to_db_callback(database, transform(items, min_date), done);
         else    // current data processing, no callback is needed
-          save_to_db(database, transform_provided(items, min_date));
+          save_to_db(database, transform(items, min_date));
       }
       else
         console.error(err);
@@ -163,7 +164,7 @@ function get_most_provided(database, min_date, max_date, done)
 function save_to_db(database, items)
 {
   for(var item in items) {  // any better way to do this ?
-    database.roaming.update(items[item], items[item], { upsert : true },
+    database.roaming.update({ timestamp : items[item].timestamp, inst_name : items[item].inst_name }, items[item], { upsert : true },
     function(err, result) {
       if(err)
         console.error(err);
@@ -175,7 +176,7 @@ function save_to_db(database, items)
 // --------------------------------------------------------------------------------------
 function save_to_db_callback(database, items, done) {
   async.forEachOf(items, function (value, key, callback) {
-    database.roaming.update(items[key], items[key], { upsert : true },
+    database.roaming.update({ timestamp : items[key].timestamp, inst_name : items[key].inst_name }, items[key], { upsert : true },
     function(err, result) {
       if(err)
         console.error(err);
@@ -190,43 +191,21 @@ function save_to_db_callback(database, items, done) {
 // --------------------------------------------------------------------------------------
 // transform data for saving to database
 // --------------------------------------------------------------------------------------
-function transform_provided(items, db_date)
+function transform(items, db_date)
 {
   var arr = [];
-  var dict = {};
 
   for(var item in items) {
-    dict = {};
-    dict['inst_name'] = items[item]['_id']['realm'];
-    dict['provided_count'] = items[item]['count'];
-    dict['timestamp'] = db_date;
-    arr.push(dict);
+    items[item].timestamp = db_date;
+    arr.push(items[item]);
   }
 
   return arr;
 }
 // --------------------------------------------------------------------------------------
-// transform data for saving to database
+// get data for organisations most providing roaming
 // --------------------------------------------------------------------------------------
-function transform_used(items, db_date)
-{
-  var arr = [];
-  var dict = {};
-
-  for(var item in items) {
-    dict = {};
-    dict['inst_name'] = items[item]['_id']['visinst'];
-    dict['used_count'] = items[item]['count'];
-    dict['timestamp'] = db_date;
-    arr.push(dict);
-  }
-
-  return arr;
-}
-// --------------------------------------------------------------------------------------
-// get data for organisations most using roaming
-// --------------------------------------------------------------------------------------
-function get_most_used(database, min_date, max_date, done)
+function get_most_provided(database, min_date, max_date, done)
 {
   database.logs.aggregate(
   [ 
@@ -273,14 +252,15 @@ function get_most_used(database, min_date, max_date, done)
             $sum : 1           // count number of current visinst
           } 
       } 
-  }
+  },
+  { $project : { inst_name : "$_id.visinst", provided_count : "$count", _id : 0 } }
   ],
     function(err, items) {
       if(err == null) {
         if(done)    // processing older data
-          save_to_db_callback(database, transform_used(items, min_date), done);
+          save_to_db_callback(database, transform(items, min_date), done);
         else    // current data processing, no callback is needed
-          save_to_db(database, transform_used(items, min_date));
+          save_to_db(database, transform(items, min_date));
       }
       else
         console.error(err);
