@@ -86,29 +86,29 @@ function handle_sort($scope, $http, data_func)
 // --------------------------------------------------------------------------------------
 function setup_calendars_time($scope)
 {
-  var calendars = document.getElementsByClassName("flatpickr").flatpickr({
+  flatpickr("#min_date", {
+    locale: "cs",
+    defaultDate: $scope.form_data.min_date,
     altInputClass : "form-control",
     altInput: true,
-    altFormat: "H:i d.m.Y",
+    altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
     minDate: $scope.db_data.mac_count.min,   // min from db
     enableTime: true,
     time_24hr : true
   });
 
-  // czech format of dates
-  var min = $scope.min_date.getHours() + ":" + $scope.min_date.getMinutes() + " " + $scope.min_date.getDate() + "." + Number($scope.min_date.getMonth() + 1) + "." + $scope.min_date.getFullYear();
-
-  var max = $scope.max_date.getHours() + ":" + $scope.max_date.getMinutes() + " " + $scope.max_date.getDate() + "." + Number($scope.max_date.getMonth() + 1) + "." + $scope.max_date.getFullYear();
-
-  // alternative hand solution
-  var min_date = document.getElementById("min_date");
-  var next = min_date.nextElementSibling;
-  next.setAttribute("value", min);
-
-  var max_date = document.getElementById("max_date");
-  var next = max_date.nextElementSibling;
-  next.setAttribute("value", max);
+  flatpickr("#max_date", {
+    locale: "cs",
+    defaultDate: $scope.form_data.max_date,
+    altInputClass : "form-control",
+    altInput: true,
+    altFormat: "d.m.Y",
+    maxDate: new Date(),                    // today
+    minDate: $scope.db_data.mac_count.min,   // min from db
+    enableTime: true,
+    time_24hr : true
+  });
 }
 // --------------------------------------------------------------------------------------
 // set form field values from another view
@@ -1172,8 +1172,19 @@ function get_days($scope)
 // --------------------------------------------------------------------------------------
 function setup_calendars($scope)
 {
-  // setup
-  var calendars = document.getElementsByClassName("flatpickr").flatpickr({
+  flatpickr("#min_date", {
+    locale: "cs",
+    defaultDate: $scope.form_data.min_date,
+    altInputClass : "form-control",
+    altInput: true,
+    altFormat: "d.m.Y",
+    maxDate: new Date(),                    // today
+    minDate: $scope.db_data.mac_count.min   // min from db
+  });
+
+  flatpickr("#max_date", {
+    locale: "cs",
+    defaultDate: $scope.form_data.max_date,
     altInputClass : "form-control",
     altInput: true,
     altFormat: "d.m.Y",
@@ -2041,11 +2052,40 @@ function sum_provided_count(data)
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
-  //addiational_fields_roaming_most($scope);   // set up additional form fields
-  $scope.graph_title = "aktivita eduroamu";
-  $scope.title = "etlog: aktivita eduroamu";
+  addiational_fields_roaming_activity($scope);   // set up additional form fields
+  $scope.graph_title = "aktivita CZ eduroamu";
+  $scope.title = "etlog: aktivita CZ eduroamu";
   //handle_submit($scope, $http, $q, get_roaming, graph, []);
 }]);
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function addiational_fields_roaming_activity($scope)
+{
+  $scope.options_added = false;
+  $scope.options = {
+    realm : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
+    },
+    visinst : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
+    },
+  };
+
+  $scope.add_options = function() {
+    $scope.options_added = true;
+  };
+
+  $scope.delete_options = function() {
+    $scope.options_added = false;
+  };
+}
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
@@ -2104,7 +2144,7 @@ function sum_provided_count(data)
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('roaming_most_used_test_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
   $scope.timestamp_opts = [ "1 měsíc", "3 měsíce", "12 měsíců" ]; // 1, 3 or 12 months
   $scope.page_sizes = [ 10, 20, 50, 100 ];
@@ -2126,16 +2166,6 @@ angular.module('etlog').controller('roaming_most_used_test_controller', ['$scope
 function init_calendar($scope, $http)
 {
   $scope.submitted = false; // form has not been submitted yet
-  
-  // setup
-  // no min set
-  var calendars = document.getElementsByClassName("flatpickr").flatpickr({
-    altInputClass : "form-control",
-    altInput: true,
-    altFormat: "d.m.Y",
-    maxDate: new Date(),                    // today
-  });
-
   setup_calendars_minmax($scope);
 }
 // --------------------------------------------------------------------------------------
@@ -2193,20 +2223,23 @@ function set_calendar_opts($scope)
 // --------------------------------------------------------------------------------------
 function setup_calendars_minmax($scope)
 {
-  // flatpickr should be able to automatically set default date by code below
-  // but it is not working at the moment
-  //flatpickr("#min_date", {
-  //  defaultDate: 1477697199863
-  //});
+  flatpickr("#min_date", {
+    locale: "cs",
+    defaultDate: $scope.form_data.min_date,
+    altInputClass : "form-control",
+    altInput: true,
+    altFormat: "d.m.Y",
+    maxDate: new Date(),                    // today
+  });
 
-  // alternative hand solution
-  var min_date = document.getElementById("min_date");
-  var next = min_date.nextElementSibling;
-  next.setAttribute("value", $scope.form_data.min_date.split("-")[2] + "." + $scope.form_data.min_date.split("-")[1] + "." + $scope.form_data.min_date.split("-")[0]);
-
-  var max_date = document.getElementById("max_date");
-  var next = max_date.nextElementSibling;
-  next.setAttribute("value", $scope.form_data.max_date.split("-")[2] + "." + $scope.form_data.max_date.split("-")[1] + "." + $scope.form_data.max_date.split("-")[0]);
+  flatpickr("#max_date", {
+    locale: "cs",
+    defaultDate: $scope.form_data.max_date,
+    altInputClass : "form-control",
+    altInput: true,
+    altFormat: "d.m.Y",
+    maxDate: new Date(),                    // today
+  });
 }
 // --------------------------------------------------------------------------------------
 function create_graph_data_used($scope, data)
@@ -2240,7 +2273,7 @@ function get_roaming_most_used_count($scope, $http, qs, $q, callback)
 
 
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('roaming_most_provided_test_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
   $scope.timestamp_opts = [ "1 měsíc", "3 měsíce", "12 měsíců" ]; // 1, 3 or 12 months
   $scope.page_sizes = [ 10, 20, 50, 100 ];
