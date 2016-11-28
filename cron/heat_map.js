@@ -100,8 +100,6 @@ exp.process_current_data = function (database)
   prev_min.setDate(prev_min.getDate() -1); // previous day hh:mm:ss:ms set to 00:00:00:000
   var prev_max = new Date(curr);           // current day hh:mm:ss:ms set to 00:00:00:000
                                            // search uses lower than max condition !
-  search(database, prev_min, prev_max);
-
   database.realms.aggregate([ 
   { $project : { _id : 0, realm : 1 } }
   ],
@@ -117,45 +115,38 @@ exp.process_current_data = function (database)
 // --------------------------------------------------------------------------------------
 function search(database, realms, min, max, done)
 {
-  async.forEachOf(realms, function (value_src, key_src, callback_src) {         // loop realms as source
-    var item = {};              // database item
-    item.realm = realms[key_src];
-    item.timestamp = min;
-    item.institutions = [];
-  
-    async.forEachOf(realms, function (value_dst, key_dst, callback_dst) {       // loop realms as destination
-      database.logs.aggregate([ 
-        { $match : { realm : realms[key_src], visinst : realms[key_dst],          // search for source and destination
-          timestamp : { $gte : min, $lt : max } } },                              // get data for one day
-        { $group : { _id : { visinst : "$visinst" }, count : { $sum : 1 } } },
-        { $project : { count : 1, _id : 0  } }
-      ],
-        function(err, items) {
-          if(items.length != 0) {  // non empty result
-            item.institutions.push({ realm : realms[key_dst], count : items[0].count}); // add to array
-          }
-          callback_dst(null);
-      });
-    }, function (err) {
-      if (err)
-        console.error(err);
-      else {
-        // save item
-        database.heat_map.update({ realm : item.realm, timestamp: item.timestamp }, item, { upsert : true },
+  // possible better performance with this
+  // than with manual iteration ?
+
+  database.logs.aggregate([
+    { $match : { timestamp : {$gte : min, $lt : max} } },                               // match given timestamp range
+    { $match : { realm : { $in : realms }, visinst : { $in : realms } } },              // limit to realms and visinst
+    { $group : { _id : { realm : "$realm", visinst : "$visinst", csi : "$csi" } } },    // group by realm, visinst, csi - normalize by csi !
+    { $group : { _id : { realm : "$_id.realm", visinst : "$_id.visinst" }, count : { $sum : 1 } } },    // group by realm, visinst
+                                                                                        // group by realm, add each visinst and count to array
+    { $group : { _id : { realm : "$_id.realm" }, institutions : { $addToSet : { realm : "$_id.visinst", count : "$count" } } } },
+    { $project : { realm : "$_id.realm", institutions : 1, _id : 0 } }
+  ],
+    function(err, items) {
+      async.forEachOf(items, function (value, key, callback) {       // loop items
+        items[key].timestamp = min; // set timestamp for each record
+
+        database.heat_map.update({ realm : items[key].realm, timestamp: items[key].timestamp }, items[key], { upsert : true },
         function(err, result) {
           if(err)  
             console.error(err);
-          callback_src(null);       // continue when record is saved
+
+          callback(null);   // continue
         });
-      }
+      },
+      function (err) {
+        if (err)
+          console.error(err);
+
+        if(done)      // callback is defined
+          done(null, null);
+      });
     });
-  }, function (err) {
-    if (err)
-      console.error(err);
-    if(done) {      // callback is defined
-      done(null, null);
-    }
-  });
 }
 // --------------------------------------------------------------------------------------
 // generate realm list for realms collection
@@ -182,7 +173,6 @@ function generate_realms(database)
           if(err)  
             console.error(err);
         });
-
       }
   });
 }
