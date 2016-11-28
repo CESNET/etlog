@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const qp = require('./query_parser');
+const agg = require('./aggregation');
 // --------------------------------------------------------------------------------------
 // get shared mac data
 // --------------------------------------------------------------------------------------
@@ -62,22 +63,7 @@ function search_days(req, res, next, query) {
   
   // ===================================================
   // add other operators, if defined in query
-
-  if(query.sort) {
-    aggregate_query.push({ $sort : query.sort });   // sort
-  }
-
-  if(query.skip && query.limit) {   // both skip and limit
-    aggregate_query.push({ $limit : query.limit + query.skip });   // limit to limit + skip
-  }
-
-  if(query.skip) {
-    aggregate_query.push({ $skip : query.skip });   // skip
-  }
-
-  if(query.limit) {
-    aggregate_query.push({ $limit : query.limit }); // limit
-  }
+  agg.add_ops(aggregate_query, query);
 
   // ===================================================
   // search
