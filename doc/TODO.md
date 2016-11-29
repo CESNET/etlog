@@ -12,6 +12,8 @@ Pro jednu instituce idealne vedle sebe
 
 staci uplne jednoducha staticka stranka
 
+jeste se podivat na generovani a opravit chyby
+
 ## Data
 
 Data dostupná pro každou z institucí:
@@ -281,6 +283,11 @@ potencialni inspirace:
 #### Neuspesna prihlaseni
 - Data NEjsou normalizovana
 
+> normalizovat pres mac adresy
+
+- data pro mesicni report brat z rozhrani pro vyhledavani
+- co nejjednodussi
+
 #### Heat mapa
 - normalizovano pouze na urovni mac adres
   - uzivatel se tremi zarizenimi je zapocitan trikrat
@@ -299,66 +306,34 @@ potencialni inspirace:
 - Data NEjsou normalizovana
 - Data pro porovnani s neuspesnymi prihlasenimi
 
+- normalizovat, neni treba zadne rozhrani
+
 #### Users mac
 - zde nema normalizace smysl
 
 
 
+### Detekce uzivatelu v ruzynch lokalitach soucasne
+
+- xml s geoografickymi informacemi
+kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
+- TODO
 
 ### Obecne k webovemu rozhrani
 
-- Je nekde treba dalsi validace?
-
 > Myslim ze CVS format ma mit nadpisy bunek na prvnim radku a na dalsich radcich pak hodnoty. Takhle jak je to udelano to vyzaduje dalsi zpracovani necim sofistikovanejsim nez je tabulkovy procesor.
 
-- Format predelan, potencialni problemu muze ale nastat v rozhrani shared mac nebo mac count.
-- Je treba dal resit?
+> dodelat tak, ze pole je zavreno do uvozovek
 
-> V rozhrani mac count & shared mac je v seznamu pravem sloupci klikatelna mezera. myslim ze jste to zminioval uz posledne ze si s tim nevite rady. je to relativne otravne kdyz by jste rad par tech adres zkopiroval. ted to vpodstate neni mozne.
+> pridat nadpis z navbaru na stranku aby bylo jasne, kde clovek je 
 
-- Vyreseno.
-
-
-
-### Obecne ke grafum
-
-> vyresit x-ovou osu
-
-- ukazka na https://etlog.cesnet.cz/#/roaming_most_provided
-- vylepsit?
-
-> zkusit pridat nejakou mrizku -> oddeleni tydnu(mesicu ... ) na ose x
-- jak konkretne ma byt mrizka udelana?
-  - pro kazdou vyznacenou hodnotu na ose x?
-  - napevno pro tydny/mesice?
-
-
-## pocet zarizeni > 2 na jednoho uzivatele (mac count)
-
-[rozhrani](https://etlog.cesnet.cz/#/mac_count)
-
-- nejake pripominky?
-
-> pridejte prosim jeste podminku na vysledek autentizace. doslo mi to pri kontrole tech hotel@ wifi@ ted je to plne failu.
-
-- V db jsou pouze data s uspesnymi autentizacemi - myslim, ze narazite na problem casoveho omezeni.
-- kdyz vybereru data za posledni dva dny a vyradim anonymni, uz tam ani jedno nemam.
-
-> To mi nedoslo. Pak v tomhle bode vse OK.
-
-## sdilene mac adresy (shared mac)
-
-[rozhrani](https://etlog.cesnet.cz/#/shared_mac)
-
-- nejake pripominky?
-- jak resit prokliknuti na hledani, kdyz je vybran pouze adresa?
-  - tento pripad je stale problemovy
-
-> Nevim v cem vidite problem? Kdyz kliknu na uzivatele tak je preneseno do hledaciho formulare jeho jmeno a mac adresa. Kdyz kliknu na mac tak me to sprdne ze chybi uzivatelske jmeno. Jaky je k tomu duvod? Prazdny formular pro hledani ne, ale kdyz je neco vyplneno tak je to ok ne?
 
 ## Obecne vyhledavani
 
 [rozhrani](https://etlog.cesnet.cz/#/search)
+
+> alespon nejake pole musi byt vyplneno pro moznost vyhledavani
+
 
 - nejake pripominky?
 
@@ -383,49 +358,23 @@ potencialni inspirace:
 > Me to neprijde tak slozite, po odeslani do backendu se podivate na opravneni uzivatele. pokud neni admin a nesedi uzivatelske jmeno tak hledani zamitnete. V cem vidite problem? Prezijem bez toho, ale prijde mi to nekonzistetni se zbytkem aplikace.
 
 
-## organizace nejvíce využívající roaming
+## organizace nejvíce poskytující konektivitu, organizace nejvíce využívající roaming
 
-[rozhrani](https://etlog.cesnet.cz/#/orgs_roaming_most_used)
+> pridat pocet unikatnich za cele obdobi 
+> -> udelat dotazem na heat mapu
+> udelat jako http://bl.ocks.org/mbostock/3886208
+> db.heat_map.find({ timestamp : { $gte : d, $lt : d2}, realm : "upol.cz"} )
+> do grafu i do tabulky
+> jak pro poskytovane tak pro vyuzivane
 
-- nejake pripominky?
 
-
-## organizace nejvíce poskytující konektivitu
-
-[rozhrani](https://etlog.cesnet.cz/#/orgs_roaming_most_provided)
-
-- nejake pripominky?
-
+> chova se nejak divne, kdyz se ptam na 12 mesicu
 
 ## aktivita CZ eduroamu
 
 [rozhrani](https://etlog.cesnet.cz/#/roaming_activity)
 
 - nejake pripominky?
-
-
-## neuspesna prihlaseni
-
-[rozhrani](https://etlog.cesnet.cz/#/failed_logins)
-
-- nejake pripominky?
-
-
-## Uspesna prihlaseni
-
-- nove [rozhrani](https://github.com/CESNET/etlog#succ_logins) pro uspesna prihlaseni
-- udelat k nemu webovou cast?
-  - backend je hotovy, frontend je prace na 15 minut
-
-
-## Element pro vyber datumu
-
-- momentalne nelze omezovat vybirana data v zavislosti na jiz zvolenem minimu/maximu.
-- Vyhovuje takto?
-- Resit nejak intuitivneji napr vyber jednoho dne?
-  - Soucasny stav posktuje data krome vybraneho maxima.
-
-
 
 # Ostatní
 
@@ -438,8 +387,6 @@ potencialni inspirace:
 
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
 - Dokumentace frontendu - co a jak popsat?
-- Momentalne neni nijak validovan/omezovan vstup formularu. Pridat nejakou validaci?
-- Zmenit popisky v navigaci? (Nevim, zda je dostatecne jasne, co ktera stranka zobrazuje)
 - Pridana dokumentace k frontendu - vyhovuje takto? ([zde](https://github.com/CESNET/etlog#frontend))
 
 
@@ -447,10 +394,7 @@ potencialni inspirace:
 # TODO list
 1. Autentizace
   - použít rozcestník
-2. Webové rozhraní
 3. sshguard + FW -> semik
-6. grafy - statistiky
-  - (grafy negenerovat na kliknuti ale nejak v noci)
 7. přstupová práva
 8. co s radlog.cesnet.cz - tim starym virtualem
   - ponechat nez bude napsany text prace
