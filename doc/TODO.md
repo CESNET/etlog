@@ -276,6 +276,34 @@ potencialni inspirace:
   - v mesicnim reportu
 - (Uspesna prihlaseni normalizovana pres mac/den?)
 
+### Normalizace
+
+#### Neuspesna prihlaseni
+- Data NEjsou normalizovana
+
+#### Heat mapa
+- normalizovano pouze na urovni mac adres
+  - uzivatel se tremi zarizenimi je zapocitan trikrat
+
+#### Mac count
+- zde nema normalizace smysl
+
+#### Roaming
+- normalizovano pouze na urovni mac adres
+  - uzivatel se tremi zarizenimi je zapocitan trikrat
+
+#### Shared mac
+- zde nema normalizace smysl
+
+#### Uspesna prihlaseni
+- Data NEjsou normalizovana
+- Data pro porovnani s neuspesnymi prihlasenimi
+
+#### Users mac
+- zde nema normalizace smysl
+
+
+
 
 ### Obecne k webovemu rozhrani
 
