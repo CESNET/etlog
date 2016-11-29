@@ -268,7 +268,10 @@ potencialni inspirace:
 ### Otazky na data
 
 - Heat mapa ma byt normalizovana pres mac/den?
+  - data jsou momentalne normalizovana
+
 - Neuspesna prihlaseni normalizovana pres mac/den?
+  - data NEjsou momentalne normalizovana
   - na [webu](https://etlog.cesnet.cz/#/failed_logins)
   - v mesicnim reportu
 - (Uspesna prihlaseni normalizovana pres mac/den?)
