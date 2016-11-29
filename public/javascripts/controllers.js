@@ -1529,10 +1529,6 @@ function get_failed_logins($scope, $http, qs, $q, callback)
 
   var ts = "timestamp=";    // timestamp
 
-
-  // TODO - pokud nebudou zadne parametry, mohlo by byt rovnou predpocitano
-
-
   $scope.days.forEach(function (day, index) {
     chain = chain.then(function(){
       return $http({
@@ -1553,7 +1549,7 @@ function get_failed_logins($scope, $http, qs, $q, callback)
         
         ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
         $scope.graph_data.push({ timestamp : ts,
-                           value : sum_fail_count(response.data)});
+                           value : normalize_by_mac(response.data)});
       });
     });
   });
@@ -1562,6 +1558,13 @@ function get_failed_logins($scope, $http, qs, $q, callback)
   chain.then(function() {
     callback($scope);
   });
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function normalize_by_mac(data)
+{
+  return data.length;   // simple filtering - every user is counted once
 }
 // --------------------------------------------------------------------------------------
 // compute sum of fail count for given data
@@ -2062,7 +2065,7 @@ angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$h
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   addiational_fields_roaming_activity($scope);   // set up additional form fields
-  handle_submit($scope, $http, $q, get_roaming, graph, ["realm", "visinst"]);
+  handle_submit($scope, $http, $q, get_roaming, graph_test, ["realm", "visinst"]);
 }]);
 // --------------------------------------------------------------------------------------
 // TODO
@@ -2406,6 +2409,14 @@ function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
     url     : '/api/roaming/most_provided' + qs + ts
   })
   .then(function(response) {
+    // pridat pocet unikatnich za cele obdobi 
+    // -> udelat dotazem na heat mapu
+    // udelat jako http://bl.ocks.org/mbostock/3886208
+    // db.heat_map.find({ timestamp : { $gte : d, $lt : d2}, realm : "upol.cz"} )
+    // do grafu i do tabulky
+    // jak pro poskytovane tak pro vyuzivane
+
+    console.log(response.data);
     $scope.table_data = response.data;
     create_graph_data_provided($scope, response.data);
     callback($scope);
@@ -2477,11 +2488,21 @@ function get_text($scope)
 
   for(var item in data) {
     for(var key in keys) {
-      if(text.length > 0 && text[text.length - 1] != "\n")   // continue
-        text += "," + data[item][keys[key]];
 
-      else    // beginning of line
-        text += data[item][keys[key]];
+      if(text.length > 0 && text[text.length - 1] != "\n") {   // continue
+        if(data[item][keys[key]].constructor === Array) // array
+          text += ",\"" + data[item][keys[key]] + "\"";      // close array into ""
+        else
+          text += "," + data[item][keys[key]];
+      }
+
+      else {    // beginning of line
+        if(data[item][keys[key]].constructor === Array) // array
+          text += "\"" + data[item][keys[key]] + "\"";      // close array into ""
+
+        else
+          text += data[item][keys[key]];
+      }
     }
     text += "\n";
   }
