@@ -264,6 +264,16 @@ potencialni inspirace:
 - pridat moznost razeni (https://bl.ocks.org/mbostock/3885705)?
 - https://codepen.io/Rastikko/pen/GqNbqM
 
+
+### Otazky na data
+
+- Heat mapa ma byt normalizovana pres mac/den?
+- Neuspesna prihlaseni normalizovana pres mac/den?
+  - na [webu](https://etlog.cesnet.cz/#/failed_logins)
+  - v mesicnim reportu
+- (Uspesna prihlaseni normalizovana pres mac/den?)
+
+
 ### Obecne k webovemu rozhrani
 
 - Je nekde treba dalsi validace?
@@ -277,7 +287,6 @@ potencialni inspirace:
 
 - Vyreseno.
 
-- Heat mapa ma byt normalizovana pres mac/den?
 
 
 ### Obecne ke grafum
