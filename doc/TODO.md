@@ -306,7 +306,7 @@ potencialni inspirace:
 - Data NEjsou normalizovana
 - Data pro porovnani s neuspesnymi prihlasenimi
 
-- normalizovat, neni treba zadne rozhrani
+> normalizovat, neni treba zadne rozhrani
 
 #### Users mac
 - zde nema normalizace smysl
@@ -318,14 +318,6 @@ potencialni inspirace:
 - xml s geoografickymi informacemi
 kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 - TODO
-
-### Obecne k webovemu rozhrani
-
-> Myslim ze CVS format ma mit nadpisy bunek na prvnim radku a na dalsich radcich pak hodnoty. Takhle jak je to udelano to vyzaduje dalsi zpracovani necim sofistikovanejsim nez je tabulkovy procesor.
-
-> dodelat tak, ze pole je zavreno do uvozovek
-
-> pridat nadpis z navbaru na stranku aby bylo jasne, kde clovek je 
 
 
 ## Obecne vyhledavani
@@ -401,3 +393,8 @@ kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 11. ...
 
 # TODO dobudoucna
+- dev server ?
+- ... ?
+
+
+
