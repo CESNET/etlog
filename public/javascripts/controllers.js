@@ -1224,7 +1224,7 @@ function addiational_fields_mac_count($scope)
 // --------------------------------------------------------------------------------------
 // draw graph with data from api
 // --------------------------------------------------------------------------------------
-function graph($scope)
+function graph_orgs($scope)
 {
   // taken from
   // https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
@@ -1533,7 +1533,7 @@ function get_failed_logins($scope, $http, qs, $q, callback)
     chain = chain.then(function(){
       return $http({
         method  : 'GET',
-        url     : '/api/failed_logins/' + qs + ts + day     // TODO - limit on fields to speed up ?
+        url     : '/api/failed_logins/' + qs + ts + day
       })
       .then(function(response) {
         // config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
@@ -1549,7 +1549,7 @@ function get_failed_logins($scope, $http, qs, $q, callback)
         
         ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
         $scope.graph_data.push({ timestamp : ts,
-                           value : normalize_by_mac(response.data)});
+                           value : sum_fail_count(response.data)});
       });
     });
   });
@@ -1558,13 +1558,6 @@ function get_failed_logins($scope, $http, qs, $q, callback)
   chain.then(function() {
     callback($scope);
   });
-}
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-function normalize_by_mac(data)
-{
-  return data.length;   // simple filtering - every user is counted once
 }
 // --------------------------------------------------------------------------------------
 // compute sum of fail count for given data
@@ -1801,7 +1794,7 @@ angular.module('etlog').controller('roaming_most_provided_controller', ['$scope'
   addiational_fields_roaming_most($scope);   // set up additional form fields
   $scope.graph_title = "organizace nejvíce poskytující roaming";
   $scope.title = "etlog: organizace nejvíce poskytující roaming";
-  handle_submit($scope, $http, $q, get_roaming_most_provided, graph_test, [ 'inst_name', 'provided_count', 'used_count' ]);
+  handle_submit($scope, $http, $q, get_roaming_most_provided, graph, [ 'inst_name', 'provided_count', 'used_count' ]);
 }]);
 // --------------------------------------------------------------------------------------
 // TODO
@@ -1871,7 +1864,7 @@ angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$h
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   addiational_fields_roaming_activity($scope);   // set up additional form fields
-  handle_submit($scope, $http, $q, get_roaming, graph_test, ["realm", "visinst"]);
+  handle_submit($scope, $http, $q, get_roaming, graph, ["realm", "visinst"]);
 }]);
 // --------------------------------------------------------------------------------------
 // TODO
@@ -2063,7 +2056,7 @@ angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope
   $scope.title = "etlog: organizace nejvíce využívající roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
-  handle_common_submit($scope, $http, $q, get_roaming_most_used_count, graph, "roaming_most_used", "used_count");
+  handle_common_submit($scope, $http, $q, get_roaming_most_used_count, graph_orgs, "roaming_most_used", "used_count");
   handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -2129,6 +2122,8 @@ function set_calendar_opts($scope)
 // --------------------------------------------------------------------------------------
 function setup_calendars_minmax($scope)
 {
+  var tmp = $scope.form_data.min_date;
+
   flatpickr("#min_date", {
     locale: "cs",
     defaultDate: $scope.form_data.min_date,
@@ -2138,6 +2133,14 @@ function setup_calendars_minmax($scope)
     maxDate: new Date(),                    // today
   });
 
+  // strange issue here - flatpickr is tied to model, but unsets the value
+  // so we need to manually set it back after setting flatpickr
+  $scope.form_data.min_date = tmp;
+
+  // =========================================
+
+  tmp = $scope.form_data.max_date;
+
   flatpickr("#max_date", {
     locale: "cs",
     defaultDate: $scope.form_data.max_date,
@@ -2146,6 +2149,10 @@ function setup_calendars_minmax($scope)
     altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
   });
+
+  // strange issue here - flatpickr is tied to model, but unsets the value
+  // so we need to manually set it back after setting flatpickr
+  $scope.form_data.max_date = tmp;
 }
 // --------------------------------------------------------------------------------------
 function create_graph_data_used($scope, data)
@@ -2156,7 +2163,7 @@ function create_graph_data_used($scope, data)
   }
 }
 // --------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------
+// TODO
 // --------------------------------------------------------------------------------------
 function get_roaming_most_used_count($scope, $http, qs, $q, callback)
 {
@@ -2174,10 +2181,7 @@ function get_roaming_most_used_count($scope, $http, qs, $q, callback)
   });
 }
 // --------------------------------------------------------------------------------------
-
-
-
-
+// TODO
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
@@ -2191,9 +2195,11 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   $scope.title = "etlog: organizace nejvíce poskytující konektivitu";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
-  handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, graph, "roaming_most_provided", "provided_count");
+  handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, graph_orgs, "roaming_most_provided", "provided_count");
   handle_download($scope);
 }]);
+// --------------------------------------------------------------------------------------
+// TODO
 // --------------------------------------------------------------------------------------
 function create_graph_data_provided($scope, data)
 {
@@ -2203,12 +2209,15 @@ function create_graph_data_provided($scope, data)
   }
 }
 // --------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------
+// TODO
 // --------------------------------------------------------------------------------------
 function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
 {
   $scope.graph_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
+
+  // debug
+  console.log($scope.form_data);
 
   return $http({
     method  : 'GET',
@@ -2228,12 +2237,6 @@ function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
     callback($scope);
   });
 }
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-angular.module('etlog').controller('test_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
-  $scope.title = "etlog: testovací datepicker";
-}]);
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
@@ -2320,7 +2323,7 @@ function get_text($scope)
 // --------------------------------------------------------------------------------------
 // draw graph with data from api
 // --------------------------------------------------------------------------------------
-function graph_test($scope)
+function graph($scope)
 {
   // taken from
   // https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
@@ -2460,8 +2463,7 @@ function graph_test($scope)
   // ==========================================================
   // add grid
 
-  // TODO
-
+  // TODO ?
   //// gridlines in x axis function
   //function make_x_gridlines() {
   //  return d3.axisBottom(x)
@@ -2475,7 +2477,6 @@ function graph_test($scope)
   //    .call(make_x_gridlines()
   //    .tickSize(-height)
   //    .tickFormat(""))
-
 
   // ==========================================================
 
