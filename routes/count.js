@@ -193,67 +193,6 @@ router.get('/logs', function(req, res, next) {
   });
 });
 // --------------------------------------------------------------------------------------
-// get count for succ logins
-// --------------------------------------------------------------------------------------
-router.get('/succ_logins', function(req, res, next) {
-  try {
-    var query = get_qs(req, [ 'timestamp', 'username', 'count' ]); // array of valid filters
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
-
-  // ===================================================
-  // if query.filter contains some conditions for data eg. count,
-  // the condition must be applied to result of all records aggregated across given timestamps
-  // -> the condition must be applied after aggregation !
-
-  var cond = agg.check_filter(query.filter, [ "count" ]);
-
-  // ===================================================
-
-  var aggregate_query = [
-    {
-      $match : query.filter       // filter by query
-    },
-    {
-      $group :
-        {
-          _id :
-            {
-              username : "$username"  // group by username -> query on multiple records, we want only on record on the output
-            },
-          count :
-            {
-              $sum : "$count"      // sum count
-            },
-        }
-    },
-    {
-      $project :
-        {
-          count : 1,
-          username : "$_id.username",   // id.username -> username
-          _id : 0
-        }
-    }
-  ];
-
-  // ===================================================
-  // add condition from original filter if defined
-  agg.add_cond(aggregate_query, cond);
-
-  // ===================================================
-
-  aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
-  aggregate_query.push({ $project : { count : 1, _id : 0 } });
-
-  get_record_count(req.db.succ_logins, res, next, aggregate_query, transform);       // perform search with constructed mongo query
-});
-// --------------------------------------------------------------------------------------
 // transform array containing dict just to number itself
 // --------------------------------------------------------------------------------------
 function transform(data)
