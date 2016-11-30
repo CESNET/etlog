@@ -1,6 +1,9 @@
 // --------------------------------------------------------------------------------------
-//const d3 = require('../public/javascripts/d3.v4.min.js');
-const d3 = require('d3');
+// simple usage:
+// $ node scripts/detection_data.js >> public/partials/detection_data.html
+// --------------------------------------------------------------------------------------
+//const d3 = require('d3');
+const d3 = require('d3-v4');
 const D3Node = require('d3-node')
 const async = require('async');
 const request = require('../request');
@@ -9,8 +12,6 @@ const fs = require('fs');
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
-//function get_realm_data(database, callback)
-//function get_data(callback)
 function get_data(database, callback)
 {
   var realms = [];
@@ -22,15 +23,10 @@ function get_data(database, callback)
 
     for(var item in items) {
       get_realm_data(items[item].realm, graph, html_text);
-
-      break;    // debug
+      //break;    // debug
     }
     
     create_output(html_text);
-  
-    // ?
-    //require('./output.js')($scope.out, d3n);
-    
     callback(null);
   });
 }
@@ -39,10 +35,12 @@ function get_data(database, callback)
 // --------------------------------------------------------------------------------------
 function create_output(html_text)
 {
+  // custom css
+  console.log("<style> .chart { display: inline-block; width: 2450px; } </style>");
+
   for(var item in html_text) {
     console.log(html_text[item]);
   }
-
 
   // add footer
   console.log("</div></div>");
@@ -53,9 +51,6 @@ function create_output(html_text)
 function get_realm_data(realm, graph_func, html_text)
 {
   $scope = {};      // "scope"
-
-  // debug
-  realm = "cvut.cz";
 
   $scope.form_data = {
     min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
@@ -75,7 +70,7 @@ function get_realm_data(realm, graph_func, html_text)
   }
   
   $scope.graph_title = "neuspesna prihlaseni";
-  html_text.push(graph_func($scope));
+  html_text.push('<div id="container"><h2>' + $scope.realm + '</h2><div class="chart">' +  graph_func($scope));
 
   // =========================================
 
@@ -109,8 +104,8 @@ function get_realm_data(realm, graph_func, html_text)
         value : val });
   }
 
-  $scope.graph_title = "pomer uspesnych / neusepsnych prihlaseni";
-  html_text.push(graph_func($scope));
+  $scope.graph_title = "pomer uspesnych / neuspesnych prihlaseni";
+  html_text.push(graph_func($scope) + '</div></div>');
 }
 // --------------------------------------------------------------------------------------
 // get all days between min and max
@@ -151,8 +146,8 @@ function graph($scope)
   // ============================================================================
 
   const styles = '.bar{fill: steelblue;} .bar:hover{fill: brown;} .axis{font: 10px sans-serif;} .axis path,.axis line{fill: none;stroke: #000;shape-rendering: crispEdges;} .x.axis path{display: none;}';
-  const markup = '<div id="container"><h2>' + $scope.realm + '</h2><div id="chart"></div></div>';
-  var options = {selector:'#graph', svgStyles:styles, container:markup};
+  //const markup = '<div id="container"><h2>' + $scope.realm + '</h2><div id="chart"></div></div>';
+  var options = {selector:'#chart', svgStyles:styles};
 
   var d3n = new D3Node(options);
 
@@ -331,7 +326,6 @@ function main()
       callback(null, null);
     },
     function(callback) {
-      //get_realm_data(database, callback);
       get_data(database, callback);
     },
     ],
