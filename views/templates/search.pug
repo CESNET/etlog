@@ -90,7 +90,7 @@ div.container-fluid(ng-controller="search_controller")
         button.btn.btn-default(type='button' ng-click='download_data()') Uložit data
 
     .text-center
-      dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='dirPagination.tpl.html')
+      dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='partials/dirPagination.tpl.html')
 
   .text-danger(ng-show='error')
     p
