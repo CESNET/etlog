@@ -85,7 +85,6 @@ function search_days(req, res, next, query) {
     }
   ];
 
-
   // ===================================================
   // add condition from original filter if defined
   agg.add_cond(aggregate_query, cond);
@@ -131,7 +130,7 @@ function transform(items) {
     dict = {};              // needed for deep copy
     dict['username'] = items[item]['_id']['pn'];
 
-    if(items[item]['results'].length != items[item]['result_count'].length) {   // both numbers for ok and fail are the same [ result_count.lenght == 1 ]
+    if(items[item]['results'].length != items[item]['result_count'].length) {   // both numbers for ok and fail are the same [ result_count.length == 1 ]
         dict['ok_count'] = items[item]['result_count'][0];
         dict['fail_count'] = items[item]['result_count'][0];
     }
