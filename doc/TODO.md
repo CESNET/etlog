@@ -43,49 +43,6 @@
 
 Pokud by generovani grafu trvalo prilis dlouho, tak generovat svg a pouze ho vkladat do stranky?
 
-### Otazky na data
-
-- Heat mapa ma byt normalizovana pres mac/den?
-  - data jsou momentalne normalizovana
-
-- Neuspesna prihlaseni normalizovana pres mac/den?
-  - data NEjsou momentalne normalizovana
-  - na [webu](https://etlog.cesnet.cz/#/failed_logins)
-  - v mesicnim reportu
-- (Uspesna prihlaseni normalizovana pres mac/den?)
-
-### Normalizace
-
-#### Neuspesna prihlaseni
-- Data NEjsou normalizovana
-
-> normalizovat pres mac adresy
-
-- data pro mesicni report brat z rozhrani pro vyhledavani
-- co nejjednodussi
-
-#### Heat mapa
-- normalizovano pouze na urovni mac adres
-  - uzivatel se tremi zarizenimi je zapocitan trikrat
-
-#### Mac count
-- zde nema normalizace smysl
-
-#### Roaming
-- normalizovano pouze na urovni mac adres
-  - uzivatel se tremi zarizenimi je zapocitan trikrat
-
-#### Shared mac
-- zde nema normalizace smysl
-
-#### Uspesna prihlaseni
-- Data NEjsou normalizovana
-- Data pro porovnani s neuspesnymi prihlasenimi
-
-> normalizovat, neni treba zadne rozhrani
-
-#### Users mac
-- zde nema normalizace smysl
 
 
 
@@ -103,11 +60,6 @@ kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 > alespon nejake pole musi byt vyplneno pro moznost vyhledavani
 
 
-- nejake pripominky?
-
-> Bylo by mozne otocit default razeni? tj. zobrazovat na prvni strance nejcerstvejsi informace
-
-- hotovo.
 
 - Jaky vyznam ma hledani podle realmu?
 - Rozhrani je navrzene tak, ze backend neumoznuje hledat, aniz by bylo zadano uzivatelske jmeno.
@@ -135,8 +87,6 @@ kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 > do grafu i do tabulky
 > jak pro poskytovane tak pro vyuzivane
 
-
-> chova se nejak divne, kdyz se ptam na 12 mesicu
 
 ## aktivita CZ eduroamu
 
