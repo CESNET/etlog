@@ -104,15 +104,16 @@ function search(database, min, max, done) {
   { 
     $project : 
       { 
-        timestamp : 1, pn : 1, result : 1   // limit to timestamp, pn and result
+        csi : 1, pn : 1    // limit to csi and pn
       } 
   },  
   { 
-    $group :                                // group by pair [ pn, result ]
+    $group :                                // group by [ csi, pn ]
     { 
       _id : 
       { 
-        pn : "$pn"
+        pn : "$pn",
+        csi : "$csi"
       }, 
       count :                               // count number of occurences
       { 
@@ -120,6 +121,7 @@ function search(database, min, max, done) {
       } 
     } 
   },
+  { $group : { _id : { pn : "$_id.pn" }, count : { $sum : "$count" } }, },      // group again by username
   { $project : { username : "$_id.pn", count : 1, _id : 0 } }
   ], 
     function (err, items) {

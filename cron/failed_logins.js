@@ -84,67 +84,13 @@ exp.process_current_data = function (database) {
 // perform database search
 // --------------------------------------------------------------------------------------
 function search(database, min, max, done) {
-  database.logs.aggregate(
-  [ 
-  { 
-    $match : 
-      { 
-        timestamp :         // get data for one day
-          { 
-            $gte : min, 
-            $lt : max 
-          }, 
-        pn : 
-          { 
-            $ne : ""        // no empty usernames
-          } 
-      } 
-  }, 
-  { 
-    $project : 
-      { 
-        timestamp : 1, pn : 1, result : 1   // limit to timestamp, pn and result
-      } 
-  },  
-  { 
-    $group :                                // group by pair [ pn, result ]
-    { 
-      _id : 
-      { 
-        pn : "$pn", result : "$result" 
-      }, 
-      count :                               // count number of occurences
-      { 
-        $sum : 1 
-      } 
-    } 
-  }, 
-  { 
-    $group :                                // group again by username
-    { 
-      _id : 
-        { 
-          pn : "$_id.pn" 
-        }, 
-      results :                             // add result to array
-        { 
-          $addToSet : "$$ROOT._id.result" 
-        }, 
-      result_count :                        // add count of results to array
-        { 
-          $addToSet : "$count" 
-        }, 
-    } 
-  }, 
-  { 
-    $match :                                // exclude users with only OK results
-    { 
-      results : 
-        { 
-          $in : [ "FAIL" ] 
-        } 
-    }  
-  }
+  database.logs.aggregate([
+    { $match : { timestamp :{ $gte : min, $lt : max }, pn : { $ne : ""} } },    // limit by timestamp and non empty username
+    { $project : { csi : 1, pn : 1, result : 1} },                              // limit to csi, pn, result
+    { $group : { _id : { csi : "$csi", pn : "$pn", result : "$result" } } },    // group by [ csi, pn, result ]
+    { $group : { _id : { pn : "$_id.pn", result : "$_id.result" }, count : { $sum : 1 } } },    // group by [ pn, result ], sum count
+    { $group : { _id : { pn : "$_id.pn" }, results : { $addToSet : "$_id.result" }, result_count : { $addToSet : "$count" } } },  // group by pn, add result and count to array
+    { $match : { results : { $in : [ "FAIL" ] } } }                            // exclude users with only OK results
   ], 
     function (err, items) {
       if(err == null) {
