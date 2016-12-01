@@ -1,49 +1,47 @@
-// Include gulp
-const gulp = require('gulp');
 // -----------------------------------------------------------
-// Include Our Plugins
-//const jshint = require('gulp-jshint');
-//const sass = require('gulp-sass');
-//const concat = require('gulp-concat');
-//const uglify = require('gulp-uglify');
-//const rename = require('gulp-rename');
+const gulp = require('gulp');
+const jshint = require('gulp-jshint');
 const pug = require('gulp-pug');
-//// -----------------------------------------------------------
-//// Lint Task
-//gulp.task('lint', function() {
-//    return gulp.src('js/*.js')
-//        .pipe(jshint())
-//        .pipe(jshint.reporter('default'));
-//});
-//// -----------------------------------------------------------
-//// Compile Our Sass
-//gulp.task('sass', function() {
-//    return gulp.src('scss/*.scss')
-//        .pipe(sass())
-//        .pipe(gulp.dest('dist/css'));
-//});
-//// -----------------------------------------------------------
-//// Concatenate & Minify JS
-//gulp.task('scripts', function() {
-//    return gulp.src('js/*.js')
-//        .pipe(concat('all.js'))
-//        .pipe(gulp.dest('dist'))
-//        .pipe(rename('all.min.js'))
-//        .pipe(uglify())
-//        .pipe(gulp.dest('dist/js'));
-//});
-//// -----------------------------------------------------------
-//// Watch Files For Changes
-//gulp.task('watch', function() {
-//    gulp.watch('js/*.js', ['lint', 'scripts']);
-//    gulp.watch('scss/*.scss', ['sass']);
-//});
+const css = require('gulp-clean-css');
+const concat = require('gulp-concat');
+const uglify = require('gulp-uglify');
+const streamqueue  = require('streamqueue');
+// -----------------------------------------------------------
+// minify css
+gulp.task('css', function() {
+  return gulp.src('stylesheets/*.css')
+    .pipe(concat('app.min.css'))
+    .pipe(css({compatibility: 'ie8'}))
+    .pipe(gulp.dest('public/stylesheets'));
+});
+// -----------------------------------------------------------
+// Concatenate & Minify JS
+gulp.task('js', function() {
+  return streamqueue({ objectMode: true },
+    gulp.src('javascripts/angular/angular_1.5.8.min.js'),
+    gulp.src('javascripts/angular/angular-ui-router.min.js'),
+    gulp.src('javascripts/angular/dirPagination.js'),
+    gulp.src('javascripts/angular/main.js'),
+    gulp.src('javascripts/angular/controllers.js'),
+    gulp.src('javascripts/angular/routes.js'),
+    gulp.src('javascripts/flatpickr/flatpickr.js'),
+    gulp.src('javascripts/flatpickr/cs.js'),
+    gulp.src('javascripts/jquery/jquery.min.js'),
+    gulp.src('javascripts/d3/d3.v4.min.js'),
+    gulp.src('javascripts/d3/d3-tip.js'),
+    gulp.src('javascripts/*.js')
+  )
+    .pipe(concat('app.min.js'))
+    //.pipe(uglify())
+    .pipe(gulp.dest('public/javascripts'));
+});
 // -----------------------------------------------------------
 gulp.task('views', function buildHTML() {
   return gulp.src('views/templates/*.pug')
-  .pipe(pug({}))
-  .pipe(gulp.dest('public/partials'))
+    .pipe(pug({}))
+    .pipe(gulp.dest('public/partials'))
 });
 // -----------------------------------------------------------
 // Default Task
-gulp.task('default', ['views']);
+gulp.task('default', ['views', 'js', 'css']);
+// -----------------------------------------------------------
