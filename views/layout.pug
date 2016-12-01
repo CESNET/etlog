@@ -5,9 +5,9 @@ html(ng-app="etlog")
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1')
     title(ng-bind='title')
+    script(src='/javascripts/app.min.js')
+    link(rel='stylesheet', href='/stylesheets/app.min.css')
 
   body
     include ./navbar.pug
-    include ./navbar_includes.pug
     block content
-    block includes
