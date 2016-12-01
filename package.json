@@ -41,6 +41,7 @@
     "pug": "^2.0.0-beta4",
     "request": "^2.75.0",
     "serve-favicon": "~2.2.0",
+    "streamqueue": "^1.1.1",
     "svg2png": "^4.1.0"
   }
 }
