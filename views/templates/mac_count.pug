@@ -1,59 +1,58 @@
 div.container-fluid(ng-controller="mac_count_controller")
   div
-    md-content(layout-padding='')
-      h4 počet zařízení na uživatele
-      form.form-horizontal(ng-submit="main_form.$valid && submit(main_form)" name="main_form", ng-model='form', novalidate)
+    h4 počet zařízení na uživatele
+    form.form-horizontal(ng-submit="main_form.$valid && submit(main_form)" name="main_form", ng-model='form', novalidate)
+      .form-group
+        label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
+        .col-xs-2
+          div(layout-gt-xs='row')
+            input.form-control.flatpickr#min_date(type='text', ng-model='form_data.min_date')
+
+      .form-group
+        label.col-sm-2.control-label(for = 'max_date') Koncové datum:
+        .col-xs-2
+          div(layout-gt-xs='row')
+            input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
+
+      div(ng-show='options_added')
         .form-group
-          label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
+          label.col-sm-2.control-label Uživatelské jméno:
           .col-xs-2
             div(layout-gt-xs='row')
-              input.form-control.flatpickr#min_date(type='text', ng-model='form_data.min_date')
+              input.form-control(type='text', ng-model='options.username.val', ng-click='remove_anon()')
+              .radio(ng-repeat='type in options.username.types track by $index')
+                input(type='radio', name='username', ng-model='options.username.sel', ng-value='type')
+                | {{options.username.type_names[$index]}}
+              .checkbox
+                input(type="checkbox", name='username', ng-click='add_anon()', ng-model='anon_sel')
+                | Vyřadit anonymní uživatele
 
         .form-group
-          label.col-sm-2.control-label(for = 'max_date') Koncové datum:
+          label.col-sm-2.control-label Počet:
           .col-xs-2
             div(layout-gt-xs='row')
-              input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
- 
-        div(ng-show='options_added')
-          .form-group
-            label.col-sm-2.control-label Uživatelské jméno:
-            .col-xs-2
-              div(layout-gt-xs='row')
-                input.form-control(type='text', ng-model='options.username.val', ng-click='remove_anon()')
-                .radio(ng-repeat='type in options.username.types track by $index')
-                  input(type='radio', name='username', ng-model='options.username.sel', ng-value='type')
-                  | {{options.username.type_names[$index]}}
-                .checkbox
-                  input(type="checkbox", name='username', ng-click='add_anon()', ng-model='anon_sel')
-                  | Vyřadit anonymní uživatele
+              input.form-control(type='text', ng-model='options.count.val')
+              .radio(ng-repeat='type in options.count.types track by $index')
+                input(type='radio', name='count', ng-model='options.count.sel', ng-value='type')
+                | {{options.count.type_names[$index]}}
 
-          .form-group
-            label.col-sm-2.control-label Počet:
-            .col-xs-2
-              div(layout-gt-xs='row')
-                input.form-control(type='text', ng-model='options.count.val')
-                .radio(ng-repeat='type in options.count.types track by $index')
-                  input(type='radio', name='count', ng-model='options.count.sel', ng-value='type')
-                  | {{options.count.type_names[$index]}}
-
-        .form-group(ng-show='!options_added')
-          label.col-sm-2.control-label Další možnosti
-          .col-xs-2
-            div(layout-gt-xs='row')
-              button.btn.btn-default.addButton(type='button', ng-click='add_options()')
-                i.fa.fa-plus
-        
-        .form-group.ng-hide(ng-show='options_added')
-          label.col-sm-2.control-label Skrýt možnosti
-          .col-xs-2
-            div(layout-gt-xs='row')
-              button.btn.btn-default.addButton(type='button', ng-click='delete_options()')
-                i.fa.fa-minus
-        
-        .form-group
-          .col-sm-offset-2.col-sm-10
-            button.btn.btn-default(type='submit') Hledej
+      .form-group(ng-show='!options_added')
+        label.col-sm-2.control-label Další možnosti
+        .col-xs-2
+          div(layout-gt-xs='row')
+            button.btn.btn-default.addButton(type='button', ng-click='add_options()')
+              i.fa.fa-plus
+      
+      .form-group.ng-hide(ng-show='options_added')
+        label.col-sm-2.control-label Skrýt možnosti
+        .col-xs-2
+          div(layout-gt-xs='row')
+            button.btn.btn-default.addButton(type='button', ng-click='delete_options()')
+              i.fa.fa-minus
+      
+      .form-group
+        .col-sm-offset-2.col-sm-10
+          button.btn.btn-default(type='submit') Hledej
 
   div(ng-show='submitted')
     .form-group

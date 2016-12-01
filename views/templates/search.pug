@@ -1,55 +1,54 @@
 div.container-fluid(ng-controller="search_controller")
   div
-    md-content(layout-padding='')
-      h4 obecné vyhledávání
-      form.form-horizontal(ng-submit="main_form.$valid && submit(main_form)" name="main_form", ng-model='form', novalidate)
-        .form-group(ng-class="{ 'has-error' : main_form.username.$invalid && main_form.$submitted}")
-          label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
-          .col-xs-3
-            input.form-control(type = 'email', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', name='username', required)
-            p.help-block(ng-show='main_form.username.$invalid && main_form.$submitted')
-              | Uživatelské jméno musí být vyplněno ve správném tvaru.
+    h4 obecné vyhledávání
+    form.form-horizontal(ng-submit="main_form.$valid && submit(main_form)" name="main_form", ng-model='form', novalidate)
+      .form-group(ng-class="{ 'has-error' : main_form.username.$invalid && main_form.$submitted}")
+        label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
+        .col-xs-3
+          input.form-control(type = 'email', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', name='username', required)
+          p.help-block(ng-show='main_form.username.$invalid && main_form.$submitted')
+            | Uživatelské jméno musí být vyplněno ve správném tvaru.
 
-        //- TODO - add check if username matches the current user logged in !
-        //- what if the user spoofs the field?
-        
-        .form-group
-          label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
-          .col-xs-2
-            input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model='form_data.csi')
+      //- TODO - add check if username matches the current user logged in !
+      //- what if the user spoofs the field?
+      
+      .form-group
+        label.col-sm-2.control-label(for = 'mac_address') Mac adresa:
+        .col-xs-2
+          input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model='form_data.csi')
 
-        .form-group
-          label.col-sm-2.control-label(for = 'result') Výsledek autentizace:
-          .col-xs-2
-            select.form-control(ng-model='form_data.result')
-              each key, val in {"nezadáno" : "", "OK" : "OK", "FAIL" : "FAIL", "TIMEOUT" : "TIMEOUT"}
-                option(value = key) #{val}
+      .form-group
+        label.col-sm-2.control-label(for = 'result') Výsledek autentizace:
+        .col-xs-2
+          select.form-control(ng-model='form_data.result')
+            each key, val in {"nezadáno" : "", "OK" : "OK", "FAIL" : "FAIL", "TIMEOUT" : "TIMEOUT"}
+              option(value = key) #{val}
 
-        .form-group
-          label.col-sm-2.control-label(for = 'realm') Realm:
-          .col-xs-2
-            input.form-control(type = 'text', placeholder = 'příklad.cz', ng-model='form_data.realm')
+      .form-group
+        label.col-sm-2.control-label(for = 'realm') Realm:
+        .col-xs-2
+          input.form-control(type = 'text', placeholder = 'příklad.cz', ng-model='form_data.realm')
 
-        .form-group
-          label.col-sm-2.control-label(for = 'visinst') Navštívená instituce:
-          .col-xs-2
-            input.form-control(type = 'text', placeholder = 'příklad.cz', ng-model='form_data.visinst')
+      .form-group
+        label.col-sm-2.control-label(for = 'visinst') Navštívená instituce:
+        .col-xs-2
+          input.form-control(type = 'text', placeholder = 'příklad.cz', ng-model='form_data.visinst')
 
-        .form-group
-          label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
-          .col-xs-2
-            div(layout-gt-xs='row')
-              input.form-control.flatpickr#min_date(type='text', ng-model='form_data.min_date')
+      .form-group
+        label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
+        .col-xs-2
+          div(layout-gt-xs='row')
+            input.form-control.flatpickr#min_date(type='text', ng-model='form_data.min_date')
 
-        .form-group
-          label.col-sm-2.control-label(for = 'max_date') Koncové datum:
-          .col-xs-2
-            div(layout-gt-xs='row')
-              input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
+      .form-group
+        label.col-sm-2.control-label(for = 'max_date') Koncové datum:
+        .col-xs-2
+          div(layout-gt-xs='row')
+            input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
 
-        .form-group
-          .col-sm-offset-2.col-sm-10
-            button.btn.btn-default(type="submit") Hledej
+      .form-group
+        .col-sm-offset-2.col-sm-10
+          button.btn.btn-default(type="submit") Hledej
 
   div(ng-show='submitted && !error')
     .form-group
