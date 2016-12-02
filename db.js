@@ -65,7 +65,8 @@ var failed_logins_schema = mongoose.Schema({
   fail_count  : Number,
   ok_count    : Number,
   ratio       : Number
-});
+},
+{ versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.failed_logins_schema = failed_logins_schema;
 var failed_logins = mongoose.model('failed_logins', failed_logins_schema, 'failed_logins');
