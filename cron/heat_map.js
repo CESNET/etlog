@@ -109,6 +109,11 @@ exp.process_current_data = function (database)
 
     search(database, realms, prev_min, prev_max);
   });
+
+  // new realms can be added:
+  // generate_realms(database);
+  // code below must be set to avoid timeouts !
+  // mongoose.connect('mongodb://localhost/etlog?socketTimeoutMS=150000');
 }
 // --------------------------------------------------------------------------------------
 // process data of 2d matrix of all realms
@@ -150,6 +155,10 @@ function search(database, realms, min, max, done)
 }
 // --------------------------------------------------------------------------------------
 // generate realm list for realms collection
+// to use this
+// db connection must be set:
+// mongoose.connect('mongodb://localhost/etlog?socketTimeoutMS=150000');
+// because query takes long time !
 // --------------------------------------------------------------------------------------
 function generate_realms(database)
 {
@@ -175,5 +184,29 @@ function generate_realms(database)
         });
       }
   });
+
+  // =========================================
+
+  var visinst_list = [];
+
+  database.logs.aggregate([
+    { $match : { visinst : /.*\.cz$/, result : "OK" } },
+    { $project : { visinst : { $toLower : "$visinst" } } },   // use lower case to match all possible visinst forms
+    { $group : { _id : { visinst : "$visinst" } } },
+    { $project : { visinst : "$_id.visinst", _id : 0 } }
+  ],
+    function(err, items) {
+      for(var item in items)
+        visinst_list.push(items[item].visinst);
+
+      for(visinst in visinst_list) {
+        database.realms.update({ realm : visinst_list[visinst] }, { realm : visinst_list[visinst] }, { upsert : true },
+        function(err, result) {
+          if(err)
+            console.error(err);
+        });
+      }
+  });
 }
+// --------------------------------------------------------------------------------------
 module.exports = exp;
