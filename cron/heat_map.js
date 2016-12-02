@@ -124,7 +124,7 @@ function search(database, realms, min, max, done)
   // than with manual iteration ?
 
   database.logs.aggregate([
-    { $match : { timestamp : {$gte : min, $lt : max} } },                               // match given timestamp range
+    { $match : { timestamp : {$gte : min, $lt : max}, result : "OK" } },                // match given timestamp range and result
     { $match : { realm : { $in : realms }, visinst : { $in : realms } } },              // limit to realms and visinst
     { $group : { _id : { realm : "$realm", visinst : "$visinst", csi : "$csi" } } },    // group by realm, visinst, csi - normalize by csi !
     { $group : { _id : { realm : "$_id.realm", visinst : "$_id.visinst" }, count : { $sum : 1 } } },    // group by realm, visinst
