@@ -108,7 +108,7 @@ function search(database, min, max, done) {
 // --------------------------------------------------------------------------------------
 function save_to_db(database, items) {
   for(var item in items) {  // any better way to do this ?
-    database.failed_logins.update(items[item], items[item], { upsert : true },
+    database.failed_logins.update({ username : items[item].username, timestamp : items[item].timestamp }, items[item], { upsert : true },
     function(err, result) {
       if(err)  
         console.error(err);
@@ -120,7 +120,7 @@ function save_to_db(database, items) {
 // --------------------------------------------------------------------------------------
 function save_to_db_callback(database, items, done) {
   async.forEachOf(items, function (value, key, callback) {
-    database.failed_logins.update(items[key], items[key], { upsert : true },
+    database.failed_logins.update({ username : items[key].username, timestamp : items[key].timestamp }, items[key], { upsert : true },
     function(err, result) {
       if(err)
         console.error(err);
