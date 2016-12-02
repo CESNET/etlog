@@ -55,7 +55,7 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
   function(err, items) {
     for(var dict in items) {
       // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
-      module.exports.send_mail(config.failed_logins_subj, items[dict].admins, data_func(items[dict].realm, limit));
+      module.exports.send_mail(config.failed_logins_subj, items[dict].admins, data_func(database, items[dict].realm, limit));
     }
   });
 }
