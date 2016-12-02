@@ -114,14 +114,10 @@ function search(database, min, max, done) {
       { 
         pn : "$pn",
         csi : "$csi"
-      }, 
-      count :                               // count number of occurences
-      { 
-        $sum : 1 
-      } 
+      }
     } 
   },
-  { $group : { _id : { pn : "$_id.pn" }, count : { $sum : "$count" } }, },      // group again by username
+  { $group : { _id : { pn : "$_id.pn" }, count : { $sum : 1 } }, },      // group again by username
   { $project : { username : "$_id.pn", count : 1, _id : 0 } }
   ], 
     function (err, items) {
