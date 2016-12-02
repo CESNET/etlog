@@ -135,6 +135,8 @@ mongoose.connection.once('open', function (callback) {
 exports.connect = function()
 {
   mongoose.connect('mongodb://localhost/etlog');
+  //mongoose.connect('mongodb://localhost/etlog?socketTimeoutMS=150000');
+  // set to generate realms for heat map
 }
 // --------------------------------------------------------------------------------------
 // disconnect from the databse
