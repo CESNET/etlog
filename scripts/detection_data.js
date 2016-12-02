@@ -10,20 +10,28 @@ const request = require('../request');
 const database = require( '../db' );
 const fs = require('fs');
 // --------------------------------------------------------------------------------------
-// TODO
+// get data for every realm
 // --------------------------------------------------------------------------------------
 function get_data(database, callback)
 {
-  var realms = [];
-  database.realms.aggregate([ 
-  { $project : { _id : 0, realm : 1 } }
+  var min = new Date(new Date() - 42 * 86400000);   // 6 weeks ago
+  var max = new Date();     // today
+  
+  // get realm list sorted by failed auth count for previous 6 weeks
+  database.logs.aggregate([ 
+    { $match : { timestamp : { $gte : min, $lt : max }, result : "FAIL", realm : /\.cz/ } },  // limit by timestamp, failed logins, cz realms
+    { $group : { _id : { csi : "$csi", pn : "$pn", realm : "$realm" } } },     // group by [ csi, pn, realm ]
+    { $group : { _id : { pn : "$_id.pn", realm : "$_id.realm" }, count : { $sum : 1 } } },    // group by [ pn, realm ], count mac addresses
+    { $group : { _id : { realm : "$_id.realm"  }, count : { $sum : "$count"  } } },   // group by realm, sum count of users
+    { $sort : { count : -1 } },   // sort by count
+    { $limit : 100 },              // limit to 100 instituons
+    { $project : { realm : "$_id.realm", _id : 0 } }      // final projection
   ],
   function(err, items) {
     var html_text = [];
 
     for(var item in items) {
       get_realm_data(items[item].realm, graph, html_text);
-      //break;    // debug
     }
     
     create_output(html_text);
@@ -31,7 +39,7 @@ function get_data(database, callback)
   });
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// create html output
 // --------------------------------------------------------------------------------------
 function create_output(html_text)
 {
@@ -46,30 +54,31 @@ function create_output(html_text)
   console.log("</div></div>");
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get data for one realm from api
 // --------------------------------------------------------------------------------------
 function get_realm_data(realm, graph_func, html_text)
 {
   $scope = {};      // "scope"
 
   $scope.form_data = {
-    min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
+    min_date : new Date(new Date() - 42 * 86400000).toISOString().replace(/T.*$/, ''),      // 6 weeks ago - %Y-%m-%d
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
   };
   
   get_days($scope);     // get days
 
-  $scope.realm = realm;
+  $scope.realm = "'" + realm + "'";     // realm could possibly contain spaces
 
   // =========================================
 
   $scope.graph_data = [];
   for(var day in $scope.days) {
     $scope.graph_data.push({timestamp : $scope.days[day], 
-                            value : normalize_by_mac(request.get_failed_logins_daily($scope.days[day], realm))});
+                            value : sum_fail_count(request.get_failed_logins_daily($scope.days[day], realm))});
   }
   
   $scope.graph_title = "neuspesna prihlaseni";
+  $scope.enable_ratio = false;
   html_text.push('<div id="container"><h2>' + $scope.realm + '</h2><div class="chart">' +  graph_func($scope));
 
   // =========================================
@@ -77,7 +86,7 @@ function get_realm_data(realm, graph_func, html_text)
   $scope.graph_data = [];
   for(var day in $scope.days) {
     $scope.graph_data.push({timestamp : $scope.days[day], 
-                            value : normalize_by_mac(request.get_succ_logins_daily($scope.days[day], realm))});
+                            value : sum_succ_count(request.get_succ_logins_daily($scope.days[day], realm))});
   }
   
   $scope.graph_title = "uspesna prihlaseni";
@@ -88,8 +97,8 @@ function get_realm_data(realm, graph_func, html_text)
   $scope.graph_data = [];
   for(var day in $scope.days) {
     
-    var v1 = normalize_by_mac(request.get_succ_logins_daily($scope.days[day], realm));
-    var v2 = normalize_by_mac(request.get_failed_logins_daily($scope.days[day], realm));
+    var v1 = sum_succ_count(request.get_succ_logins_daily($scope.days[day], realm));
+    var v2 = sum_fail_count(request.get_failed_logins_daily($scope.days[day], realm));
     var val;
 
     if(v2 == 0) {
@@ -105,16 +114,38 @@ function get_realm_data(realm, graph_func, html_text)
   }
 
   $scope.graph_title = "pomer uspesnych / neuspesnych prihlaseni";
+  $scope.enable_ratio = true;
   html_text.push(graph_func($scope) + '</div></div>');
+}
+// --------------------------------------------------------------------------------------
+// sum failed count for given data
+// --------------------------------------------------------------------------------------
+function sum_fail_count(data)
+{
+  var cnt = 0;
+
+  for(var item in data)
+    cnt += data[item].fail_count;
+
+  return cnt;
+}
+// --------------------------------------------------------------------------------------
+// sum successfull count for given data
+// --------------------------------------------------------------------------------------
+function sum_succ_count(data)
+{
+  var cnt = 0;
+
+  for(var item in data)
+    cnt += data[item].count;
+
+  return cnt;
 }
 // --------------------------------------------------------------------------------------
 // get all days between min and max
 // --------------------------------------------------------------------------------------
 function get_days($scope)
 {
-  // TODO - fix db data UTC offset
-  // TODO - fix iteration when overcoming DST
-
   $scope.days = [];
 
   var min = new Date($scope.form_data.min_date);
@@ -124,13 +155,6 @@ function get_days($scope)
   for(var i = min; i < max; i.setTime(i.getTime() + 86400000)) {
     $scope.days.push(i.toISOString().replace(/T.*$/, ''));
   }
-}
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-function normalize_by_mac(data)
-{
-  return data.length;   // simple filtering - every user is counted once
 }
 // --------------------------------------------------------------------------------------
 // draw graph with data from api
@@ -279,11 +303,20 @@ function graph($scope)
       .attr("transform", "rotate(60)")
       .style("text-anchor", "start");
 
-  // add the y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y)
-      .tickFormat(d3.format("d")) // custom format - disable comma for thousands
-      .tickValues(y_unique));     // unique y values
+  if($scope.enable_ratio == true) {
+    // add the y Axis
+    svg.append("g")
+        .call(d3.axisLeft(y)
+        .tickFormat(d3.format(".2f"))); // enable floating point numbers for ratio graph
+  }
+  else {
+    // add the y Axis
+    svg.append("g")
+        .call(d3.axisLeft(y)
+        .tickFormat(d3.format("d")) // custom format - disable comma for thousands
+        .tickValues(y_unique));     // unique y values
+  }
+
 
   // set graph title
   svg.append("text")
@@ -316,7 +349,7 @@ function graph($scope)
   return text;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// main function
 // --------------------------------------------------------------------------------------
 function main()
 {
