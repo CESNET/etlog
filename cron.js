@@ -11,6 +11,7 @@ module.exports = function(database) {
   const shared_mac = require('./cron/shared_mac.js');
   const succ_logins = require('./cron/succ_logins.js');
   const request = require('./request');
+  const retention = require('./cron/delete_logs.js')
   const config = require('./config/config.js');
 // --------------------------------------------------------------------------------------
   new CronJob('0 00 06 1 * *', function() {     // run once a month
@@ -45,18 +46,19 @@ module.exports = function(database) {
     heat_map.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
+  // TODO
+  new CronJob('0 00 03 * * *', function() {     // run at 03:00:00
+  //service_state.process_current_data(database);
+  }, null, true, 'Europe/Prague');
+
+  new CronJob('0 30 03 * * *', function() {     // run at 03:30:00
+    retention.process_current_data(database);
+  }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------
   // mac to user mapping is run more often
   new CronJob('0 */15 * * * *', function() {   // every 15 minutes
     users_mac.process_current_data(database, 900); // every 15 minutes
   }, null, true, 'Europe/Prague');
-
-// --------------------------------------------------------------------------------------
-
-  // TODO - automatic data retention -> delete older data:
-  // logs itself after a year ?
-  // invalid data after .. ?
-  // 
 }
 // --------------------------------------------------------------------------------------
