@@ -104,18 +104,17 @@ kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 > zkontrolovat, jak budou formatovany zpravy
 
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
-- Dokumentace frontendu - co a jak popsat?
 - Pridana dokumentace k frontendu - vyhovuje takto? ([zde](https://github.com/CESNET/etlog#frontend))
-
 
 
 # TODO list
 1. Autentizace
   - použít rozcestník
+2. přstupová práva
 3. sshguard + FW -> semik
-7. přstupová práva
 8. co s radlog.cesnet.cz - tim starym virtualem
   - ponechat nez bude napsany text prace
+10. snyk?
 11. ...
 
 # TODO dobudoucna
