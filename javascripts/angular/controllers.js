@@ -716,7 +716,7 @@ function graph_orgs($scope)
     .text(min + " - " + max);
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// failed logins controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('failed_logins_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
@@ -727,7 +727,7 @@ angular.module('etlog').controller('failed_logins_controller', ['$scope', '$http
   handle_submit($scope, $http, $q, get_failed_logins, graph, [ "username", "fail_count", "ok_count", "ratio" ]);
 }]);
 // --------------------------------------------------------------------------------------
-// TODO
+// additional form fields for failed logins
 // --------------------------------------------------------------------------------------
 function addiational_fields_failed_logins($scope)
 {
@@ -942,7 +942,7 @@ function get_shared_mac($scope, $http, qs, callback)
   });
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get roaming most used for given query string
 // --------------------------------------------------------------------------------------
 function get_roaming_most_used($scope, $http, qs, $q, callback)
 {
@@ -955,7 +955,7 @@ function get_roaming_most_used($scope, $http, qs, $q, callback)
     chain = chain.then(function(){
       return $http({
         method  : 'GET',
-        url     : '/api/roaming/most_used/' + qs + ts + day     // TODO - limit on fields to speed up ?
+        url     : '/api/roaming/most_used/' + qs + ts + day
       })
       .then(function(response) {
         // config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
@@ -982,7 +982,7 @@ function get_roaming_most_used($scope, $http, qs, $q, callback)
   });
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// sum used count for given data
 // --------------------------------------------------------------------------------------
 function sum_used_count(data)
 {
@@ -995,7 +995,7 @@ function sum_used_count(data)
   return cnt;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get roaming most provided for given query string
 // --------------------------------------------------------------------------------------
 function get_roaming_most_provided($scope, $http, qs, $q, callback)
 {
@@ -1008,7 +1008,7 @@ function get_roaming_most_provided($scope, $http, qs, $q, callback)
     chain = chain.then(function(){
       return $http({
         method  : 'GET',
-        url     : '/api/roaming/most_provided/' + qs + ts + day     // TODO - limit on fields to speed up ?
+        url     : '/api/roaming/most_provided/' + qs + ts + day
       })
       .then(function(response) {
         // config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
@@ -1035,7 +1035,7 @@ function get_roaming_most_provided($scope, $http, qs, $q, callback)
   });
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// sum provided count for given data
 // --------------------------------------------------------------------------------------
 function sum_provided_count(data)
 {
@@ -1048,7 +1048,7 @@ function sum_provided_count(data)
   return cnt;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// roaming activity controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
@@ -1065,7 +1065,7 @@ angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$h
   handle_submit($scope, $http, $q, get_roaming, graph, ["realm", "visinst"]);
 }]);
 // --------------------------------------------------------------------------------------
-// TODO
+// additional fields for roaming activity form
 // --------------------------------------------------------------------------------------
 function addiational_fields_roaming_activity($scope)
 {
@@ -1094,7 +1094,7 @@ function addiational_fields_roaming_activity($scope)
   };
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get roaming defined by query string
 // --------------------------------------------------------------------------------------
 function get_roaming($scope, $http, qs, $q, callback)
 {
@@ -1114,7 +1114,7 @@ function get_roaming($scope, $http, qs, $q, callback)
   }
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get both proided and used roaming with no limit to realm or visinst
 // --------------------------------------------------------------------------------------
 function get_roaming_all($scope, $http, qs, $q, callback)
 {
@@ -1186,8 +1186,6 @@ function sum_heat_map_count(data, visinst)
 
   if(visinst instanceof RegExp) {   // regex
     for(var item in data) {     // iterate data
-      console.log("iterating data");
-
       for(var inst in data[item].institutions) {        // iterate institutions
         if(visinst.test(data[item].institutions[inst].realm) == true)  {   //  visinst matches
           cnt += data[item].institutions[inst].count;
@@ -1205,8 +1203,6 @@ function sum_heat_map_count(data, visinst)
       }
     }
   }
-
-  //console.log(cnt);
 
   return cnt;
 }
