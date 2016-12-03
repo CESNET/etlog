@@ -37,7 +37,26 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   handle_sort($scope, $http, get_logs);
   set_params($scope, $stateParams); // set params passed from other views
   handle_download($scope);
+  handle_empty_form($scope);
 }]);
+// --------------------------------------------------------------------------------------
+// checks if form is empty or not
+// --------------------------------------------------------------------------------------
+function handle_empty_form($scope)
+{
+  $scope.check_empty = function() {
+    var items = [ "pn", "csi", "realm", "visinst", "result" ];    // form fields
+
+    for(var item in items)
+      if(items[item] in $scope.form_data && $scope.form_data[items[item]]) {    // is present and is not undefined
+        $scope.empty = false;
+        return true;
+      }
+
+    $scope.empty = true;
+    return false;
+  };
+}
 // --------------------------------------------------------------------------------------
 // inittialize search variables
 // --------------------------------------------------------------------------------------
@@ -129,21 +148,6 @@ function set_params($scope, $stateParams)
     $scope.$watch('main_form', function(main_form) {
       if(main_form)
         $scope.submit(main_form); // automatically click search button when form is ready
-      //console.log($scope.main_form);
-
-      // TODO
-
-      //console.log(main_form.$valid);
-      //console.log(main_form.$invalid);
-      //console.log(main_form);
-      //console.log(main_form.$valid);
-      //console.log(main_form.$invalid);
-      //console.log(main_form.$valid == true);
-
-      //if(main_form.$valid) {
-      //  console.log("submitting");
-      //  $scope.submit(main_form); // automatically click search button when form is ready
-      //}
     });
   }
 }
@@ -185,15 +189,12 @@ function transform_timestamp(data)
 function handle_search_submit($scope, $http, data_func, paging, coll_name)
 {
   $scope.submit = function (form) {
-    if(form.$valid) {
-      $scope.error = false; // begin submitting - no error yet
-
-      $scope.base_qs = build_qs_search($scope.form_data);  // create query string
-      $scope.qs = $scope.base_qs;
-      get_total_items($scope, $http, coll_name);        // set number of total items for paging
-      $scope.get_page($http, $scope.paging.current_page, data_func);
-      $scope.submitted = true;
-    }
+    $scope.error = false; // begin submitting - no error yet
+    $scope.base_qs = build_qs_search($scope.form_data);  // create query string
+    $scope.qs = $scope.base_qs;
+    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    $scope.get_page($http, $scope.paging.current_page, data_func);
+    $scope.submitted = true;
   }
 }
 // --------------------------------------------------------------------------------------
