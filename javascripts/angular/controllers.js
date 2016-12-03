@@ -213,19 +213,6 @@ function build_qs_search(data)
   return ret;       // returned value is '?' or '?.*&'
 }
 // --------------------------------------------------------------------------------------
-// get list of realms
-// --------------------------------------------------------------------------------------
-function get_realms($scope, $http)
-{
-  return $http({
-    method  : 'GET',
-    url     : '/api/realms'
-  })
-  .then(function(response) {
-    $scope.realms = response.data; // get realm list
-  });
-}
-// --------------------------------------------------------------------------------------
 // mac count table controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', function ($scope, $http) {
@@ -745,42 +732,6 @@ function graph_orgs($scope)
     .style("font-size", "20px")
     .style("text-decoration", "underline")
     .text(min + " - " + max);
-
-
-
-  // TODO
-  //if($scope.grouped) {
-  //  console.log("grouped");
-
-  //  d3.select('#show_failed').on('change', function() {
-  //    console.log('func');
-  //    //var x = d3.select('#show_failed').selectAll('.category:checked');
-  //    ////var ids = x[0].map(function(category) {
-  //    ////  return category.id;
-  //    ////});
-
-  //    //console.log(x);
-
-  //    ////updateGraph(ids);
-  //  });
-  //  //renderGraph();
-  //
-  //}
-
-
-}
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-function get_x_ticks(ticks, data_length)
-{
-  if(data_length > 15) {
-
-  }
-
-  console.log(ticks);
-
-  return ticks;
 }
 // --------------------------------------------------------------------------------------
 // TODO
@@ -1449,13 +1400,13 @@ function handle_common_submit($scope, $http, $q, data_func, graph_func, coll_nam
   $scope.submit = function (form) {
     if(form.$valid) {
       $scope.loading = true;
+      $scope.submitted = true; // form has been submitted
       get_days($scope);                           // get array of days in specified interval
       $scope.base_qs = build_sorted_qs(sort_key, $scope.form_data.inst_count);//
       $scope.qs = $scope.base_qs;
       data_func($scope, $http, $scope.qs, $q, function ($scope) { // get data from api
         graph_func($scope);    // draw graph
         $scope.loading = false;
-        $scope.submitted = true; // form has not been submitted yet
       });
     }
   }
@@ -1563,6 +1514,7 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, graph_orgs, "roaming_most_provided", "provided_count");
+  //handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
   handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -1583,9 +1535,6 @@ function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
   $scope.graph_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
-  // debug
-  console.log($scope.form_data);
-
   return $http({
     method  : 'GET',
     url     : '/api/roaming/most_provided' + qs + ts
@@ -1598,18 +1547,44 @@ function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
     // do grafu i do tabulky
     // jak pro poskytovane tak pro vyuzivane
 
-    console.log(response.data);
+    // http://bl.ocks.org/mstanaland/6100713
+
+    // TODO ?
+
+    //var chain = $q.when();
+
+    //response.data.forEach(function (item, index) {
+    //  chain = chain.then(function(){
+    //    return $http({
+    //      method  : 'GET',
+    //      url     : '/api/unique_users/?' + ts + "&visinst=" + item.inst_name
+    //    })
+    //    .then(function(response) {
+    //      // config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
+    //      
+    //      //$scope.graph_data.push({ timestamp : ts,
+    //      //                   value : sum_fail_count(response.data)});
+
+    //      console.log(item.inst_name);
+    //      console.log(response.data);
+    //    });
+    //  });
+    //});
+
+    //// the final chain object will resolve once all the posts have completed.
+    //chain.then(function() {
+    //  //console.log(response.data);
+    //  $scope.table_data = response.data;
+    //  create_graph_data_provided($scope, response.data);
+    //  callback($scope);
+    //});
+  
+  
     $scope.table_data = response.data;
     create_graph_data_provided($scope, response.data);
     callback($scope);
   });
 }
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-angular.module('etlog').controller('detection_data_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
-  $scope.title = "etlog: data k detekci";
-}]);
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
@@ -1889,6 +1864,96 @@ function graph($scope)
     .text(min + " - " + max);
 }
 // --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('heat_map_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+  $scope.title = "etlog: mapa roamingu";
+  $scope.form_data = {
+    min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
+    max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
+  };
+  init_calendar($scope, $http);
+  handle_submit_heat_map($scope, $http, $q, get_heat_map, graph_heat_map);
+}]);
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function handle_submit_heat_map($scope, $http, $q, data_func, graph_func)
+{
+  $scope.submit = function (form) {
+    if(form.$valid) {
+      // set loading animation
+      $scope.loading = true;
+      
+      
+      // debug
+      graph_func($scope);
+      $scope.loading = false;
+
+      //get_realms($scope, $http).then(function() {   // get list of realms
+      //  data_func($scope, $http, $q, function ($scope) { // get data from api
+      //    graph_func($scope);    // draw graph
+      //    // unset loading animation
+      //    $scope.loading = false;
+      //  });
+      //});        
+    }
+  }
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function get_heat_map($scope, $http, $q, callback)
+{
+  var chain = $q.when();
+  $scope.graph_data = [];
+
+  var qs = get_ts($scope);
+
+  $scope.realms.forEach(function (realm, index) {
+    chain = chain.then(function(){
+      return $http({
+        method  : 'GET',
+        url     : '/api/heat_map/' + qs + "&realm=" + realm
+      })
+      .then(function(response) {
+        // config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
+        var ts;
+        var arr = response.config.url.split("?")[1].split("&");
+
+        for(var item in arr) {  // find timestamp in query string variables
+          if(arr[item].indexOf("timestamp") != -1) {
+            ts = arr[item].split("=")[1].split("-");
+            break;
+          }
+        }
+        
+        ts = ts[2] + "." + ts[1] + "." + ts[0];     // czech format - eg 01.11.2016
+        $scope.graph_data.push({ timestamp : ts,
+                           value : transform_heat_data(response.data)});
+      });
+    });
+  });
+
+  // the final chain object will resolve once all the posts have completed.
+  chain.then(function() {
+    callback($scope);
+  });
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function get_ts($scope)
+{
+  return "?timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function graph_heat_map($scope)
+{
+  // debug
+  //console.log($scope.graph_data);
 
 
 
@@ -1899,3 +1964,546 @@ function graph($scope)
 
 
 
+
+
+
+
+}
+// --------------------------------------------------------------------------------------
+// get list of realms
+// --------------------------------------------------------------------------------------
+function get_realms($scope, $http)
+{
+  return $http({
+    method  : 'GET',
+    url     : '/api/realms'
+  })
+  .then(function(response) {
+    $scope.realms = response.data; // get realm list
+  });
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function transform_heat_data(data)
+{
+  // TODO
+  console.log(data);
+
+  return 0;
+}
+// --------------------------------------------------------------------------------------
+function stacked_graph($scope)
+{
+  // Setup svg using Bostock's margin convention
+  var margin = {top: 20, right: 160, bottom: 35, left: 30};   // orig
+  //var margin = {top: 50, right: 20, bottom: 100, left: 80};
+
+  var width = $(window).width() - 130;      // compensate for y axis labels
+  var height = 500 - margin.top - margin.bottom;
+
+  // ==========================================================
+            
+  var svg = d3.select("#graph");
+
+  if(svg.html() == "") {    // no graph present yet
+    svg = svg.append("svg");
+  }
+  else {    // graph already present
+    svg = svg.selectAll("div > svg").remove("svg"); // delete it
+    svg = d3.select("#graph").append("svg");        // and create again
+  }
+
+  // ==========================================================
+
+  svg = svg.attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // ==========================================================
+
+
+  /* Data in strings like it would be if imported from a csv */
+
+  var data = [
+    { year: "2006", redDelicious: "10", mcintosh: "15", oranges: "9", pears: "6" },
+    { year: "2007", redDelicious: "12", mcintosh: "18", oranges: "9", pears: "4" },
+    { year: "2008", redDelicious: "05", mcintosh: "20", oranges: "8", pears: "2" },
+    { year: "2009", redDelicious: "01", mcintosh: "15", oranges: "5", pears: "4" },
+    { year: "2010", redDelicious: "02", mcintosh: "10", oranges: "4", pears: "2" },
+    { year: "2011", redDelicious: "03", mcintosh: "12", oranges: "6", pears: "3" },
+    { year: "2012", redDelicious: "04", mcintosh: "15", oranges: "8", pears: "1" },
+    { year: "2013", redDelicious: "06", mcintosh: "11", oranges: "9", pears: "4" },
+    { year: "2014", redDelicious: "10", mcintosh: "13", oranges: "9", pears: "5" },
+    { year: "2015", redDelicious: "16", mcintosh: "19", oranges: "6", pears: "9" },
+    { year: "2016", redDelicious: "19", mcintosh: "17", oranges: "5", pears: "7" },
+  ];
+
+  var parse = d3.time.format("%Y").parse;
+
+
+  // Transpose the data into layers
+  var dataset = d3.layout.stack()(["redDelicious", "mcintosh"].map(function(fruit) {
+    return data.map(function(d) {
+      return {x: parse(d.year), y: +d[fruit]};
+    });
+  }));
+
+
+  // Set x, y and colors
+  var x = d3.scale.ordinal()
+    .domain(dataset[0].map(function(d) { return d.x; }))
+    .rangeRoundBands([10, width-10], 0.02);
+
+  var y = d3.scale.linear()
+    .domain([0, d3.max(dataset, function(d) {  return d3.max(d, function(d) { return d.y0 + d.y; });  })])
+    .range([height, 0]);
+
+  //var colors = ["b33040", "#d25c4d", "#f2b447", "#d9d574"];
+  var colors = ["b33040", "#d25c4d" ];
+
+  // Define and draw axes
+  var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(5)
+    .tickSize(-width, 0, 0)
+    .tickFormat( function(d) { return d } );
+
+  var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .tickFormat(d3.time.format("%Y"));
+
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+
+  // Create groups for each series, rects for each segment 
+  var groups = svg.selectAll("g.cost")
+    .data(dataset)
+    .enter().append("g")
+    .attr("class", "cost")
+    .style("fill", function(d, i) { return colors[i]; });
+
+  var rect = groups.selectAll("rect")
+    .data(function(d) { return d; })
+    .enter()
+    .append("rect")
+    .attr("x", function(d) { return x(d.x); })
+    .attr("y", function(d) { return y(d.y0 + d.y); })
+    .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+    .attr("width", x.rangeBand())
+    .on("mouseover", function() { tooltip.style("display", null); })
+    .on("mouseout", function() { tooltip.style("display", "none"); })
+    .on("mousemove", function(d) {
+      var xPosition = d3.mouse(this)[0] - 15;
+      var yPosition = d3.mouse(this)[1] - 25;
+      tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+      tooltip.select("text").text(d.y);
+    });
+
+
+  // Draw legend
+  var legend = svg.selectAll(".legend")
+    .data(colors)
+    .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate(30," + i * 19 + ")"; });
+   
+  legend.append("rect")
+    .attr("x", width - 18)
+    .attr("width", 18)
+    .attr("height", 18)
+    .style("fill", function(d, i) {return colors.slice().reverse()[i];});
+   
+  legend.append("text")
+    .attr("x", width + 5)
+    .attr("y", 9)
+    .attr("dy", ".35em")
+    .style("text-anchor", "start")
+    .text(function(d, i) { 
+      switch (i) {
+        case 0: return "Anjou pears";
+        case 1: return "Naval oranges";
+        case 2: return "McIntosh apples";
+        case 3: return "Red Delicious apples";
+      }
+    });
+
+
+  // Prep the tooltip bits, initial display is hidden
+  var tooltip = svg.append("g")
+    .attr("class", "tooltip")
+    .style("display", "none");
+      
+  tooltip.append("rect")
+    .attr("width", 30)
+    .attr("height", 20)
+    .attr("fill", "white")
+    .style("opacity", 0.5);
+
+  tooltip.append("text")
+    .attr("x", 15)
+    .attr("dy", "1.2em")
+    .style("text-anchor", "middle")
+    .attr("font-size", "12px")
+    .attr("font-weight", "bold");
+
+
+}
+// --------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function heat_map_graph($scope)
+{
+
+var margin = { top: 150, right: 10, bottom: 50, left: 100 },
+  cellSize=12;
+  col_number=60;
+  row_number=50;
+  width = cellSize*col_number, // - margin.left - margin.right,
+  height = cellSize*row_number , // - margin.top - margin.bottom,
+  //gridSize = Math.floor(width / 24),
+  legendElementWidth = cellSize*2.5,
+  colorBuckets = 21,
+  colors = ['#005824','#1A693B','#347B53','#4F8D6B','#699F83','#83B09B','#9EC2B3','#B8D4CB','#D2E6E3','#EDF8FB','#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
+  hcrow = [49,11,30,4,18,6,12,20,19,33,32,26,44,35,38,3,23,41,22,10,2,15,16,36,8,25,29,7,27,34,48,31,45,43,14,9,39,1,37,47,42,21,40,5,28,46,50,17,24,13], // change to gene name or probe id
+  hccol = [6,5,41,12,42,21,58,56,14,16,43,15,17,46,47,48,54,49,37,38,25,22,7,8,2,45,9,20,24,44,23,19,13,40,11,1,39,53,10,52,3,26,27,60,50,51,59,18,31,32,30,4,55,28,29,57,36,34,33,35], // change to gene name or probe id
+  rowLabel = ['1759080_s_at','1759302_s_at','1759502_s_at','1759540_s_at','1759781_s_at','1759828_s_at','1759829_s_at','1759906_s_at','1760088_s_at','1760164_s_at','1760453_s_at','1760516_s_at','1760594_s_at','1760894_s_at','1760951_s_at','1761030_s_at','1761128_at','1761145_s_at','1761160_s_at','1761189_s_at','1761222_s_at','1761245_s_at','1761277_s_at','1761434_s_at','1761553_s_at','1761620_s_at','1761873_s_at','1761884_s_at','1761944_s_at','1762105_s_at','1762118_s_at','1762151_s_at','1762388_s_at','1762401_s_at','1762633_s_at','1762701_s_at','1762787_s_at','1762819_s_at','1762880_s_at','1762945_s_at','1762983_s_at','1763132_s_at','1763138_s_at','1763146_s_at','1763198_s_at','1763383_at','1763410_s_at','1763426_s_at','1763490_s_at','1763491_s_at'], // change to gene name or probe id
+  colLabel = ['con1027','con1028','con1029','con103','con1030','con1031','con1032','con1033','con1034','con1035','con1036','con1037','con1038','con1039','con1040','con1041','con108','con109','con110','con111','con112','con125','con126','con127','con128','con129','con130','con131','con132','con133','con134','con135','con136','con137','con138','con139','con14','con15','con150','con151','con152','con153','con16','con17','con174','con184','con185','con186','con187','con188','con189','con191','con192','con193','con194','con199','con2','con200','con201','con21']; // change to contrast name
+
+d3.tsv("data_heatmap.tsv",
+function(d) {
+  return {
+    row:   +d.row_idx,
+    col:   +d.col_idx,
+    value: +d.log2ratio
+  };
+},
+function(error, data) {
+  var colorScale = d3.scale.quantile()
+      .domain([ -10 , 0, 10])
+      .range(colors);
+  
+  var svg = d3.select("#chart").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      ;
+  var rowSortOrder=false;
+  var colSortOrder=false;
+  var rowLabels = svg.append("g")
+      .selectAll(".rowLabelg")
+      .data(rowLabel)
+      .enter()
+      .append("text")
+      .text(function (d) { return d; })
+      .attr("x", 0)
+      .attr("y", function (d, i) { return hcrow.indexOf(i+1) * cellSize; })
+      .style("text-anchor", "end")
+      .attr("transform", "translate(-6," + cellSize / 1.5 + ")")
+      .attr("class", function (d,i) { return "rowLabel mono r"+i;} ) 
+      .on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
+      .on("mouseout" , function(d) {d3.select(this).classed("text-hover",false);})
+      .on("click", function(d,i) {rowSortOrder=!rowSortOrder; sortbylabel("r",i,rowSortOrder);d3.select("#order").property("selectedIndex", 4).node().focus();;})
+      ;
+
+  var colLabels = svg.append("g")
+      .selectAll(".colLabelg")
+      .data(colLabel)
+      .enter()
+      .append("text")
+      .text(function (d) { return d; })
+      .attr("x", 0)
+      .attr("y", function (d, i) { return hccol.indexOf(i+1) * cellSize; })
+      .style("text-anchor", "left")
+      .attr("transform", "translate("+cellSize/2 + ",-6) rotate (-90)")
+      .attr("class",  function (d,i) { return "colLabel mono c"+i;} )
+      .on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
+      .on("mouseout" , function(d) {d3.select(this).classed("text-hover",false);})
+      .on("click", function(d,i) {colSortOrder=!colSortOrder;  sortbylabel("c",i,colSortOrder);d3.select("#order").property("selectedIndex", 4).node().focus();;})
+      ;
+
+  var heatMap = svg.append("g").attr("class","g3")
+        .selectAll(".cellg")
+        .data(data,function(d){return d.row+":"+d.col;})
+        .enter()
+        .append("rect")
+        .attr("x", function(d) { return hccol.indexOf(d.col) * cellSize; })
+        .attr("y", function(d) { return hcrow.indexOf(d.row) * cellSize; })
+        .attr("class", function(d){return "cell cell-border cr"+(d.row-1)+" cc"+(d.col-1);})
+        .attr("width", cellSize)
+        .attr("height", cellSize)
+        .style("fill", function(d) { return colorScale(d.value); })
+        /* .on("click", function(d) {
+               var rowtext=d3.select(".r"+(d.row-1));
+               if(rowtext.classed("text-selected")==false){
+                   rowtext.classed("text-selected",true);
+               }else{
+                   rowtext.classed("text-selected",false);
+               }
+        })*/
+        .on("mouseover", function(d){
+               //highlight text
+               d3.select(this).classed("cell-hover",true);
+               d3.selectAll(".rowLabel").classed("text-highlight",function(r,ri){ return ri==(d.row-1);});
+               d3.selectAll(".colLabel").classed("text-highlight",function(c,ci){ return ci==(d.col-1);});
+        
+               //Update the tooltip position and value
+               d3.select("#tooltip")
+                 .style("left", (d3.event.pageX+10) + "px")
+                 .style("top", (d3.event.pageY-10) + "px")
+                 .select("#value")
+                 .text("lables:"+rowLabel[d.row-1]+","+colLabel[d.col-1]+"\ndata:"+d.value+"\nrow-col-idx:"+d.col+","+d.row+"\ncell-xy "+this.x.baseVal.value+", "+this.y.baseVal.value);  
+               //Show the tooltip
+               d3.select("#tooltip").classed("hidden", false);
+        })
+        .on("mouseout", function(){
+               d3.select(this).classed("cell-hover",false);
+               d3.selectAll(".rowLabel").classed("text-highlight",false);
+               d3.selectAll(".colLabel").classed("text-highlight",false);
+               d3.select("#tooltip").classed("hidden", true);
+        })
+        ;
+
+  var legend = svg.selectAll(".legend")
+      .data([-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10])
+      .enter().append("g")
+      .attr("class", "legend");
+ 
+  legend.append("rect")
+    .attr("x", function(d, i) { return legendElementWidth * i; })
+    .attr("y", height+(cellSize*2))
+    .attr("width", legendElementWidth)
+    .attr("height", cellSize)
+    .style("fill", function(d, i) { return colors[i]; });
+ 
+  legend.append("text")
+    .attr("class", "mono")
+    .text(function(d) { return d; })
+    .attr("width", legendElementWidth)
+    .attr("x", function(d, i) { return legendElementWidth * i; })
+    .attr("y", height + (cellSize*4));
+
+// Change ordering of cells
+
+  function sortbylabel(rORc,i,sortOrder){
+       var t = svg.transition().duration(3000);
+       var log2r=[];
+       var sorted; // sorted is zero-based index
+       d3.selectAll(".c"+rORc+i) 
+         .filter(function(ce){
+            log2r.push(ce.value);
+          })
+       ;
+       if(rORc=="r"){ // sort log2ratio of a gene
+         sorted=d3.range(col_number).sort(function(a,b){ if(sortOrder){ return log2r[b]-log2r[a];}else{ return log2r[a]-log2r[b];}});
+         t.selectAll(".cell")
+           .attr("x", function(d) { return sorted.indexOf(d.col-1) * cellSize; })
+           ;
+         t.selectAll(".colLabel")
+          .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; })
+         ;
+       }else{ // sort log2ratio of a contrast
+         sorted=d3.range(row_number).sort(function(a,b){if(sortOrder){ return log2r[b]-log2r[a];}else{ return log2r[a]-log2r[b];}});
+         t.selectAll(".cell")
+           .attr("y", function(d) { return sorted.indexOf(d.row-1) * cellSize; })
+           ;
+         t.selectAll(".rowLabel")
+          .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; })
+         ;
+       }
+  }
+
+  d3.select("#order").on("change",function(){
+    order(this.value);
+  });
+  
+  function order(value){
+   if(value=="hclust"){
+    var t = svg.transition().duration(3000);
+    t.selectAll(".cell")
+      .attr("x", function(d) { return hccol.indexOf(d.col) * cellSize; })
+      .attr("y", function(d) { return hcrow.indexOf(d.row) * cellSize; })
+      ;
+
+    t.selectAll(".rowLabel")
+      .attr("y", function (d, i) { return hcrow.indexOf(i+1) * cellSize; })
+      ;
+
+    t.selectAll(".colLabel")
+      .attr("y", function (d, i) { return hccol.indexOf(i+1) * cellSize; })
+      ;
+
+   }else if (value=="probecontrast"){
+    var t = svg.transition().duration(3000);
+    t.selectAll(".cell")
+      .attr("x", function(d) { return (d.col - 1) * cellSize; })
+      .attr("y", function(d) { return (d.row - 1) * cellSize; })
+      ;
+
+    t.selectAll(".rowLabel")
+      .attr("y", function (d, i) { return i * cellSize; })
+      ;
+
+    t.selectAll(".colLabel")
+      .attr("y", function (d, i) { return i * cellSize; })
+      ;
+
+   }else if (value=="probe"){
+    var t = svg.transition().duration(3000);
+    t.selectAll(".cell")
+      .attr("y", function(d) { return (d.row - 1) * cellSize; })
+      ;
+
+    t.selectAll(".rowLabel")
+      .attr("y", function (d, i) { return i * cellSize; })
+      ;
+   }else if (value=="contrast"){
+    var t = svg.transition().duration(3000);
+    t.selectAll(".cell")
+      .attr("x", function(d) { return (d.col - 1) * cellSize; })
+      ;
+    t.selectAll(".colLabel")
+      .attr("y", function (d, i) { return i * cellSize; })
+      ;
+   }
+  }
+  // 
+  var sa=d3.select(".g3")
+      .on("mousedown", function() {
+          if( !d3.event.altKey) {
+             d3.selectAll(".cell-selected").classed("cell-selected",false);
+             d3.selectAll(".rowLabel").classed("text-selected",false);
+             d3.selectAll(".colLabel").classed("text-selected",false);
+          }
+         var p = d3.mouse(this);
+         sa.append("rect")
+         .attr({
+             rx      : 0,
+             ry      : 0,
+             class   : "selection",
+             x       : p[0],
+             y       : p[1],
+             width   : 1,
+             height  : 1
+         })
+      })
+      .on("mousemove", function() {
+         var s = sa.select("rect.selection");
+      
+         if(!s.empty()) {
+             var p = d3.mouse(this),
+                 d = {
+                     x       : parseInt(s.attr("x"), 10),
+                     y       : parseInt(s.attr("y"), 10),
+                     width   : parseInt(s.attr("width"), 10),
+                     height  : parseInt(s.attr("height"), 10)
+                 },
+                 move = {
+                     x : p[0] - d.x,
+                     y : p[1] - d.y
+                 }
+             ;
+      
+             if(move.x < 1 || (move.x*2<d.width)) {
+                 d.x = p[0];
+                 d.width -= move.x;
+             } else {
+                 d.width = move.x;       
+             }
+      
+             if(move.y < 1 || (move.y*2<d.height)) {
+                 d.y = p[1];
+                 d.height -= move.y;
+             } else {
+                 d.height = move.y;       
+             }
+             s.attr(d);
+      
+                 // deselect all temporary selected state objects
+             d3.selectAll('.cell-selection.cell-selected').classed("cell-selected", false);
+             d3.selectAll(".text-selection.text-selected").classed("text-selected",false);
+
+             d3.selectAll('.cell').filter(function(cell_d, i) {
+                 if(
+                     !d3.select(this).classed("cell-selected") && 
+                         // inner circle inside selection frame
+                     (this.x.baseVal.value)+cellSize >= d.x && (this.x.baseVal.value)<=d.x+d.width && 
+                     (this.y.baseVal.value)+cellSize >= d.y && (this.y.baseVal.value)<=d.y+d.height
+                 ) {
+      
+                     d3.select(this)
+                     .classed("cell-selection", true)
+                     .classed("cell-selected", true);
+
+                     d3.select(".r"+(cell_d.row-1))
+                     .classed("text-selection",true)
+                     .classed("text-selected",true);
+
+                     d3.select(".c"+(cell_d.col-1))
+                     .classed("text-selection",true)
+                     .classed("text-selected",true);
+                 }
+             });
+         }
+      })
+      .on("mouseup", function() {
+            // remove selection frame
+         sa.selectAll("rect.selection").remove();
+      
+             // remove temporary selection marker class
+         d3.selectAll('.cell-selection').classed("cell-selection", false);
+         d3.selectAll(".text-selection").classed("text-selection",false);
+      })
+      .on("mouseout", function() {
+         if(d3.event.relatedTarget.tagName=='html') {
+                 // remove selection frame
+             sa.selectAll("rect.selection").remove();
+                 // remove temporary selection marker class
+             d3.selectAll('.cell-selection').classed("cell-selection", false);
+             d3.selectAll(".rowLabel").classed("text-selected",false);
+             d3.selectAll(".colLabel").classed("text-selected",false);
+         }
+      })
+      ;
+});
+
+
+
+}
