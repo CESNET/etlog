@@ -900,23 +900,16 @@ It enables dynamic content manipulation throught html element attributes.
 
 Frontend has followind structure:
 
-| state                          | url                             |     title                                      |
-|--------------------------------|---------------------------------|------------------------------------------------|
-| search                         | /#/search?pn&csi                | etlog: obecné vyhledávání                      |
-| mac_count                      | /#/mac_count                    | etlog: počet zařízení                          |
-| failed_logins                  | /#/failed_logins                | etlog: neúspěšná přihlášení                    |
-| shared_mac                     | /#/shared_mac                   | etlog: sdílená zařízení                        |
-| roaming_most_provided          | /#/roaming_most_provided        | etlog: posktovaný roaming - vyhledávání        |
-| roaming_most_used              | /#/roaming_most_used            | etlog: čerpaný roaming - vyhledávání           |
-| heat_map                       | /#/heat_map                     | etlog: mapa roamingu                           |
-| roaming_most_used_test         | /#/roaming_most_used_test       | etlog: Instituce nejvíce čerpající roaming     |
-| roaming_most_provided_test     | /#/roaming_most_provided_test   | etlog: Instituce nejvíce poskytující roaming   |
-| roaming_activity               | /#/roaming_activity             | etlog: aktivita eduroamu                       |
-| detection_data                 | /#/detection_data               | etlog: data k detekci                          |
-
-
-TODO - rename test states
-TODO - remove test views
+| state                          | url                             |     title                                          |
+|--------------------------------|---------------------------------|----------------------------------------------------|
+| search                         | /#/search?pn&csi                | etlog: obecné vyhledávání                          |
+| mac_count                      | /#/mac_count                    | etlog: počet zařízení                              |
+| failed_logins                  | /#/failed_logins                | etlog: neúspěšná přihlášení                        |
+| shared_mac                     | /#/shared_mac                   | etlog: sdílená zařízení                            |
+| heat_map                       | /#/heat_map                     | etlog: mapa roamingu                               |
+| orgs_roaming_most_used         | /#/orgs_roaming_most_provided   | etlog: organizace nejvíce poskytující konektivitu  |
+| orgs_roaming_most_provided     | /#/orgs_roaming_most_used       | etlog: organizace nejvíce využívající roaming      |
+| roaming_activity               | /#/roaming_activity             | etlog: aktivita eduroamu                           |
 
 
 #### Backend
