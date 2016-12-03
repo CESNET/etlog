@@ -453,7 +453,7 @@ Collection has following structure:
 ##### realm\_admins
 
 Collection contains array of administrators email's for institutions.
-Each instituon hay have administrators specified.
+Each institution hay have administrators specified.
 
 If the insititution is defined and has administrators defined,
 the administrator(s) get a report once every month.
@@ -463,7 +463,7 @@ The only exception is realm "cz" which does not correspond with any institution.
 In this case, the administrator recieves reports with most significant problems found.
 
 Realms are hierarchical - they are domain names, which use DNS.
-Every instituon has it's domain and may have subdomains.
+Every institution has it's domain and may have subdomains.
 All of these are different realms. Depending on the size of a subdomain/realm,
 it may be efficient for each one to have separate administration.
 
