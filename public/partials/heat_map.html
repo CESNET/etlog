@@ -1,16 +1,1 @@
-<style>body {
-background-color: #ffffff;
-margin: 0;
-overflow: hidden;
-font-family: Inconsolata, serif;
-font-size: 11px;
-}
-div.tooltip {
-position: absolute;
-text-align: center;
-padding: 4px;
-background: white;
-border-radius: 4px;
-pointer-events: none;
-}
-</style><div class="container-fluid" ng-controller="heat_map_controller"><div><h4>mapa roamingu</h4><form class="form-horizontal" ng-submit="main_form.$valid &amp;&amp; submit(main_form)" name="main_form" ng-model="form" novalidate="novalidate"><div class="form-group"><label class="col-sm-2 control-label" for="min_date">Počáteční datum:</label><div class="col-xs-2"><div layout-gt-xs="row"><input class="form-control flatpickr" id="min_date" type="text" ng-model="form_data.min_date"/></div></div></div><div class="form-group"><label class="col-sm-2 control-label" for="max_date">Koncové datum:</label><div class="col-xs-2"><div layout-gt-xs="row"><input class="form-control flatpickr" id="max_date" type="text" ng-model="form_data.max_date"/></div></div></div><div class="form-group"><div class="col-sm-offset-2 col-sm-10"><button class="btn btn-default" type="submit">Vykreslit graf</button></div></div></form></div><div><div class="loading-indicator" ng-show="loading"></div><div id="graph" ng-show="!loading"></div></div></div>
+<div class="container-fluid" ng-controller="heat_map_controller"><div><h4>mapa roamingu</h4><form class="form-horizontal" ng-submit="main_form.$valid &amp;&amp; submit(main_form)" name="main_form" ng-model="form" novalidate="novalidate"><div class="form-group"><label class="col-sm-2 control-label" for="min_date">Počáteční datum:</label><div class="col-xs-2"><div layout-gt-xs="row"><input class="form-control flatpickr" id="min_date" type="text" ng-model="form_data.min_date"/></div></div></div><div class="form-group"><label class="col-sm-2 control-label" for="max_date">Koncové datum:</label><div class="col-xs-2"><div layout-gt-xs="row"><input class="form-control flatpickr" id="max_date" type="text" ng-model="form_data.max_date"/></div></div></div><div class="form-group"><div class="col-sm-offset-2 col-sm-10"><button class="btn btn-default" type="submit">Vykreslit graf</button></div></div></form></div><div><div class="loading-indicator" ng-show="loading"></div><div id="graph" ng-show="!loading"></div></div></div>
