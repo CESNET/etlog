@@ -166,9 +166,6 @@ function search(database, min, max, done) {
 // save data to dabase
 // --------------------------------------------------------------------------------------
 function save_to_db(database, items) {
-  //database.mac_count.collection.insert(items);      // why the hell this strange syntax ?!  TODO
-  // problem with duplicates 
-
   for(var item in items) {  // any better way to do this ?
     database.mac_count.update(items[item], items[item], { upsert : true },
     function(err, result) {
