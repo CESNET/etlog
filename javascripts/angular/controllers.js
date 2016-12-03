@@ -617,7 +617,6 @@ function graph_orgs($scope)
     svg = svg.append("svg");
   }
   else {    // graph already present
-    // TODO - transition / animation ?
     svg = svg.selectAll("div > svg").remove("svg"); // delete it
     svg = d3.select("#graph").append("svg");        // and create again
   }
@@ -639,7 +638,7 @@ function graph_orgs($scope)
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-    return "<strong>počet:</strong> <span style='color:red'>" + d.value + "</span>";    // TODO - generic tooltip text ?
+    return "<strong>počet:</strong> <span style='color:red'>" + d.value + "</span>";
   })
 
   svg.call(tip);
@@ -647,11 +646,8 @@ function graph_orgs($scope)
   // ==========================================================
  
   // Scale the range of the data in the domains
-  x.domain(data.map(function(d) { return d.timestamp; }));
+  x.domain(data.map(function(d) { return d.inst_name; }));
   y.domain([0, d3.max(data, function(d) { return d.value; })]);
-
-  // TODO - dynamic data update -> http://bl.ocks.org/biovisualize/5372077 ?
-
 
   // ==========================================================
 
@@ -661,21 +657,7 @@ function graph_orgs($scope)
   }
 
   function get_unique(value, index, self) { return self.indexOf(value) === index; }
-
   var y_unique = y.ticks().map(formatter).filter(get_unique);
-  //console.log(y.ticks());
-  //console.log(x);
-
-  // ==========================================================
-  
-  //if(data.length > 15)
-  //  x.domain(data.filter(function(value, index) { return index % 2 == 0; }).map(function(d) { return d.timestamp; }));
-
-  //else if(data.length > 30)
-  //  x.domain(data.filter(function(value, index) { return index % 3 == 0; }).map(function(d) { return d.timestamp; }));
-  ////aconsole.log(data.length);
-  
-  //var x_ticks = get_x_ticks(x.ticks(), $scope.graph_data.length);
 
   // ==========================================================
 
@@ -684,7 +666,7 @@ function graph_orgs($scope)
       .data(data)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x(d.timestamp); })
+      .attr("x", function(d) { return x(d.inst_name); })
       .attr("width", x.bandwidth())
       .attr("y", function(d) { return y(d.value); })
       .attr("height", function(d) { return height - y(d.value); })
@@ -1359,7 +1341,7 @@ function sum_provided_count(data)
   return cnt;
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// oganizations most using roaming controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
@@ -1386,14 +1368,14 @@ function init_calendar($scope, $http)
   setup_calendars_minmax($scope);
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// create query string sorted by sort_key and limited by inst_count
 // --------------------------------------------------------------------------------------
 function build_sorted_qs(sort_key, inst_count)
 {
   return "?sort=-" + sort_key + "&limit=" + inst_count + "&";
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// handle submit button
 // --------------------------------------------------------------------------------------
 function handle_common_submit($scope, $http, $q, data_func, graph_func, coll_name, sort_key)
 {
@@ -1473,15 +1455,17 @@ function setup_calendars_minmax($scope)
   $scope.form_data.max_date = tmp;
 }
 // --------------------------------------------------------------------------------------
+// create graph data for organizations most using roaming
+// --------------------------------------------------------------------------------------
 function create_graph_data_used($scope, data)
 {
   for(var item in data) {
-    $scope.graph_data.push({ timestamp : data[item].inst_name,     /// TODO ???
+    $scope.graph_data.push({ inst_name : data[item].inst_name,
                        value : data[item].used_count });
   }
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// get institutions most using roaming
 // --------------------------------------------------------------------------------------
 function get_roaming_most_used_count($scope, $http, qs, $q, callback)
 {
@@ -1499,7 +1483,7 @@ function get_roaming_most_used_count($scope, $http, qs, $q, callback)
   });
 }
 // --------------------------------------------------------------------------------------
-// TODO
+// oganizations most providing roaming controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
@@ -1518,12 +1502,12 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
-// TODO
+// create graph data for organizations most providing roaming
 // --------------------------------------------------------------------------------------
 function create_graph_data_provided($scope, data)
 {
   for(var item in data) {
-    $scope.graph_data.push({ timestamp : data[item].inst_name,     /// TODO ???
+    $scope.graph_data.push({ inst_name : data[item].inst_name,
                        value : data[item].provided_count });
   }
 }
