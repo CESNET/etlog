@@ -873,19 +873,6 @@ function sum_fail_count(data)
   return cnt;
 }
 // --------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-// --------------------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------------------
 // shared mac controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', function ($scope, $http) {
@@ -957,85 +944,6 @@ function get_shared_mac($scope, $http, qs, callback)
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
-function get_interval($scope)
-{
-  // TODO
-
-
-
-  // TODO - fix db data UTC offset
-  // TODO - fix iteration when overcoming DST
-
-  $scope.days = [];
-
-  var min = new Date($scope.form_data.min_date);
-  var max = new Date($scope.form_data.max_date);
-
-  var diff = (max - min) / 86400000;        // number of days between dates
-  var step = 1;
-
-  if(diff > 15)
-    step = 2;
-
-  if(diff > 30)
-    step = 3;
-
-  // iterate from min to max by days
-  for(var i = min; i < max; i.setTime(i.getTime() + step * 86400000)) {
-    $scope.days.push(i.toISOString().replace(/T.*$/, ''));
-  }
-
-
-}
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-angular.module('etlog').controller('roaming_most_used_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
-  init($scope, $http);
-  addiational_fields_roaming_most($scope);   // set up additional form fields
-  $scope.graph_title = "organizace nejvíce využívající roaming";
-  $scope.title = "etlog: organizace nejvíce využívající roaming";
-  handle_submit($scope, $http, $q, get_roaming_most_used, graph, [ 'inst_name', 'provided_count', 'used_count' ]);
-}]);
-// --------------------------------------------------------------------------------------
-// set up additional form fields
-// generic function for roaming most used and provided
-// --------------------------------------------------------------------------------------
-function addiational_fields_roaming_most($scope)
-{
-  $scope.options_added = false;
-  $scope.options = {
-    inst_name : {
-      val : "",
-      sel : "like",
-      types : [ "eq", "like" ],
-      type_names : [ "přesně odpovídá", "obsahuje" ]
-    },
-    used_count : {
-      val : "",
-      sel : "eq",
-      types : [ "eq", "gt", "lt" ],
-      type_names : [ "je roven", "je větší", "je menší" ]
-    },
-    provided_count : {
-      val : "",
-      sel : "eq",
-      types : [ "eq", "gt", "lt" ],
-      type_names : [ "je roven", "je větší", "je menší" ]
-    }
-  };
-
-  $scope.add_options = function() {
-    $scope.options_added = true;
-  };
-  
-  $scope.delete_options = function() {
-    $scope.options_added = false;
-  };
-}
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
 function get_roaming_most_used($scope, $http, qs, $q, callback)
 {
   var chain = $q.when();
@@ -1086,16 +994,6 @@ function sum_used_count(data)
 
   return cnt;
 }
-// --------------------------------------------------------------------------------------
-// TODO
-// --------------------------------------------------------------------------------------
-angular.module('etlog').controller('roaming_most_provided_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
-  init($scope, $http);
-  addiational_fields_roaming_most($scope);   // set up additional form fields
-  $scope.graph_title = "organizace nejvíce poskytující roaming";
-  $scope.title = "etlog: organizace nejvíce poskytující roaming";
-  handle_submit($scope, $http, $q, get_roaming_most_provided, graph, [ 'inst_name', 'provided_count', 'used_count' ]);
-}]);
 // --------------------------------------------------------------------------------------
 // TODO
 // --------------------------------------------------------------------------------------
