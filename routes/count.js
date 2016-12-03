@@ -172,13 +172,6 @@ router.get('/logs', function(req, res, next) {
     return;
   }
 
-  if(!query.filter.pn) {
-    var err = new Error("Uživatelské jméno musí být zadáno!");
-    err.status = 400;
-    next(err);
-    return;
-  }
-
   req.db.logs.count(query.filter,
   function(err1, items) {
     if(err1) {
