@@ -96,8 +96,10 @@ function search_days(req, res, next, query) {
   // ===================================================
   // search
 
-  req.db.failed_logins.aggregate(aggregate_query,
-  function(err1, items) {
+ var stream = req.db.failed_logins.aggregate(aggregate_query).cursor({ batchSize: 1000 }).exec().stream();
+ var data = [];
+
+  stream.on('error', function (err1) {
     if(err1) {
       var err2 = new Error();      // just to detect where the original error happened
       console.error(err1);
@@ -105,9 +107,16 @@ function search_days(req, res, next, query) {
       next([err2, err1]);
       return;
     }
-
-    respond(round_ratio(items), res);
   });
+
+  stream.on('data', function(item) {
+    data.push(item);
+  });
+
+  stream.on('end', function(items) {
+    respond(round_ratio(data), res);
+  });
+
 }
 // --------------------------------------------------------------------------------------
 // send data to user
