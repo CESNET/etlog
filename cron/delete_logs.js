@@ -16,7 +16,7 @@ exp.process_current_data = function (database) {
   curr.setSeconds(0);
   curr.setMilliseconds(0);
   var min = new Date(curr);
-  min.setTime(prev_min.getTime() - 365 * 86400000);     // 1 year ago
+  min.setTime(min.getTime() - 365 * 86400000);     // 1 year ago
   
   database.logs.remove({ timestamp : { $lt : min }});
 };
