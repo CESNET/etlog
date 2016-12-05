@@ -6,7 +6,7 @@
 sample_size=50
 
 # where to send copy of the report - just for testing purposes
-cc="vac.mach@sh.cvut.cz"
+# cc="vac.mach@sh.cvut.cz"
 
 # sender of report
 sender="etlog@etlog.cesnet.cz"
