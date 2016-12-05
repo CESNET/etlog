@@ -31,7 +31,7 @@ gulp.task('js', function() {
     gulp.src('javascripts/d3/d3-tip.js'),
     gulp.src('javascripts/*.js')
   )
-    .pipe(concat('app.min.js'))
+    .pipe(concat('app.js'))
     //.pipe(uglify())
     .pipe(gulp.dest('public/javascripts'));
 });
