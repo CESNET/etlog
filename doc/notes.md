@@ -665,9 +665,25 @@ npm install -g gulp-cli
 
 Everything that gulp does is defined in gulpfile.js.
 After defining tasks, they can be run bu using `gulp`.
+When no particular task is defined as gulp parameter, all tasks are run.
+
+#### views
+
 Gulp is used to generate html files from pug templating language.
 Pug files are in `views/templates/`, html output is in `public/partials`.
+Task is run by `gulp views`.
 
+#### css
+
+Gulp is used to generate single css file from all used css files.
+Source css files are in `stylesheets`, concatenated and minified output is in `public/stylesheets/app.min.css`.
+Task is run by `gulp css`.
+
+#### js
+
+Gulp is used to generate single javascript file from all used javascript files.
+Source javascript files are in `javascripts/`, concatenated output is in `public/javascripts/app.js`.
+Task is run by `gulp js`.
 
 ### Log files 
 
