@@ -35,7 +35,7 @@ function search_days(req, res, next, query) {
   // the condition must be applied to result of all records aggregated across given timestamps
   // -> the condition must be applied after aggregation !
 
-  var cond = agg.check_filter(query.filter, [ "fail_count", "ok_count" ]);
+  var cond = agg.check_filter(query.filter, [ "fail_count", "ok_count", "ratio" ]);
 
   // ===================================================
   // construct base query
