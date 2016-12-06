@@ -822,7 +822,6 @@ Application api:
 | /api/count/mac\_count           |        | timestamp, [ username, count, addrs ]                  | returns count of records for mac\_count collection |
 | /api/count/shared\_mac          |        | timestamp, [ count, mac\_address, users ]              | returns count of records for shared\_mac collection |
 | /api/count/logs                 |        | timestamp, [ 'pn', 'csi', 'realm', 'visinst', 'result' ] | returns count of records for logs collection |
-| /api/count/succ\_logins         |        | timestamp, [ 'username', 'count' ]                     | returns count of records for succ logins collection |
 
 
 
