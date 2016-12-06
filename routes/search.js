@@ -69,9 +69,8 @@ function search(req, res, next, query) {
   // ===================================================
   // search
 
-
- var stream = req.db.logs.aggregate(aggregate_query).cursor({ batchSize: 1000 }).exec().stream();
- var data = [];
+  var stream = req.db.logs.aggregate(aggregate_query).cursor({ batchSize: 1000 }).exec().stream();
+  var data = [];
 
   stream.on('error', function (err1) {
     if(err1) {
