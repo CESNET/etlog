@@ -210,6 +210,7 @@ service mongod start
 #### Configuration
 
 Disable THP by following guide from official [docs](https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/).
+THP is disabled using init script.
 No further configuration should be needed.
 
 
