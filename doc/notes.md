@@ -616,19 +616,24 @@ Monthly reports configuration is located in `config/config.js`.
   |-- bin                   
       `-- www                      - script to start the application
   |-- cert                         - certificate related files
+  |-- config                       - configuration files for reports
   |-- cron                         - cron tasks
+      `-- delete_logs.js           - cron task for deleting old data from logs collection
       `-- failed_logins.js         - cron task for generating failed_logins collection data
       `-- heat_map.js              - cron task for generating heat_map collection data
       `-- mac_count.js             - cron task for generating mac_count collection data
       `-- roaming.js               - cron task for generating roaming collection data
       `-- service_state.js         - cron task for checking service state in all known realms
       `-- shared_mac.js            - cron task for generating shared mac address data
+      `-- succ_logins.js           - cron task for generating succ_logins collection data
       `-- users_mac.js             - cron task for mapping users and mac addresses
   |-- cron.js                      - cron tasks definiton
   |-- db.js                        - database and schema configuration
   |-- doc                          - documentation
   |-- error_handling.js            - middleware error handlers
   |-- gulpfile.js                  - definition of gulp tasks
+  |-- javavscripts                 - directory with source frontend javascript files
+  |-- LICENSE                      - project LICENSE
   |-- mail.js                      - mail api
   |-- mongo_queries                - directory with mongo shell queries for debugging purposes
   |-- node_modules                 - application dependency files
@@ -642,11 +647,14 @@ Monthly reports configuration is located in `config/config.js`.
   |-- scripts                      - various scripts
       `-- archive.sh               - script for old data archivation
       `-- data_import.sh           - cron script to import live data delivered by syslog
+      `-- detection_data           - files for generating service state detection data
       `-- fticks_to_bson.sh        - transformation script from fticks to bson
+      `-- indexes.js               - simple file with used indexes
       `-- invalid_records_mail.sh  - script for generating weekly invalid records report
       `-- invalid_records.sh       - script for generating invalid record files
       `-- old_data.sh              - script to import old data
       `-- process_old_data.js      - script to generate database data from old data
+  |-- stylesheets                  - source frontend css files
   |-- views                        - templates of displayed pages
       `-- templates                - directory with pug templates for html pages
 ```
