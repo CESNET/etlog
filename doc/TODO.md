@@ -57,26 +57,13 @@ kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 
 [rozhrani](https://etlog.cesnet.cz/#/search)
 
-> alespon nejake pole musi byt vyplneno pro moznost vyhledavani
-
-
-
-- Jaky vyznam ma hledani podle realmu?
-- Rozhrani je navrzene tak, ze backend neumoznuje hledat, aniz by bylo zadano uzivatelske jmeno.
-- Tudiz realm bude pro vsechny(?) dostupne zaznamy stejny jako domenova cast uzivatelskeho jmena.
-
-> Tak tohle souvisi se shared mac, vyse. Tohle omezeni mi nejak uniklo a prilis mi nedava smysl. Muzete rozvest proc je takove omezeni nutne? Hledani podle realmu by umoznilo vypsat si aktualni autentizace uzivatelu z nejake instituce. Hledani podle MAC adresy mi prijde docela prirozeny pozadavek.
-
 > neslo by v uzivatelskem jmene hledani podle reg vyrazu?
+Hledani uzivatelskeho jmena podle regularniho vyrazu je nyni mozne.
+Implicitne se provadi vyhledavani na presnou shodu.
+Hledani pomoci regularniho vyrazu je mozne pomoci javascriptove regex syntaxe.
+Napriklad pro vsechny uviatele, kteri maji ve jmenu cesnet je vstup  "/^.*@cesnet.cz/".
 
-- Hledani uzivatelskeho jmena podle regularniho vyrazu by bylo mozne, ale nejsem si jisty jake by to melo dusledky:
-  - Uzivatel sam by mel mit moznost vyhledavat pouze sve zaznamy (presna shoda username, ktere bude napevno vyplneno).
-  - Admin by potencialne mohl vyhledavat kohokoliv (vcetne moznosti pouzit reg vyraz).
-  - Pravdepodobne by bylo nutne generovat dve rozdilne stranky pro uzivatele/admina nebo jinym zpusobem zajistit, ze uzivatel nebude mit k takove funkcionalite pristup.
-  - Jak moc je tato funkcionalita dulezita?
-
-> Me to neprijde tak slozite, po odeslani do backendu se podivate na opravneni uzivatele. pokud neni admin a nesedi uzivatelske jmeno tak hledani zamitnete. V cem vidite problem? Prezijem bez toho, ale prijde mi to nekonzistetni se zbytkem aplikace.
-
+Stale neni dokoncena autentizace a to podle me v souvislosti s timto rozhranim predstavuje velky problem.
 
 ## organizace nejvíce poskytující konektivitu, organizace nejvíce využívající roaming
 
