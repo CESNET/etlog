@@ -4,6 +4,10 @@
 
 [data](https://etlog.cesnet.cz/#/detection_data)
 
+- Jakym zpusobem tedy kontrolu stavu sluzby resit?
+- Koho notifikovat?
+- Jak by mela notifikace vypadat?
+
 # Grafy
 
 - Heat mapa - možnosti:
