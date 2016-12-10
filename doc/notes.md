@@ -569,18 +569,18 @@ One record may look like:
 Indexes are used to speed up queries.
 Following indexes are used:
 
-| collection name   | indexed fields                          |   note  |
-|-------------------|-----------------------------------------|---------|
-| failed\_logins    | _id, timestamp                          |         |
-| logs              | _id, timestamp, realm, visinst, pn, csi |         |
-| realms            | _id, realm                              |         |
-| mac\_count        | _id, timestamp                          |         |
-| shared\_mac       | _id, mac\_address                       |         |
-| privileged\_ips   | _id                                     |         |
-| realm\_admins     | _id                                     |         |
-| roaming           | _id, timestamp                          |         |
-| users\_mac        | _id, username                           |         |
-| heat\_map         | _id, timestamp, realm                   |         |
+| collection name   | indexed fields                                             |   note  |
+|-------------------|------------------------------------------------------------|---------|
+| failed\_logins    | _id, timestamp                                             |         |
+| logs              | _id, timestamp, realm, visinst, pn, csi, result            |         |
+| realms            | _id, realm                                                 |         |
+| mac\_count        | _id, timestamp                                             |         |
+| shared\_mac       | _id, mac\_address                                          |         |
+| privileged\_ips   | _id                                                        |         |
+| realm\_admins     | _id                                                        |         |
+| roaming           | _id, timestamp                                             |         |
+| users\_mac        | _id, username                                              |         |
+| heat\_map         | _id, timestamp, realm                                      |         |
 
 ### Reports
 
