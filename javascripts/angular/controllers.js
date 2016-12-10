@@ -256,8 +256,10 @@ function handle_anon($scope)
   }
 
   $scope.remove_anon = function() {
-    $scope.anon_sel = false;
-    $scope.options.username.val = '';
+    if($scope.anon_sel == true) {
+      $scope.anon_sel = false;
+      $scope.options.username.val = '';
+    }
   }
 }
 // --------------------------------------------------------------------------------------
