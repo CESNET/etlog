@@ -58,6 +58,7 @@ kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 [rozhrani](https://etlog.cesnet.cz/#/search)
 
 > neslo by v uzivatelskem jmene hledani podle reg vyrazu?
+
 Hledani uzivatelskeho jmena podle regularniho vyrazu je nyni mozne.
 Implicitne se provadi vyhledavani na presnou shodu.
 Hledani pomoci regularniho vyrazu je mozne pomoci javascriptove regex syntaxe.
