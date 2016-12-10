@@ -5,7 +5,7 @@ div.container-fluid(ng-controller="search_controller")
       .form-group
         label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
         .col-xs-3
-          input.form-control(type = 'email', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', name='username')
+          input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn')
 
       //- TODO - add check if username matches the current user logged in !
       //- what if the user spoofs the field?
