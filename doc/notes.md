@@ -133,6 +133,18 @@ Every task in the table below generates data for collection of the same name.
 | heat\_map        |      every day at 02:40:00       |
 | users\_mac       |      every 15 minutes            |
 
+
+Other tasks:
+
+| task name        |              interval            |
+|------------------|----------------------------------|
+| service\_state   |      every day at 03:00:00       |
+| retention        |      every day at 03:30:00       |
+
+Task service state TODO
+
+Task retention deletes data from logs collections which are older than 365 days.
+
 Monthly report about failed logins is sent at 6:00 every first day of month.
 For details see [reports](#reports).
 
