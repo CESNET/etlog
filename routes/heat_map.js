@@ -38,19 +38,10 @@ function search_days(req, res, next, query) {
     {
       $unwind : "$institutions"          // deconstruct institutions array
     },
-    {
-      $group :
-        {
-          _id :
-            {
-              realm : "$realm"      // group by realm
-            },
-          institutions :       // add users
-            {
-              $addToSet : "$institutions"
-            }
-        }
-    },
+    // group by institutions.realm first to get total count for all institutions.realm
+    { $group : { _id : { realm : "$realm", inst_realm : "$institutions.realm" }, count : { $sum : "$institutions.count" } } },
+    // group by realm only, add object to instituons
+    { $group : { _id : { realm : "$_id.realm" }, institutions : { $addToSet : { realm : "$_id.inst_realm", count : "$count" } } } },
     {
       $project :
         {
