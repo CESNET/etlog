@@ -1881,8 +1881,7 @@ function graph_heat_map($scope)
     svg = svg.attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-        ;
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
   // ==========================================================
     
@@ -1960,8 +1959,7 @@ function graph_heat_map($scope)
                  d3.selectAll(".rowLabel").classed("text-highlight", false);
                  d3.selectAll(".colLabel").classed("text-highlight", false);
                  d3.select("#tooltip").classed("hidden", true);
-          })
-          ;
+          });
 
   // ==========================================================
   // Change ordering of cells
@@ -1994,7 +1992,6 @@ function graph_heat_map($scope)
            ;
          }
     }
-
   // ==========================================================
 }
 // --------------------------------------------------------------------------------------
