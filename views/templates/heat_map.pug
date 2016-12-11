@@ -19,6 +19,9 @@ div.container-fluid(ng-controller="heat_map_controller")
           button.btn.btn-default(type="submit") Vykreslit graf
 
   div
+    #tooltip.hidden
+      p
+        span#value
     .loading-indicator(ng-show='loading')
     #graph(ng-show='!loading')
 
