@@ -29,6 +29,7 @@ gulp.task('js', function() {
     gulp.src('javascripts/jquery/jquery.min.js'),
     gulp.src('javascripts/d3/d3.v4.min.js'),
     gulp.src('javascripts/d3/d3-tip.js'),
+    gulp.src('javascripts/d3/d3-scale-chromatic.v1.min.js'),
     gulp.src('javascripts/*.js')
   )
     .pipe(concat('app.js'))
