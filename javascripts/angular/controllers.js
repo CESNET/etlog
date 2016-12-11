@@ -1829,50 +1829,27 @@ function get_index($scope, realm)
 }
 // --------------------------------------------------------------------------------------
 // draw heat map graph
+// based on http://bl.ocks.org/ianyfchang/8119685
 // --------------------------------------------------------------------------------------
 function graph_heat_map($scope)
 {
-  var margin = { top: 170, right: 10, bottom: 50, left: 170 },
-    cellSize = 18;
+  // ==========================================================
+  var margin = { top: 170, right: 10, bottom: 50, left: 170 };
+  var cellSize = 18;
 
-    col_number = $scope.realms.length;
-    row_number = $scope.realms.length;
+  var col_number = $scope.realms.length;
+  var row_number = $scope.realms.length;
 
-    width = cellSize * col_number,
-    height = cellSize * row_number,
-
-    legendElementWidth = cellSize * 2.5,
-    colors = [
-      '#005824',
-      '#1A693B',
-      '#347B53',
-      '#4F8D6B',
-      '#699F83',
-      '#83B09B',
-      '#9EC2B3',
-      '#B8D4CB',
-      '#D2E6E3',
-      '#EDF8FB',
-      '#FFFFFF',
-      '#F1EEF6',
-      '#E6D3E1',
-      '#DBB9CD',
-      '#D19EB9',
-      '#C684A4',
-      '#BB6990',
-      '#B14F7C',
-      '#A63467',
-      '#9B1A53',
-      '#91003F'
-    ];
+  var width = cellSize * col_number;
+  var height = cellSize * row_number;
 
   // ==========================================================
 
   var rowLabel = $scope.realms;
   var colLabel = $scope.realms;
 
-  hcrow = [];
-  hccol = [];
+  var hcrow = [];
+  var hccol = [];
   for(var item in $scope.realms) {
     hcrow.push(Number(item) + 1);
     hccol.push(Number(item) + 1);
@@ -1881,86 +1858,6 @@ function graph_heat_map($scope)
   // ==========================================================
 
   var data = $scope.graph_data;
-  // debug
-  //var data = [ 
-  //  { 
-  //    col: 0,
-  //    row: 0,
-  //    value: 1
-  //  },
-  //  { 
-  //    col: 1,
-  //    row: 0,
-  //    value: 2  
-  //  },
-  //  { 
-  //    col: 0,
-  //    row: 1,
-  //    value: 3  
-  //  },
-  //  { 
-  //    col: 1,
-  //    row: 1,
-  //    value: 4  
-  //  },
-  //  
-  //  //{ 
-  //  //  col: 0,
-  //  //  row: 0,
-  //  //  value: 35
-  //  //},
-  //  //{ 
-  //  //  col: 1,
-  //  //  row: 0,
-  //  //  value: 9  
-  //  //},
-  //  //{ 
-  //  //  col: 2,
-  //  //  row: 0,
-  //  //  value: 8  
-  //  //},
-  //  //{ 
-  //  //  col: 3,
-  //  //  row: 0,
-  //  //  value: 7  
-  //  //},
-  //  //{ 
-  //  //  col: 4,
-  //  //  row: 0,
-  //  //  value: 6  
-  //  //},
-  //  //{ 
-  //  //  col: 5,
-  //  //  row: 0,
-  //  //  value: 5  
-  //  //},
-  //  //{ 
-  //  //  col: 6,
-  //  //  row: 0,
-  //  //  value: 4  
-  //  //},
-  //  //{ 
-  //  //  col: 7,
-  //  //  row: 0,
-  //  //  value: 3  
-  //  //},
-  //  //{ 
-  //  //  col: 8,
-  //  //  row: 0,
-  //  //  value: 2  
-  //  //},
-  //  //{ 
-  //  //  col: 9,
-  //  //  row: 0,
-  //  //  value: 1  
-  //  //},
-  //  //{ 
-  //  //  col: 10,
-  //  //  row: 0,
-  //  //  value: 0  
-  //  //},
-  //];
-  
   var max = d3.max(data.map(function(d) { return d.value; }));
   
   // ==========================================================
@@ -2004,8 +1901,11 @@ function graph_heat_map($scope)
         .attr("class", function (d, i) { return "rowLabel mono r" + i; }) 
         .on("mouseover", function(d) { d3.select(this).classed("text-hover", true);})
         .on("mouseout" , function(d) { d3.select(this).classed("text-hover", false);})
-        .on("click", function(d,i) {rowSortOrder=!rowSortOrder; sortbylabel("r", i, rowSortOrder);d3.select("#order").property("selectedIndex", 4).node().focus();;})
-        ;
+        .on("click", function(d, i) { 
+          rowSortOrder = !rowSortOrder; 
+          sortbylabel("r", i, rowSortOrder);
+          d3.select("#order").property("selectedIndex", 4).node().focus();
+        });
 
   // ==========================================================
 
@@ -2022,8 +1922,11 @@ function graph_heat_map($scope)
         .attr("class",  function (d,i) { return "colLabel mono c" + i; })
         .on("mouseover", function(d) { d3.select(this).classed("text-hover", true); })
         .on("mouseout" , function(d) { d3.select(this).classed("text-hover", false); })
-        .on("click", function(d,i) {colSortOrder=!colSortOrder;  sortbylabel("c",i,colSortOrder);d3.select("#order").property("selectedIndex", 4).node().focus();;})
-        ;
+        .on("click", function(d,i) { 
+          colSortOrder= !colSortOrder;  
+          sortbylabel("c", i, colSortOrder);
+          d3.select("#order").property("selectedIndex", 4).node().focus();
+        });
 
   // ==========================================================
 
@@ -2038,14 +1941,6 @@ function graph_heat_map($scope)
           .attr("width", cellSize)
           .attr("height", cellSize)
           .style("fill", function(d) { return colorScale(d.value); })
-          /* .on("click", function(d) {
-                 var rowtext=d3.select(".r"+(d.row-1));
-                 if(rowtext.classed("text-selected")==false){
-                     rowtext.classed("text-selected",true);
-                 }else{
-                     rowtext.classed("text-selected",false);
-                 }
-          })*/
           .on("mouseover", function(d) {
                  //highlight text
                  d3.select(this).classed("cell-hover", true);
@@ -2068,48 +1963,52 @@ function graph_heat_map($scope)
           })
           ;
 
-    var legend = svg.selectAll(".legend")
-        .data([-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10])  // TODO
-        // neco jako MAX / 10 -> zaklad + 10 ruznych hodnot
-        .enter().append("g")
-        .attr("class", "legend");
+  // ==========================================================
+
+    //var legend = svg.selectAll(".legend")
+    //    .data([-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10])
+    //    .enter().append("g")
+    //    .attr("class", "legend");
    
-    legend.append("rect")
-      .attr("x", function(d, i) { return legendElementWidth * i; })
-      .attr("y", height + (cellSize * 2))
-      .attr("width", legendElementWidth)
-      .attr("height", cellSize)
-      .style("fill", function(d, i) { return colors[i]; });
-      //.style("fill", function(d, i) { return colorScale(i); });
+    //legend.append("rect")
+    //  .attr("x", function(d, i) { return legendElementWidth * i; })
+    //  .attr("y", height + (cellSize * 2))
+    //  .attr("width", legendElementWidth)
+    //  .attr("height", cellSize)
+    //  .style("fill", function(d, i) { return colors[i]; });
+    //  //.style("fill", function(d, i) { return colorScale(i); });
    
-    legend.append("text")
-      .attr("class", "mono")
-      .text(function(d) { return d; })
-      .attr("width", legendElementWidth)
-      .attr("x", function(d, i) { return legendElementWidth * i; })
-      .attr("y", height + (cellSize*4));
+    //legend.append("text")
+    //  .attr("class", "mono")
+    //  .text(function(d) { return d; })
+    //  .attr("width", legendElementWidth)
+    //  .attr("x", function(d, i) { return legendElementWidth * i; })
+    //  .attr("y", height + (cellSize*4));
+
+  // ==========================================================
 
   // Change ordering of cells
 
-    function sortbylabel(rORc,i,sortOrder){
+    function sortbylabel(rORc, i, sortOrder){
          var t = svg.transition().duration(3000);
-         var log2r=[];
+         var log2r = [];
          var sorted; // sorted is zero-based index
-         d3.selectAll(".c"+rORc+i) 
+         d3.selectAll(".c" + rORc + i) 
            .filter(function(ce){
               log2r.push(ce.value);
             })
          ;
-         if(rORc=="r"){ // sort log2ratio of a gene
-           sorted=d3.range(col_number).sort(function(a,b){ if(sortOrder){ return log2r[b]-log2r[a];}else{ return log2r[a]-log2r[b];}});
+
+         if(rORc == "r") { // sort log2ratio of a gene
+           sorted = d3.range(col_number).sort(function(a, b){ if(sortOrder) { return log2r[b] - log2r[a]; } else { return log2r[a] - log2r[b]; } });
            t.selectAll(".cell")
-             .attr("x", function(d) { return sorted.indexOf(d.col-1) * cellSize; })
+             .attr("x", function(d) { return sorted.indexOf(d.col - 1) * cellSize; })
              ;
            t.selectAll(".colLabel")
             .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; })
            ;
-         }else{ // sort log2ratio of a contrast
-           sorted=d3.range(row_number).sort(function(a,b){if(sortOrder){ return log2r[b]-log2r[a];}else{ return log2r[a]-log2r[b];}});
+         } else { // sort log2ratio of a contrast
+           sorted = d3.range(row_number).sort(function(a, b){ if(sortOrder) { return log2r[b] - log2r[a]; } else { return log2r[a] - log2r[b]; } });
            t.selectAll(".cell")
              .attr("y", function(d) { return sorted.indexOf(d.row-1) * cellSize; })
              ;
@@ -2119,12 +2018,14 @@ function graph_heat_map($scope)
          }
     }
 
+  // ==========================================================
+
     d3.select("#order").on("change",function(){
       order(this.value);
     });
     
     function order(value){
-     if(value=="hclust"){
+     if(value == "hclust"){
       var t = svg.transition().duration(3000);
       t.selectAll(".cell")
         .attr("x", function(d) { return hccol.indexOf(d.col) * cellSize; })
@@ -2173,104 +2074,107 @@ function graph_heat_map($scope)
         ;
      }
     }
-    // 
-    var sa=d3.select(".g3")
-        .on("mousedown", function() {
-            if( !d3.event.altKey) {
-               d3.selectAll(".cell-selected").classed("cell-selected",false);
-               d3.selectAll(".rowLabel").classed("text-selected",false);
-               d3.selectAll(".colLabel").classed("text-selected",false);
-            }
-           var p = d3.mouse(this);
-           sa.append("rect")
-           .attr({
-               rx      : 0,
-               ry      : 0,
-               class   : "selection",
-               x       : p[0],
-               y       : p[1],
-               width   : 1,
-               height  : 1
-           })
-        })
-        .on("mousemove", function() {
-           var s = sa.select("rect.selection");
-        
-           if(!s.empty()) {
-               var p = d3.mouse(this),
-                   d = {
-                       x       : parseInt(s.attr("x"), 10),
-                       y       : parseInt(s.attr("y"), 10),
-                       width   : parseInt(s.attr("width"), 10),
-                       height  : parseInt(s.attr("height"), 10)
-                   },
-                   move = {
-                       x : p[0] - d.x,
-                       y : p[1] - d.y
-                   }
-               ;
-        
-               if(move.x < 1 || (move.x*2<d.width)) {
-                   d.x = p[0];
-                   d.width -= move.x;
-               } else {
-                   d.width = move.x;       
-               }
-        
-               if(move.y < 1 || (move.y*2<d.height)) {
-                   d.y = p[1];
-                   d.height -= move.y;
-               } else {
-                   d.height = move.y;       
-               }
-               s.attr(d);
-        
-                   // deselect all temporary selected state objects
-               d3.selectAll('.cell-selection.cell-selected').classed("cell-selected", false);
-               d3.selectAll(".text-selection.text-selected").classed("text-selected",false);
+  
+    //// ==========================================================
 
-               d3.selectAll('.cell').filter(function(cell_d, i) {
-                   if(
-                       !d3.select(this).classed("cell-selected") && 
-                           // inner circle inside selection frame
-                       (this.x.baseVal.value)+cellSize >= d.x && (this.x.baseVal.value)<=d.x+d.width && 
-                       (this.y.baseVal.value)+cellSize >= d.y && (this.y.baseVal.value)<=d.y+d.height
-                   ) {
-        
-                       d3.select(this)
-                       .classed("cell-selection", true)
-                       .classed("cell-selected", true);
+    //var sa = d3.select(".g3")
+    //    .on("mousedown", function() {
+    //        if( !d3.event.altKey) {
+    //           d3.selectAll(".cell-selected").classed("cell-selected",false);
+    //           d3.selectAll(".rowLabel").classed("text-selected",false);
+    //           d3.selectAll(".colLabel").classed("text-selected",false);
+    //        }
+    //       var p = d3.mouse(this);
+    //       sa.append("rect")
+    //       .attr({
+    //           rx      : 0,
+    //           ry      : 0,
+    //           class   : "selection",
+    //           x       : p[0],
+    //           y       : p[1],
+    //           width   : 1,
+    //           height  : 1
+    //       })
+    //    })
+    //    .on("mousemove", function() {
+    //       var s = sa.select("rect.selection");
+    //    
+    //       if(!s.empty()) {
+    //           var p = d3.mouse(this),
+    //               d = {
+    //                   x       : parseInt(s.attr("x"), 10),
+    //                   y       : parseInt(s.attr("y"), 10),
+    //                   width   : parseInt(s.attr("width"), 10),
+    //                   height  : parseInt(s.attr("height"), 10)
+    //               },
+    //               move = {
+    //                   x : p[0] - d.x,
+    //                   y : p[1] - d.y
+    //               }
+    //           ;
+    //    
+    //           if(move.x < 1 || (move.x*2<d.width)) {
+    //               d.x = p[0];
+    //               d.width -= move.x;
+    //           } else {
+    //               d.width = move.x;       
+    //           }
+    //    
+    //           if(move.y < 1 || (move.y*2<d.height)) {
+    //               d.y = p[1];
+    //               d.height -= move.y;
+    //           } else {
+    //               d.height = move.y;       
+    //           }
+    //           s.attr(d);
+    //    
+    //               // deselect all temporary selected state objects
+    //           d3.selectAll('.cell-selection.cell-selected').classed("cell-selected", false);
+    //           d3.selectAll(".text-selection.text-selected").classed("text-selected",false);
 
-                       d3.select(".r"+(cell_d.row-1))
-                       .classed("text-selection",true)
-                       .classed("text-selected",true);
+    //           d3.selectAll('.cell').filter(function(cell_d, i) {
+    //               if(
+    //                   !d3.select(this).classed("cell-selected") && 
+    //                       // inner circle inside selection frame
+    //                   (this.x.baseVal.value)+cellSize >= d.x && (this.x.baseVal.value)<=d.x+d.width && 
+    //                   (this.y.baseVal.value)+cellSize >= d.y && (this.y.baseVal.value)<=d.y+d.height
+    //               ) {
+    //    
+    //                   d3.select(this)
+    //                   .classed("cell-selection", true)
+    //                   .classed("cell-selected", true);
 
-                       d3.select(".c"+(cell_d.col-1))
-                       .classed("text-selection",true)
-                       .classed("text-selected",true);
-                   }
-               });
-           }
-        })
-        .on("mouseup", function() {
-              // remove selection frame
-           sa.selectAll("rect.selection").remove();
-        
-               // remove temporary selection marker class
-           d3.selectAll('.cell-selection').classed("cell-selection", false);
-           d3.selectAll(".text-selection").classed("text-selection",false);
-        })
-        .on("mouseout", function() {
-           if(d3.event.relatedTarget.tagName=='html') {
-                   // remove selection frame
-               sa.selectAll("rect.selection").remove();
-                   // remove temporary selection marker class
-               d3.selectAll('.cell-selection').classed("cell-selection", false);
-               d3.selectAll(".rowLabel").classed("text-selected",false);
-               d3.selectAll(".colLabel").classed("text-selected",false);
-           }
-        })
-        ;
+    //                   d3.select(".r"+(cell_d.row-1))
+    //                   .classed("text-selection",true)
+    //                   .classed("text-selected",true);
+
+    //                   d3.select(".c"+(cell_d.col-1))
+    //                   .classed("text-selection",true)
+    //                   .classed("text-selected",true);
+    //               }
+    //           });
+    //       }
+    //    })
+    //    .on("mouseup", function() {
+    //          // remove selection frame
+    //       sa.selectAll("rect.selection").remove();
+    //    
+    //           // remove temporary selection marker class
+    //       d3.selectAll('.cell-selection').classed("cell-selection", false);
+    //       d3.selectAll(".text-selection").classed("text-selection",false);
+    //    })
+    //    .on("mouseout", function() {
+    //       if(d3.event.relatedTarget.tagName=='html') {
+    //               // remove selection frame
+    //           sa.selectAll("rect.selection").remove();
+    //               // remove temporary selection marker class
+    //           d3.selectAll('.cell-selection').classed("cell-selection", false);
+    //           d3.selectAll(".rowLabel").classed("text-selected",false);
+    //           d3.selectAll(".colLabel").classed("text-selected",false);
+    //       }
+    //    })
+    //    ;
+    //// ==========================================================
 }
 // --------------------------------------------------------------------------------------
 function stacked_graph($scope)
