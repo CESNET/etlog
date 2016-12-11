@@ -1977,19 +1977,15 @@ function graph_heat_map($scope)
          if(rORc == "r") { // sort log2ratio of a gene
            sorted = d3.range(col_number).sort(function(a, b){ if(sortOrder) { return log2r[b] - log2r[a]; } else { return log2r[a] - log2r[b]; } });
            t.selectAll(".cell")
-             .attr("x", function(d) { return sorted.indexOf(d.col - 1) * cellSize; })
-             ;
+             .attr("x", function(d) { return sorted.indexOf(d.col - 1) * cellSize; });
            t.selectAll(".colLabel")
-            .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; })
-           ;
+            .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; });
          } else { // sort log2ratio of a contrast
            sorted = d3.range(row_number).sort(function(a, b){ if(sortOrder) { return log2r[b] - log2r[a]; } else { return log2r[a] - log2r[b]; } });
            t.selectAll(".cell")
-             .attr("y", function(d) { return sorted.indexOf(d.row-1) * cellSize; })
-             ;
+             .attr("y", function(d) { return sorted.indexOf(d.row-1) * cellSize; });
            t.selectAll(".rowLabel")
-            .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; })
-           ;
+            .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; });
          }
     }
   // ==========================================================
