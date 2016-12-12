@@ -1904,7 +1904,6 @@ function graph_heat_map($scope)
         .on("click", function(d, i) { 
           rowSortOrder = !rowSortOrder; 
           sortbylabel("r", i, rowSortOrder);
-          d3.select("#order").property("selectedIndex", 4).node().focus();
         });
 
   // ==========================================================
@@ -1925,7 +1924,6 @@ function graph_heat_map($scope)
         .on("click", function(d,i) { 
           colSortOrder= !colSortOrder;  
           sortbylabel("c", i, colSortOrder);
-          d3.select("#order").property("selectedIndex", 4).node().focus();
         });
 
   // ==========================================================
