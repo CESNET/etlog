@@ -72,3 +72,7 @@ text.text-hover {
   font-size: 12px;
   line-height: 20px;
 }
+
+g text {
+  cursor: pointer;
+}
