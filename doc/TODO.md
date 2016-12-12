@@ -12,7 +12,7 @@
 
 [rozhrani](https://etlog.cesnet.cz/#/heat_map)
 
-- jeste pracuji na razeni podle sloupcu
+- umoznuje razeni podle radku i sloupcu
 - pripominky?
 
 
