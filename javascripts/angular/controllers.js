@@ -1834,7 +1834,8 @@ function get_index($scope, realm)
 function graph_heat_map($scope)
 {
   // ==========================================================
-  var margin = { top: 170, right: 10, bottom: 50, left: 170 };
+  // right margin for timestamp
+  var margin = { top: 170, right: 230, bottom: 50, left: 170 };
   var cellSize = 18;
 
   var col_number = $scope.realms.length;
@@ -1851,13 +1852,93 @@ function graph_heat_map($scope)
   var hcrow = [];
   var hccol = [];
   for(var item in $scope.realms) {
-    hcrow.push(Number(item) + 1);
-    hccol.push(Number(item) + 1);
+    hcrow.push(Number(item));
+    hccol.push(Number(item));
   }
 
   // ==========================================================
 
   var data = $scope.graph_data;
+  //// debug
+  //var data = [ 
+  //  //{ 
+  //  //  col: 0,
+  //  //  row: 0,
+  //  //  value: 1
+  //  //},
+  //  //{ 
+  //  //  col: 1,
+  //  //  row: 0,
+  //  //  value: 2  
+  //  //},
+  //  //{ 
+  //  //  col: 0,
+  //  //  row: 1,
+  //  //  value: 3  
+  //  //},
+  //  //{ 
+  //  //  col: 1,
+  //  //  row: 1,
+  //  //  value: 4  
+  //  //},
+  //  
+  //  { 
+  //    row: 0,
+  //    col: 0,
+  //    value: 35
+  //  },
+  //  { 
+  //    row: 1,
+  //    col: 0,
+  //    value: 9  
+  //  },
+  //  { 
+  //    row: 2,
+  //    col: 0,
+  //    value: 8  
+  //  },
+  //  { 
+  //    row: 3,
+  //    col: 0,
+  //    value: 7  
+  //  },
+  //  { 
+  //    row: 4,
+  //    col: 0,
+  //    value: 6  
+  //  },
+  //  { 
+  //    row: 5,
+  //    col: 0,
+  //    value: 5  
+  //  },
+  //  { 
+  //    row: 6,
+  //    col: 0,
+  //    value: 4  
+  //  },
+  //  { 
+  //    row: 7,
+  //    col: 0,
+  //    value: 3  
+  //  },
+  //  { 
+  //    row: 8,
+  //    col: 0,
+  //    value: 2  
+  //  },
+  //  { 
+  //    row: 9,
+  //    col: 0,
+  //    value: 1  
+  //  },
+  //  { 
+  //    row: 10,
+  //    col: 0,
+  //    value: 0  
+  //  },
+  //];
+
   var max = d3.max(data.map(function(d) { return d.value; }));
   
   // ==========================================================
@@ -1894,7 +1975,7 @@ function graph_heat_map($scope)
         .append("text")
         .text(function (d) { return d; })
         .attr("x", 0)
-        .attr("y", function (d, i) { return hcrow.indexOf(i + 1) * cellSize; })
+        .attr("y", function (d, i) { return hcrow.indexOf(i) * cellSize; })
         .style("text-anchor", "end")
         .attr("transform", "translate(-6," + cellSize + ")")
         .attr("class", function (d, i) { return "rowLabel mono r" + i; }) 
@@ -1915,7 +1996,7 @@ function graph_heat_map($scope)
         .append("text")
         .text(function (d) { return d; })
         .attr("x", 0)
-        .attr("y", function (d, i) { return hccol.indexOf(i+1) * cellSize; })
+        .attr("y", function (d, i) { return hccol.indexOf(i) * cellSize; })
         .style("text-anchor", "left")
         .attr("transform", "translate(" + cellSize  + ",-6) rotate (-90)")
         .attr("class",  function (d,i) { return "colLabel mono c" + i; })
@@ -1931,12 +2012,12 @@ function graph_heat_map($scope)
 
     var heatMap = svg.append("g").attr("class", "g3")
           .selectAll(".cellg")
-          .data(data,function(d){ return d.row + ":" + d.col; })
+          .data(data,function(d) { return d.row + ":" + d.col; })
           .enter()
           .append("rect")
-          .attr("x", function(d) { return (hccol.indexOf(d.col) + 1) * cellSize + 4; })     // compensate for labels
-          .attr("y", function(d) { return (hcrow.indexOf(d.row) + 1) * cellSize + 4; })     // compensate for labels
-          .attr("class", function(d) { return "cell cell-border cr" + (d.row - 1) + " cc" + (d.col - 1); })
+          .attr("x", function(d) { return (hccol.indexOf(d.col)) * cellSize + 4; })     // compensate for labels
+          .attr("y", function(d) { return (hcrow.indexOf(d.row)) * cellSize + 4; })     // compensate for labels
+          .attr("class", function(d) { return "cell cell-border cr" + d.row + " cc" + d.col; })
           .attr("width", cellSize)
           .attr("height", cellSize)
           .style("fill", function(d) { return colorScale(d.value); })
@@ -1954,7 +2035,7 @@ function graph_heat_map($scope)
                  //Show the tooltip
                  d3.select("#tooltip").classed("hidden", false);
           })
-          .on("mouseout", function(){
+          .on("mouseout", function() {
                  d3.select(this).classed("cell-hover", false);
                  d3.selectAll(".rowLabel").classed("text-highlight", false);
                  d3.selectAll(".colLabel").classed("text-highlight", false);
@@ -1964,29 +2045,73 @@ function graph_heat_map($scope)
   // ==========================================================
   // Change ordering of cells
 
-    function sortbylabel(rORc, i, sortOrder){
-         var t = svg.transition().duration(3000);
-         var log2r = [];
-         var sorted; // sorted is zero-based index
-         d3.selectAll(".c" + rORc + i) 
-           .filter(function(ce){
-              log2r.push(ce.value);
-            })
-         ;
+    function sortbylabel(rORc, i, sortOrder) {
+      var t = svg.transition().duration(3000);
+      var values = [];
+      var sorted; // sorted is zero-based index
 
-         if(rORc == "r") { // sort log2ratio of a gene
-           sorted = d3.range(col_number).sort(function(a, b){ if(sortOrder) { return log2r[b] - log2r[a]; } else { return log2r[a] - log2r[b]; } });
-           t.selectAll(".cell")
-             .attr("x", function(d) { return sorted.indexOf(d.col - 1) * cellSize; });
-           t.selectAll(".colLabel")
-            .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; });
-         } else { // sort log2ratio of a contrast
-           sorted = d3.range(row_number).sort(function(a, b){ if(sortOrder) { return log2r[b] - log2r[a]; } else { return log2r[a] - log2r[b]; } });
-           t.selectAll(".cell")
-             .attr("y", function(d) { return sorted.indexOf(d.row-1) * cellSize; });
-           t.selectAll(".rowLabel")
-            .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; });
-         }
+      // data is sorted ascending by row
+      // no order is defined on col
+      // row or column
+      if(rORc == "r") {     // row
+        var idx = data.map(function(e) { return e.row }).indexOf(i);     // find row index
+
+        // add values from data
+        while(data[idx].row == i) {
+          values[data[idx].col] = data[idx].value;
+          idx++;
+        }
+
+        // set undefined values
+        for(var num in hccol) {        // iterate realms by numbers
+          if(values[num] == undefined)
+            values[num] = 0;
+        }
+
+        // ==================================================
+
+        sorted = d3.range(col_number).sort(function(a, b) {
+          if(sortOrder)
+            return values[b] - values[a];
+          else
+            return values[a] - values[b];
+        });
+
+        t.selectAll(".cell")
+          .attr("x", function(d) { return sorted.indexOf(d.col) * cellSize; });
+        t.selectAll(".colLabel")
+          .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; });
+      }
+      else {    // column
+        // columns are not sorted!
+
+        for(var num in hccol) {        // iterate realms by numbers
+          var found = data.filter(function(obj) {
+            return obj.row == num && obj.col == i;
+          });
+
+          if(found.length > 0) {   // add value
+            values[num] = found[0].value;
+          }
+          else {        // no value exists - set to zero
+            values[num] = 0;
+          }
+        }
+
+        // ==================================================
+
+        sorted = d3.range(row_number).sort(function(a, b) {
+          if(sortOrder)
+            return values[b] - values[a];
+          else
+            return values[a] - values[b];
+        });
+
+        t.selectAll(".cell")
+          .attr("y", function(d) { return sorted.indexOf(d.row) * cellSize; });
+        t.selectAll(".rowLabel")
+          .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; });
+      }
     }
   // ==========================================================
 }
