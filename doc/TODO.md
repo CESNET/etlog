@@ -12,7 +12,9 @@
 
 [rozhrani](https://etlog.cesnet.cz/#/heat_map)
 
+- jeste pracuji na razeni podle sloupcu
 - pripominky?
+
 
 
 # Detekce uzivatelu v ruzynch lokalitach soucasne
