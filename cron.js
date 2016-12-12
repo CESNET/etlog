@@ -12,6 +12,7 @@ module.exports = function(database) {
   const succ_logins = require('./cron/succ_logins.js');
   const request = require('./request');
   const retention = require('./cron/delete_logs.js')
+  const unique_users = require('./cron/unique_users.js')
   const config = require('./config/config.js');
 // --------------------------------------------------------------------------------------
   new CronJob('0 00 06 1 * *', function() {     // run once a month
@@ -44,6 +45,10 @@ module.exports = function(database) {
 
   new CronJob('0 40 02 * * *', function() {     // run at 02:40:00
     heat_map.process_current_data(database);
+  }, null, true, 'Europe/Prague');
+
+  new CronJob('0 55 02 * * *', function() {     // run at 02:55:00
+    unique_users.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
   // TODO

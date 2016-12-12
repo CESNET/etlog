@@ -24,6 +24,7 @@ module.exports = function(app, database) {
   app.use('/api/realms', require('./routes/realms'));                                // api for realms
   app.use('/api/count', require('./routes/count'));                                  // api to count records for pagination purposes
   app.use('/api/succ_logins', require('./routes/succ_logins'));                      // generic api for successful logins
+  app.use('/api/unique_users', require('./routes/unique_users'));                    // generic api for unique users
 
 // -----------------------------------------------------------
   // login routing is defined separately

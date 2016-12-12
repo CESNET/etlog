@@ -131,6 +131,7 @@ Every task in the table below generates data for collection of the same name.
 | shared\_mac      |      every day at 02:25:00       |
 | succ\_logins     |      every day at 02:35:00       |
 | heat\_map        |      every day at 02:40:00       |
+| unique\_users    |      every day at 02:55:00       |
 | users\_mac       |      every 15 minutes            |
 
 
@@ -461,6 +462,27 @@ Collection has following structure:
 | username     |   String  |         username                    |
 | timestamp    |   Date    |         timestamp                   |
 | count        |   Number  |    count of successful logins       |
+
+
+##### unique\_users
+
+Collection contains unique mac addresses for realms for every day.
+Addresses of users from the realm are in array used\_addrs.
+Addresses of users from other instituions which used realm as visinst are in array provided\_addrs;
+
+Timestamp field is populated with artificial data, just to
+distint in which interval the record belongs.
+Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
+Lowest distinction interval for timestamp is 24 hours.
+
+Collection has following structure:
+
+| field name      | data type |               note                        |
+|-----------------|-----------|-------------------------------------------|
+| timestamp       | Date      |         timestamp                         |
+| realm           | String    |         name of instituion                |
+| realm\_addrs    | Array     | array of instituion's users addresses     |
+| visinst\_addrs  | Array     | array of users, which used visited realm  |
 
 
 ##### realm\_admins

@@ -125,6 +125,18 @@ exports.succ_logins_schema = succ_logins_schema;
 var succ_logins = mongoose.model('succ_logins', succ_logins_schema, 'succ_logins');
 exports.succ_logins = succ_logins;
 // --------------------------------------------------------------------------------------
+var unique_users_schema = mongoose.Schema({
+  timestamp       : Date,
+  realm           : String,
+  realm_addrs      : Array,
+  visinst_addrs  : Array
+},
+{ versionKey: false });
+// --------------------------------------------------------------------------------------
+exports.unique_users_schema = unique_users_schema;
+var unique_users = mongoose.model('unique_users', unique_users_schema, 'unique_users');
+exports.unique_users = unique_users;
+// --------------------------------------------------------------------------------------
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.once('open', function (callback) {
   console.log("sucesfully connected do mongodb database on localhost");
