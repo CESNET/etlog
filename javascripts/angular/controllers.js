@@ -1241,7 +1241,7 @@ angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope
   $scope.title = "etlog: organizace nejvíce využívající roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
-  handle_common_submit($scope, $http, $q, get_roaming_most_used_count, graph_orgs, "roaming_most_used", "used_count");
+  handle_common_submit($scope, $http, $q, get_roaming_most_used_count, stacked_graph, "roaming_most_used", "used_count");
   handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -1354,6 +1354,7 @@ function create_graph_data_used($scope, data)
 // --------------------------------------------------------------------------------------
 function get_roaming_most_used_count($scope, $http, qs, $q, callback)
 {
+  var chain = $q.when();
   $scope.graph_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
@@ -1362,9 +1363,26 @@ function get_roaming_most_used_count($scope, $http, qs, $q, callback)
     url     : '/api/roaming/most_used' + qs + ts
   })
   .then(function(response) {
-    $scope.table_data = response.data;
-    create_graph_data_used($scope, response.data);
-    callback($scope);
+    var unique = [];
+
+    response.data.forEach(function (item, index) {
+      chain = chain.then(function(){
+        return $http({
+          method  : 'GET',
+          url     : '/api/unique_users/realm/?' + ts + "&realm=" + item.inst_name
+        })
+        .then(function(response) {
+          unique.push(response.data);
+        });
+      });
+    });
+
+    chain.then(function() {
+      $scope.table_data = response.data;
+      create_graph_data_used($scope, response.data);
+      add_unique(unique, $scope.table_data, $scope.graph_data);      // add unique count
+      callback($scope);
+    });
   });
 }
 // --------------------------------------------------------------------------------------
@@ -1382,7 +1400,6 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   $scope.title = "etlog: organizace nejvíce poskytující konektivitu";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
-  //handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, graph_orgs, "roaming_most_provided", "provided_count");
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
   handle_download($scope);
 }]);
@@ -1431,23 +1448,6 @@ function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
       callback($scope);
     });
   });
-
-
-
-
-  //return $http({
-  //  method  : 'GET',
-  //  url     : '/api/roaming/most_provided' + qs + ts
-  //})
-  //.then(function(response) {
-  //  // pridat pocet unikatnich za cele obdobi 
-  //  // -> udelat dotazem na heat mapu
-  //  // udelat jako http://bl.ocks.org/mbostock/3886208
-  //  // db.heat_map.find({ timestamp : { $gte : d, $lt : d2}, realm : "upol.cz"} )
-  //  // do grafu i do tabulky
-  //  // jak pro poskytovane tak pro vyuzivane
-
-  //  // http://bl.ocks.org/mstanaland/6100713
 }
 // --------------------------------------------------------------------------------------
 // add unique count for every institution to graph data
@@ -2082,8 +2082,6 @@ function stacked_graph($scope)
   
   var dataset = stack(data);
 
-  console.log(dataset);
-
   // ==================================================
 
   var x = d3.scaleBand()
@@ -2092,7 +2090,7 @@ function stacked_graph($scope)
             .padding(0.1);
 
   var y = d3.scaleLinear()
-    .domain([0, d3.max(dataset, function(d) { return d3.max(d, function(d) { return d[0] + d[1]; });  })])
+    .domain([0, d3.max(dataset, function(d) { return d3.max(d, function(d) { return d[1]; });  })])
     .range([height, 0]);
 
   var colors = [ "b33040", "#d25c4d" ];
@@ -2156,18 +2154,15 @@ function stacked_graph($scope)
     .enter()
     .append("rect")
     .attr("x", function(d) { return x(d.data.inst_name); })
-    //.attr("y", function(d) { return y(d[0] + d[1]); })
     .attr("y", function(d) { return y(d[1]); })
-    //.attr("height", function(d) { return y(d[0]) - y(d[0] + d[1]); })
     .attr("height", function(d) { return Math.abs(y(d[1]) - y(d[0])); })
-    //.attr("height", function(d) { return y(d[0]) - y(d[1]); })
     .attr("width", x.bandwidth())
     //.on("mouseover", function() { tooltip.style("display", null); })
     //.on("mouseout", function() { tooltip.style("display", "none"); })
     .on("mousemove", function(d) {
       // debug
-      console.log(d[0]);
-      console.log(d[1]);
+      //console.log(d[0]);
+      //console.log(d[1]);
 
       //console.log(y(d[0]));
       //console.log(y(d[1]));
@@ -2176,7 +2171,8 @@ function stacked_graph($scope)
       var xPosition = d3.mouse(this)[0] - 15;
       var yPosition = d3.mouse(this)[1] - 25;
       tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-      tooltip.select("text").text(d[0]);
+      //tooltip.select("text").text(d[0]);
+      tooltip.select("text").text("cau tohle je nejaky text");
     });
 
   // ==================================================
@@ -2217,7 +2213,8 @@ function stacked_graph($scope)
     .attr("width", 30)
     .attr("height", 20)
     .attr("fill", "white")
-    .style("opacity", 0.5);
+    .attr("class", "tooltip_box")                   // TODO
+    //.style("opacity", 0.5);
 
   tooltip.append("text")
     .attr("x", 15)
