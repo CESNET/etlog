@@ -680,6 +680,7 @@ function graph_orgs($scope)
 
   // add the x Axis
   svg.append("g")
+      .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x))
       // rotate text by 60 degrees
@@ -692,9 +693,13 @@ function graph_orgs($scope)
 
   // add the y Axis
   svg.append("g")
+      .attr("class", "y axis")
       .call(d3.axisLeft(y)
       .tickFormat(d3.format("d")) // custom format - disable comma for thousands
+      .tickSize(-width, 0, 0)
       .tickValues(y_unique));     // unique y values
+
+  // ==========================================================
 
   // set graph title
   svg.append("text")
@@ -1664,6 +1669,55 @@ function graph($scope)
 
   // ==========================================================
 
+  // add the x Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "x axis")
+      .call(d3.axisBottom(x)
+      .tickFormat(multiFormat))
+      // rotate text by 60 degrees
+      .selectAll("text")
+      .attr("y", 0)
+      .attr("x", 9)
+      .attr("dy", ".35em")
+      .attr("transform", "rotate(60)")
+      .style("text-anchor", "start");
+
+  // add the y Axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(d3.axisLeft(y)
+      .tickFormat(d3.format("d")) // custom format - disable comma for thousands
+      .tickSize(-width, 0, 0)
+      .tickValues(y_unique));     // unique y values
+
+  // ==========================================================
+
+  // set graph title
+  svg.append("text")
+    .attr("x", (width / 2))             
+    .attr("y", 0 - (margin.top / 2))
+    .attr("text-anchor", "middle")  
+    .style("font-size", "20px")
+    .style("text-decoration", "underline")  
+    .text($scope.graph_title);
+
+  // determine min and max dates for graph title
+  var min = $scope.form_data.min_date.split('-')[2] + "." + $scope.form_data.min_date.split('-')[1] + "." + $scope.form_data.min_date.split('-')[0];
+  var max = $scope.form_data.max_date.split('-')[2] + "." + $scope.form_data.max_date.split('-')[1] + "." + $scope.form_data.max_date.split('-')[0];
+
+  // set graph dates
+  svg.append("text")
+    .attr("x", (width / 2))
+    .attr("y", 25 - (margin.top / 2))   // place under title
+    .attr("text-anchor", "middle")
+    .style("font-size", "20px")
+    .style("text-decoration", "underline")
+    .text(min + " - " + max);
+
+
+  // ==========================================================
+
   // append the rectangles for the bar chart
   svg.selectAll(".bar")
       .data(data, function(d) { return d.timestamp; })
@@ -1695,47 +1749,6 @@ function graph($scope)
   //    .tickFormat(""))
 
   // ==========================================================
-
-  // add the x Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x)
-      .tickFormat(multiFormat))
-      // rotate text by 60 degrees
-      .selectAll("text")
-      .attr("y", 0)
-      .attr("x", 9)
-      .attr("dy", ".35em")
-      .attr("transform", "rotate(60)")
-      .style("text-anchor", "start");
-
-  // add the y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y)
-      .tickFormat(d3.format("d")) // custom format - disable comma for thousands
-      .tickValues(y_unique));     // unique y values
-
-  // set graph title
-  svg.append("text")
-    .attr("x", (width / 2))             
-    .attr("y", 0 - (margin.top / 2))
-    .attr("text-anchor", "middle")  
-    .style("font-size", "20px")
-    .style("text-decoration", "underline")  
-    .text($scope.graph_title);
-
-  // determine min and max dates for graph title
-  var min = $scope.form_data.min_date.split('-')[2] + "." + $scope.form_data.min_date.split('-')[1] + "." + $scope.form_data.min_date.split('-')[0];
-  var max = $scope.form_data.max_date.split('-')[2] + "." + $scope.form_data.max_date.split('-')[1] + "." + $scope.form_data.max_date.split('-')[0];
-
-  // set graph dates
-  svg.append("text")
-    .attr("x", (width / 2))
-    .attr("y", 25 - (margin.top / 2))   // place under title
-    .attr("text-anchor", "middle")
-    .style("font-size", "20px")
-    .style("text-decoration", "underline")
-    .text(min + " - " + max);
 }
 // --------------------------------------------------------------------------------------
 // heat map controller
