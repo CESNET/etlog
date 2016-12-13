@@ -24,6 +24,13 @@ kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 - TODO
 
 
+# Obecne sloupcove grafy
+
+- pridany linky pro hodnoty na ose y
+- mirna uprava vzhledu osy x
+- vyhovuje takto?
+
+
 # Obecne vyhledavani
 
 [rozhrani](https://etlog.cesnet.cz/#/search)
