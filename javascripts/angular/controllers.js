@@ -2140,6 +2140,18 @@ function stacked_graph($scope)
 
   // ==================================================
 
+  // tooltip
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+    return "<strong>počet:</strong> <span style='color:red'>" + d[1] + "</span>";
+  })
+
+  svg.call(tip);
+
+  // ==================================================
+
   // Create groups for each series, rects for each segment 
   var groups = svg.selectAll("g.cost")
     .data(dataset)
@@ -2157,23 +2169,8 @@ function stacked_graph($scope)
     .attr("y", function(d) { return y(d[1]); })
     .attr("height", function(d) { return Math.abs(y(d[1]) - y(d[0])); })
     .attr("width", x.bandwidth())
-    //.on("mouseover", function() { tooltip.style("display", null); })
-    //.on("mouseout", function() { tooltip.style("display", "none"); })
-    .on("mousemove", function(d) {
-      // debug
-      //console.log(d[0]);
-      //console.log(d[1]);
-
-      //console.log(y(d[0]));
-      //console.log(y(d[1]));
-
-
-      var xPosition = d3.mouse(this)[0] - 15;
-      var yPosition = d3.mouse(this)[1] - 25;
-      tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-      //tooltip.select("text").text(d[0]);
-      tooltip.select("text").text("cau tohle je nejaky text");
-    });
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
 
   // ==================================================
 
@@ -2204,26 +2201,27 @@ function stacked_graph($scope)
 
   // ==================================================
 
-  // Prep the tooltip bits, initial display is hidden
-  var tooltip = svg.append("g")
-    .attr("class", "tooltip")
-    //.style("display", "none");
-      
-  tooltip.append("rect")
-    .attr("width", 30)
-    .attr("height", 20)
-    .attr("fill", "white")
-    .attr("class", "tooltip_box")                   // TODO
-    //.style("opacity", 0.5);
+  // original tooltip
+  //// ==================================================
+  //// Prep the tooltip bits, initial display is hidden
+  //var tooltip = svg.append("g")
+  //  .attr("class", "tooltip")
+  //  .style("display", "none");
+  //
+  //tooltip.append("rect")
+  //  .attr("width", 30)
+  //  .attr("height", 20)
+  //  .attr("fill", "white")
+  //  .style("opacity", 0.5);
 
-  tooltip.append("text")
-    .attr("x", 15)
-    .attr("dy", "1.2em")
-    .style("text-anchor", "middle")
-    .attr("font-size", "12px")
-    .attr("font-weight", "bold");
+  //tooltip.append("text")
+  //  .attr("x", 15)
+  //  .attr("dy", "1.2em")
+  //  .style("text-anchor", "middle")
+  //  .attr("font-size", "12px")
+  //  .attr("font-weight", "bold");
 
-  // ==================================================
+  //// ==================================================
 }
 // --------------------------------------------------------------------------------------
 
