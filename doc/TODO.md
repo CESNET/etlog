@@ -8,6 +8,17 @@
 - Koho notifikovat?
 - Jak by mela notifikace vypadat?
 
+> Podle me je to nepouzitelne. Bude treba popsat co jste zkusil a napsat ze to nevede k smysluplnym vysledkum. Nicmene mam pochybnosti o tom ze ty grafy jsou OK. Krajne podivne je eduroam.muni.cz - nedovedu najit kde jste pro 23.11. vzal ze meli jen 140 uspesnych prihlaseni.
+
+```
+# bzgrep VISINST=1eduroam.muni.cz fticks-full.2016_11_23.log.bz2  |grep FAIL$  | sed "s/.*CSI=//" | sed "s/#.*//" | grep -vi ^70-6F | sort -u | wc -l
+506
+# bzgrep VISINST=1eduroam.muni.cz fticks-full.2016_11_23.log.bz2  |grep OK$  | sed "s/.*CSI=//" | sed "s/#.*//" | grep -vi ^70-6F | sort -u | wc -l
+2050
+```
+
+
+
 # mapa roamingu
 
 [rozhrani](https://etlog.cesnet.cz/#/heat_map)
