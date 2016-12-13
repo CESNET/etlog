@@ -2650,7 +2650,7 @@ function graph($scope)
   }
 
   // ==========================================================
-  
+
   // add the x Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
@@ -2696,8 +2696,8 @@ function graph($scope)
     .style("font-size", "20px")
     .style("text-decoration", "underline")
     .text(min + " - " + max);
-  
-  
+
+
   // ==========================================================
 
   // append the rectangles for the bar chart
