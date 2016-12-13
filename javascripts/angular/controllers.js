@@ -2097,9 +2097,17 @@ function stacked_graph($scope)
 
   // ==================================================
 
+  // add the y Axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(d3.axisLeft(y)
+      .tickSize(-width, 0, 0)
+      .tickFormat(d3.format("d"))); // custom format - disable comma for thousands
+
   // add the x Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
+      .attr("class", "x axis")
       .call(d3.axisBottom(x))
       // rotate text by 60 degrees
       .selectAll("text")
@@ -2108,11 +2116,6 @@ function stacked_graph($scope)
       .attr("dy", ".35em")
       .attr("transform", "rotate(60)")
       .style("text-anchor", "start");
-
-  // add the y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y)
-      .tickFormat(d3.format("d"))); // custom format - disable comma for thousands
 
   // ==================================================
 
