@@ -1662,6 +1662,7 @@ function graph_orgs($scope)
 
   // add the x Axis
   svg.append("g")
+      .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x))
       // rotate text by 60 degrees
@@ -1674,9 +1675,13 @@ function graph_orgs($scope)
 
   // add the y Axis
   svg.append("g")
+      .attr("class", "y axis")
       .call(d3.axisLeft(y)
       .tickFormat(d3.format("d")) // custom format - disable comma for thousands
+      .tickSize(-width, 0, 0)
       .tickValues(y_unique));     // unique y values
+
+  // ==========================================================
 
   // set graph title
   svg.append("text")
@@ -2223,7 +2228,7 @@ angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope
   $scope.title = "etlog: organizace nejvíce využívající roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
-  handle_common_submit($scope, $http, $q, get_roaming_most_used_count, graph_orgs, "roaming_most_used", "used_count");
+  handle_common_submit($scope, $http, $q, get_roaming_most_used_count, stacked_graph, "roaming_most_used", "used_count");
   handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -2336,6 +2341,7 @@ function create_graph_data_used($scope, data)
 // --------------------------------------------------------------------------------------
 function get_roaming_most_used_count($scope, $http, qs, $q, callback)
 {
+  var chain = $q.when();
   $scope.graph_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
@@ -2344,9 +2350,26 @@ function get_roaming_most_used_count($scope, $http, qs, $q, callback)
     url     : '/api/roaming/most_used' + qs + ts
   })
   .then(function(response) {
-    $scope.table_data = response.data;
-    create_graph_data_used($scope, response.data);
-    callback($scope);
+    var unique = [];
+
+    response.data.forEach(function (item, index) {
+      chain = chain.then(function(){
+        return $http({
+          method  : 'GET',
+          url     : '/api/unique_users/realm/?' + ts + "&realm=" + item.inst_name
+        })
+        .then(function(response) {
+          unique.push(response.data);
+        });
+      });
+    });
+
+    chain.then(function() {
+      $scope.table_data = response.data;
+      create_graph_data_used($scope, response.data);
+      add_unique(unique, $scope.table_data, $scope.graph_data);      // add unique count
+      callback($scope);
+    });
   });
 }
 // --------------------------------------------------------------------------------------
@@ -2364,8 +2387,7 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   $scope.title = "etlog: organizace nejvíce poskytující konektivitu";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
-  handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, graph_orgs, "roaming_most_provided", "provided_count");
-  //handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
+  handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
   handle_download($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -2383,6 +2405,7 @@ function create_graph_data_provided($scope, data)
 // --------------------------------------------------------------------------------------
 function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
 {
+  var chain = $q.when();
   $scope.graph_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
@@ -2391,50 +2414,39 @@ function get_roaming_most_provided_count($scope, $http, qs, $q, callback)
     url     : '/api/roaming/most_provided' + qs + ts
   })
   .then(function(response) {
-    // pridat pocet unikatnich za cele obdobi 
-    // -> udelat dotazem na heat mapu
-    // udelat jako http://bl.ocks.org/mbostock/3886208
-    // db.heat_map.find({ timestamp : { $gte : d, $lt : d2}, realm : "upol.cz"} )
-    // do grafu i do tabulky
-    // jak pro poskytovane tak pro vyuzivane
+    var unique = [];
 
-    // http://bl.ocks.org/mstanaland/6100713
+    response.data.forEach(function (item, index) {
+      chain = chain.then(function(){
+        return $http({
+          method  : 'GET',
+          url     : '/api/unique_users/visinst/?' + ts + "&realm=" + item.inst_name
+        })
+        .then(function(response) {
+          unique.push(response.data);
+        });
+      });
+    });
 
-    // TODO ?
-
-    //var chain = $q.when();
-
-    //response.data.forEach(function (item, index) {
-    //  chain = chain.then(function(){
-    //    return $http({
-    //      method  : 'GET',
-    //      url     : '/api/unique_users/?' + ts + "&visinst=" + item.inst_name
-    //    })
-    //    .then(function(response) {
-    //      // config.url : '/api/failed_logins/?timestamp=2016-11-01&username=/.*@cvut\.cz/'
-    //      
-    //      //$scope.graph_data.push({ timestamp : ts,
-    //      //                   value : sum_fail_count(response.data)});
-
-    //      console.log(item.inst_name);
-    //      console.log(response.data);
-    //    });
-    //  });
-    //});
-
-    //// the final chain object will resolve once all the posts have completed.
-    //chain.then(function() {
-    //  //console.log(response.data);
-    //  $scope.table_data = response.data;
-    //  create_graph_data_provided($scope, response.data);
-    //  callback($scope);
-    //});
-  
-  
-    $scope.table_data = response.data;
-    create_graph_data_provided($scope, response.data);
-    callback($scope);
+    chain.then(function() {
+      $scope.table_data = response.data;
+      create_graph_data_provided($scope, response.data);
+      add_unique(unique, $scope.table_data, $scope.graph_data);      // add unique count
+      callback($scope);
+    });
   });
+}
+// --------------------------------------------------------------------------------------
+// add unique count for every institution to graph data
+// --------------------------------------------------------------------------------------
+function add_unique(data, table_data, graph_data)
+{
+  for(var item in data) {
+    table_data[item].unique_count = data[item];
+    graph_data[item].unique_count = data[item];
+    // this is needed for graphing function
+    graph_data[item].value -= data[item];   // substract unique count
+  }
 }
 // --------------------------------------------------------------------------------------
 // handle download button
@@ -2638,6 +2650,55 @@ function graph($scope)
   }
 
   // ==========================================================
+  
+  // add the x Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "x axis")
+      .call(d3.axisBottom(x)
+      .tickFormat(multiFormat))
+      // rotate text by 60 degrees
+      .selectAll("text")
+      .attr("y", 0)
+      .attr("x", 9)
+      .attr("dy", ".35em")
+      .attr("transform", "rotate(60)")
+      .style("text-anchor", "start");
+
+  // add the y Axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(d3.axisLeft(y)
+      .tickFormat(d3.format("d")) // custom format - disable comma for thousands
+      .tickSize(-width, 0, 0)
+      .tickValues(y_unique));     // unique y values
+
+  // ==========================================================
+
+  // set graph title
+  svg.append("text")
+    .attr("x", (width / 2))             
+    .attr("y", 0 - (margin.top / 2))
+    .attr("text-anchor", "middle")  
+    .style("font-size", "20px")
+    .style("text-decoration", "underline")  
+    .text($scope.graph_title);
+
+  // determine min and max dates for graph title
+  var min = $scope.form_data.min_date.split('-')[2] + "." + $scope.form_data.min_date.split('-')[1] + "." + $scope.form_data.min_date.split('-')[0];
+  var max = $scope.form_data.max_date.split('-')[2] + "." + $scope.form_data.max_date.split('-')[1] + "." + $scope.form_data.max_date.split('-')[0];
+
+  // set graph dates
+  svg.append("text")
+    .attr("x", (width / 2))
+    .attr("y", 25 - (margin.top / 2))   // place under title
+    .attr("text-anchor", "middle")
+    .style("font-size", "20px")
+    .style("text-decoration", "underline")
+    .text(min + " - " + max);
+  
+  
+  // ==========================================================
 
   // append the rectangles for the bar chart
   svg.selectAll(".bar")
@@ -2670,47 +2731,6 @@ function graph($scope)
   //    .tickFormat(""))
 
   // ==========================================================
-
-  // add the x Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x)
-      .tickFormat(multiFormat))
-      // rotate text by 60 degrees
-      .selectAll("text")
-      .attr("y", 0)
-      .attr("x", 9)
-      .attr("dy", ".35em")
-      .attr("transform", "rotate(60)")
-      .style("text-anchor", "start");
-
-  // add the y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y)
-      .tickFormat(d3.format("d")) // custom format - disable comma for thousands
-      .tickValues(y_unique));     // unique y values
-
-  // set graph title
-  svg.append("text")
-    .attr("x", (width / 2))             
-    .attr("y", 0 - (margin.top / 2))
-    .attr("text-anchor", "middle")  
-    .style("font-size", "20px")
-    .style("text-decoration", "underline")  
-    .text($scope.graph_title);
-
-  // determine min and max dates for graph title
-  var min = $scope.form_data.min_date.split('-')[2] + "." + $scope.form_data.min_date.split('-')[1] + "." + $scope.form_data.min_date.split('-')[0];
-  var max = $scope.form_data.max_date.split('-')[2] + "." + $scope.form_data.max_date.split('-')[1] + "." + $scope.form_data.max_date.split('-')[0];
-
-  // set graph dates
-  svg.append("text")
-    .attr("x", (width / 2))
-    .attr("y", 25 - (margin.top / 2))   // place under title
-    .attr("text-anchor", "middle")
-    .style("font-size", "20px")
-    .style("text-decoration", "underline")
-    .text(min + " - " + max);
 }
 // --------------------------------------------------------------------------------------
 // heat map controller
@@ -3016,17 +3036,19 @@ function graph_heat_map($scope)
   // ==========================================================
 }
 // --------------------------------------------------------------------------------------
+// basic stacked graph for roaming views
+// based on http://bl.ocks.org/mstanaland/6100713
+// --------------------------------------------------------------------------------------
 function stacked_graph($scope)
 {
   // Setup svg using Bostock's margin convention
-  var margin = {top: 20, right: 160, bottom: 35, left: 30};   // orig
-  //var margin = {top: 50, right: 20, bottom: 100, left: 80};
+  var margin = {top: 50, right: 20, bottom: 100, left: 80};
 
   var width = $(window).width() - 130;      // compensate for y axis labels
   var height = 500 - margin.top - margin.bottom;
 
   // ==========================================================
-            
+   
   var svg = d3.select("#graph");
 
   if(svg.html() == "") {    // no graph present yet
@@ -3046,68 +3068,87 @@ function stacked_graph($scope)
 
   // ==========================================================
 
+  var data = $scope.graph_data;
 
-  /* Data in strings like it would be if imported from a csv */
+  var stack = d3.stack()
+    .keys(["unique_count", "value"])
+    .order(d3.stackOrderNone)
+    .offset(d3.stackOffsetNone);
+  
+  var dataset = stack(data);
 
-  var data = [
-    { year: "2006", redDelicious: "10", mcintosh: "15", oranges: "9", pears: "6" },
-    { year: "2007", redDelicious: "12", mcintosh: "18", oranges: "9", pears: "4" },
-    { year: "2008", redDelicious: "05", mcintosh: "20", oranges: "8", pears: "2" },
-    { year: "2009", redDelicious: "01", mcintosh: "15", oranges: "5", pears: "4" },
-    { year: "2010", redDelicious: "02", mcintosh: "10", oranges: "4", pears: "2" },
-    { year: "2011", redDelicious: "03", mcintosh: "12", oranges: "6", pears: "3" },
-    { year: "2012", redDelicious: "04", mcintosh: "15", oranges: "8", pears: "1" },
-    { year: "2013", redDelicious: "06", mcintosh: "11", oranges: "9", pears: "4" },
-    { year: "2014", redDelicious: "10", mcintosh: "13", oranges: "9", pears: "5" },
-    { year: "2015", redDelicious: "16", mcintosh: "19", oranges: "6", pears: "9" },
-    { year: "2016", redDelicious: "19", mcintosh: "17", oranges: "5", pears: "7" },
-  ];
+  // ==================================================
 
-  var parse = d3.time.format("%Y").parse;
+  var x = d3.scaleBand()
+            .domain(data.map(function(d) { return d.inst_name; }))
+            .range([0, width])
+            .padding(0.1);
 
-
-  // Transpose the data into layers
-  var dataset = d3.layout.stack()(["redDelicious", "mcintosh"].map(function(fruit) {
-    return data.map(function(d) {
-      return {x: parse(d.year), y: +d[fruit]};
-    });
-  }));
-
-
-  // Set x, y and colors
-  var x = d3.scale.ordinal()
-    .domain(dataset[0].map(function(d) { return d.x; }))
-    .rangeRoundBands([10, width-10], 0.02);
-
-  var y = d3.scale.linear()
-    .domain([0, d3.max(dataset, function(d) {  return d3.max(d, function(d) { return d.y0 + d.y; });  })])
+  var y = d3.scaleLinear()
+    .domain([0, d3.max(dataset, function(d) { return d3.max(d, function(d) { return d[1]; });  })])
     .range([height, 0]);
 
-  //var colors = ["b33040", "#d25c4d", "#f2b447", "#d9d574"];
-  var colors = ["b33040", "#d25c4d" ];
+  var colors = [ "b33040", "#d25c4d" ];
 
-  // Define and draw axes
-  var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .ticks(5)
-    .tickSize(-width, 0, 0)
-    .tickFormat( function(d) { return d } );
+  // ==================================================
 
-  var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
-    .tickFormat(d3.time.format("%Y"));
-
+  // add the y Axis
   svg.append("g")
-    .attr("class", "y axis")
-    .call(yAxis);
+      .attr("class", "y axis")
+      .call(d3.axisLeft(y)
+      .tickSize(-width, 0, 0)
+      .tickFormat(d3.format("d"))); // custom format - disable comma for thousands
 
+  // add the x Axis
   svg.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "x axis")
+      .call(d3.axisBottom(x))
+      // rotate text by 60 degrees
+      .selectAll("text")
+      .attr("y", 0)
+      .attr("x", 9)
+      .attr("dy", ".35em")
+      .attr("transform", "rotate(60)")
+      .style("text-anchor", "start");
 
+  // ==================================================
+
+  // set graph title
+  svg.append("text")
+    .attr("x", (width / 2))             
+    .attr("y", 0 - (margin.top / 2))
+    .attr("text-anchor", "middle")  
+    .style("font-size", "20px")
+    .style("text-decoration", "underline")  
+    .text($scope.graph_title);
+
+  // determine min and max dates for graph title
+  var min = $scope.form_data.min_date.split('-')[2] + "." + $scope.form_data.min_date.split('-')[1] + "." + $scope.form_data.min_date.split('-')[0];
+  var max = $scope.form_data.max_date.split('-')[2] + "." + $scope.form_data.max_date.split('-')[1] + "." + $scope.form_data.max_date.split('-')[0];
+
+  // set graph dates
+  svg.append("text")
+    .attr("x", (width / 2))
+    .attr("y", 25 - (margin.top / 2))   // place under title
+    .attr("text-anchor", "middle")
+    .style("font-size", "20px")
+    .style("text-decoration", "underline")
+    .text(min + " - " + max);
+
+  // ==================================================
+
+  // tooltip
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+    return "<strong>počet:</strong> <span style='color:red'>" + d[1] + "</span>";
+  })
+
+  svg.call(tip);
+
+  // ==================================================
 
   // Create groups for each series, rects for each segment 
   var groups = svg.selectAll("g.cost")
@@ -3116,23 +3157,20 @@ function stacked_graph($scope)
     .attr("class", "cost")
     .style("fill", function(d, i) { return colors[i]; });
 
+  // ==================================================
+
   var rect = groups.selectAll("rect")
     .data(function(d) { return d; })
     .enter()
     .append("rect")
-    .attr("x", function(d) { return x(d.x); })
-    .attr("y", function(d) { return y(d.y0 + d.y); })
-    .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
-    .attr("width", x.rangeBand())
-    .on("mouseover", function() { tooltip.style("display", null); })
-    .on("mouseout", function() { tooltip.style("display", "none"); })
-    .on("mousemove", function(d) {
-      var xPosition = d3.mouse(this)[0] - 15;
-      var yPosition = d3.mouse(this)[1] - 25;
-      tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-      tooltip.select("text").text(d.y);
-    });
+    .attr("x", function(d) { return x(d.data.inst_name); })
+    .attr("y", function(d) { return y(d[1]); })
+    .attr("height", function(d) { return Math.abs(y(d[1]) - y(d[0])); })
+    .attr("width", x.bandwidth())
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
 
+  // ==================================================
 
   // Draw legend
   var legend = svg.selectAll(".legend")
@@ -3142,45 +3180,46 @@ function stacked_graph($scope)
     .attr("transform", function(d, i) { return "translate(30," + i * 19 + ")"; });
    
   legend.append("rect")
-    .attr("x", width - 18)
+    .attr("x", width - 200)
     .attr("width", 18)
     .attr("height", 18)
-    .style("fill", function(d, i) {return colors.slice().reverse()[i];});
+    .style("fill", function(d, i) { return colors.slice().reverse()[i]; });
    
   legend.append("text")
-    .attr("x", width + 5)
+    .attr("x", width - 175)
     .attr("y", 9)
     .attr("dy", ".35em")
     .style("text-anchor", "start")
     .text(function(d, i) { 
       switch (i) {
-        case 0: return "Anjou pears";
-        case 1: return "Naval oranges";
-        case 2: return "McIntosh apples";
-        case 3: return "Red Delicious apples";
+        case 0: return "uživatelé celkem";
+        case 1: return "unikátní uživatelé";
       }
     });
 
+  // ==================================================
 
-  // Prep the tooltip bits, initial display is hidden
-  var tooltip = svg.append("g")
-    .attr("class", "tooltip")
-    .style("display", "none");
-      
-  tooltip.append("rect")
-    .attr("width", 30)
-    .attr("height", 20)
-    .attr("fill", "white")
-    .style("opacity", 0.5);
+  // original tooltip
+  //// ==================================================
+  //// Prep the tooltip bits, initial display is hidden
+  //var tooltip = svg.append("g")
+  //  .attr("class", "tooltip")
+  //  .style("display", "none");
+  //
+  //tooltip.append("rect")
+  //  .attr("width", 30)
+  //  .attr("height", 20)
+  //  .attr("fill", "white")
+  //  .style("opacity", 0.5);
 
-  tooltip.append("text")
-    .attr("x", 15)
-    .attr("dy", "1.2em")
-    .style("text-anchor", "middle")
-    .attr("font-size", "12px")
-    .attr("font-weight", "bold");
+  //tooltip.append("text")
+  //  .attr("x", 15)
+  //  .attr("dy", "1.2em")
+  //  .style("text-anchor", "middle")
+  //  .attr("font-size", "12px")
+  //  .attr("font-weight", "bold");
 
-
+  //// ==================================================
 }
 // --------------------------------------------------------------------------------------
 
