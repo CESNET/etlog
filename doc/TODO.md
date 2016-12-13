@@ -39,13 +39,10 @@ Stale neni dokoncena autentizace a to podle me v souvislosti s timto rozhranim p
 
 # organizace nejvíce poskytující konektivitu, organizace nejvíce využívající roaming
 
-> pridat pocet unikatnich za cele obdobi 
-> -> udelat dotazem na heat mapu
-> udelat jako http://bl.ocks.org/mbostock/3886208
-> db.heat_map.find({ timestamp : { $gte : d, $lt : d2}, realm : "upol.cz"} )
-> do grafu i do tabulky
-> jak pro poskytovane tak pro vyuzivane
+- pridan pocet unikatnich uzivatelu za cele obdobi
+  - pridano do grafu i tabulky
 
+- pripominky?
 
 # autentizace
 
