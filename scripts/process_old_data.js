@@ -9,7 +9,8 @@ const roaming = require('../cron/roaming.js');
 const users_mac = require('../cron/users_mac.js');
 const shared_mac = require('../cron/shared_mac.js');
 const heat_map = require('../cron/heat_map.js');
-const succ_logins = require('../cron/succ_logins.js');
+const realm_logins = require('../cron/realm_logins.js');
+const visinst_logins = require('../cron/visinst_logins.js');
 const unique_users = require('../cron/unique_users.js');
 // --------------------------------------------------------------------------------------
 // launch all tasks in defined order
@@ -38,7 +39,10 @@ async.series([
     heat_map.process_old_data(database, callback);
   },
   function(callback) {
-    succ_logins.process_old_data(database, callback);
+    realm_logins.process_old_data(database, callback);
+  },
+  function(callback) {
+    visinst_logins.process_old_data(database, callback);
   },
   function(callback) {
     unique_users.process_old_data(database, callback);

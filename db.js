@@ -114,16 +114,29 @@ exports.realms_schema = realms_schema;
 var realms = mongoose.model('realms', realms_schema, 'realms');
 exports.realms = realms;
 // --------------------------------------------------------------------------------------
-var succ_logins_schema = mongoose.Schema({
+var realm_logins_schema = mongoose.Schema({
   timestamp     : Date,
-  username      : String,
-  count         : Number
+  realm         : String,
+  ok_count      : Number,
+  fail_count    : Number
 },
 { versionKey: false });
 // --------------------------------------------------------------------------------------
-exports.succ_logins_schema = succ_logins_schema;
-var succ_logins = mongoose.model('succ_logins', succ_logins_schema, 'succ_logins');
-exports.succ_logins = succ_logins;
+exports.realm_logins_schema = realm_logins_schema;
+var realm_logins = mongoose.model('realm_logins', realm_logins_schema, 'realm_logins');
+exports.realm_logins = realm_logins;
+// --------------------------------------------------------------------------------------
+var visinst_logins_schema = mongoose.Schema({
+  timestamp     : Date,
+  realm         : String,
+  ok_count      : Number,
+  fail_count    : Number
+},
+{ versionKey: false });
+// --------------------------------------------------------------------------------------
+exports.visinst_logins_schema = visinst_logins_schema;
+var visinst_logins = mongoose.model('visinst_logins', visinst_logins_schema, 'visinst_logins');
+exports.visinst_logins = visinst_logins;
 // --------------------------------------------------------------------------------------
 var unique_users_schema = mongoose.Schema({
   timestamp       : Date,

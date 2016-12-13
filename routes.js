@@ -23,7 +23,8 @@ module.exports = function(app, database) {
   app.use('/api/db_data', require('./routes/db_data'));                              // api for db data
   app.use('/api/realms', require('./routes/realms'));                                // api for realms
   app.use('/api/count', require('./routes/count'));                                  // api to count records for pagination purposes
-  app.use('/api/succ_logins', require('./routes/succ_logins'));                      // generic api for successful logins
+  app.use('/api/realm_logins', require('./routes/realm_logins'));                    // generic api for realm logins
+  app.use('/api/visinst_logins', require('./routes/visinst_logins'));                // generic api for visinst logins
   app.use('/api/unique_users', require('./routes/unique_users'));                    // generic api for unique users
 
 // -----------------------------------------------------------

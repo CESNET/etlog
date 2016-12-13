@@ -2,7 +2,8 @@ const async = require( 'async' );
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
-// perform successful logins counting
+// process old data through days until current day 
+// get roaming collection data
 // --------------------------------------------------------------------------------------
 exp.process_old_data = function (database, callback) {
   // find the lowest date in database and go from that date to present
@@ -44,7 +45,7 @@ exp.process_old_data = function (database, callback) {
     function(next) {
       async.series([
         function(done) {
-          search(database, min, max, done);     // calls done when finished
+          process_data(database, min, max, done);     // calls done when finished
         },
         function(done) {
           min.setDate(min.getDate() + 1);  // continue
@@ -60,13 +61,14 @@ exp.process_old_data = function (database, callback) {
       if(err)
         console.error(err);
       else
-        console.log("cron task succ_logins finished processing old data");
+        console.log("cron task realm_logins finished processing old data");
       callback(null, null);
     });
   });
 };
 // --------------------------------------------------------------------------------------
-// perform successful logins counting
+// function for current data
+// get roaming collection data
 // --------------------------------------------------------------------------------------
 exp.process_current_data = function (database) {
   var curr = new Date();        // current day
@@ -78,54 +80,41 @@ exp.process_current_data = function (database) {
   prev_min.setDate(prev_min.getDate() -1); // previous day hh:mm:ss:ms set to 00:00:00:000
   var prev_max = new Date(curr);           // current day hh:mm:ss:ms set to 00:00:00:000
                                            // search uses lower than max condition !
-  search(database, prev_min, prev_max);
+  process_data(database, prev_min, prev_max);
 };
 // --------------------------------------------------------------------------------------
-// perform database search
+function process_data(database, min_date, max_date, done)
+{
+  async.series([
+    function(finished) {
+      get_succ_logins(database, min_date, max_date, finished);
+    },
+    function(finished) {
+      get_failed_logins(database, min_date, max_date, finished);
+    }
+    ],
+    function(err, results) {
+      if(done)  // no callback needed for current data
+        done(null);                      // both most_provided and most_used are done
+  });
+}
 // --------------------------------------------------------------------------------------
-function search(database, min, max, done) {
-  database.logs.aggregate(
-  [ 
-  { 
-    $match : 
-      { 
-        timestamp :         // get data for one day
-          { 
-            $gte : min, 
-            $lt : max 
-          }, 
-        pn : 
-          { 
-            $ne : ""        // no empty usernames
-          }, 
-        result : "OK"
-      } 
-  }, 
-  { 
-    $project : 
-      { 
-        csi : 1, pn : 1    // limit to csi and pn
-      } 
-  },  
-  { 
-    $group :                                // group by [ csi, pn ]
-    { 
-      _id : 
-      { 
-        pn : "$pn",
-        csi : "$csi"
-      }
-    } 
-  },
-  { $group : { _id : { pn : "$_id.pn" }, count : { $sum : 1 } }, },      // group again by username
-  { $project : { username : "$_id.pn", count : 1, _id : 0 } }
-  ], 
-    function (err, items) {
+// get data for organisations most using roaming
+// --------------------------------------------------------------------------------------
+function get_succ_logins(database, min, max, done)
+{
+  database.logs.aggregate([ 
+    { $match : { timestamp : { $gte : min, $lt : max }, result : "OK" } },
+    { $group : { _id : { realm : "$realm", csi : "$csi" } } },                // group by [realm, csi]
+    { $group : { _id : { realm : "$_id.realm" }, count : { $sum : 1 } } },    // group by realm
+    { $project : { realm : "$_id.realm", ok_count : "$count", _id : 0 } },
+  ],
+    function(err, items) {
       if(err == null) {
         if(done)    // processing older data
           save_to_db_callback(database, transform(items, min), done);
         else    // current data processing, no callback is needed
-          save_to_db(database, transform(items, min));    // add timestamp in transform
+          save_to_db(database, transform(items, min));
       }
       else
         console.error(err);
@@ -134,11 +123,12 @@ function search(database, min, max, done) {
 // --------------------------------------------------------------------------------------
 // save data to database
 // --------------------------------------------------------------------------------------
-function save_to_db(database, items) {
+function save_to_db(database, items)
+{
   for(var item in items) {  // any better way to do this ?
-    database.succ_logins.update(items[item], items[item], { upsert : true },
+    database.realm_logins.update({ timestamp : items[item].timestamp, realm : items[item].realm }, items[item], { upsert : true },
     function(err, result) {
-      if(err)  
+      if(err)
         console.error(err);
     });
   }
@@ -148,7 +138,7 @@ function save_to_db(database, items) {
 // --------------------------------------------------------------------------------------
 function save_to_db_callback(database, items, done) {
   async.forEachOf(items, function (value, key, callback) {
-    database.succ_logins.update(items[key], items[key], { upsert : true },
+    database.realm_logins.update({ timestamp : items[key].timestamp, realm : items[key].realm }, items[key], { upsert : true },
     function(err, result) {
       if(err)
         console.error(err);
@@ -161,9 +151,10 @@ function save_to_db_callback(database, items, done) {
   });
 }
 // --------------------------------------------------------------------------------------
-// add timestamp to every record
+// transform data for saving to database
 // --------------------------------------------------------------------------------------
-function transform(items, db_date) {
+function transform(items, db_date)
+{
   var arr = [];
 
   for(var item in items) {
@@ -172,6 +163,28 @@ function transform(items, db_date) {
   }
 
   return arr;
+}
+// --------------------------------------------------------------------------------------
+// get data for organisations most providing roaming
+// --------------------------------------------------------------------------------------
+function get_failed_logins(database, min, max, done)
+{
+  database.logs.aggregate([ 
+    { $match : { timestamp : { $gte : min, $lt : max }, result : "FAIL" } },
+    { $group : { _id : { realm : "$realm", csi : "$csi" } } },                // group by [realm, csi]
+    { $group : { _id : { realm : "$_id.realm" }, count : { $sum : 1 } } },    // group by realm
+    { $project : { realm : "$_id.realm", fail_count : "$count", _id : 0 } },
+  ],
+    function(err, items) {
+      if(err == null) {
+        if(done)    // processing older data
+          save_to_db_callback(database, transform(items, min), done);
+        else    // current data processing, no callback is needed
+          save_to_db(database, transform(items, min));
+      }
+      else
+        console.error(err);
+  });
 }
 // --------------------------------------------------------------------------------------
 module.exports = exp;
