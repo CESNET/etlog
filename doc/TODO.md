@@ -26,7 +26,11 @@
 - umoznuje razeni podle radku i sloupcu
 - pripominky?
 
+> budu potrebovat to trideni vysvetlit
 
+> neni mi jasne co je v radku co je v sloupci, nejak to popsat?
+
+> chtelo by to profiltrovat vstupni data, je tam spousta instituci/realmu ktrey nevykazuji zadnou rozumnou aktivitu treba realm doma-semik.cz s tim sem si hral jen chvilicku. Neslo by to nejak omezit na ty kteri jsou aktivni? S volitelnou hodnotu aktivnosti?
 
 # Detekce uzivatelu v ruzynch lokalitach soucasne
 
