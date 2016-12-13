@@ -2041,6 +2041,9 @@ function graph_heat_map($scope)
   // ==========================================================
 }
 // --------------------------------------------------------------------------------------
+// basic stacked graph for roaming views
+// based on http://bl.ocks.org/mstanaland/6100713
+// --------------------------------------------------------------------------------------
 function stacked_graph($scope)
 {
   // Setup svg using Bostock's margin convention
@@ -2073,13 +2076,12 @@ function stacked_graph($scope)
   var data = $scope.graph_data;
 
   var stack = d3.stack()
-    .keys(["value", "unique_count"])
+    .keys(["unique_count", "value"])
     .order(d3.stackOrderNone)
     .offset(d3.stackOffsetNone);
   
   var dataset = stack(data);
 
-  console.log(data);
   console.log(dataset);
 
   // ==================================================
@@ -2093,8 +2095,7 @@ function stacked_graph($scope)
     .domain([0, d3.max(dataset, function(d) { return d3.max(d, function(d) { return d[0] + d[1]; });  })])
     .range([height, 0]);
 
-  //var colors = ["b33040", "#d25c4d", "#f2b447", "#d9d574"];
-  var colors = ["b33040", "#d25c4d" ];
+  var colors = [ "b33040", "#d25c4d" ];
 
   // ==================================================
 
@@ -2114,7 +2115,6 @@ function stacked_graph($scope)
   svg.append("g")
       .call(d3.axisLeft(y)
       .tickFormat(d3.format("d"))); // custom format - disable comma for thousands
-      //.tickValues(y));
 
   // ==================================================
 
@@ -2149,60 +2149,69 @@ function stacked_graph($scope)
     .attr("class", "cost")
     .style("fill", function(d, i) { return colors[i]; });
 
-  //// ==================================================
+  // ==================================================
 
-  //var rect = groups.selectAll("rect")
-  //  .data(function(d) { return d; })
-  //  .enter()
-  //  .append("rect")
-  //  .attr("x", function(d) { return x(d.x); })
-  //  .attr("y", function(d) { return y(d.y0 + d.y); })
-  //  .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
-  //  .attr("width", x.rangeBand())
-  //  .on("mouseover", function() { tooltip.style("display", null); })
-  //  .on("mouseout", function() { tooltip.style("display", "none"); })
-  //  .on("mousemove", function(d) {
-  //    var xPosition = d3.mouse(this)[0] - 15;
-  //    var yPosition = d3.mouse(this)[1] - 25;
-  //    tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-  //    tooltip.select("text").text(d.y);
-  //  });
+  var rect = groups.selectAll("rect")
+    .data(function(d) { return d; })
+    .enter()
+    .append("rect")
+    .attr("x", function(d) { return x(d.data.inst_name); })
+    //.attr("y", function(d) { return y(d[0] + d[1]); })
+    .attr("y", function(d) { return y(d[1]); })
+    //.attr("height", function(d) { return y(d[0]) - y(d[0] + d[1]); })
+    .attr("height", function(d) { return Math.abs(y(d[1]) - y(d[0])); })
+    //.attr("height", function(d) { return y(d[0]) - y(d[1]); })
+    .attr("width", x.bandwidth())
+    //.on("mouseover", function() { tooltip.style("display", null); })
+    //.on("mouseout", function() { tooltip.style("display", "none"); })
+    .on("mousemove", function(d) {
+      // debug
+      console.log(d[0]);
+      console.log(d[1]);
 
-  ////// ==================================================
+      //console.log(y(d[0]));
+      //console.log(y(d[1]));
 
-  //// Draw legend
-  //var legend = svg.selectAll(".legend")
-  //  .data(colors)
-  //  .enter().append("g")
-  //  .attr("class", "legend")
-  //  .attr("transform", function(d, i) { return "translate(30," + i * 19 + ")"; });
-  // 
-  //legend.append("rect")
-  //  .attr("x", width - 18)
-  //  .attr("width", 18)
-  //  .attr("height", 18)
-  //  .style("fill", function(d, i) {return colors.slice().reverse()[i];});
-  // 
-  //legend.append("text")
-  //  .attr("x", width + 5)
-  //  .attr("y", 9)
-  //  .attr("dy", ".35em")
-  //  .style("text-anchor", "start")
-  //  .text(function(d, i) { 
-  //    switch (i) {
-  //      case 0: return "Anjou pears";
-  //      case 1: return "Naval oranges";
-  //      case 2: return "McIntosh apples";
-  //      case 3: return "Red Delicious apples";
-  //    }
-  //  });
+
+      var xPosition = d3.mouse(this)[0] - 15;
+      var yPosition = d3.mouse(this)[1] - 25;
+      tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+      tooltip.select("text").text(d[0]);
+    });
+
+  // ==================================================
+
+  // Draw legend
+  var legend = svg.selectAll(".legend")
+    .data(colors)
+    .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate(30," + i * 19 + ")"; });
+   
+  legend.append("rect")
+    .attr("x", width - 200)
+    .attr("width", 18)
+    .attr("height", 18)
+    .style("fill", function(d, i) { return colors.slice().reverse()[i]; });
+   
+  legend.append("text")
+    .attr("x", width - 175)
+    .attr("y", 9)
+    .attr("dy", ".35em")
+    .style("text-anchor", "start")
+    .text(function(d, i) { 
+      switch (i) {
+        case 0: return "uživatelé celkem";
+        case 1: return "unikátní uživatelé";
+      }
+    });
 
   // ==================================================
 
   // Prep the tooltip bits, initial display is hidden
   var tooltip = svg.append("g")
     .attr("class", "tooltip")
-    .style("display", "none");
+    //.style("display", "none");
       
   tooltip.append("rect")
     .attr("width", 30)
