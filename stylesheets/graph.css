@@ -17,6 +17,12 @@
 .x.axis path {
   display: none;
 }
+.y .tick line {
+  stroke: #ddd;
+}
+path.domain {
+  stroke: none;
+}
 .d3-tip {
   line-height: 1;
   font-weight: bold;
