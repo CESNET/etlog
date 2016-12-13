@@ -32,7 +32,7 @@
 
 > chtelo by to profiltrovat vstupni data, je tam spousta instituci/realmu ktrey nevykazuji zadnou rozumnou aktivitu treba realm doma-semik.cz s tim sem si hral jen chvilicku. Neslo by to nejak omezit na ty kteri jsou aktivni? S volitelnou hodnotu aktivnosti?
 
-# Detekce uzivatelu v ruzynch lokalitach soucasne
+# Detekce uzivatelu v ruznych lokalitach soucasne
 
 - xml s geoografickymi informacemi
 kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
@@ -44,6 +44,8 @@ kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 - pridany linky pro hodnoty na ose y
 - mirna uprava vzhledu osy x
 - vyhovuje takto?
+
+> k jake zmene doslo na ose x nedovedu poznat. Linky jsou dobre, jen jak jsou tluste sloupecky, tak se nedaji sledovat a tak u nizsich hodnot nejsou moc pouzitelne. Nevim jak to vyresit lip, castecna pruhlednost sloupcu? Asi to nechte jak je.
 
 
 # Obecne vyhledavani
