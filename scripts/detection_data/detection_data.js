@@ -6,24 +6,24 @@
 const d3 = require('d3-v4');
 const D3Node = require('d3-node')
 const async = require('async');
-const request = require('../request');
-const database = require( '../db' );
+const request = require('request');
+const deasync = require('deasync');
+const url_base = 'https://etlog.cesnet.cz:8443/api';
+const database = require( '../../db' );
 const fs = require('fs');
 // --------------------------------------------------------------------------------------
 // get data for every realm
 // --------------------------------------------------------------------------------------
 function get_data(database, callback)
 {
-  var min = new Date(new Date() - 42 * 86400000);   // 6 weeks ago
+  var min = new Date(new Date() - 60 * 86400000);   // 60 days ago
   var max = new Date();     // today
   
-  // get realm list sorted by failed auth count for previous 6 weeks
-  database.logs.aggregate([ 
-    { $match : { timestamp : { $gte : min, $lt : max }, result : "FAIL", realm : /\.cz/ } },  // limit by timestamp, failed logins, cz realms
-    { $group : { _id : { csi : "$csi", pn : "$pn", realm : "$realm" } } },     // group by [ csi, pn, realm ]
-    { $group : { _id : { pn : "$_id.pn", realm : "$_id.realm" }, count : { $sum : 1 } } },    // group by [ pn, realm ], count mac addresses
-    { $group : { _id : { realm : "$_id.realm"  }, count : { $sum : "$count"  } } },   // group by realm, sum count of users
-    { $sort : { count : -1 } },   // sort by count
+  // get realm list sorted by failed auth count for previous 60 days
+  database.visinst_logins.aggregate([ 
+    { $match : { timestamp : { $gte : min, $lt : max }, realm : /\.cz/ } },  // limit by timestamp, cz realms
+    { $group : { _id : { realm : "$realm" }, fail_count : { $sum : "$fail_count" } } },
+    { $sort : { fail_count : -1 } },   // sort by count
     { $limit : 100 },              // limit to 100 instituons
     { $project : { realm : "$_id.realm", _id : 0 } }      // final projection
   ],
@@ -31,6 +31,7 @@ function get_data(database, callback)
     var html_text = [];
 
     for(var item in items) {
+      get_visinst_data(items[item].realm, graph, html_text);
       get_realm_data(items[item].realm, graph, html_text);
     }
     
@@ -54,27 +55,27 @@ function create_output(html_text)
   console.log("</div></div>");
 }
 // --------------------------------------------------------------------------------------
-// get data for one realm from api
+// get data for one visinst from api
 // --------------------------------------------------------------------------------------
-function get_realm_data(realm, graph_func, html_text)
+function get_visinst_data(realm, graph_func, html_text)
 {
   $scope = {};      // "scope"
 
   $scope.form_data = {
-    min_date : new Date(new Date() - 42 * 86400000).toISOString().replace(/T.*$/, ''),      // 6 weeks ago - %Y-%m-%d
+    min_date : new Date(new Date() - 60 * 86400000).toISOString().replace(/T.*$/, ''),      // 60 days ago - %Y-%m-%d
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
   };
   
   get_days($scope);     // get days
 
-  $scope.realm = "'" + realm + "'";     // realm could possibly contain spaces
+  $scope.realm = "visinst: '" + realm + "'";     // realm could possibly contain spaces
 
   // =========================================
 
   $scope.graph_data = [];
   for(var day in $scope.days) {
     $scope.graph_data.push({timestamp : $scope.days[day], 
-                            value : sum_fail_count(request.get_failed_logins_daily($scope.days[day], realm))});
+                            value : get_visinst_failed_logins($scope.days[day], realm)});
   }
   
   $scope.graph_title = "neuspesna prihlaseni";
@@ -86,7 +87,7 @@ function get_realm_data(realm, graph_func, html_text)
   $scope.graph_data = [];
   for(var day in $scope.days) {
     $scope.graph_data.push({timestamp : $scope.days[day], 
-                            value : sum_succ_count(request.get_succ_logins_daily($scope.days[day], realm))});
+                            value : get_visinst_succ_logins($scope.days[day], realm)});
   }
   
   $scope.graph_title = "uspesna prihlaseni";
@@ -97,8 +98,72 @@ function get_realm_data(realm, graph_func, html_text)
   $scope.graph_data = [];
   for(var day in $scope.days) {
     
-    var v1 = sum_succ_count(request.get_succ_logins_daily($scope.days[day], realm));
-    var v2 = sum_fail_count(request.get_failed_logins_daily($scope.days[day], realm));
+    var v1 = get_visinst_succ_logins($scope.days[day], realm);
+    var v2 = get_visinst_failed_logins($scope.days[day], realm);
+    var val;
+
+    if(v2 == 0) {
+      val = v1;
+    }
+    else {
+      val = v1 / v2;
+    }
+
+    $scope.graph_data.push(
+      { timestamp : $scope.days[day], 
+        value : val });
+  }
+
+  $scope.graph_title = "pomer uspesnych / neuspesnych prihlaseni";
+  $scope.enable_ratio = true;
+  html_text.push(graph_func($scope) + '</div></div>');
+}
+// --------------------------------------------------------------------------------------
+// get data for one realm from api
+// --------------------------------------------------------------------------------------
+function get_realm_data(realm, graph_func, html_text)
+{
+  $scope = {};      // "scope"
+
+  $scope.form_data = {
+    min_date : new Date(new Date() - 60 * 86400000).toISOString().replace(/T.*$/, ''),      // 60 days ago - %Y-%m-%d
+    max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
+  };
+  
+  get_days($scope);     // get days
+
+  $scope.realm = "realm: '" + realm + "'";     // realm could possibly contain spaces
+
+  // =========================================
+
+  $scope.graph_data = [];
+  for(var day in $scope.days) {
+    $scope.graph_data.push({timestamp : $scope.days[day], 
+                            value : get_realm_failed_logins($scope.days[day], realm)});
+  }
+  
+  $scope.graph_title = "neuspesna prihlaseni";
+  $scope.enable_ratio = false;
+  html_text.push('<div id="container"><h2>' + $scope.realm + '</h2><div class="chart">' +  graph_func($scope));
+
+  // =========================================
+
+  $scope.graph_data = [];
+  for(var day in $scope.days) {
+    $scope.graph_data.push({timestamp : $scope.days[day], 
+                            value : get_realm_succ_logins($scope.days[day], realm)});
+  }
+  
+  $scope.graph_title = "uspesna prihlaseni";
+  html_text.push(graph_func($scope));
+
+  // =========================================
+
+  $scope.graph_data = [];
+  for(var day in $scope.days) {
+    
+    var v1 = get_realm_succ_logins($scope.days[day], realm);
+    var v2 = get_realm_failed_logins($scope.days[day], realm);
     var val;
 
     if(v2 == 0) {
@@ -169,7 +234,7 @@ function graph($scope)
   // http://stackoverflow.com/questions/21639305/d3js-take-data-from-an-array-instead-of-a-file
   // ============================================================================
 
-  const styles = '.bar{fill: steelblue;} .bar:hover{fill: brown;} .axis{font: 10px sans-serif;} .axis path,.axis line{fill: none;stroke: #000;shape-rendering: crispEdges;} .x.axis path{display: none;}';
+  const styles = '.bar{fill: steelblue;} .bar:hover{fill: brown;} .axis{font: 10px sans-serif;} .axis path,.axis line{fill: none;stroke: #000;shape-rendering: crispEdges;} .x.axis path{display: none;} .y .tick line { stroke: #ddd; } path.domain { stroke: none;} ';
   //const markup = '<div id="container"><h2>' + $scope.realm + '</h2><div id="chart"></div></div>';
   var options = {selector:'#chart', svgStyles:styles};
 
@@ -276,23 +341,10 @@ function graph($scope)
 
   // ==========================================================
 
-  // append the rectangles for the bar chart
-  svg.selectAll(".bar")
-      .data(data, function(d) { return d.timestamp; })
-      .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.timestamp) - width / data.length / 2; })
-      .attr("width", width / data.length - 1)
-      .attr("y", function(d) { return y(d.value); })
-      .attr("height", function(d) { return height - y(d.value); })
-      //.on('mouseover', tip.show)
-      //.on('mouseout', tip.hide);
-
-  // ==========================================================
-
   // add the x Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
+      .attr("class", "x axis")
       .call(d3.axisBottom(x)
       .tickFormat(multiFormat))
       // rotate text by 60 degrees
@@ -306,17 +358,36 @@ function graph($scope)
   if($scope.enable_ratio == true) {
     // add the y Axis
     svg.append("g")
+        .attr("class", "y axis")
         .call(d3.axisLeft(y)
+        .tickSize(-width, 0, 0)
         .tickFormat(d3.format(".2f"))); // enable floating point numbers for ratio graph
   }
   else {
     // add the y Axis
     svg.append("g")
+        .attr("class", "y axis")
         .call(d3.axisLeft(y)
         .tickFormat(d3.format("d")) // custom format - disable comma for thousands
+        .tickSize(-width, 0, 0)
         .tickValues(y_unique));     // unique y values
   }
 
+  // ==========================================================
+
+  // append the rectangles for the bar chart
+  svg.selectAll(".bar")
+      .data(data, function(d) { return d.timestamp; })
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.timestamp) - width / data.length / 2; })
+      .attr("width", width / data.length - 1)
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      //.on('mouseover', tip.show)
+      //.on('mouseout', tip.hide);
+
+  // ==========================================================
 
   // set graph title
   svg.append("text")
@@ -347,6 +418,104 @@ function graph($scope)
   var text = d3n.html();
   text = text.replace('<html><head></head><body>', '').replace('</body></html>', '');
   return text;
+}
+// --------------------------------------------------------------------------------------
+// get failed logins for visinst
+// --------------------------------------------------------------------------------------
+function get_visinst_failed_logins(date, realm)
+{
+  return get_visinst(date, realm).fail_count;
+}
+// --------------------------------------------------------------------------------------
+// get successfull logins for visinst
+// --------------------------------------------------------------------------------------
+function get_visinst_succ_logins(date, realm)
+{
+  return get_visinst(date, realm).ok_count;
+}
+// --------------------------------------------------------------------------------------
+// get data for visinst for given date
+// --------------------------------------------------------------------------------------
+function get_visinst(date, realm)
+{
+  var url = "/visinst_logins/";
+  var done = false;
+  var ret;
+
+  var d = new Date(date);
+  d.setHours(0);
+  d.setMinutes(0);
+  d.setSeconds(0);
+  d.setMilliseconds(0);  // set to 00:00:00:000
+
+  var query = '?timestamp=' + d.toISOString();
+  query += "&realm=" + realm;   // limit by realm
+
+  request.get({
+    url: url_base + url + query     // use query string here for simple usage
+  }, function (error, response, body) {
+    if(error)
+      console.error(error);
+    else {
+      ret = JSON.parse(body);
+      done = true;
+    }
+  });
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
+
+  return ret[0];
+}
+// --------------------------------------------------------------------------------------
+// get failed logins for realm
+// --------------------------------------------------------------------------------------
+function get_realm_failed_logins(date, realm)
+{
+  return get_realm(date, realm).fail_count;
+}
+// --------------------------------------------------------------------------------------
+// get successfull logins for realm
+// --------------------------------------------------------------------------------------
+function get_realm_succ_logins(date, realm)
+{
+  return get_realm(date, realm).ok_count;
+}
+// --------------------------------------------------------------------------------------
+// get data for realm for given date
+// --------------------------------------------------------------------------------------
+function get_realm(date, realm)
+{
+  var url = "/realm_logins/";
+  var done = false;
+  var ret;
+
+  var d = new Date(date);
+  d.setHours(0);
+  d.setMinutes(0);
+  d.setSeconds(0);
+  d.setMilliseconds(0);  // set to 00:00:00:000
+
+  var query = '?timestamp=' + d.toISOString();
+  query += "&realm=" + realm;   // limit by realm
+
+  request.get({
+    url: url_base + url + query     // use query string here for simple usage
+  }, function (error, response, body) {
+    if(error)
+      console.error(error);
+    else {
+      ret = JSON.parse(body);
+      done = true;
+    }
+  });
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
+
+  return ret[0];
 }
 // --------------------------------------------------------------------------------------
 // main function
