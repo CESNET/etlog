@@ -61,12 +61,18 @@ Napriklad pro vsechny uviatele, kteri maji ve jmenu cesnet je vstup  "/^.*@cesne
 
 Stale neni dokoncena autentizace a to podle me v souvislosti s timto rozhranim predstavuje velky problem.
 
+> normalizace vstupu mac adresy, takhle to nenajde ani kdyz je vstup vsemi velkymi
+
 # organizace nejvíce poskytující konektivitu, organizace nejvíce využívající roaming
 
 - pridan pocet unikatnich uzivatelu za cele obdobi
   - pridano do grafu i tabulky
 
 - pripominky?
+
+> pekne, jen proc najednou jina barva? prosil bych navrat k nejake eduroam modre
+
+> csv format by mel odpovidat zobrazeny tabulce, ted jsou cisla prvni
 
 # autentizace
 
@@ -81,6 +87,8 @@ Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
 [rozhrani](https://etlog.cesnet.cz/#/roaming_activity)
 
 - nejake pripominky?
+
+> spokojenost
 
 # Ostatní
 
