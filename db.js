@@ -128,8 +128,8 @@ exports.succ_logins = succ_logins;
 var unique_users_schema = mongoose.Schema({
   timestamp       : Date,
   realm           : String,
-  realm_addrs      : Array,
-  visinst_addrs  : Array
+  realm_addrs     : Array,
+  visinst_addrs   : Array
 },
 { versionKey: false });
 // --------------------------------------------------------------------------------------
