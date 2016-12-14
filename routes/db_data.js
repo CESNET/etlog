@@ -13,7 +13,8 @@ router.get('/', function(req, res, next) {
   ret.failed_logins = {};
   ret.shared_mac = {};
   ret.heat_map = {};
-  ret.succ_logins = {};
+  ret.realm_logins = {};
+  ret.visinst_logins = {};
 
   async.series([
     function(done) {
@@ -101,16 +102,30 @@ router.get('/', function(req, res, next) {
       });
     },
     function(done) {
-      req.db.succ_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+      req.db.realm_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
       { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.succ_logins.min = convert(doc[0].timestamp).toISOString();
+        ret.realm_logins.min = convert(doc[0].timestamp).toISOString();
       });
 
-      req.db.succ_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+      req.db.realm_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
       { $project : { timestamp : 1, _id : 0 } } ],
       function(err, doc) {
-        ret.succ_logins.max = convert(doc[0].timestamp).toISOString();
+        ret.realm_logins.max = convert(doc[0].timestamp).toISOString();
+        done(null);
+      });
+    },
+    function(done) {
+      req.db.visinst_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+      { $project : { timestamp : 1, _id : 0 } } ],
+      function(err, doc) {
+        ret.visinst_logins.min = convert(doc[0].timestamp).toISOString();
+      });
+
+      req.db.visinst_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+      { $project : { timestamp : 1, _id : 0 } } ],
+      function(err, doc) {
+        ret.visinst_logins.max = convert(doc[0].timestamp).toISOString();
         done(null);
       });
     },
