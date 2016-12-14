@@ -105,9 +105,25 @@ function get_succ_logins(database, min, max, done)
 {
   database.logs.aggregate([ 
     { $match : { timestamp : { $gte : min, $lt : max }, result : "OK" } },
+    { $group : { _id : { realm : "$visinst" }, count : { $sum : 1 } } },      // group by visinst
+    { $project : { realm : "$_id.realm", ok_count : "$count", _id : 0 } },
+  ],
+    function(err, items) {
+      if(err == null) {
+        save_to_db(database, transform(items, min));
+      }
+      else
+        console.error(err);
+  });
+
+  // ============================================
+  // grouped count
+
+  database.logs.aggregate([ 
+    { $match : { timestamp : { $gte : min, $lt : max }, result : "OK" } },
     { $group : { _id : { realm : "$visinst", csi : "$csi" } } },                // group by [visinst, csi]
     { $group : { _id : { realm : "$_id.realm" }, count : { $sum : 1 } } },      // group by visinst
-    { $project : { realm : "$_id.realm", ok_count : "$count", _id : 0 } },
+    { $project : { realm : "$_id.realm", grouped_ok_count : "$count", _id : 0 } },
   ],
     function(err, items) {
       if(err == null) {
@@ -171,9 +187,25 @@ function get_failed_logins(database, min, max, done)
 {
   database.logs.aggregate([ 
     { $match : { timestamp : { $gte : min, $lt : max }, result : "FAIL" } },
+    { $group : { _id : { realm : "$visinst" }, count : { $sum : 1 } } },      // group by visinst
+    { $project : { realm : "$_id.realm", fail_count : "$count", _id : 0 } },
+  ],
+    function(err, items) {
+      if(err == null) {
+        save_to_db(database, transform(items, min));
+      }
+      else
+        console.error(err);
+  });
+
+  // ============================================
+  // grouped count
+  
+  database.logs.aggregate([ 
+    { $match : { timestamp : { $gte : min, $lt : max }, result : "FAIL" } },
     { $group : { _id : { realm : "$visinst", csi : "$csi" } } },                // group by [visinst, csi]
     { $group : { _id : { realm : "$_id.realm" }, count : { $sum : 1 } } },      // group by visinst
-    { $project : { realm : "$_id.realm", fail_count : "$count", _id : 0 } },
+    { $project : { realm : "$_id.realm", grouped_fail_count : "$count", _id : 0 } },
   ],
     function(err, items) {
       if(err == null) {

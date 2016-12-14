@@ -115,10 +115,12 @@ var realms = mongoose.model('realms', realms_schema, 'realms');
 exports.realms = realms;
 // --------------------------------------------------------------------------------------
 var realm_logins_schema = mongoose.Schema({
-  timestamp     : Date,
-  realm         : String,
-  ok_count      : Number,
-  fail_count    : Number
+  timestamp            : Date,
+  realm                : String,
+  ok_count             : Number,
+  grouped_ok_count     : Number,
+  fail_count           : Number,
+  grouped_fail_count   : Number
 },
 { versionKey: false });
 // --------------------------------------------------------------------------------------
@@ -127,10 +129,12 @@ var realm_logins = mongoose.model('realm_logins', realm_logins_schema, 'realm_lo
 exports.realm_logins = realm_logins;
 // --------------------------------------------------------------------------------------
 var visinst_logins_schema = mongoose.Schema({
-  timestamp     : Date,
-  realm         : String,
-  ok_count      : Number,
-  fail_count    : Number
+  timestamp            : Date,
+  realm                : String,
+  ok_count             : Number,
+  grouped_ok_count     : Number,
+  fail_count           : Number,
+  grouped_fail_count   : Number
 },
 { versionKey: false });
 // --------------------------------------------------------------------------------------
