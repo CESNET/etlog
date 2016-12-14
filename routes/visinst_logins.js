@@ -36,8 +36,9 @@ function search_days(req, res, next, query) {
       $match : query.filter       // filter by query
     },
     // group by realm, sum counts
-    { $group : { _id : { realm : "$realm" }, ok_count : { $sum : "$ok_count" }, fail_count : { $sum : "$fail_count" } } },
-    { $project : { realm : "$_id.realm", ok_count : 1, fail_count : 1, _id : 0 } },
+    { $group : { _id : { realm : "$realm" }, ok_count : { $sum : "$ok_count" }, fail_count : { $sum : "$fail_count" },
+      grouped_ok_count : { $sum : "$grouped_ok_count" }, grouped_fail_count : { $sum : "$grouped_fail_count" } } },
+    { $project : { realm : "$_id.realm", ok_count : 1, grouped_ok_count : 1, fail_count : 1, grouped_fail_count : 1, _id : 0 } },
   ];
 
   req.db.visinst_logins.aggregate(aggregate_query,
