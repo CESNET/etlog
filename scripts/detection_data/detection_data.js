@@ -14,7 +14,7 @@ const fs = require('fs');
 // --------------------------------------------------------------------------------------
 // get data for every realm
 // --------------------------------------------------------------------------------------
-function get_data(database, callback)
+function get_data(database, grouped, callback)
 {
   var min = new Date(new Date() - 60 * 86400000);   // 60 days ago
   var max = new Date();     // today
@@ -31,8 +31,8 @@ function get_data(database, callback)
     var html_text = [];
 
     for(var item in items) {
-      get_visinst_data(items[item].realm, graph, html_text);
-      get_realm_data(items[item].realm, graph, html_text);
+      get_visinst_data(items[item].realm, graph, html_text, grouped);
+      get_realm_data(items[item].realm, graph, html_text, grouped);
     }
     
     create_output(html_text);
@@ -55,9 +55,9 @@ function create_output(html_text)
   console.log("</div></div>");
 }
 // --------------------------------------------------------------------------------------
-// get data for one visinst from api
+// get data for visinst or realm
 // --------------------------------------------------------------------------------------
-function get_visinst_data(realm, graph_func, html_text)
+function get_api_data(realm, graph_func, html_text, inst_type, fail_func, ok_func)
 {
   $scope = {};      // "scope"
 
@@ -67,15 +67,14 @@ function get_visinst_data(realm, graph_func, html_text)
   };
   
   get_days($scope);     // get days
-
-  $scope.realm = "visinst: '" + realm + "'";     // realm could possibly contain spaces
+  $scope.realm = inst_type + ": '" + realm + "'";     // realm could possibly contain spaces
 
   // =========================================
 
   $scope.graph_data = [];
   for(var day in $scope.days) {
     $scope.graph_data.push({timestamp : $scope.days[day], 
-                            value : get_visinst_failed_logins($scope.days[day], realm)});
+                            value : fail_func($scope.days[day], realm)});
   }
   
   $scope.graph_title = "neuspesna prihlaseni";
@@ -87,7 +86,7 @@ function get_visinst_data(realm, graph_func, html_text)
   $scope.graph_data = [];
   for(var day in $scope.days) {
     $scope.graph_data.push({timestamp : $scope.days[day], 
-                            value : get_visinst_succ_logins($scope.days[day], realm)});
+                            value : ok_func($scope.days[day], realm)});
   }
   
   $scope.graph_title = "uspesna prihlaseni";
@@ -98,8 +97,8 @@ function get_visinst_data(realm, graph_func, html_text)
   $scope.graph_data = [];
   for(var day in $scope.days) {
     
-    var v1 = get_visinst_succ_logins($scope.days[day], realm);
-    var v2 = get_visinst_failed_logins($scope.days[day], realm);
+    var v1 = ok_func($scope.days[day], realm);
+    var v2 = fail_func($scope.days[day], realm);
     var val;
 
     if(v2 == 0) {
@@ -117,94 +116,28 @@ function get_visinst_data(realm, graph_func, html_text)
   $scope.graph_title = "pomer uspesnych / neuspesnych prihlaseni";
   $scope.enable_ratio = true;
   html_text.push(graph_func($scope) + '</div></div>');
+}
+// --------------------------------------------------------------------------------------
+// get data for one visinst from api
+// --------------------------------------------------------------------------------------
+function get_visinst_data(realm, graph_func, html_text, grouped)
+{
+  if(grouped)
+    get_api_data(realm, graph_func, html_text, "visinst", get_visinst_failed_logins_grouped, get_visinst_succ_logins_grouped);
+
+  else // non grouped data
+    get_api_data(realm, graph_func, html_text, "visinst", get_visinst_failed_logins, get_visinst_succ_logins);
 }
 // --------------------------------------------------------------------------------------
 // get data for one realm from api
 // --------------------------------------------------------------------------------------
-function get_realm_data(realm, graph_func, html_text)
+function get_realm_data(realm, graph_func, html_text, grouped)
 {
-  $scope = {};      // "scope"
+  if(grouped)
+    get_api_data(realm, graph_func, html_text, "realm", get_realm_failed_logins_grouped, get_realm_succ_logins_grouped);
 
-  $scope.form_data = {
-    min_date : new Date(new Date() - 60 * 86400000).toISOString().replace(/T.*$/, ''),      // 60 days ago - %Y-%m-%d
-    max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
-  };
-  
-  get_days($scope);     // get days
-
-  $scope.realm = "realm: '" + realm + "'";     // realm could possibly contain spaces
-
-  // =========================================
-
-  $scope.graph_data = [];
-  for(var day in $scope.days) {
-    $scope.graph_data.push({timestamp : $scope.days[day], 
-                            value : get_realm_failed_logins($scope.days[day], realm)});
-  }
-  
-  $scope.graph_title = "neuspesna prihlaseni";
-  $scope.enable_ratio = false;
-  html_text.push('<div id="container"><h2>' + $scope.realm + '</h2><div class="chart">' +  graph_func($scope));
-
-  // =========================================
-
-  $scope.graph_data = [];
-  for(var day in $scope.days) {
-    $scope.graph_data.push({timestamp : $scope.days[day], 
-                            value : get_realm_succ_logins($scope.days[day], realm)});
-  }
-  
-  $scope.graph_title = "uspesna prihlaseni";
-  html_text.push(graph_func($scope));
-
-  // =========================================
-
-  $scope.graph_data = [];
-  for(var day in $scope.days) {
-    
-    var v1 = get_realm_succ_logins($scope.days[day], realm);
-    var v2 = get_realm_failed_logins($scope.days[day], realm);
-    var val;
-
-    if(v2 == 0) {
-      val = v1;
-    }
-    else {
-      val = v1 / v2;
-    }
-
-    $scope.graph_data.push(
-      { timestamp : $scope.days[day], 
-        value : val });
-  }
-
-  $scope.graph_title = "pomer uspesnych / neuspesnych prihlaseni";
-  $scope.enable_ratio = true;
-  html_text.push(graph_func($scope) + '</div></div>');
-}
-// --------------------------------------------------------------------------------------
-// sum failed count for given data
-// --------------------------------------------------------------------------------------
-function sum_fail_count(data)
-{
-  var cnt = 0;
-
-  for(var item in data)
-    cnt += data[item].fail_count;
-
-  return cnt;
-}
-// --------------------------------------------------------------------------------------
-// sum successfull count for given data
-// --------------------------------------------------------------------------------------
-function sum_succ_count(data)
-{
-  var cnt = 0;
-
-  for(var item in data)
-    cnt += data[item].count;
-
-  return cnt;
+  else // non grouped data
+    get_api_data(realm, graph_func, html_text, "realm", get_realm_failed_logins, get_realm_succ_logins);
 }
 // --------------------------------------------------------------------------------------
 // get all days between min and max
@@ -444,11 +377,10 @@ function get_visinst_succ_logins(date, realm)
   return ret.ok_count;
 }
 // --------------------------------------------------------------------------------------
-// get data for visinst for given date
+// request data based on params
 // --------------------------------------------------------------------------------------
-function get_visinst(date, realm)
+function request_data(url, date, realm)
 {
-  var url = "/visinst_logins/";
   var done = false;
   var ret;
 
@@ -476,7 +408,15 @@ function get_visinst(date, realm)
     return !done;
   });
 
-  return ret[0];
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// get data for visinst for given date
+// --------------------------------------------------------------------------------------
+function get_visinst(date, realm)
+{
+  var url = "/visinst_logins/";
+  return request_data(url, date, realm)[0];
 }
 // --------------------------------------------------------------------------------------
 // get failed logins for realm
@@ -508,34 +448,55 @@ function get_realm_succ_logins(date, realm)
 function get_realm(date, realm)
 {
   var url = "/realm_logins/";
-  var done = false;
-  var ret;
+  return request_data(url, date, realm)[0];
+}
+// --------------------------------------------------------------------------------------
+// get failed logins for visinst
+// --------------------------------------------------------------------------------------
+function get_visinst_failed_logins_grouped(date, realm)
+{
+  var ret = get_visinst(date, realm);
 
-  var d = new Date(date);
-  d.setHours(0);
-  d.setMinutes(0);
-  d.setSeconds(0);
-  d.setMilliseconds(0);  // set to 00:00:00:000
+  if(ret == undefined)
+    return 0;
 
-  var query = '?timestamp=' + d.toISOString();
-  query += "&realm=" + realm;   // limit by realm
+  return ret.grouped_fail_count;
+}
+// --------------------------------------------------------------------------------------
+// get successfull logins for visinst
+// --------------------------------------------------------------------------------------
+function get_visinst_succ_logins_grouped(date, realm)
+{
+  var ret = get_visinst(date, realm);
 
-  request.get({
-    url: url_base + url + query     // use query string here for simple usage
-  }, function (error, response, body) {
-    if(error)
-      console.error(error);
-    else {
-      ret = JSON.parse(body);
-      done = true;
-    }
-  });
+  if(ret == undefined)
+    return 0;
 
-  deasync.loopWhile(function() {
-    return !done;
-  });
+  return ret.grouped_ok_count;
+}
+// --------------------------------------------------------------------------------------
+// get failed logins for realm
+// --------------------------------------------------------------------------------------
+function get_realm_failed_logins_grouped(date, realm)
+{
+  var ret = get_realm(date, realm);
 
-  return ret[0];
+  if(ret == undefined)
+    return 0;
+
+  return ret.grouped_fail_count;
+}
+// --------------------------------------------------------------------------------------
+// get successfull logins for realm
+// --------------------------------------------------------------------------------------
+function get_realm_succ_logins_grouped(date, realm)
+{
+  var ret = get_realm(date, realm);
+
+  if(ret == undefined)
+    return 0;
+
+  return ret.grouped_ok_count;
 }
 // --------------------------------------------------------------------------------------
 // main function
@@ -548,7 +509,10 @@ function main()
       callback(null, null);
     },
     function(callback) {
-      get_data(database, callback);
+      if(process.argv.length > 2)
+        get_data(database, true, callback);  // generate grouped data
+      else
+        get_data(database, false, callback); // generate non grouped date
     },
     ],
     function(err, results) {
