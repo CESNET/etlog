@@ -1,3 +1,7 @@
+# system pro ZP
+
+- stav?
+
 # Detekce problémů funkčnosti služby
 
 ## Data
@@ -17,7 +21,22 @@
 2050
 ```
 
+Prikazi mi davaji stejny vystup, nicmene podrobnejsi analyza ukazala, ze standartni nastroje na toto nestaci:
+```
+# bzgrep VISINST=1eduroam.muni.cz fticks-full.2016_11_23.log.bz2  | grep FAIL$  | sed "s/.*CSI=//" | sed "s/#.*//" | grep -vi ^70-6F | sort -u | tail
+```
 
+- Nove rozhrani pro grafy, data pregenerovana
+- Dotaz na data vyse pomoci:
+```
+ curl 'https://etlog.cesnet.cz/api/visinst_logins/?timestamp=2016-11-23&realm=eduroam.muni.cz'
+```
+
+obdobni prikaz na radce dava stejne vysledek
+```
+zcat ~/logs/fticks/fticks-2016-11-23.gz | grep VISINST=1eduroam.muni.cz | grep OK$  | sed "s/.*CSI=//" | sed "s/#.*//" | grep -vi ^70-6F |  tr "[[:upper:]]" "[[:lower:]]" | sed 's/\.//g; s/-//g; s/://g'  | sort -u | wc -l
+
+```
 
 # mapa roamingu
 
