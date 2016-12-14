@@ -51,7 +51,7 @@ div.container-fluid(ng-controller="orgs_roaming_most_provided_controller")
           tr
             th Název instituce:
             th Celkový počet využití:
-            th Počet unikátních uživatelů:
+            th Počet unikátních zařízení:
         tbody(ng-show='!paging.loading')
           tr(dir-paginate='row in table_data | itemsPerPage: form_data.inst_count')
             td {{row.inst_name}}
