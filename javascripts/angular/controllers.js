@@ -2099,7 +2099,7 @@ function stacked_graph($scope)
     .domain([0, d3.max(dataset, function(d) { return d3.max(d, function(d) { return d[1]; });  })])
     .range([height, 0]);
 
-  var colors = [ "b33040", "#d25c4d" ];
+  var colors = [ "#225885", "#4682B4" ];
 
   // ==================================================
 
@@ -2174,6 +2174,7 @@ function stacked_graph($scope)
     .data(function(d) { return d; })
     .enter()
     .append("rect")
+    .style("opacity", "0.8")
     .attr("x", function(d) { return x(d.data.inst_name); })
     .attr("y", function(d) { return y(d[1]); })
     .attr("height", function(d) { return Math.abs(y(d[1]) - y(d[0])); })
