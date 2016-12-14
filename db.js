@@ -155,9 +155,11 @@ var unique_users = mongoose.model('unique_users', unique_users_schema, 'unique_u
 exports.unique_users = unique_users;
 // --------------------------------------------------------------------------------------
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
+/*
 mongoose.connection.once('open', function (callback) {
   console.log("sucesfully connected do mongodb database on localhost");
 });
+*/
 // --------------------------------------------------------------------------------------
 // connect to the databse
 // --------------------------------------------------------------------------------------
