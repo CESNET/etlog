@@ -1,6 +1,6 @@
 # system pro ZP
 
-- stav?
+- zajistit prirazeni oponentury
 
 # Detekce problémů funkčnosti služby
 
@@ -38,6 +38,13 @@ zcat ~/logs/fticks/fticks-2016-11-23.gz | grep VISINST=1eduroam.muni.cz | grep O
 
 ```
 
+- jednou tydne generovat data
+- dve verze - grupovana a negrupovana
+- dve ruzne stranky pro grupovana a negrupovana data
+- zpristupnit z menu, primo do menu
+
+
+
 # mapa roamingu
 
 [rozhrani](https://etlog.cesnet.cz/#/heat_map)
@@ -51,20 +58,24 @@ zcat ~/logs/fticks/fticks-2016-11-23.gz | grep VISINST=1eduroam.muni.cz | grep O
 
 > chtelo by to profiltrovat vstupni data, je tam spousta instituci/realmu ktrey nevykazuji zadnou rozumnou aktivitu treba realm doma-semik.cz s tim sem si hral jen chvilicku. Neslo by to nejak omezit na ty kteri jsou aktivni? S volitelnou hodnotu aktivnosti?
 
+> pridat filtrovani dat pomoci poctu - jedno pole pro pocet pouziti i pocet poskytnuti
+> zmenit barevnou paletu - pouzit interpolateRdYlGn a otocit spektrum
+> upravit popisky sloupce - jsou mirne posunute
+> pridat tooltip na radky a sloupce -> realm, visinst
+
 # Detekce uzivatelu v ruznych lokalitach soucasne
 
 - xml s geoografickymi informacemi
 kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
 - TODO
 
+> pokud by bylo mozne zpracovat dynamicky, tak by to bylo ok, ale pokud
+by interaktivni zpracovani trvalo dlouho, tak generovat nejak staticky
+> je treba implicitne vyhodit anonymous uzivatele
 
-# Obecne sloupcove grafy
+> soucasne zarizeni nema smysl resit - nema smysl protoze realny vysledek je k nicemu
 
-- pridany linky pro hodnoty na ose y
-- mirna uprava vzhledu osy x
-- vyhovuje takto?
-
-> k jake zmene doslo na ose x nedovedu poznat. Linky jsou dobre, jen jak jsou tluste sloupecky, tak se nedaji sledovat a tak u nizsich hodnot nejsou moc pouzitelne. Nevim jak to vyresit lip, castecna pruhlednost sloupcu? Asi to nechte jak je.
+> do repozitare : xml ne, perl ano, vypocet
 
 
 # Obecne vyhledavani
@@ -93,6 +104,10 @@ Stale neni dokoncena autentizace a to podle me v souvislosti s timto rozhranim p
 
 > csv format by mel odpovidat zobrazeny tabulce, ted jsou cisla prvni
 
+- csv nerespektuje poradi tabulky ve vsech pohledech - ma brat zretel na poradi sloupcu v tabulce vsude?
+
+> predelat vsude, tak aby stahovana data odpovidala poradi v tabulce
+
 # autentizace
 
 Pokud zatim nenastal zadny pokrok s debugem autentizace, tak aplikaci nechat v soucasnem stavu a
@@ -100,14 +115,6 @@ pouze omezit pristupnost pomoci IP adres v iptables?
 
 Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
 
-
-# aktivita CZ eduroamu
-
-[rozhrani](https://etlog.cesnet.cz/#/roaming_activity)
-
-- nejake pripominky?
-
-> spokojenost
 
 # Ostatní
 
@@ -118,8 +125,22 @@ Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
     - je treba resit rotovani logu? syslog sam zajisti novy soubor pro kazdy den.
 > zkontrolovat, jak budou formatovany zpravy
 
+> potencialne vyzkouset jiny process manager, ktery nebude mit problem zapisovat do souboru a bude spravne formatovat zpravy
+
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
 - Pridana dokumentace k frontendu - vyhovuje takto? ([zde](https://github.com/CESNET/etlog#frontend))
+- pdf DP do repozitare, jakmile bude odevzdano? jako dodatecna forma dokumentace?
+> ano
+
+# text prace
+
+
+- rozsirit mac count tim zpusobem, ze by se pro vsechny adresy konkretniho uzivatele udelal casovy graf
+  kdy uzivatel adresy pouzival a pokud by se nektere intervaly prekryvaly, 
+  mohlo by to indikovat sdileni identity -> muselo by se napriklad pouzivat nekolik zarizeni soucasne => uzivatel muze mit nekolik zarizeni soucasne
+  - Pokud se uzivatel nijak neprekryva, neni treba ho nejak dale zkoumat, zrejme pouziva randomizaci mac adres
+
+- do prace uvest, ze se poradilo odhalit nejake vyznamne sdilene identity
 
 
 # TODO list
@@ -129,8 +150,6 @@ Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
 3. sshguard + FW -> semik
 8. co s radlog.cesnet.cz - tim starym virtualem
   - ponechat nez bude napsany text prace
-10. snyk?
-10. hsts?
 11. ...
 
 # TODO dobudoucna
@@ -139,6 +158,8 @@ Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
 - lepsi reseni popisku na ose x pro intervaly < mesic?
 - mrizka v grafech?
 - lokalizace?
+- snyk?
+- hsts?
 - ... ?
 
 
