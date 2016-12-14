@@ -424,14 +424,24 @@ function graph($scope)
 // --------------------------------------------------------------------------------------
 function get_visinst_failed_logins(date, realm)
 {
-  return get_visinst(date, realm).fail_count;
+  var ret = get_visinst(date, realm);
+
+  if(ret == undefined)
+    return 0;
+
+  return ret.fail_count;
 }
 // --------------------------------------------------------------------------------------
 // get successfull logins for visinst
 // --------------------------------------------------------------------------------------
 function get_visinst_succ_logins(date, realm)
 {
-  return get_visinst(date, realm).ok_count;
+  var ret = get_visinst(date, realm);
+
+  if(ret == undefined)
+    return 0;
+
+  return ret.ok_count;
 }
 // --------------------------------------------------------------------------------------
 // get data for visinst for given date
@@ -473,14 +483,24 @@ function get_visinst(date, realm)
 // --------------------------------------------------------------------------------------
 function get_realm_failed_logins(date, realm)
 {
-  return get_realm(date, realm).fail_count;
+  var ret = get_realm(date, realm);
+
+  if(ret == undefined)
+    return 0;
+
+  return ret.fail_count;
 }
 // --------------------------------------------------------------------------------------
 // get successfull logins for realm
 // --------------------------------------------------------------------------------------
 function get_realm_succ_logins(date, realm)
 {
-  return get_realm(date, realm).ok_count;
+  var ret = get_realm(date, realm);
+
+  if(ret == undefined)
+    return 0;
+
+  return ret.ok_count;
 }
 // --------------------------------------------------------------------------------------
 // get data for realm for given date
