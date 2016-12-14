@@ -36,7 +36,7 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   setup_filters($scope, $http, "logs");
   handle_sort($scope, $http, get_logs);
   set_params($scope, $stateParams); // set params passed from other views
-  handle_download($scope);
+  handle_download($scope, ["result", "timestamp", "username", "mac_address", "realm", "visinst"]);
   handle_empty_form($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
   handle_table_submit($scope, $http, get_mac_count, $scope.paging, [ "username", "count" ], "mac_count");
   handle_pagination($scope, $http, get_mac_count);
   setup_filters($scope, $http, "mac_count");
-  handle_download($scope);
+  handle_download($scope, ["username", "count", "addrs" ]);
   handle_anon($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -901,7 +901,7 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
   handle_table_submit($scope, $http, get_shared_mac, $scope.paging, [ "mac_address", "count" ], "shared_mac");
   handle_pagination($scope, $http, get_shared_mac);
   setup_filters($scope, $http, "shared_mac");
-  handle_download($scope);
+  handle_download($scope, ["mac_address", "count", "users"]);
 }]);
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
@@ -1247,7 +1247,7 @@ angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_used_count, stacked_graph, "roaming_most_used", "used_count");
-  handle_download($scope);
+  handle_download($scope, ["inst_name", "used_count", "unique_count"]);
 }]);
 // --------------------------------------------------------------------------------------
 // initialize calendars
@@ -1406,7 +1406,7 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
-  handle_download($scope);
+  handle_download($scope, ["inst_name", "provided_count", "unique_count"]);
 }]);
 // --------------------------------------------------------------------------------------
 // create graph data for organizations most providing roaming
@@ -1468,11 +1468,12 @@ function add_unique(data, table_data, graph_data)
 }
 // --------------------------------------------------------------------------------------
 // handle download button
+// order is array of keys
 // --------------------------------------------------------------------------------------
-function handle_download($scope)
+function handle_download($scope, order)
 {
   $scope.download_data = function() {
-    var text = get_text($scope);
+    var text = get_text($scope, order);
     // taken from https://codepen.io/YuvarajTana/pen/yNoNdZ
     var a = $('<a/>', {
       style:'display:none',
@@ -1484,9 +1485,9 @@ function handle_download($scope)
   }
 }
 // --------------------------------------------------------------------------------------
-// generate csv from table data
+// generate csv from table data in defined order
 // --------------------------------------------------------------------------------------
-function get_text($scope)
+function get_text($scope, order)
 {
   var text = "";
   var data = $scope.table_data;
@@ -1495,23 +1496,15 @@ function get_text($scope)
     return;
   }
 
-  var keys = Object.keys(data[0]);
-
-  // filter keys
-  for(var key in keys) {
-    if(keys[key] == "$$hashKey")
-      keys.splice(key, 1)
-  }
-
   // create csv header
   // ============================
 
-  for(var key in keys) {
-    if(key == keys.length - 1)
-      text += keys[key];
+  for(var key in order) {
+    if(key == order.length - 1)
+      text += order[key];
 
     else
-      text += keys[key] + ",";
+      text += order[key] + ",";
   }
   text += "\n";
 
@@ -1519,21 +1512,21 @@ function get_text($scope)
   // ============================
 
   for(var item in data) {
-    for(var key in keys) {
+    for(var key in order) {
 
       if(text.length > 0 && text[text.length - 1] != "\n") {   // continue
-        if(data[item][keys[key]].constructor === Array) // array
-          text += ",\"" + data[item][keys[key]] + "\"";      // close array into ""
+        if(data[item][order[key]].constructor === Array) // array
+          text += ",\"" + data[item][order[key]] + "\"";      // close array into ""
         else
-          text += "," + data[item][keys[key]];
+          text += "," + data[item][order[key]];
       }
 
       else {    // beginning of line
-        if(data[item][keys[key]].constructor === Array) // array
-          text += "\"" + data[item][keys[key]] + "\"";      // close array into ""
+        if(data[item][order[key]].constructor === Array) // array
+          text += "\"" + data[item][order[key]] + "\"";      // close array into ""
 
         else
-          text += data[item][keys[key]];
+          text += data[item][order[key]];
       }
     }
     text += "\n";
