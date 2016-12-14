@@ -83,7 +83,13 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   .state('detection_data', {
     url: '/detection_data',
     templateUrl: '/partials/detection_data.html',
-    title : 'etlog: data k detekci'
+    title : 'etlog: data k detekci 1'
+  })
+
+  .state('detection_data_grouped', {
+    url: '/detection_data_grouped',
+    templateUrl: '/partials/detection_data_grouped.html',
+    title : 'etlog: data k detekci 2'
   })
 });
 // --------------------------------------------------------------------------------------
