@@ -130,6 +130,7 @@ Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
 8. co s radlog.cesnet.cz - tim starym virtualem
   - ponechat nez bude napsany text prace
 10. snyk?
+10. hsts?
 11. ...
 
 # TODO dobudoucna
