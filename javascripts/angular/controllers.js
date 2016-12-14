@@ -1554,7 +1554,7 @@ function graph($scope)
   // ============================================================================
 
   // set the dimensions and margins of the graph
-  var margin = {top: 50, right: 20, bottom: 100, left: 80};
+  var margin = {top: 80, right: 20, bottom: 100, left: 80};
   var col_length = 40;  // column length
 
   // dynamically determine graph width by size of data
@@ -1969,7 +1969,7 @@ function graph_heat_map($scope)
                    .style("left", (d3.event.pageX + 10) + "px")
                    .style("top", (d3.event.pageY - 10) + "px")
                    .select("#value")
-                   .text("realm: " + rowLabel[d.row] + ", navštívená instituce: " + colLabel[d.col] + "\npočet: " + d.value);
+                   .text("realm: " + rowLabel[d.row] + ", navštívená instituce: " + colLabel[d.col] + ", \npočet: " + d.value);
                  //Show the tooltip
                  d3.select("#tooltip").classed("hidden", false);
           })
@@ -2210,8 +2210,8 @@ function stacked_graph($scope)
     .style("text-anchor", "start")
     .text(function(d, i) { 
       switch (i) {
-        case 0: return "uživatelé celkem";
-        case 1: return "unikátní uživatelé";
+        case 0: return "počet využítí";
+        case 1: return "unikátní zařízení";
       }
     });
 
