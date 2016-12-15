@@ -14,6 +14,30 @@ div.container-fluid(ng-controller="heat_map_controller")
           div(layout-gt-xs='row')
             input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
 
+      div(ng-show='options_added')
+        .form-group
+          label.col-sm-2.control-label Počet:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.form-control(type='text', ng-model='options.count.val')
+              .radio(ng-repeat='type in options.count.types track by $index')
+                input(type='radio', name='count', ng-model='options.count.sel', ng-value='type')
+                | {{options.count.type_names[$index]}}
+
+      .form-group(ng-show='!options_added')
+        label.col-sm-2.control-label Další možnosti
+        .col-xs-2
+          div(layout-gt-xs='row')
+            button.btn.btn-default.addButton(type='button', ng-click='add_options()')
+              i.fa.fa-plus
+
+      .form-group.ng-hide(ng-show='options_added')
+        label.col-sm-2.control-label Skrýt možnosti
+        .col-xs-2
+          div(layout-gt-xs='row')
+            button.btn.btn-default.addButton(type='button', ng-click='delete_options()')
+              i.fa.fa-minus
+
       .form-group
         .col-sm-offset-2.col-sm-10
           button.btn.btn-default(type="submit") Vykreslit graf
