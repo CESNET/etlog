@@ -2053,7 +2053,7 @@ function graph_heat_map($scope)
 function stacked_graph($scope)
 {
   // Setup svg using Bostock's margin convention
-  var margin = {top: 50, right: 20, bottom: 100, left: 80};
+  var margin = {top: 80, right: 20, bottom: 100, left: 80};
 
   var width = $(window).width() - 130;      // compensate for y axis labels
   var height = 500 - margin.top - margin.bottom;
