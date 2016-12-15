@@ -20,13 +20,19 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
         li(ng-class='{ active: is_active(["/failed_logins"])}')
           a(ui-sref='failed_logins') neúspěšná přihlášení
 
-        li(ng-class='{ active: is_active(["/detection_data"])}')
-          a(ui-sref='detection_data') Data funkčnosti služby 1
+        li(ng-class='{ active: is_active(["/detection_data", "/detection_data_grouped" ])}')
+          a.dropdown-toggle(href='#', data-toggle='dropdown')
+            | počty přihlášení
+            span.caret
+          ul.dropdown-menu(role='menu')
 
-        li(ng-class='{ active: is_active(["/detection_data_grouped"])}')
-          a(ui-sref='detection_data_grouped') Data funkčnosti služby 2
+            li
+              a(ui-sref='detection_data') absolutní počet
 
-        li#roaming(ng-class='{ active: is_active(["/roaming_activity", "/heat_map", "/orgs_roaming_most_provided", "/orgs_roaming_most_used" ])}')
+            li
+              a(ui-sref='detection_data_grouped') normalizováno
+
+        li(ng-class='{ active: is_active(["/roaming_activity", "/heat_map", "/orgs_roaming_most_provided", "/orgs_roaming_most_used" ])}')
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             | roaming
             span.caret
