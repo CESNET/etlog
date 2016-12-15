@@ -207,11 +207,23 @@ function build_qs_search(data)
   var keys = Object.keys(data);
 
   for(var key in keys) {
-    if(data[keys[key]])
-      ret += keys[key] + "=" + data[keys[key]] + "&";
+    //if(keys[key] == "csi") {      // TODO
+    //  ret += normalize_mac(data);
+    //}
+    //else {
+      if(data[keys[key]])
+        ret += keys[key] + "=" + data[keys[key]] + "&";
+    //}
   }
 
   return ret;       // returned value is '?' or '?.*&'
+}
+// --------------------------------------------------------------------------------------
+// normalize input for mac address
+// --------------------------------------------------------------------------------------
+function normalize_mac(data)
+{
+
 }
 // --------------------------------------------------------------------------------------
 // mac count table controller
@@ -1988,6 +2000,30 @@ function graph_heat_map($scope)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // ==========================================================
+
+    // row tooltip
+    var row_tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+      return "<strong>realm:</strong> <span style='color:red'>" + d + "</span>";
+    })
+
+    svg.call(row_tip);
+
+  // ==========================================================
+
+    // col tooltip
+    var col_tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-80, 7])
+      .html(function(d) {
+      return "<strong>navštívená instituce:</strong> <span style='color:red'>" + d + "</span>";
+    })
+
+    svg.call(col_tip);
     
   // ==========================================================
     
@@ -2004,8 +2040,8 @@ function graph_heat_map($scope)
         .style("text-anchor", "end")
         .attr("transform", "translate(-6," + cellSize + ")")
         .attr("class", function (d, i) { return "rowLabel mono r" + i; }) 
-        .on("mouseover", function(d) { d3.select(this).classed("text-hover", true);})
-        .on("mouseout" , function(d) { d3.select(this).classed("text-hover", false);})
+        .on('mouseover', row_tip.show)
+        .on('mouseout', row_tip.hide)
         .on("click", function(d, i) { 
           rowSortOrder = !rowSortOrder; 
           sortbylabel("r", i, rowSortOrder);
@@ -2024,8 +2060,8 @@ function graph_heat_map($scope)
         .style("text-anchor", "left")
         .attr("transform", "translate(" + cellSize  + ",-6) rotate (-90)")
         .attr("class",  function (d,i) { return "colLabel mono c" + i; })
-        .on("mouseover", function(d) { d3.select(this).classed("text-hover", true); })
-        .on("mouseout" , function(d) { d3.select(this).classed("text-hover", false); })
+        .on('mouseover', col_tip.show)
+        .on('mouseout', col_tip.hide)
         .on("click", function(d,i) { 
           colSortOrder= !colSortOrder;  
           sortbylabel("c", i, colSortOrder);
