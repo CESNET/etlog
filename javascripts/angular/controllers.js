@@ -1956,8 +1956,8 @@ function graph_heat_map($scope)
   
   // ==========================================================
 
-    var colorScale = d3.scaleLinear().
-        domain([0, max])
+    var colorScale = d3.scaleLinear()
+        .domain([0, max])
         .range([d3.interpolateRdYlGn(1), d3.interpolateRdYlGn(0)])
 
   // ==========================================================
