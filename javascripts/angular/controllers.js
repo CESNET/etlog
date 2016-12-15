@@ -2068,7 +2068,7 @@ function graph_heat_map($scope)
         var idx = data.map(function(e) { return e.row }).indexOf(i);     // find row index
 
         // add values from data
-        while(data[idx].row == i) {
+        while(data[idx].row == i && idx < data.length - 1) {
           values[data[idx].col] = data[idx].value;
           idx++;
         }
@@ -2089,6 +2089,19 @@ function graph_heat_map($scope)
       }
       else {    // column
         // columns are not sorted!
+
+        for(var num in hccol) {        // iterate realms by numbers
+          var found = data.filter(function(obj) {
+            return obj.row == num && obj.col == i;
+          });
+
+          if(found.length > 0) {   // add value
+            values[num] = found[0].value;
+          }
+          //else {        // no value exists - set to zero
+          //  values[num] = 0;
+          //}
+        }
 
         // ==================================================
 
