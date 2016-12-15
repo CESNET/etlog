@@ -1946,7 +1946,7 @@ function graph_heat_map($scope)
           .data(data,function(d) { return d.row + ":" + d.col; })
           .enter()
           .append("rect")
-          .attr("x", function(d) { return (hccol.indexOf(d.col)) * cellSize + 4; })     // compensate for labels
+          .attr("x", function(d) { return (hccol.indexOf(d.col)) * cellSize + 6; })     // compensate for labels
           .attr("y", function(d) { return (hcrow.indexOf(d.row)) * cellSize + 4; })     // compensate for labels
           .attr("class", function(d) { return "cell cell-border cr" + d.row + " cc" + d.col; })
           .attr("width", cellSize)
