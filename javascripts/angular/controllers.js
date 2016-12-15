@@ -1900,6 +1900,11 @@ function transform_heat_data($scope, realm, data)
 // --------------------------------------------------------------------------------------
 function set_missing($scope, realms)
 {
+  var val = 0;
+
+  if($scope.form_data.log_scale)
+    val = 1;        // min value for log scale
+
   for(var realm in realms) {
     for(var visinst in realms) {
       var found = $scope.graph_data.filter(function(obj) {
@@ -1909,7 +1914,7 @@ function set_missing($scope, realms)
       if(found.length > 0)  // item exists
         continue;
       else   // fill data
-        $scope.graph_data.push({ row : Number(realm), col : Number(visinst), value : 0});
+        $scope.graph_data.push({ row : Number(realm), col : Number(visinst), value : val });
     }
   }
 }
@@ -1956,9 +1961,16 @@ function graph_heat_map($scope)
   
   // ==========================================================
 
+  if($scope.form_data.log_scale) {
+    var colorScale = d3.scaleLog()
+        .domain([1, max])
+        .range([d3.interpolateRdYlGn(1), d3.interpolateRdYlGn(0)])
+  }
+  else {
     var colorScale = d3.scaleLinear()
         .domain([0, max])
         .range([d3.interpolateRdYlGn(1), d3.interpolateRdYlGn(0)])
+  }
 
   // ==========================================================
     

@@ -24,6 +24,14 @@ div.container-fluid(ng-controller="heat_map_controller")
                 input(type='radio', name='count', ng-model='options.count.sel', ng-value='type')
                 | {{options.count.type_names[$index]}}
 
+        .form-group
+          label.col-sm-2.control-label
+          .col-xs-2
+            div(layout-gt-xs='row')
+              .checkbox
+                input(type="checkbox", ng-model='form_data.log_scale')
+                | Logaritmické měřítko
+
       .form-group(ng-show='!options_added')
         label.col-sm-2.control-label Další možnosti
         .col-xs-2
