@@ -2073,12 +2073,6 @@ function graph_heat_map($scope)
           idx++;
         }
 
-        // set undefined values
-        for(var num in hccol) {        // iterate realms by numbers
-          if(values[num] == undefined)
-            values[num] = 0;
-        }
-
         // ==================================================
 
         sorted = d3.range(col_number).sort(function(a, b) {
@@ -2095,19 +2089,6 @@ function graph_heat_map($scope)
       }
       else {    // column
         // columns are not sorted!
-
-        for(var num in hccol) {        // iterate realms by numbers
-          var found = data.filter(function(obj) {
-            return obj.row == num && obj.col == i;
-          });
-
-          if(found.length > 0) {   // add value
-            values[num] = found[0].value;
-          }
-          else {        // no value exists - set to zero
-            values[num] = 0;
-          }
-        }
 
         // ==================================================
 
