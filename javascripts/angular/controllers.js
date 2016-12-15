@@ -1753,8 +1753,32 @@ angular.module('etlog').controller('heat_map_controller', ['$scope', '$http', '$
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
   };
   init_calendar($scope, $http);
+  addiational_fields_heat_map($scope);
   handle_submit_heat_map($scope, $http, $q, get_heat_map, graph_heat_map);
 }]);
+// --------------------------------------------------------------------------------------
+// set up additional fields for form
+// --------------------------------------------------------------------------------------
+function addiational_fields_heat_map($scope)
+{
+  $scope.options_added = false;
+  $scope.options = {
+    count : {
+      val : "",
+      sel : "gt",
+      types : [ "eq", "gt", "lt" ],
+      type_names : [ "je roven", "je větší", "je menší" ]
+    }
+  };
+
+  $scope.add_options = function() {
+    $scope.options_added = true;
+  };
+
+  $scope.delete_options = function() {
+    $scope.options_added = false;
+  };
+}
 // --------------------------------------------------------------------------------------
 // handle sumbit button for heat map
 // --------------------------------------------------------------------------------------
@@ -1779,6 +1803,7 @@ function get_heat_map($scope, $http, $q, callback)
 {
   var chain = $q.when();
   $scope.graph_data = [];
+  $scope.response = [];
 
   var qs = get_ts($scope);
 
@@ -1789,13 +1814,27 @@ function get_heat_map($scope, $http, $q, callback)
         url     : '/api/heat_map/' + qs + "&realm=" + realm
       })
       .then(function(response) {
-         transform_heat_data($scope, realm, response.data);
+        if(response.data.length == 0) {   // no data for realm available delete realm
+          $scope.realms.splice(get_index($scope, realm), 1);        // delete realm
+        }
+        else
+          $scope.response.push(response.data);
       });
     });
   });
 
   // the final chain object will resolve once all the posts have completed.
   chain.then(function() {
+    if($scope.options.count.val) {
+      filter_heat_data($scope);     // filter data
+    }
+
+    for(var item in $scope.response) {
+      if($scope.realms.indexOf($scope.response[item][0].realm) != -1)   // realm present in realms
+        transform_heat_data($scope, $scope.response[item][0].realm, $scope.response[item]);
+    }
+
+    set_missing($scope, $scope.realms);
     callback($scope);
   });
 }
@@ -1820,6 +1859,25 @@ function get_realms($scope, $http)
   });
 }
 // --------------------------------------------------------------------------------------
+// filter heat map data by form count
+// --------------------------------------------------------------------------------------
+function filter_heat_data($scope)
+{
+  for(var resp in $scope.response) {
+    for(var item in $scope.response[resp]) {
+      var sum = 0;
+
+      for(var inst in $scope.response[resp][item].institutions) {
+        sum += $scope.response[resp][item].institutions[inst].count;
+      }
+
+      if(sum < $scope.options.count.val) {    // sum is lower than the one defined in form
+        $scope.realms.splice(get_index($scope, $scope.response[resp][item].realm), 1);        // delete realm
+      }
+    }
+  }
+}
+// --------------------------------------------------------------------------------------
 // transform response from heat map api and save to scope variable
 // --------------------------------------------------------------------------------------
 function transform_heat_data($scope, realm, data)
@@ -1829,7 +1887,29 @@ function transform_heat_data($scope, realm, data)
       var dict = { row : get_index($scope, realm) };       // add realm index
       dict.col = get_index($scope, data[item].institutions[inst].realm);  // add visinst index
       dict.value = data[item].institutions[inst].count;  // add count
+
+      if(dict.col == -1 || dict.row == -1)  // index out of map - probably caused by filtering
+        continue;                           // do not add such data
+
       $scope.graph_data.push(dict);        // add { row : realm index, col : visinst index, value : count }
+    }
+  }
+}
+// --------------------------------------------------------------------------------------
+// set missing data to 0
+// --------------------------------------------------------------------------------------
+function set_missing($scope, realms)
+{
+  for(var realm in realms) {
+    for(var visinst in realms) {
+      var found = $scope.graph_data.filter(function(obj) {
+        return obj.row == realm && obj.col == visinst;
+      });
+
+      if(found.length > 0)  // item exists
+        continue;
+      else   // fill data
+        $scope.graph_data.push({ row : Number(realm), col : Number(visinst), value : 0});
     }
   }
 }
