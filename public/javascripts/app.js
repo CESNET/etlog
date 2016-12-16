@@ -1018,7 +1018,7 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   setup_filters($scope, $http, "logs");
   handle_sort($scope, $http, get_logs);
   set_params($scope, $stateParams); // set params passed from other views
-  handle_download($scope);
+  handle_download($scope, ["result", "timestamp", "username", "mac_address", "realm", "visinst"]);
   handle_empty_form($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -1189,11 +1189,24 @@ function build_qs_search(data)
   var keys = Object.keys(data);
 
   for(var key in keys) {
-    if(data[keys[key]])
-      ret += keys[key] + "=" + data[keys[key]] + "&";
+    if(keys[key] == "csi") {
+      ret += normalize_mac(data);
+    }
+    else {
+      if(data[keys[key]])
+        ret += keys[key] + "=" + data[keys[key]] + "&";
+    }
   }
 
   return ret;       // returned value is '?' or '?.*&'
+}
+// --------------------------------------------------------------------------------------
+// normalize input for mac address
+// --------------------------------------------------------------------------------------
+function normalize_mac(data)
+{
+  var ret = data["csi"].replace(/[:\.-]/g, "").toLowerCase();
+  return "csi=" + ret + "&";
 }
 // --------------------------------------------------------------------------------------
 // mac count table controller
@@ -1216,7 +1229,7 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
   handle_table_submit($scope, $http, get_mac_count, $scope.paging, [ "username", "count" ], "mac_count");
   handle_pagination($scope, $http, get_mac_count);
   setup_filters($scope, $http, "mac_count");
-  handle_download($scope);
+  handle_download($scope, ["username", "count", "addrs" ]);
   handle_anon($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -1883,7 +1896,7 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
   handle_table_submit($scope, $http, get_shared_mac, $scope.paging, [ "mac_address", "count" ], "shared_mac");
   handle_pagination($scope, $http, get_shared_mac);
   setup_filters($scope, $http, "shared_mac");
-  handle_download($scope);
+  handle_download($scope, ["mac_address", "count", "users"]);
 }]);
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
@@ -2229,7 +2242,7 @@ angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_used_count, stacked_graph, "roaming_most_used", "used_count");
-  handle_download($scope);
+  handle_download($scope, ["inst_name", "used_count", "unique_count"]);
 }]);
 // --------------------------------------------------------------------------------------
 // initialize calendars
@@ -2388,7 +2401,7 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
-  handle_download($scope);
+  handle_download($scope, ["inst_name", "provided_count", "unique_count"]);
 }]);
 // --------------------------------------------------------------------------------------
 // create graph data for organizations most providing roaming
@@ -2450,11 +2463,12 @@ function add_unique(data, table_data, graph_data)
 }
 // --------------------------------------------------------------------------------------
 // handle download button
+// order is array of keys
 // --------------------------------------------------------------------------------------
-function handle_download($scope)
+function handle_download($scope, order)
 {
   $scope.download_data = function() {
-    var text = get_text($scope);
+    var text = get_text($scope, order);
     // taken from https://codepen.io/YuvarajTana/pen/yNoNdZ
     var a = $('<a/>', {
       style:'display:none',
@@ -2466,9 +2480,9 @@ function handle_download($scope)
   }
 }
 // --------------------------------------------------------------------------------------
-// generate csv from table data
+// generate csv from table data in defined order
 // --------------------------------------------------------------------------------------
-function get_text($scope)
+function get_text($scope, order)
 {
   var text = "";
   var data = $scope.table_data;
@@ -2477,23 +2491,15 @@ function get_text($scope)
     return;
   }
 
-  var keys = Object.keys(data[0]);
-
-  // filter keys
-  for(var key in keys) {
-    if(keys[key] == "$$hashKey")
-      keys.splice(key, 1)
-  }
-
   // create csv header
   // ============================
 
-  for(var key in keys) {
-    if(key == keys.length - 1)
-      text += keys[key];
+  for(var key in order) {
+    if(key == order.length - 1)
+      text += order[key];
 
     else
-      text += keys[key] + ",";
+      text += order[key] + ",";
   }
   text += "\n";
 
@@ -2501,21 +2507,21 @@ function get_text($scope)
   // ============================
 
   for(var item in data) {
-    for(var key in keys) {
+    for(var key in order) {
 
       if(text.length > 0 && text[text.length - 1] != "\n") {   // continue
-        if(data[item][keys[key]].constructor === Array) // array
-          text += ",\"" + data[item][keys[key]] + "\"";      // close array into ""
+        if(data[item][order[key]].constructor === Array) // array
+          text += ",\"" + data[item][order[key]] + "\"";      // close array into ""
         else
-          text += "," + data[item][keys[key]];
+          text += "," + data[item][order[key]];
       }
 
       else {    // beginning of line
-        if(data[item][keys[key]].constructor === Array) // array
-          text += "\"" + data[item][keys[key]] + "\"";      // close array into ""
+        if(data[item][order[key]].constructor === Array) // array
+          text += "\"" + data[item][order[key]] + "\"";      // close array into ""
 
         else
-          text += data[item][keys[key]];
+          text += data[item][order[key]];
       }
     }
     text += "\n";
@@ -2536,7 +2542,7 @@ function graph($scope)
   // ============================================================================
 
   // set the dimensions and margins of the graph
-  var margin = {top: 50, right: 20, bottom: 100, left: 80};
+  var margin = {top: 80, right: 20, bottom: 100, left: 80};
   var col_length = 40;  // column length
 
   // dynamically determine graph width by size of data
@@ -2742,8 +2748,32 @@ angular.module('etlog').controller('heat_map_controller', ['$scope', '$http', '$
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
   };
   init_calendar($scope, $http);
+  addiational_fields_heat_map($scope);
   handle_submit_heat_map($scope, $http, $q, get_heat_map, graph_heat_map);
 }]);
+// --------------------------------------------------------------------------------------
+// set up additional fields for form
+// --------------------------------------------------------------------------------------
+function addiational_fields_heat_map($scope)
+{
+  $scope.options_added = false;
+  $scope.options = {
+    count : {
+      val : "",
+      sel : "gt",
+      types : [ "eq", "gt", "lt" ],
+      type_names : [ "je roven", "je větší", "je menší" ]
+    }
+  };
+
+  $scope.add_options = function() {
+    $scope.options_added = true;
+  };
+
+  $scope.delete_options = function() {
+    $scope.options_added = false;
+  };
+}
 // --------------------------------------------------------------------------------------
 // handle sumbit button for heat map
 // --------------------------------------------------------------------------------------
@@ -2768,6 +2798,7 @@ function get_heat_map($scope, $http, $q, callback)
 {
   var chain = $q.when();
   $scope.graph_data = [];
+  $scope.response = [];
 
   var qs = get_ts($scope);
 
@@ -2778,13 +2809,27 @@ function get_heat_map($scope, $http, $q, callback)
         url     : '/api/heat_map/' + qs + "&realm=" + realm
       })
       .then(function(response) {
-         transform_heat_data($scope, realm, response.data);
+        if(response.data.length == 0) {   // no data for realm available delete realm
+          $scope.realms.splice(get_index($scope, realm), 1);        // delete realm
+        }
+        else
+          $scope.response.push(response.data);
       });
     });
   });
 
   // the final chain object will resolve once all the posts have completed.
   chain.then(function() {
+    if($scope.options.count.val) {
+      filter_heat_data($scope);     // filter data
+    }
+
+    for(var item in $scope.response) {
+      if($scope.realms.indexOf($scope.response[item][0].realm) != -1)   // realm present in realms
+        transform_heat_data($scope, $scope.response[item][0].realm, $scope.response[item]);
+    }
+
+    set_missing($scope, $scope.realms);
     callback($scope);
   });
 }
@@ -2809,6 +2854,25 @@ function get_realms($scope, $http)
   });
 }
 // --------------------------------------------------------------------------------------
+// filter heat map data by form count
+// --------------------------------------------------------------------------------------
+function filter_heat_data($scope)
+{
+  for(var resp in $scope.response) {
+    for(var item in $scope.response[resp]) {
+      var sum = 0;
+
+      for(var inst in $scope.response[resp][item].institutions) {
+        sum += $scope.response[resp][item].institutions[inst].count;
+      }
+
+      if(sum < $scope.options.count.val) {    // sum is lower than the one defined in form
+        $scope.realms.splice(get_index($scope, $scope.response[resp][item].realm), 1);        // delete realm
+      }
+    }
+  }
+}
+// --------------------------------------------------------------------------------------
 // transform response from heat map api and save to scope variable
 // --------------------------------------------------------------------------------------
 function transform_heat_data($scope, realm, data)
@@ -2818,7 +2882,34 @@ function transform_heat_data($scope, realm, data)
       var dict = { row : get_index($scope, realm) };       // add realm index
       dict.col = get_index($scope, data[item].institutions[inst].realm);  // add visinst index
       dict.value = data[item].institutions[inst].count;  // add count
+
+      if(dict.col == -1 || dict.row == -1)  // index out of map - probably caused by filtering
+        continue;                           // do not add such data
+
       $scope.graph_data.push(dict);        // add { row : realm index, col : visinst index, value : count }
+    }
+  }
+}
+// --------------------------------------------------------------------------------------
+// set missing data to 0
+// --------------------------------------------------------------------------------------
+function set_missing($scope, realms)
+{
+  var val = 0;
+
+  if($scope.form_data.log_scale)
+    val = 1;        // min value for log scale
+
+  for(var realm in realms) {
+    for(var visinst in realms) {
+      var found = $scope.graph_data.filter(function(obj) {
+        return obj.row == realm && obj.col == visinst;
+      });
+
+      if(found.length > 0)  // item exists
+        continue;
+      else   // fill data
+        $scope.graph_data.push({ row : Number(realm), col : Number(visinst), value : val });
     }
   }
 }
@@ -2865,9 +2956,16 @@ function graph_heat_map($scope)
   
   // ==========================================================
 
-    var colorScale = d3.scaleLinear().
-        domain([0, max])
-        .range([d3.interpolateBlues(0), d3.interpolateBlues(1)])
+  if($scope.form_data.log_scale) {
+    var colorScale = d3.scaleLog()
+        .domain([1, max])
+        .range([d3.interpolateRdYlGn(1), d3.interpolateRdYlGn(0)])
+  }
+  else {
+    var colorScale = d3.scaleLinear()
+        .domain([0, max])
+        .range([d3.interpolateRdYlGn(1), d3.interpolateRdYlGn(0)])
+  }
 
   // ==========================================================
     
@@ -2885,9 +2983,48 @@ function graph_heat_map($scope)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // ==========================================================
+
+    // row tooltip
+    var row_tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+      return "<strong>realm:</strong> <span style='color:red'>" + d + "</span>";
+    })
+
+    svg.call(row_tip);
+
+  // ==========================================================
+
+    // col tooltip
+    var col_tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset(function(d) {
+        return [ (d.length * -5), 7];
+      })
+      .html(function(d) {
+      return "<strong>navštívená instituce:</strong> <span style='color:red'>" + d + "</span>";
+    })
+
+    svg.call(col_tip);
     
   // ==========================================================
     
+    // cell tooltip
+    var cell_tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+        return "<strong>realm:</strong> " + $scope.realms[d.row] + ", <strong>navštívená instituce:</strong> " + $scope.realms[d.col] +
+               " <span style='color:red'>" + d.value + "</span>";
+    })
+
+    svg.call(cell_tip);
+
+  // ==========================================================
+
     var rowSortOrder = false;
     var colSortOrder = false;
     var rowLabels = svg.append("g")
@@ -2901,8 +3038,8 @@ function graph_heat_map($scope)
         .style("text-anchor", "end")
         .attr("transform", "translate(-6," + cellSize + ")")
         .attr("class", function (d, i) { return "rowLabel mono r" + i; }) 
-        .on("mouseover", function(d) { d3.select(this).classed("text-hover", true);})
-        .on("mouseout" , function(d) { d3.select(this).classed("text-hover", false);})
+        .on('mouseover', row_tip.show)
+        .on('mouseout', row_tip.hide)
         .on("click", function(d, i) { 
           rowSortOrder = !rowSortOrder; 
           sortbylabel("r", i, rowSortOrder);
@@ -2921,8 +3058,8 @@ function graph_heat_map($scope)
         .style("text-anchor", "left")
         .attr("transform", "translate(" + cellSize  + ",-6) rotate (-90)")
         .attr("class",  function (d,i) { return "colLabel mono c" + i; })
-        .on("mouseover", function(d) { d3.select(this).classed("text-hover", true); })
-        .on("mouseout" , function(d) { d3.select(this).classed("text-hover", false); })
+        .on('mouseover', col_tip.show)
+        .on('mouseout', col_tip.hide)
         .on("click", function(d,i) { 
           colSortOrder= !colSortOrder;  
           sortbylabel("c", i, colSortOrder);
@@ -2935,32 +3072,14 @@ function graph_heat_map($scope)
           .data(data,function(d) { return d.row + ":" + d.col; })
           .enter()
           .append("rect")
-          .attr("x", function(d) { return (hccol.indexOf(d.col)) * cellSize + 4; })     // compensate for labels
+          .attr("x", function(d) { return (hccol.indexOf(d.col)) * cellSize + 6; })     // compensate for labels
           .attr("y", function(d) { return (hcrow.indexOf(d.row)) * cellSize + 4; })     // compensate for labels
           .attr("class", function(d) { return "cell cell-border cr" + d.row + " cc" + d.col; })
           .attr("width", cellSize)
           .attr("height", cellSize)
           .style("fill", function(d) { return colorScale(d.value); })
-          .on("mouseover", function(d) {
-                 //highlight text
-                 d3.select(this).classed("cell-hover", true);
-                 d3.selectAll(".rowLabel").classed("text-highlight", function(r, ri) { return ri == d.row; });
-                 d3.selectAll(".colLabel").classed("text-highlight", function(c, ci) { return ci == d.col; });
-                 //Update the tooltip position and value
-                 d3.select("#tooltip")
-                   .style("left", (d3.event.pageX + 10) + "px")
-                   .style("top", (d3.event.pageY - 10) + "px")
-                   .select("#value")
-                   .text("realm: " + rowLabel[d.row] + ", navštívená instituce: " + colLabel[d.col] + "\npočet: " + d.value);
-                 //Show the tooltip
-                 d3.select("#tooltip").classed("hidden", false);
-          })
-          .on("mouseout", function() {
-                 d3.select(this).classed("cell-hover", false);
-                 d3.selectAll(".rowLabel").classed("text-highlight", false);
-                 d3.selectAll(".colLabel").classed("text-highlight", false);
-                 d3.select("#tooltip").classed("hidden", true);
-          });
+          .on('mouseover', cell_tip.show)
+          .on('mouseout', cell_tip.hide);
 
   // ==========================================================
   // Change ordering of cells
@@ -2977,15 +3096,9 @@ function graph_heat_map($scope)
         var idx = data.map(function(e) { return e.row }).indexOf(i);     // find row index
 
         // add values from data
-        while(data[idx].row == i) {
+        while(data[idx].row == i && idx < data.length - 1) {
           values[data[idx].col] = data[idx].value;
           idx++;
-        }
-
-        // set undefined values
-        for(var num in hccol) {        // iterate realms by numbers
-          if(values[num] == undefined)
-            values[num] = 0;
         }
 
         // ==================================================
@@ -2998,7 +3111,7 @@ function graph_heat_map($scope)
         });
 
         t.selectAll(".cell")
-          .attr("x", function(d) { return sorted.indexOf(d.col) * cellSize; });
+          .attr("x", function(d) { return sorted.indexOf(d.col) * cellSize + 6; });
         t.selectAll(".colLabel")
           .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; });
       }
@@ -3013,9 +3126,9 @@ function graph_heat_map($scope)
           if(found.length > 0) {   // add value
             values[num] = found[0].value;
           }
-          else {        // no value exists - set to zero
-            values[num] = 0;
-          }
+          //else {        // no value exists - set to zero
+          //  values[num] = 0;
+          //}
         }
 
         // ==================================================
@@ -3028,7 +3141,7 @@ function graph_heat_map($scope)
         });
 
         t.selectAll(".cell")
-          .attr("y", function(d) { return sorted.indexOf(d.row) * cellSize; });
+          .attr("y", function(d) { return sorted.indexOf(d.row) * cellSize + 4; });
         t.selectAll(".rowLabel")
           .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; });
       }
@@ -3042,7 +3155,7 @@ function graph_heat_map($scope)
 function stacked_graph($scope)
 {
   // Setup svg using Bostock's margin convention
-  var margin = {top: 50, right: 20, bottom: 100, left: 80};
+  var margin = {top: 80, right: 20, bottom: 100, left: 80};
 
   var width = $(window).width() - 130;      // compensate for y axis labels
   var height = 500 - margin.top - margin.bottom;
@@ -3088,7 +3201,7 @@ function stacked_graph($scope)
     .domain([0, d3.max(dataset, function(d) { return d3.max(d, function(d) { return d[1]; });  })])
     .range([height, 0]);
 
-  var colors = [ "b33040", "#d25c4d" ];
+  var colors = [ "#225885", "#4682B4" ];
 
   // ==================================================
 
@@ -3163,6 +3276,7 @@ function stacked_graph($scope)
     .data(function(d) { return d; })
     .enter()
     .append("rect")
+    .style("opacity", "0.8")
     .attr("x", function(d) { return x(d.data.inst_name); })
     .attr("y", function(d) { return y(d[1]); })
     .attr("height", function(d) { return Math.abs(y(d[1]) - y(d[0])); })
@@ -3192,8 +3306,8 @@ function stacked_graph($scope)
     .style("text-anchor", "start")
     .text(function(d, i) { 
       switch (i) {
-        case 0: return "uživatelé celkem";
-        case 1: return "unikátní uživatelé";
+        case 0: return "počet využítí";
+        case 1: return "unikátní zařízení";
       }
     });
 
@@ -3309,7 +3423,13 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   .state('detection_data', {
     url: '/detection_data',
     templateUrl: '/partials/detection_data.html',
-    title : 'etlog: data k detekci'
+    title : 'etlog: data k detekci 1'
+  })
+
+  .state('detection_data_grouped', {
+    url: '/detection_data_grouped',
+    templateUrl: '/partials/detection_data_grouped.html',
+    title : 'etlog: data k detekci 2'
   })
 });
 // --------------------------------------------------------------------------------------
