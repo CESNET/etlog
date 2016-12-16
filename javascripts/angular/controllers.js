@@ -2029,6 +2029,19 @@ function graph_heat_map($scope)
     
   // ==========================================================
     
+    // cell tooltip
+    var cell_tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+        return "<strong>realm:</strong> " + $scope.realms[d.row] + ", <strong>navštívená instituce:</strong> " + $scope.realms[d.col] +
+               " <span style='color:red'>" + d.value + "</span>";
+    })
+
+    svg.call(cell_tip);
+
+  // ==========================================================
+
     var rowSortOrder = false;
     var colSortOrder = false;
     var rowLabels = svg.append("g")
@@ -2082,26 +2095,8 @@ function graph_heat_map($scope)
           .attr("width", cellSize)
           .attr("height", cellSize)
           .style("fill", function(d) { return colorScale(d.value); })
-          .on("mouseover", function(d) {
-                 //highlight text
-                 d3.select(this).classed("cell-hover", true);
-                 d3.selectAll(".rowLabel").classed("text-highlight", function(r, ri) { return ri == d.row; });
-                 d3.selectAll(".colLabel").classed("text-highlight", function(c, ci) { return ci == d.col; });
-                 //Update the tooltip position and value
-                 d3.select("#tooltip")
-                   .style("left", (d3.event.pageX + 10) + "px")
-                   .style("top", (d3.event.pageY - 10) + "px")
-                   .select("#value")
-                   .text("realm: " + rowLabel[d.row] + ", navštívená instituce: " + colLabel[d.col] + ", \npočet: " + d.value);
-                 //Show the tooltip
-                 d3.select("#tooltip").classed("hidden", false);
-          })
-          .on("mouseout", function() {
-                 d3.select(this).classed("cell-hover", false);
-                 d3.selectAll(".rowLabel").classed("text-highlight", false);
-                 d3.selectAll(".colLabel").classed("text-highlight", false);
-                 d3.select("#tooltip").classed("hidden", true);
-          });
+          .on('mouseover', cell_tip.show)
+          .on('mouseout', cell_tip.hide);
 
   // ==========================================================
   // Change ordering of cells
