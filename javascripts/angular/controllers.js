@@ -2018,7 +2018,9 @@ function graph_heat_map($scope)
     // col tooltip
     var col_tip = d3.tip()
       .attr('class', 'd3-tip')
-      .offset([-80, 7])
+      .offset(function(d) {
+        return [ (d.length * -5), 7];
+      })
       .html(function(d) {
       return "<strong>navštívená instituce:</strong> <span style='color:red'>" + d + "</span>";
     })
