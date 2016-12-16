@@ -6,62 +6,22 @@
 
 ## Data
 
-[data](https://etlog.cesnet.cz/#/detection_data)
-
-- Jakym zpusobem tedy kontrolu stavu sluzby resit?
-- Koho notifikovat?
-- Jak by mela notifikace vypadat?
+[data 1](https://etlog.cesnet.cz/#/detection_data)
+[data 2](https://etlog.cesnet.cz/#/detection_data_grouped)
 
 > Podle me je to nepouzitelne. Bude treba popsat co jste zkusil a napsat ze to nevede k smysluplnym vysledkum. Nicmene mam pochybnosti o tom ze ty grafy jsou OK. Krajne podivne je eduroam.muni.cz - nedovedu najit kde jste pro 23.11. vzal ze meli jen 140 uspesnych prihlaseni.
 
-```
-# bzgrep VISINST=1eduroam.muni.cz fticks-full.2016_11_23.log.bz2  |grep FAIL$  | sed "s/.*CSI=//" | sed "s/#.*//" | grep -vi ^70-6F | sort -u | wc -l
-506
-# bzgrep VISINST=1eduroam.muni.cz fticks-full.2016_11_23.log.bz2  |grep OK$  | sed "s/.*CSI=//" | sed "s/#.*//" | grep -vi ^70-6F | sort -u | wc -l
-2050
-```
 
-Prikazi mi davaji stejny vystup, nicmene podrobnejsi analyza ukazala, ze standartni nastroje na toto nestaci:
-```
-# bzgrep VISINST=1eduroam.muni.cz fticks-full.2016_11_23.log.bz2  | grep FAIL$  | sed "s/.*CSI=//" | sed "s/#.*//" | grep -vi ^70-6F | sort -u | tail
-```
-
-- Nove rozhrani pro grafy, data pregenerovana
-- Dotaz na data vyse pomoci:
-```
- curl 'https://etlog.cesnet.cz/api/visinst_logins/?timestamp=2016-11-23&realm=eduroam.muni.cz'
-```
-
-obdobni prikaz na radce dava stejne vysledek
-```
-zcat ~/logs/fticks/fticks-2016-11-23.gz | grep VISINST=1eduroam.muni.cz | grep OK$  | sed "s/.*CSI=//" | sed "s/#.*//" | grep -vi ^70-6F |  tr "[[:upper:]]" "[[:lower:]]" | sed 's/\.//g; s/-//g; s/://g'  | sort -u | wc -l
-
-```
-
-- jednou tydne generovat data
-- dve verze - grupovana a negrupovana
-- dve ruzne stranky pro grupovana a negrupovana data
-- zpristupnit z menu, primo do menu
-
+- pripominky?
 
 
 # mapa roamingu
 
 [rozhrani](https://etlog.cesnet.cz/#/heat_map)
 
-- umoznuje razeni podle radku i sloupcu
 - pripominky?
 
-> budu potrebovat to trideni vysvetlit
-
-> neni mi jasne co je v radku co je v sloupci, nejak to popsat?
-
-> chtelo by to profiltrovat vstupni data, je tam spousta instituci/realmu ktrey nevykazuji zadnou rozumnou aktivitu treba realm doma-semik.cz s tim sem si hral jen chvilicku. Neslo by to nejak omezit na ty kteri jsou aktivni? S volitelnou hodnotu aktivnosti?
-
-> pridat filtrovani dat pomoci poctu - jedno pole pro pocet pouziti i pocet poskytnuti
-> zmenit barevnou paletu - pouzit interpolateRdYlGn a otocit spektrum
-> upravit popisky sloupce - jsou mirne posunute
-> pridat tooltip na radky a sloupce -> realm, visinst
+> ma smysl resit omezeni jinym zpusobem nez pomoci > ?
 
 # Detekce uzivatelu v ruznych lokalitach soucasne
 
@@ -92,21 +52,6 @@ Napriklad pro vsechny uviatele, kteri maji ve jmenu cesnet je vstup  "/^.*@cesne
 Stale neni dokoncena autentizace a to podle me v souvislosti s timto rozhranim predstavuje velky problem.
 
 > normalizace vstupu mac adresy, takhle to nenajde ani kdyz je vstup vsemi velkymi
-
-# organizace nejvíce poskytující konektivitu, organizace nejvíce využívající roaming
-
-- pridan pocet unikatnich uzivatelu za cele obdobi
-  - pridano do grafu i tabulky
-
-- pripominky?
-
-> pekne, jen proc najednou jina barva? prosil bych navrat k nejake eduroam modre
-
-> csv format by mel odpovidat zobrazeny tabulce, ted jsou cisla prvni
-
-- csv nerespektuje poradi tabulky ve vsech pohledech - ma brat zretel na poradi sloupcu v tabulce vsude?
-
-> predelat vsude, tak aby stahovana data odpovidala poradi v tabulce
 
 # autentizace
 
