@@ -38,21 +38,6 @@ by interaktivni zpracovani trvalo dlouho, tak generovat nejak staticky
 > do repozitare : xml ne, perl ano, vypocet
 
 
-# Obecne vyhledavani
-
-[rozhrani](https://etlog.cesnet.cz/#/search)
-
-> neslo by v uzivatelskem jmene hledani podle reg vyrazu?
-
-Hledani uzivatelskeho jmena podle regularniho vyrazu je nyni mozne.
-Implicitne se provadi vyhledavani na presnou shodu.
-Hledani pomoci regularniho vyrazu je mozne pomoci javascriptove regex syntaxe.
-Napriklad pro vsechny uviatele, kteri maji ve jmenu cesnet je vstup  "/^.*@cesnet.cz/".
-
-Stale neni dokoncena autentizace a to podle me v souvislosti s timto rozhranim predstavuje velky problem.
-
-> normalizace vstupu mac adresy, takhle to nenajde ani kdyz je vstup vsemi velkymi
-
 # autentizace
 
 Pokud zatim nenastal zadny pokrok s debugem autentizace, tak aplikaci nechat v soucasnem stavu a
