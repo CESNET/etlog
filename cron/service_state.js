@@ -2,6 +2,7 @@
 const request = require('../request');
 const async = require('async');
 const deasync = require('deasync');
+const mail = require('../mail.js');
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
@@ -18,18 +19,8 @@ exp.process_current_data = function (database) {
     for(var item in items)
       realms.push(items[item].realm);
 
-    // debug
-    //realms = [ 'fit.cvut.cz' ];
-    //realms = [ 'fit.cvut.cz', 'cvut.cz', 'cuni.cz' ];
-    //realms = [ 'utia.cas.cz', 'uhk.cz' ];
-    //realms = [ 'asu.cas.cz' ];
-
-
-    //realms = [ 'flu.cas.cz', 'ssakhk.cz', 'ueb.cas.cz', 'mvso.cz', 'arup.cas.cz', 'uochb.cas.cz' ];
-    realms = [ 'flu.cas.cz' ];
     compare_stats(database, realms);
   });
-
 };
 // --------------------------------------------------------------------------------------
 // TODO
@@ -37,38 +28,31 @@ exp.process_current_data = function (database) {
 function compare_stats(database, realms)
 {
   var data = get_data(realms);
-  console.log(data);
-  //compare_data(data);
+  //console.log(data);
+  compare_data(data);
+  // should return a dict:
+  // [ {
+  //   inst_name : inst,
+  //   data which indicate problem .. 
+  // } ]
 
+  //notify(database, data);
+}
+// --------------------------------------------------------------------------------------
+// TODO
+// --------------------------------------------------------------------------------------
+function notify(database, data)
+{
+  var keys = Object.keys(data);
 
+  // TODO - add more info to mail ?
 
-
-
-
-  //var avg_ratio = current_avg_stats / old_avg_stats;            
-  //
-  //console.log(current_stats, old_stats);
-  //console.log(current_avg_stats, old_avg_stats);
-  //console.log(current_avg_stats / old_avg_stats);
-
-  //// TODO - compage avg
-  //// TODO - compare individual numbers
-  //// 
-  //
-  //// ============================
-
-  //// use awg for previous week for each day separately
-  //// compare with previous day
-
-
-  //// use avg for previous week without previous day
-  //// use avg for previous week with previous day
-  //// -> compare failed login counts
-
-  //// did any successfull logins occur?
-
-  //// compare previous day with same day of past week 
-  //// how must does the values differ ?
+  for(var key in keys) {
+    var content = "V oblasti " + keys[key] + " pravděpodobně došlo k problému s fungováním služby eduroam.\n";
+    content += "Včera došlo k " + data[keys[key]].current_day_stats.ok + " úspěšným a " + data[keys[key]].current_day_stats.fail + " neúspěšným přihlášením.\n";
+    content += "Tyto hodnoty představují výraznou odchylku od obvyklých hodnot.\n";
+    mail.send_service_problem_notification(database, keys[key], content);
+  }
 }
 // --------------------------------------------------------------------------------------
 // TODO
@@ -81,10 +65,10 @@ function compare_data(data)
       console.log(keys[key]);
       console.log(data[keys[key]]);
 
-    if(data[keys[key]].avg_ratio_current_to_old.fail > 1.8) {
-      //console.log(keys[key]);
-      //console.log(data[keys[key]]);
-    }
+    //if(data[keys[key]].avg_ratio_current_to_old.fail > 1.5) {
+    //  console.log(keys[key]);
+    //  console.log(data[keys[key]]);
+    //}
   }
 }
 // --------------------------------------------------------------------------------------
