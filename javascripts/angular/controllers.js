@@ -207,13 +207,13 @@ function build_qs_search(data)
   var keys = Object.keys(data);
 
   for(var key in keys) {
-    //if(keys[key] == "csi") {      // TODO
-    //  ret += normalize_mac(data);
-    //}
-    //else {
+    if(keys[key] == "csi") {
+      ret += normalize_mac(data);
+    }
+    else {
       if(data[keys[key]])
         ret += keys[key] + "=" + data[keys[key]] + "&";
-    //}
+    }
   }
 
   return ret;       // returned value is '?' or '?.*&'
@@ -223,7 +223,8 @@ function build_qs_search(data)
 // --------------------------------------------------------------------------------------
 function normalize_mac(data)
 {
-
+  var ret = data["csi"].replace(/[:\.-]/g, "").toLowerCase();
+  return "csi=" + ret + "&";
 }
 // --------------------------------------------------------------------------------------
 // mac count table controller
