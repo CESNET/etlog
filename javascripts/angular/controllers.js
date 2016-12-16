@@ -1848,6 +1848,7 @@ function get_heat_map($scope, $http, $q, callback)
     }
 
     set_missing($scope, $scope.realms);
+    sort_by_row($scope.graph_data);     // sort data by rows
     callback($scope);
   });
 }
@@ -1930,6 +1931,20 @@ function set_missing($scope, realms)
         $scope.graph_data.push({ row : Number(realm), col : Number(visinst), value : val });
     }
   }
+}
+// --------------------------------------------------------------------------------------
+// sort data by row number
+// --------------------------------------------------------------------------------------
+function sort_by_row(data)
+{
+  data.sort(compare_row);
+}
+// --------------------------------------------------------------------------------------
+// compare heat map data based on row
+// --------------------------------------------------------------------------------------
+function compare_row(a, b)
+{
+  return a.row - b.row
 }
 // --------------------------------------------------------------------------------------
 // returns index in realms array
