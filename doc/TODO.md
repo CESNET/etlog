@@ -21,7 +21,6 @@
 
 - pripominky?
 
-> ma smysl resit omezeni jinym zpusobem nez pomoci > ?
 
 # Detekce uzivatelu v ruznych lokalitach soucasne
 
