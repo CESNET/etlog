@@ -1,6 +1,6 @@
 const async = require( 'async' );
 const fs = require('fs');
-const data_file = "./scripts/concurent_users/inst.json"
+const data_file = "./scripts/concurrent_users/inst.json"
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
@@ -95,6 +95,7 @@ function search(database, data, min, max, done)
       // "continue" implementation - TODO
       if(data[key_visinst_1].institutions[key_visinst_2].institution == data[key_visinst_1].institution)
         callback_visinst_2(null);
+
       else {
         dict = { 
           visinst_1 : data[key_visinst_1].institution, visinst_2 : data[key_visinst_1].institutions[key_visinst_2].institution,
@@ -111,7 +112,9 @@ function search(database, data, min, max, done)
   }, function (err) {
     if (err)
       console.error(err);
-    done(null, null);   // all done
+
+    if(done)
+      done(null);   // all done
   });
 }
 // --------------------------------------------------------------------------------------
@@ -132,23 +135,10 @@ function search_db(database, data, min, max, done)
   ],
     function (err, items) {
       if(err == null && items.length > 0) {
-        //console.log(data.visinst_1, data.visinst_2);
-        //console.log(items);
         search_users(database, min, max, data, items, done);
-        //done(); // TODO
       }
       else if(err)
         console.error(err);
-
-      // TODO
-      //if(err == null) {
-      //  if(done)    // processing older data
-      //    save_to_db_callback(database, transform(items, min), done);
-      //  else    // current data processing, no callback is needed
-      //    save_to_db(database, transform(items, min));    // add timestamp in transform
-      //}
-      //else
-      //  console.error(err);
   });
 }
 // --------------------------------------------------------------------------------------
@@ -163,37 +153,27 @@ function search_users(database, min, max, data, users, done)
     ],
       function (err, items) {
         if(err == null && items.length > 0)
-          analyze_data(items, data, callback)
+          analyze_data(items, data, min, callback)
         else if(err)
           console.error(err);
-
-        // TODO
-        //if(err == null) {
-        //  if(done)    // processing older data
-        //    save_to_db_callback(database, transform(items, min), done);
-        //  else    // current data processing, no callback is needed
-        //    save_to_db(database, transform(items, min));    // add timestamp in transform
-        //}
-        //else
-        //  console.error(err);
     });
-    
-    // TODO - callback
   }, function (err) {
     if (err)
       console.error(err);
-    done(null); // all users done
+    if(done)
+      done(null); // all users done
   });
 }
 // --------------------------------------------------------------------------------------
 // analyze all records for one user and two visited institutions
 // --------------------------------------------------------------------------------------
-function analyze_data(items, data, done)
+function analyze_data(items, data, min, done)
 {
   // items are implicly sorted by time
 
   var idx = 0;
   var visinst = items[0].visinst;
+  var db_data = [];
   
   while(idx < items.length - 1) {
     while(items[idx].visinst == visinst && idx < items.length - 1) {
@@ -206,19 +186,17 @@ function analyze_data(items, data, done)
       // timestamp is in milliseconds
       // timestamp difference is lower than the one defined
       if((items[idx].timestamp - items[idx -1].timestamp) / 1000 < data.time) {
-        console.log("username: " + items[idx].pn);
-        console.log("instituce 1: " + items[idx - 1].visinst);
-        console.log("instituce 2: " + items[idx].visinst);
-        console.log("cas autentizace v prvni instituci: " + items[idx - 1].timestamp);
-        console.log("cas autentizace ve druhe instituci: " + items[idx].timestamp);
-        console.log("cas mezi autentiacemi [s]: " + (items[idx].timestamp - items[idx -1].timestamp) / 1000);
-        console.log("cas potrebny k presunu [s]: " + data.time);
+        var item = {
+          timestamp   : min,
+          timestamp_1 : items[idx - 1].timestamp,
+          timestamp_2 : items[idx].timestamp,
+          visinst_1   : items[idx - 1].visinst,
+          visinst_2   : items[idx].visinst,
+          username    : items[idx].pn,
+          time_needed : data.time
+        };
         
-        //// debug only
-        //console.log(items[idx - 1]);
-        //console.log(items[idx]);
-        
-        console.log("===================================");
+        db_data.push(item);
       }
    
       // set new visinst
@@ -227,50 +205,42 @@ function analyze_data(items, data, done)
     }
   }
 
-  done(null);   // TODO
+  // ==========================================
+  // save to db
+
+  if(done)
+    save_to_db_callback(database, items, done);
+  else
+    save_to_d(database, items);
 }
 // --------------------------------------------------------------------------------------
 // save data to dabase
 // --------------------------------------------------------------------------------------
 function save_to_db(database, items) {
-  //for(var item in items) {  // any better way to do this ?
-  //  database.mac_count.update(items[item], items[item], { upsert : true },
-  //  function(err, result) {
-  //    if(err)  
-  //      console.error(err);
-  //  });
-  //}
+  for(var item in items) {  // any better way to do this ?
+    database.concurrent_users.update(items[item], items[item], { upsert : true },
+    function(err, result) {
+      if(err)
+        console.error(err);
+    });
+  }
 }
 // --------------------------------------------------------------------------------------
 // save data to database with callback
 // --------------------------------------------------------------------------------------
 function save_to_db_callback(database, items, done) {
-  //async.forEachOf(items, function (value, key, callback) {
-  //  database.mac_count.update(items[key], items[key], { upsert : true },
-  //  function(err, result) {
-  //    if(err)
-  //      console.error(err);
-  //    callback(null);   // save next item
-  //  });
-  //}, function (err) {
-  //  if (err)
-  //    console.error(err);
-  //  done(null, null);   // all items are saved
-  //});
-}
-// --------------------------------------------------------------------------------------
-// transform data for saving to database
-// --------------------------------------------------------------------------------------
-function transform(items, db_date)
-{
-  var arr = [];
-
-  for(var item in items) {
-    items[item].timestamp = db_date;
-    arr.push(items[item]);
-  }
-
-  return arr;
+  async.forEachOf(items, function (value, key, callback) {
+    database.concurrent_users.update(items[key], items[key], { upsert : true },
+    function(err, result) {
+      if(err)
+        console.error(err);
+      callback(null);   // save next item
+    });
+  }, function (err) {
+    if (err)
+      console.error(err);
+    done(null, null);   // all items are saved
+  });
 }
 // --------------------------------------------------------------------------------------
 module.exports = exp;
