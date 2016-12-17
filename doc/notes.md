@@ -107,6 +107,7 @@ Crontab contains following jobs:
 | `/home/etlog/etlog/scripts/invalid_records.sh`        | every day at 1:00     | generating of files with invalid records |
 | `/home/etlog/etlog/scripts/invalid_records_mail.sh`   | every monday at 6:00  | sending report about invalid records     |
 | `/home/etlog/etlog/scripts/archive.sh`                | every monday at 6:05  | archiving old log files                  |
+| `/home/etlog/etlog/scripts/detection_data/create_detection_data.sh &>/dev/null`| every monday at 6:10  | generating login count graphs  |
 
 Crontab contents:
 ```
@@ -114,6 +115,7 @@ Crontab contents:
 0   1  *   *   *     /home/etlog/etlog/scripts/invalid_records.sh
 0   6  *   *   1     /home/etlog/etlog/scripts/invalid_records_mail.sh
 5   6  *   *   1     /home/etlog/etlog/scripts/archive.sh
+10  6  *   *   1     /home/etlog/etlog/scripts/detection_data/create_detection_data.sh &>/dev/null
 ```
 
 #### Node.js
@@ -123,24 +125,25 @@ Table below defined how tasks are run.
 
 Every task in the table below generates data for collection of the same name.
 
-| task name        |              interval            |
-|------------------|----------------------------------|
-| failed\_logins   |      every day at 02:05:00       |
-| mac\_count       |      every day at 02:15:00       |
-| roaming          |      every day at 02:20:00       |
-| shared\_mac      |      every day at 02:25:00       |
-| succ\_logins     |      every day at 02:35:00       |
-| heat\_map        |      every day at 02:40:00       |
-| unique\_users    |      every day at 02:55:00       |
-| users\_mac       |      every 15 minutes            |
+| task name          |              interval            |
+|--------------------|----------------------------------|
+| failed\_logins     |      every day at 02:05:00       |
+| mac\_count         |      every day at 02:15:00       |
+| roaming            |      every day at 02:20:00       |
+| shared\_mac        |      every day at 02:25:00       |
+| realm\_logins      |      every day at 02:35:00       |
+| visinst\_logins    |      every day at 02:40:00       |
+| heat\_map          |      every day at 02:45:00       |
+| unique\_users      |      every day at 02:55:00       |
+| concurrent\_users  |      every day at 03:10:00       |
+| users\_mac         |      every 15 minutes            |
 
 
 Other tasks:
 
 | task name        |              interval            |
 |------------------|----------------------------------|
-| service\_state   |      every day at 03:00:00       |
-| retention        |      every day at 03:30:00       |
+| retention        |      every day at 03:00:00       |
 
 Task service state TODO
 
@@ -445,10 +448,13 @@ Collection has following structure:
 | ratio        |   Number  |  ratio of fail\_count to (ok\_count + fail\_count) |
 
 
-##### succ\_logins
+##### realm\_logins
 
-Collection contains information about users, which have successfully authenticated, for every day.
-Any user which has successfully authenticated at least once is inserted.
+Collection contains count of logins for realms.
+Both successful and unsuccessful logins are counted.
+Values are saved in ok\_count and fail\_count.
+Unique values are also gathered, they are saved in
+grouped\_ok\_count and gropued\_fail\_count.
 
 Timestamp field is populated with artificial data, just to
 distint in which interval the record belongs.
@@ -457,11 +463,44 @@ Lowest distinction interval for timestamp is 24 hours.
 
 Collection has following structure:
 
-| field name   | data type |               note                  |
-|--------------|-----------|-------------------------------------|
-| username     |   String  |         username                    |
-| timestamp    |   Date    |         timestamp                   |
-| count        |   Number  |    count of successful logins       |
+| field name           | data type |               note                  |
+|----------------------|-----------|-------------------------------------|
+| timestamp            |   Date    |         timestamp                   |
+| realm                |   String  |         realm                       |
+| ok\_count            |   Number  |    count of successful logins       |
+| grouped\_ok\_count   |   Number  | unique count of successful logins   |
+| fail\_count          |   Number  |    count of unsuccessful logins     |
+| grouped\_fail\_count |   Number  | unique count of unsuccessful logins |
+
+
+##### visinst\_logins
+
+Collection contains count of logins for visited institutions.
+Both successful and unsuccessful logins are counted.
+Values are saved in ok\_count and fail\_count.
+Unique values are also gathered, they are saved in
+grouped\_ok\_count and gropued\_fail\_count.
+
+Timestamp field is populated with artificial data, just to
+distint in which interval the record belongs.
+Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
+Lowest distinction interval for timestamp is 24 hours.
+
+Collection has following structure:
+
+| field name           | data type |               note                  |
+|----------------------|-----------|-------------------------------------|
+| timestamp            |   Date    |         timestamp                   |
+| realm                |   String  |         visinst                     |
+| ok\_count            |   Number  |    count of successful logins       |
+| grouped\_ok\_count   |   Number  | unique count of successful logins   |
+| fail\_count          |   Number  |    count of unsuccessful logins     |
+| grouped\_fail\_count |   Number  | unique count of unsuccessful logins |
+
+
+##### concurrent\_users
+
+TODO
 
 
 ##### unique\_users
@@ -615,6 +654,11 @@ Following indexes are used:
 | roaming           | _id, timestamp                                             |         |
 | users\_mac        | _id, username                                              |         |
 | heat\_map         | _id, timestamp, realm                                      |         |
+| realm\_logins     | _id, timestamp, realm                                      |         |
+| visinst\_logins   | _id, timestamp, realm                                      |         |
+| unique\_users     | _id, timestamp, realm                                      |         |
+| concurrent\_users | _id, timestamp, username                                   |         |
+
 
 ### Reports
 
