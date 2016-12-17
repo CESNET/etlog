@@ -128,7 +128,7 @@ function search_db(database, data, min, max, done)
     { $match : { visinst : { $all : [ data.visinst_1, data.visinst_2 ] } } },       // both visinst have to match
     { $project : { pn : "$_id.pn", visited_count : { $size : "$visinst" }, _id : 0 } },     // project pn, get size of array
     { $match : { visited_count : { $gt : 1 } } },                                  // more than one institution
-    { $project : { pn : 1 } }
+    { $project : { pn : 1 } }                                                      // project username
   ],
     function (err, items) {
       if(err == null && items.length > 0) {
@@ -137,7 +137,7 @@ function search_db(database, data, min, max, done)
         search_users(database, min, max, data, items, done);
         //done(); // TODO
       }
-      else
+      else if(err)
         console.error(err);
 
       // TODO
@@ -158,21 +158,13 @@ function search_users(database, min, max, data, users, done)
 {
   async.forEachOf(users, function (value, key, callback) {
     database.logs.aggregate([ 
-      // initial limit by timestamp, username, result
-
       { $match : { timestamp : { $gte : min, $lt : max }, pn : users[key].pn, result : "OK" } },
       { $match : { visinst : { $in : [ data.visinst_1, data.visinst_2 ] } } },       // limit by visinst
-
-      //{ $match : { pn : { $nin : [ /^anonymous@.*$/, /^@.*$/ ] } } }, // no anonymous users
-      //{ $group : { _id : { pn : "$pn"} , visinst : { $addToSet : "$visinst" } } },   // group by pn, add visinst to array
-      //{ $project : { pn : "$_id.pn", visited_count : { $size : "$visinst", _id : 0 } } },     // project pn, get size of array
-      //{ $match : { visited_count : { $gt : 1 } } },                                  // more than one institution
-      //{ $project : { pn : "$pn" } }
     ],
       function (err, items) {
         if(err == null && items.length > 0)
-          analyze_data(items, data, done)
-        else
+          analyze_data(items, data, callback)
+        else if(err)
           console.error(err);
 
         // TODO
@@ -200,10 +192,6 @@ function analyze_data(items, data, done)
 {
   // items are implicly sorted by time
 
-  //for(var item in items) {
-  //  
-  //}
-  
   var idx = 0;
   var visinst = items[0].visinst;
   
@@ -211,16 +199,32 @@ function analyze_data(items, data, done)
     while(items[idx].visinst == visinst && idx < items.length - 1) {
       idx++;
     }
+    
     // visinst changed
-
-    console.log(items[idx - 1]);
-    console.log(items[idx]);
-    console.log("=======================");
-
-
-    // set new visinst
-    visinst = items[idx].visinst;
-    continue;
+    if(visinst != items[idx].visinst) {
+      
+      // timestamp is in milliseconds
+      // timestamp difference is lower than the one defined
+      if((items[idx].timestamp - items[idx -1].timestamp) / 1000 < data.time) {
+        console.log("username: " + items[idx].pn);
+        console.log("instituce 1: " + items[idx - 1].visinst);
+        console.log("instituce 2: " + items[idx].visinst);
+        console.log("cas autentizace v prvni instituci: " + items[idx - 1].timestamp);
+        console.log("cas autentizace ve druhe instituci: " + items[idx].timestamp);
+        console.log("cas mezi autentiacemi [s]: " + (items[idx].timestamp - items[idx -1].timestamp) / 1000);
+        console.log("cas potrebny k presunu [s]: " + data.time);
+        
+        //// debug only
+        //console.log(items[idx - 1]);
+        //console.log(items[idx]);
+        
+        console.log("===================================");
+      }
+   
+      // set new visinst
+      visinst = items[idx].visinst;
+      continue;
+    }
   }
 
   done(null);   // TODO
