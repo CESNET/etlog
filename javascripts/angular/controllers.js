@@ -1820,6 +1820,7 @@ function get_heat_map($scope, $http, $q, callback)
 
   var qs = get_ts($scope);
 
+  $scope.visinst = clone($scope.realms);
   $scope.realms.forEach(function (realm, index) {
     chain = chain.then(function(){
       return $http({
@@ -1839,17 +1840,27 @@ function get_heat_map($scope, $http, $q, callback)
   // the final chain object will resolve once all the posts have completed.
   chain.then(function() {
     if($scope.options.count.val) {
-      filter_heat_data($scope);     // filter data
-    }
+      filter_heat_data($scope, $http, $q, qs, function() {     // filter data
+        for(var item in $scope.response) {
+          if($scope.realms.indexOf($scope.response[item][0].realm) != -1)   // realm present in realms
+            transform_heat_data($scope, $scope.response[item][0].realm, $scope.response[item]);
+        }
 
-    for(var item in $scope.response) {
-      if($scope.realms.indexOf($scope.response[item][0].realm) != -1)   // realm present in realms
-        transform_heat_data($scope, $scope.response[item][0].realm, $scope.response[item]);
+        set_missing($scope, $scope.realms);
+        sort_by_row($scope.graph_data);     // sort data by rows
+        callback($scope);
+      });
     }
+    else {
+      for(var item in $scope.response) {
+        if($scope.realms.indexOf($scope.response[item][0].realm) != -1)   // realm present in realms
+          transform_heat_data($scope, $scope.response[item][0].realm, $scope.response[item]);
+      }
 
-    set_missing($scope, $scope.realms);
-    sort_by_row($scope.graph_data);     // sort data by rows
-    callback($scope);
+      set_missing($scope, $scope.realms);
+      sort_by_row($scope.graph_data);     // sort data by rows
+      callback($scope);
+    }
   });
 }
 // --------------------------------------------------------------------------------------
@@ -1858,6 +1869,12 @@ function get_heat_map($scope, $http, $q, callback)
 function get_ts($scope)
 {
   return "?timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;
+}
+// --------------------------------------------------------------------------------------
+// clone object
+// --------------------------------------------------------------------------------------
+function clone(a) {
+  return JSON.parse(JSON.stringify(a));
 }
 // --------------------------------------------------------------------------------------
 // get list of realms
@@ -1875,21 +1892,64 @@ function get_realms($scope, $http)
 // --------------------------------------------------------------------------------------
 // filter heat map data by form count
 // --------------------------------------------------------------------------------------
-function filter_heat_data($scope)
+function filter_heat_data($scope, $http, $q, qs, callback)
 {
-  for(var resp in $scope.response) {
-    for(var item in $scope.response[resp]) {
-      var sum = 0;
+  // =============================================
+  // filter visinst list
 
-      for(var inst in $scope.response[resp][item].institutions) {
-        sum += $scope.response[resp][item].institutions[inst].count;
-      }
+  var chain = $q.when();
+  $scope.graph_data = [];
 
-      if(sum < $scope.options.count.val) {    // sum is lower than the one defined in form
-        $scope.realms.splice(get_index($scope, $scope.response[resp][item].realm), 1);        // delete realm
-      }
+  var ts = "timestamp=";    // timestamp
+  var to_delete = [];
+
+  $scope.visinst.forEach(function (visinst, index) {
+    chain = chain.then(function(){
+      return $http({
+        method  : 'GET',
+        url     : '/api/roaming/most_provided/' + qs + "&inst_name=" + visinst
+      })
+      .then(function(response) {
+        if(sum_provided_count(response.data) < $scope.options.count.val)
+          to_delete.push(visinst);
+      });
+    });
+  });
+
+  chain = chain.then(function(){
+    for(var item in to_delete) {
+      $scope.visinst.splice($scope.visinst.indexOf(to_delete[item]), 1);        // delete visinst
     }
-  }
+  });
+
+  // =============================================
+  // filter realms
+  var to_delete = [];
+
+  $scope.realms.forEach(function (realm, index) {
+    chain = chain.then(function(){
+      return $http({
+        method  : 'GET',
+        url     : '/api/roaming/most_used/' + qs + "&inst_name=" + realm
+      })
+      .then(function(response) {
+        if(sum_used_count(response.data) < $scope.options.count.val) {
+          to_delete.push(realm);
+        }
+      });
+    });
+  });
+
+  // the final chain object will resolve once all the posts have completed.
+  chain.then(function() {
+    for(var item in to_delete) {
+      if($scope.realms.indexOf(to_delete[item]) != -1)      // realm present
+        $scope.realms.splice($scope.realms.indexOf(to_delete[item]), 1);        // delete realm
+    }
+    //console.log($scope.visinst);
+    //console.log($scope.realms);
+    callback();
+  });
 }
 // --------------------------------------------------------------------------------------
 // transform response from heat map api and save to scope variable
