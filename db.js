@@ -154,6 +154,21 @@ exports.unique_users_schema = unique_users_schema;
 var unique_users = mongoose.model('unique_users', unique_users_schema, 'unique_users');
 exports.unique_users = unique_users;
 // --------------------------------------------------------------------------------------
+var concurrent_users_schema = mongoose.Schema({
+  timestamp       : Date,
+  timestamp_1     : Date,
+  timestamp_2     : Date,
+  visinst_1       : String,
+  visinst_2       : String,
+  username        : String,
+  time_needed     : Number
+},
+{ versionKey: false });
+// --------------------------------------------------------------------------------------
+exports.concurrent_users_schema = concurrent_users_schema;
+var concurrent_users = mongoose.model('concurrent_users', concurrent_users_schema, 'concurrent_users');
+exports.concurrent_users = concurrent_users;
+// --------------------------------------------------------------------------------------
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 /*
 mongoose.connection.once('open', function (callback) {
