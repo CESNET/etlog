@@ -1779,8 +1779,8 @@ function addiational_fields_heat_map($scope)
     count : {
       val : "",
       sel : "gt",
-      types : [ "eq", "gt", "lt" ],
-      type_names : [ "je roven", "je větší", "je menší" ]
+      types : [ "gt" ],
+      type_names : [ "je větší" ]
     }
   };
 
@@ -1946,8 +1946,6 @@ function filter_heat_data($scope, $http, $q, qs, callback)
       if($scope.realms.indexOf(to_delete[item]) != -1)      // realm present
         $scope.realms.splice($scope.realms.indexOf(to_delete[item]), 1);        // delete realm
     }
-    //console.log($scope.visinst);
-    //console.log($scope.realms);
     callback();
   });
 }
@@ -1959,10 +1957,10 @@ function transform_heat_data($scope, realm, data)
   for(var item in data) {
     for(var inst in data[item].institutions) {
       var dict = { row : get_index($scope, realm) };       // add realm index
-      dict.col = get_index($scope, data[item].institutions[inst].realm);  // add visinst index
+      dict.col = $scope.visinst.indexOf(data[item].institutions[inst].realm);  // add visinst index
       dict.value = data[item].institutions[inst].count;  // add count
 
-      if(dict.col == -1 || dict.row == -1)  // index out of map - probably caused by filtering
+      if(dict.col == -1)  // index out of map - probably caused by filtering
         continue;                           // do not add such data
 
       $scope.graph_data.push(dict);        // add { row : realm index, col : visinst index, value : count }
@@ -1980,7 +1978,7 @@ function set_missing($scope, realms)
     val = 1;        // min value for log scale
 
   for(var realm in realms) {
-    for(var visinst in realms) {
+    for(var visinst in $scope.visinst) {
       var found = $scope.graph_data.filter(function(obj) {
         return obj.row == realm && obj.col == visinst;
       });
@@ -2024,7 +2022,7 @@ function graph_heat_map($scope)
   var margin = { top: 170, right: 230, bottom: 50, left: 170 };
   var cellSize = 18;
 
-  var col_number = $scope.realms.length;
+  var col_number = $scope.visinst.length;
   var row_number = $scope.realms.length;
 
   var width = cellSize * col_number;
@@ -2033,14 +2031,16 @@ function graph_heat_map($scope)
   // ==========================================================
 
   var rowLabel = $scope.realms;
-  var colLabel = $scope.realms;
+  var colLabel = $scope.visinst;
 
   var hcrow = [];
   var hccol = [];
-  for(var item in $scope.realms) {
+
+  for(var item in $scope.realms)
     hcrow.push(Number(item));
+
+  for(var item in $scope.visinst)
     hccol.push(Number(item));
-  }
 
   // ==========================================================
 
@@ -2110,7 +2110,7 @@ function graph_heat_map($scope)
       .attr('class', 'd3-tip')
       .offset([-10, 0])
       .html(function(d) {
-        return "<strong>realm:</strong> " + $scope.realms[d.row] + ", <strong>navštívená instituce:</strong> " + $scope.realms[d.col] +
+        return "<strong>realm:</strong> " + $scope.realms[d.row] + ", <strong>navštívená instituce:</strong> " + $scope.visinst[d.col] +
                " <span style='color:red'>" + d.value + "</span>";
     })
 
