@@ -51,7 +51,6 @@ exp.process_old_data = function (database, callback) {
           search(database, data, min, max, done);     // calls done when finished
         },
         function(done) {
-          //console.log("debug: next day");
           min.setDate(min.getDate() + 1);  // continue
           max.setDate(max.getDate() + 1);  // continue
           done(null);                      // done
@@ -92,11 +91,7 @@ exp.process_current_data = function (database) {
 function search(database, data, min, max, done)
 {
   async.forEachOf(data, function (value_visinst_1, key_visinst_1, callback_visinst_1) {
-    //console.log("debug: visisnt_1 iteration");
-
     async.forEachOf(data[key_visinst_1].institutions, function (value_visinst_2, key_visinst_2, callback_visinst_2) {
-      //console.log("debug: visisnt_2 iteration");
-
       // "continue" implementation
       if(data[key_visinst_1].institutions[key_visinst_2].institution == data[key_visinst_1].institution)
         callback_visinst_2(null);
