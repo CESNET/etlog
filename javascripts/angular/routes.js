@@ -61,5 +61,17 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
     templateUrl: '/partials/detection_data_grouped.html',
     title : 'etlog: normalizovaný počet přihlíšení'
   })
+
+  .state('concurrent_users', {
+    url: '/concurrent_users',
+    templateUrl: '/partials/concurrent_users.html',
+    title : 'etlog: uživatelé v různých lokalitách současně'
+  })
+
+  .state('concurrent_inst', {
+    url: '/concurrent_inst',
+    templateUrl: '/partials/concurrent_inst.html',
+    title : 'etlog: nejčastější souběžně vyskytující se instituce'
+  })
 });
 // --------------------------------------------------------------------------------------

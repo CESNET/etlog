@@ -1,0 +1,69 @@
+div.container-fluid(ng-controller="concurrent_users_controller")
+  div
+    md-content(layout-padding='')
+      h4 neúspěšná přihlášení
+      form.form-horizontal(ng-submit="main_form.$valid && submit(main_form)" name="main_form", ng-model='form', novalidate)
+        .form-group
+          label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.form-control.flatpickr#min_date(type='text', ng-model='form_data.min_date')
+
+        .form-group
+          label.col-sm-2.control-label(for = 'max_date') Koncové datum:
+          .col-xs-2
+            div(layout-gt-xs='row')
+              input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
+ 
+        div(ng-show='options_added')
+          .form-group
+            label.col-sm-2.control-label Uživatelské jméno:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                input.form-control(type='text', ng-model='options.username.val')
+                .radio(ng-repeat='type in options.username.types track by $index')
+                  input(type='radio', name='username', ng-model='options.username.sel', ng-value='type')
+                  | {{options.username.type_names[$index]}}
+
+          .form-group
+            label.col-sm-2.control-label Navštívená instituce 1:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                input.form-control(type='text', ng-model='options.visinst_1.val')
+                .radio(ng-repeat='type in options.visinst_1.types track by $index')
+                  input(type='radio', name='visinst_1', ng-model='options.visinst_1.sel', ng-value='type')
+                  | {{options.visinst_1.type_names[$index]}}
+
+          .form-group
+            label.col-sm-2.control-label Navštívená instituce 2:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                input.form-control(type='text', ng-model='options.visinst_2.val')
+                .radio(ng-repeat='type in options.visinst_2.types track by $index')
+                  input(type='radio', name='visinst_2', ng-model='options.visinst_2.sel', ng-value='type')
+                  | {{options.visinst_2.type_names[$index]}}
+
+        .form-group(ng-show='!options_added')
+          label.col-sm-2.control-label Další možnosti
+          .col-xs-2
+            div(layout-gt-xs='row')
+              button.btn.btn-default.addButton(type='button', ng-click='add_options()')
+                i.fa.fa-plus
+
+        .form-group(ng-show='options_added')
+          label.col-sm-2.control-label Skrýt možnosti
+          .col-xs-2
+            div(layout-gt-xs='row')
+              button.btn.btn-default.addButton(type='button', ng-click='delete_options()')
+                i.fa.fa-minus
+
+        .form-group
+          .col-sm-offset-2.col-sm-10
+            button.btn.btn-default(type="submit") Vykreslit graf
+
+  div
+    .loading-indicator(ng-show='loading')
+    #graph(ng-show='!loading')
+
+
+

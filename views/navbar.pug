@@ -20,6 +20,18 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
         li(ng-class='{ active: is_active(["/failed_logins"])}')
           a(ui-sref='failed_logins') neúspěšná přihlášení
 
+        li(ng-class='{ active: is_active(["/concurrent_users", "/concurrent_inst" ])}')
+          a.dropdown-toggle(href='#', data-toggle='dropdown')
+            | uživatelé v různých lokalitách současně
+            span.caret
+          ul.dropdown-menu(role='menu')
+
+            li
+              a(ui-sref='concurrent_users') vyhledávání
+
+            li
+              a(ui-sref='concurrent_inst') nejčastější instituce
+
         li(ng-class='{ active: is_active(["/detection_data", "/detection_data_grouped" ])}')
           a.dropdown-toggle(href='#', data-toggle='dropdown')
             | počty přihlášení
