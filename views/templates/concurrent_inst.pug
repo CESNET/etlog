@@ -30,7 +30,7 @@ div.container-fluid(ng-controller="concurrent_inst_controller")
             th Název instituce 2:
             th Počet:
         tbody(ng-show='!paging.loading')
-          tr(dir-paginate='row in table_data | itemsPerPage: table_data.length')
+          tr(dir-paginate='row in table_data | itemsPerPage: table_length')
             td {{row.visinst_1}}
             td {{row.visinst_2}}
             td {{row.count}}
