@@ -2429,4 +2429,80 @@ function stacked_graph($scope)
   //// ==================================================
 }
 // --------------------------------------------------------------------------------------
+// concurrent users controller
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+  init($scope, $http);
+  additional_fields_concurrent_users($scope);   // set up additional form fields
+  $scope.paging = {
+    items_by_page : 10,
+    current_page : 1,
+    filters : {         // must match route qs names
+      //username : "",
+      //addrs : ""
+    },
+    loading : false,
+    total_items : 0
+  };
+  $scope.title = "etlog: uživatelé v různých lokalitách současně";
+  $scope.page_sizes = [ 10, 20, 50, 100 ];
+  handle_table_submit($scope, $http, get_concurrent_users, $scope.paging,  [ "username", "visinst_1", "visinst_2" ], "concurrent_users");
+  handle_pagination($scope, $http, get_concurrent_users);
+  //setup_filters($scope, $http, "concurrent_users");      // TODO?
+  handle_download($scope, [ "username", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "time_difference", "time_needed" ]);
+}]);
+// --------------------------------------------------------------------------------------
+// set up additional fields for form
+// --------------------------------------------------------------------------------------
+function additional_fields_concurrent_users($scope)
+{
+  $scope.options_added = false;
+  $scope.options = {
+    username : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
+    },
+    visinst_1 : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
+    },
+    visinst_2 : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
+    },
+  };
+
+  $scope.add_options = function() {
+    $scope.options_added = true;
+  };
+
+  $scope.delete_options = function() {
+    $scope.options_added = false;
+  };
+}
+// --------------------------------------------------------------------------------------
+// get concurrent users data
+// --------------------------------------------------------------------------------------
+function get_concurrent_users($scope, $http, qs, callback)
+{
+  $scope.table_data = [];
+  var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
+
+  return $http({
+    method  : 'GET',
+    url     : '/api/concurrent_users/' + qs + ts + "&sort=-username"      // always sort by username
+  })
+  .then(function(response) {
+    $scope.table_data = response.data;
+    callback($scope);
+  });
+}
+// --------------------------------------------------------------------------------------
+
 
