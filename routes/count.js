@@ -186,6 +186,50 @@ router.get('/logs', function(req, res, next) {
   });
 });
 // --------------------------------------------------------------------------------------
+// get count for concurrent users
+// --------------------------------------------------------------------------------------
+router.get('/concurrent_users', function(req, res, next) {
+  try {
+    var query = get_qs(req, [ 'timestamp', 'username', 'visinst_1', 'visinst_2' ]); // array of valid filters
+  }
+  catch(error) {
+    var err = new Error(error.error);
+    err.status = 400;
+    next(err);
+    return;
+  }
+
+  // ===================================================
+  // construct base query
+  var aggregate_query = [
+    { $match : query.filter },      // filter by query
+    { $project : { 
+      _id : 0,
+      time_needed : 1,
+      username : 1,
+      timestamp_1 : 1,
+      timestamp_2 : 1,
+      visinst_1 : 1,
+      visinst_2 : 1,
+      time_difference : { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] }, // difference is in milliseconds
+    } },
+  ];
+
+  // ===================================================
+  // add other operators, if defined in query
+  agg.add_ops(aggregate_query, query);
+
+  // ===================================================
+
+  aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
+  aggregate_query.push({ $project : { count : 1, _id : 0 } });
+
+  get_record_count(req.db.concurrent_users, res, next, aggregate_query, transform);       // perform search with constructed mongo query
+});
+// --------------------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------------------
 // transform array containing dict just to number itself
 // --------------------------------------------------------------------------------------
 function transform(data)
