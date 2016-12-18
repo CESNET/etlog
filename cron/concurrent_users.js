@@ -51,6 +51,7 @@ exp.process_old_data = function (database, callback) {
           search(database, data, min, max, done);     // calls done when finished
         },
         function(done) {
+          //console.log("debug: next day");
           min.setDate(min.getDate() + 1);  // continue
           max.setDate(max.getDate() + 1);  // continue
           done(null);                      // done
@@ -91,7 +92,11 @@ exp.process_current_data = function (database) {
 function search(database, data, min, max, done)
 {
   async.forEachOf(data, function (value_visinst_1, key_visinst_1, callback_visinst_1) {
+    //console.log("debug: visisnt_1 iteration");
+
     async.forEachOf(data[key_visinst_1].institutions, function (value_visinst_2, key_visinst_2, callback_visinst_2) {
+      //console.log("debug: visisnt_2 iteration");
+
       // "continue" implementation
       if(data[key_visinst_1].institutions[key_visinst_2].institution == data[key_visinst_1].institution)
         callback_visinst_2(null);
@@ -134,11 +139,16 @@ function search_db(database, data, min, max, done)
     { $project : { pn : 1 } }                                                      // project username
   ],
     function (err, items) {
-      if(err == null && items.length > 0) {
-        search_users(database, min, max, data, items, done);
+      if(err == null) {
+        if(items.length > 0)
+          search_users(database, min, max, data, items, done);
+        else
+          done(null);
       }
-      else if(err)
+      else {
         console.error(err);
+        done(null);
+      }
   });
 }
 // --------------------------------------------------------------------------------------
@@ -150,12 +160,19 @@ function search_users(database, min, max, data, users, done)
     database.logs.aggregate([ 
       { $match : { timestamp : { $gte : min, $lt : max }, pn : users[key].pn, result : "OK" } },
       { $match : { visinst : { $in : [ data.visinst_1, data.visinst_2 ] } } },       // limit by visinst
+      { $sort : { timestamp : 1 } },        // sort by timestamp
     ],
       function (err, items) {
-        if(err == null && items.length > 0)
-          analyze_data(database, items, data, min, callback)
-        else if(err)
+        if(err == null) {
+          if(items.length > 0)
+            analyze_data(database, items, data, min, callback)
+          else
+            callback(null);
+        }
+        else {
           console.error(err);
+          callback(null);
+        }
     });
   }, function (err) {
     if (err)
@@ -215,7 +232,7 @@ function analyze_data(database, items, data, min, done)
   if(done)
     save_to_db_callback(database, db_data, done);
   else
-    save_to_d(database, db_data);
+    save_to_db(database, db_data);
 }
 // --------------------------------------------------------------------------------------
 // save data to dabase
