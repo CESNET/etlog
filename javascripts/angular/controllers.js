@@ -2052,12 +2052,12 @@ function graph_heat_map($scope)
   if($scope.form_data.log_scale) {
     var colorScale = d3.scaleLog()
         .domain([1, max])
-        .range([d3.interpolateRdYlGn(1), d3.interpolateRdYlGn(0)])
+        .range([d3.interpolateBlues(0), d3.interpolateBlues(1)])
   }
   else {
     var colorScale = d3.scaleLinear()
         .domain([0, max])
-        .range([d3.interpolateRdYlGn(1), d3.interpolateRdYlGn(0)])
+        .range([d3.interpolateBlues(0), d3.interpolateBlues(1)])
   }
 
   // ==========================================================
