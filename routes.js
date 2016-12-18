@@ -26,6 +26,8 @@ module.exports = function(app, database) {
   app.use('/api/realm_logins', require('./routes/realm_logins'));                    // generic api for realm logins
   app.use('/api/visinst_logins', require('./routes/visinst_logins'));                // generic api for visinst logins
   app.use('/api/unique_users', require('./routes/unique_users'));                    // generic api for unique users
+  app.use('/api/concurrent_users', require('./routes/concurrent_users'));            // generic api for concurrent users
+  app.use('/api/concurrent_inst', require('./routes/concurrent_inst'));              // api for concurrent institutions
 
 // -----------------------------------------------------------
   // login routing is defined separately
