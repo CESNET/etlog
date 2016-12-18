@@ -59,11 +59,47 @@ div.container-fluid(ng-controller="concurrent_users_controller")
 
         .form-group
           .col-sm-offset-2.col-sm-10
-            button.btn.btn-default(type="submit") Vykreslit graf
+            button.btn.btn-default(type="submit") Hledej
 
-  div
-    .loading-indicator(ng-show='loading')
-    #graph(ng-show='!loading')
+  div(ng-show='submitted')
+    .form-group
+      .col-xs-2
+      label záznamů na stránku:
+        select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes')
+
+    table.table.table-bordered.table-responsive#out
+      thead
+        tr
+          th Uživatelské jméno:
+          th Čas první autentizace:
+          th Navštívená instituce 1:
+          th Čas druhé autentizace:
+          th Navštívená instituce 2:
+          th Rozdíl časů [s]:
+          th Čas potřebný k přesunu [s]:
+      tbody(ng-show='!paging.loading')
+        tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
+          td
+            a(ui-sref='search({pn : row.username})' target='_blank')
+              | {{row.username}}
+          td {{row.timestamp_1}}
+          td {{row.visinst_1}}
+          td {{row.timestamp_2}}
+          td {{row.visinst_2}}
+          td {{row.time_difference}}
+          td {{row.time_needed}}
+      tbody(ng-show='paging.loading')
+        tr
+          td.text-center(colspan='4')
+            .loading-indicator
+
+    .form-group
+      .col-xs-2
+        button.btn.btn-default(type='button' ng-click='download_data()') Uložit data
+
+    .text-center
+      dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='partials/dirPagination.tpl.html')
+
 
 
 
