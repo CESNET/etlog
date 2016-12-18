@@ -153,7 +153,7 @@ function search_users(database, min, max, data, users, done)
     ],
       function (err, items) {
         if(err == null && items.length > 0)
-          analyze_data(items, data, min, callback)
+          analyze_data(database, items, data, min, callback)
         else if(err)
           console.error(err);
     });
@@ -167,7 +167,7 @@ function search_users(database, min, max, data, users, done)
 // --------------------------------------------------------------------------------------
 // analyze all records for one user and two visited institutions
 // --------------------------------------------------------------------------------------
-function analyze_data(items, data, min, done)
+function analyze_data(database, items, data, min, done)
 {
   // items are implicly sorted by time
 
