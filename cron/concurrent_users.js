@@ -213,9 +213,9 @@ function analyze_data(database, items, data, min, done)
   // save to db
 
   if(done)
-    save_to_db_callback(database, items, done);
+    save_to_db_callback(database, db_data, done);
   else
-    save_to_d(database, items);
+    save_to_d(database, db_data);
 }
 // --------------------------------------------------------------------------------------
 // save data to dabase
