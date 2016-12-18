@@ -494,11 +494,13 @@ function add_options($scope)
 {
   // add optional fields to form data
   // radio buttons indicate type of value
-  var keys = Object.keys($scope.options);
+  if($scope.options) {
+    var keys = Object.keys($scope.options);
 
-  for(var key in keys) {
-    if($scope.options[keys[key]].val.length > 0) {    // value is defined
-      $scope.form_data[keys[key]] = $scope.options[keys[key]];    // add dict with current radio selection inside
+    for(var key in keys) {
+      if($scope.options[keys[key]].val.length > 0) {    // value is defined
+        $scope.form_data[keys[key]] = $scope.options[keys[key]];    // add dict with current radio selection inside
+      }
     }
   }
 }
@@ -2502,6 +2504,66 @@ function get_concurrent_users($scope, $http, qs, callback)
     $scope.table_data = response.data;
     callback($scope);
   });
+}
+// --------------------------------------------------------------------------------------
+// concurrent users controller
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('concurrent_inst_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+  init($scope, $http);
+  $scope.title = "etlog: nejčastější souběžně vyskytující se instituce";
+  handle_submit($scope, $http, $q, get_concurrent_inst, filter_table_data, []);
+  handle_download($scope, [ "visinst_1", "visinst_2", "count" ]);
+}]);
+// --------------------------------------------------------------------------------------
+// get concurrent inst data
+// --------------------------------------------------------------------------------------
+function get_concurrent_inst($scope, $http, qs, $q, callback)
+{
+  $scope.table_data = [];
+  var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
+
+  return $http({
+    method  : 'GET',
+    url     : '/api/concurrent_inst/' + qs + ts
+  })
+  .then(function(response) {
+    $scope.table_data = response.data;
+    $scope.submitted = true;
+    callback($scope);
+  });
+}
+// --------------------------------------------------------------------------------------
+// set table table
+// --------------------------------------------------------------------------------------
+function filter_table_data($scope)
+{
+  for(var item in $scope.table_data) {
+    var found = $scope.table_data.filter(function(obj) {
+      return obj.visinst_2 == $scope.table_data[item].visinst_1 && obj.visinst_1 == $scope.table_data[item].visinst_2;
+    });
+
+    if(found.length > 0) {
+      var index = $scope.table_data.map(function(obj) {
+        return obj.visinst_2 == $scope.table_data[item].visinst_1 && obj.visinst_1 == $scope.table_data[item].visinst_2;
+      }).indexOf(true);
+
+      $scope.table_data[item].count += found[0].count;
+      $scope.table_data.splice(index, 1);       // delete item
+    }
+  }
+  $scope.table_length = $scope.table_data.length;
+
+  // ========================================
+  // sort data
+
+  $scope.table_data.sort(compare_count);
+}
+// --------------------------------------------------------------------------------------
+// compare table data by count
+// --------------------------------------------------------------------------------------
+function compare_count(a, b)
+{
+  return b.count - a.count
 }
 // --------------------------------------------------------------------------------------
 
