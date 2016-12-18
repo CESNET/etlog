@@ -1974,8 +1974,8 @@ function set_missing($scope, realms)
 {
   var val = 0;
 
-  if($scope.form_data.log_scale)
-    val = 1;        // min value for log scale
+  //if($scope.form_data.log_scale)
+  //  val = 1;        // min value for log scale
 
   for(var realm in realms) {
     for(var visinst in $scope.visinst) {
