@@ -71,12 +71,6 @@ div.container-fluid(ng-controller="failed_logins_controller")
             button.btn.btn-default(type="submit") Vykreslit graf
 
   div
-    form.categories
-      //label.col-xs-1.control-label
-      //.col-xs-4
-      //  div(layout-gt-xs='row')
-      //    input#show_failed(type='checkbox')
-      //    | Zobrazit neúspěšná přihlášení
     .loading-indicator(ng-show='loading')
     #graph(ng-show='!loading')
 
