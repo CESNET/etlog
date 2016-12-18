@@ -15,26 +15,12 @@
 - pripominky?
 
 
-# mapa roamingu
-
-[rozhrani](https://etlog.cesnet.cz/#/heat_map)
-
-- pripominky?
-
-
 # Detekce uzivatelu v ruznych lokalitach soucasne
 
-- xml s geoografickymi informacemi
-kazda instituce muze mit mnoho bodu - nevime, ze ktereho bodu autentizace vysla
-- TODO
-
-> pokud by bylo mozne zpracovat dynamicky, tak by to bylo ok, ale pokud
-by interaktivni zpracovani trvalo dlouho, tak generovat nejak staticky
-> je treba implicitne vyhodit anonymous uzivatele
-
-> soucasne zarizeni nema smysl resit - nema smysl protoze realny vysledek je k nicemu
-
-> do repozitare : xml ne, perl ano, vypocet
+- nazvy predmetu v menu - upravit?
+- pridat do repozitare zdrojovy json pro vypocet?
+- dokumentace transformace xml dat?
+- vystup transformace TODO
 
 
 # autentizace
@@ -70,6 +56,9 @@ Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
   - Pokud se uzivatel nijak neprekryva, neni treba ho nejak dale zkoumat, zrejme pouziva randomizaci mac adres
 
 - do prace uvest, ze se poradilo odhalit nejake vyznamne sdilene identity
+
+> soucasne zarizeni nema smysl resit - nema smysl protoze realny vysledek je k nicemu
+> -> poznamka k uzivatelum k ruznych lokalitach soucasne
 
 
 # TODO list
