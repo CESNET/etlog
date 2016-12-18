@@ -2956,8 +2956,8 @@ function set_missing($scope, realms)
 {
   var val = 0;
 
-  if($scope.form_data.log_scale)
-    val = 1;        // min value for log scale
+  //if($scope.form_data.log_scale)
+  //  val = 1;        // min value for log scale
 
   for(var realm in realms) {
     for(var visinst in $scope.visinst) {
@@ -3034,12 +3034,12 @@ function graph_heat_map($scope)
   if($scope.form_data.log_scale) {
     var colorScale = d3.scaleLog()
         .domain([1, max])
-        .range([d3.interpolateRdYlGn(1), d3.interpolateRdYlGn(0)])
+        .range([d3.interpolateBlues(0), d3.interpolateBlues(1)])
   }
   else {
     var colorScale = d3.scaleLinear()
         .domain([0, max])
-        .range([d3.interpolateRdYlGn(1), d3.interpolateRdYlGn(0)])
+        .range([d3.interpolateBlues(0), d3.interpolateBlues(1)])
   }
 
   // ==========================================================
@@ -3429,40 +3429,16 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
     title : 'etlog: počet zařízení'
   })
 
-  .state('failed_logins', {
-    url: '/failed_logins',
-    templateUrl: '/partials/failed_logins.html',
-    title : 'etlog: neúspěšná přihlášení'
-  })
-
   .state('shared_mac', {
     url: '/shared_mac',
     templateUrl: '/partials/shared_mac.html',
     title : 'etlog: sdílená zařízení'
   })
 
-  .state('graph_test_2', {
-    url: '/graph_test_2',
-    templateUrl: '/partials/graph_test_2.html',
-    title : 'etlog: graph test 2'
-  })
-
-  .state('graph_test_3', {
-    url: '/graph_test_3',
-    templateUrl: '/partials/graph_test_3.html',
-    title : 'etlog: graph test 3'
-  })
-
-  .state('roaming_most_provided', {
-    url: '/roaming_most_provided',
-    templateUrl: '/partials/roaming_most_provided.html',
-    title : 'etlog: posktovaný roaming - vyhledávání'
-  })
-
-  .state('roaming_most_used', {
-    url: '/roaming_most_used',
-    templateUrl: '/partials/roaming_most_used.html',
-    title : 'etlog: čerpaný roaming - vyhledávání'
+  .state('failed_logins', {
+    url: '/failed_logins',
+    templateUrl: '/partials/failed_logins.html',
+    title : 'etlog: neúspěšná přihlášení'
   })
 
   .state('heat_map', {
@@ -3489,22 +3465,16 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
     title : 'etlog: aktivita CZ eduroamu'
   })
 
-  .state('test', {
-    url: '/test',
-    templateUrl: '/partials/test.html',
-    title : 'etlog: test datepickeru'
-  })
-
   .state('detection_data', {
     url: '/detection_data',
     templateUrl: '/partials/detection_data.html',
-    title : 'etlog: data k detekci 1'
+    title : 'etlog: absolutní počet přihlášení'
   })
 
   .state('detection_data_grouped', {
     url: '/detection_data_grouped',
     templateUrl: '/partials/detection_data_grouped.html',
-    title : 'etlog: data k detekci 2'
+    title : 'etlog: normalizovaný počet přihlíšení'
   })
 });
 // --------------------------------------------------------------------------------------
