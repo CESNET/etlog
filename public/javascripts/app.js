@@ -1476,11 +1476,13 @@ function add_options($scope)
 {
   // add optional fields to form data
   // radio buttons indicate type of value
-  var keys = Object.keys($scope.options);
+  if($scope.options) {
+    var keys = Object.keys($scope.options);
 
-  for(var key in keys) {
-    if($scope.options[keys[key]].val.length > 0) {    // value is defined
-      $scope.form_data[keys[key]] = $scope.options[keys[key]];    // add dict with current radio selection inside
+    for(var key in keys) {
+      if($scope.options[keys[key]].val.length > 0) {    // value is defined
+        $scope.form_data[keys[key]] = $scope.options[keys[key]];    // add dict with current radio selection inside
+      }
     }
   }
 }
@@ -3411,6 +3413,142 @@ function stacked_graph($scope)
   //// ==================================================
 }
 // --------------------------------------------------------------------------------------
+// concurrent users controller
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+  init($scope, $http);
+  additional_fields_concurrent_users($scope);   // set up additional form fields
+  $scope.paging = {
+    items_by_page : 10,
+    current_page : 1,
+    filters : {         // must match route qs names
+      //username : "",
+      //addrs : ""
+    },
+    loading : false,
+    total_items : 0
+  };
+  $scope.title = "etlog: uživatelé v různých lokalitách současně";
+  $scope.page_sizes = [ 10, 20, 50, 100 ];
+  handle_table_submit($scope, $http, get_concurrent_users, $scope.paging,  [ "username", "visinst_1", "visinst_2" ], "concurrent_users");
+  handle_pagination($scope, $http, get_concurrent_users);
+  //setup_filters($scope, $http, "concurrent_users");      // TODO?
+  handle_download($scope, [ "username", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "time_difference", "time_needed" ]);
+}]);
+// --------------------------------------------------------------------------------------
+// set up additional fields for form
+// --------------------------------------------------------------------------------------
+function additional_fields_concurrent_users($scope)
+{
+  $scope.options_added = false;
+  $scope.options = {
+    username : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
+    },
+    visinst_1 : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
+    },
+    visinst_2 : {
+      val : "",
+      sel : "like",
+      types : [ "eq", "like" ],
+      type_names : [ "přesně odpovídá", "obsahuje" ]
+    },
+  };
+
+  $scope.add_options = function() {
+    $scope.options_added = true;
+  };
+
+  $scope.delete_options = function() {
+    $scope.options_added = false;
+  };
+}
+// --------------------------------------------------------------------------------------
+// get concurrent users data
+// --------------------------------------------------------------------------------------
+function get_concurrent_users($scope, $http, qs, callback)
+{
+  $scope.table_data = [];
+  var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
+
+  return $http({
+    method  : 'GET',
+    url     : '/api/concurrent_users/' + qs + ts + "&sort=-username"      // always sort by username
+  })
+  .then(function(response) {
+    $scope.table_data = response.data;
+    callback($scope);
+  });
+}
+// --------------------------------------------------------------------------------------
+// concurrent users controller
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('concurrent_inst_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+  init($scope, $http);
+  $scope.title = "etlog: nejčastější souběžně vyskytující se instituce";
+  handle_submit($scope, $http, $q, get_concurrent_inst, filter_table_data, []);
+  handle_download($scope, [ "visinst_1", "visinst_2", "count" ]);
+}]);
+// --------------------------------------------------------------------------------------
+// get concurrent inst data
+// --------------------------------------------------------------------------------------
+function get_concurrent_inst($scope, $http, qs, $q, callback)
+{
+  $scope.table_data = [];
+  var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
+
+  return $http({
+    method  : 'GET',
+    url     : '/api/concurrent_inst/' + qs + ts
+  })
+  .then(function(response) {
+    $scope.table_data = response.data;
+    $scope.submitted = true;
+    callback($scope);
+  });
+}
+// --------------------------------------------------------------------------------------
+// set table table
+// --------------------------------------------------------------------------------------
+function filter_table_data($scope)
+{
+  for(var item in $scope.table_data) {
+    var found = $scope.table_data.filter(function(obj) {
+      return obj.visinst_2 == $scope.table_data[item].visinst_1 && obj.visinst_1 == $scope.table_data[item].visinst_2;
+    });
+
+    if(found.length > 0) {
+      var index = $scope.table_data.map(function(obj) {
+        return obj.visinst_2 == $scope.table_data[item].visinst_1 && obj.visinst_1 == $scope.table_data[item].visinst_2;
+      }).indexOf(true);
+
+      $scope.table_data[item].count += found[0].count;
+      $scope.table_data.splice(index, 1);       // delete item
+    }
+  }
+  $scope.table_length = $scope.table_data.length;
+
+  // ========================================
+  // sort data
+
+  $scope.table_data.sort(compare_count);
+}
+// --------------------------------------------------------------------------------------
+// compare table data by count
+// --------------------------------------------------------------------------------------
+function compare_count(a, b)
+{
+  return b.count - a.count
+}
+// --------------------------------------------------------------------------------------
+
 
 
 // --------------------------------------------------------------------------------------
@@ -3475,6 +3613,18 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
     url: '/detection_data_grouped',
     templateUrl: '/partials/detection_data_grouped.html',
     title : 'etlog: normalizovaný počet přihlíšení'
+  })
+
+  .state('concurrent_users', {
+    url: '/concurrent_users',
+    templateUrl: '/partials/concurrent_users.html',
+    title : 'etlog: uživatelé v různých lokalitách současně'
+  })
+
+  .state('concurrent_inst', {
+    url: '/concurrent_inst',
+    templateUrl: '/partials/concurrent_inst.html',
+    title : 'etlog: nejčastější souběžně vyskytující se instituce'
   })
 });
 // --------------------------------------------------------------------------------------
