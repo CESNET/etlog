@@ -92,7 +92,7 @@ function search(database, data, min, max, done)
 {
   async.forEachOf(data, function (value_visinst_1, key_visinst_1, callback_visinst_1) {
     async.forEachOf(data[key_visinst_1].institutions, function (value_visinst_2, key_visinst_2, callback_visinst_2) {
-      // "continue" implementation - TODO
+      // "continue" implementation
       if(data[key_visinst_1].institutions[key_visinst_2].institution == data[key_visinst_1].institution)
         callback_visinst_2(null);
 
@@ -186,17 +186,21 @@ function analyze_data(items, data, min, done)
       // timestamp is in milliseconds
       // timestamp difference is lower than the one defined
       if((items[idx].timestamp - items[idx -1].timestamp) / 1000 < data.time) {
-        var item = {
-          timestamp   : min,
-          timestamp_1 : items[idx - 1].timestamp,
-          timestamp_2 : items[idx].timestamp,
-          visinst_1   : items[idx - 1].visinst,
-          visinst_2   : items[idx].visinst,
-          username    : items[idx].pn,
-          time_needed : data.time
-        };
-        
-        db_data.push(item);
+        // only positive difference
+        // negative will be processed in reversed order
+        if(items[idx].timestamp - items[idx -1].timestamp >= 0) {
+          var item = {
+            timestamp   : min,
+            timestamp_1 : items[idx - 1].timestamp,
+            timestamp_2 : items[idx].timestamp,
+            visinst_1   : items[idx - 1].visinst,
+            visinst_2   : items[idx].visinst,
+            username    : items[idx].pn,
+            time_needed : data.time
+          };
+
+          db_data.push(item);
+        }
       }
    
       // set new visinst
