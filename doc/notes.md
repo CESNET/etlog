@@ -500,7 +500,30 @@ Collection has following structure:
 
 ##### concurrent\_users
 
-TODO
+
+Collection contains data about users which logged in different locations concurrently.
+For the user to be in the collection the time difference of
+authentication in first visisted institution and the second visisted instituon
+must be lower than time\_needed.
+The value of time\_needed field is computed from geo information about instituons
+and possible travel speed.
+
+Timestamp field is populated with artificial data, just to
+distint in which interval the record belongs.
+Inserted timestamp is javascript Date for corresponding day at 00:00:00:000 (hours, minutes, seconds, milliseconds).
+Lowest distinction interval for timestamp is 24 hours.
+
+Collection has following structure:
+
+| field name           | data type |               note                                  |
+|----------------------|-----------|-----------------------------------------------------|
+| timestamp            | Date      |         timestamp                                   |
+| timestamp\_1         | Date      |  timestamp of first authentication                  |
+| timestamp\_2         | Date      |  timestamp of second authentication                 |
+| visinst\_1           | String    |  first visited institution                          |
+| visinst\_2           | String    |  second visited institution                         |
+| username             | String    |  username                                           |
+| time\_needed         | Number    | time needed to travel from visinst\_1 to visinst\_2 |
 
 
 ##### unique\_users
@@ -906,9 +929,22 @@ Application api:
 | /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
 | /api/realms/                    |        |                                                        | url returning list of realms from realms collection |
+| /api/realm\_logins              |        | timestamp, [ realm ]                                   |  |
+| /api/visinst\_logins            |        | tiemstamp, [ realm ]                                   |  |
+| /api/unique\_users/realm        |        | timestamp, realm                                       |  |
+| /api/unique\_users/visinst      |        | timestamp, realm                                       |  |
+| /api/concurrent\_users          |        | timestamp, [ username, visinst\_1, visinst\_2 ]        |  |
+| /api/concurrent\_inst           |        | timestamp                                              |  |
 | /api/count/mac\_count           |        | timestamp, [ username, count, addrs ]                  | returns count of records for mac\_count collection |
-| /api/count/shared\_mac          |        | timestamp, [ count, mac\_address, users ]              | returns count of records for shared\_mac collection |
+| /api/count/shared\_mac          |        | timestamp, [ count, mac\_address, users ]              | returns count of records for shared\_mac collection|
+| /api/count/concurrent\_users    |        | timestamp, [ username, visinst\_1, visinst\_2 ]        | returns count of records for concurrent\_users collection  |
 | /api/count/logs                 |        | timestamp, [ 'pn', 'csi', 'realm', 'visinst', 'result' ] | returns count of records for logs collection |
+
+
+
+
+
+
 
 
 
