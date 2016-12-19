@@ -80,6 +80,7 @@ Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
 - lokalizace?
 - snyk?
 - hsts?
+- minifikace js?
 - ... ?
 
 
