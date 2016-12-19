@@ -21,6 +21,8 @@
 - pridat do repozitare zdrojovy json pro vypocet?
 - dokumentace transformace xml dat?
 - vystup transformace TODO
+- upravit popisky tabulky?
+- implicitne razeno dle uzivatelskeho jmena
 
 
 # autentizace
