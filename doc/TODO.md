@@ -1,37 +1,46 @@
-# system pro ZP
+# TODO
 
-- zajistit prirazeni oponentury
+- obrazky do textu?
+> vsechny ruzne verze grafu
+> muzu vyuzit i mapu dostupnou na eduroam.cz
+> pridat jeste obrazek hierarchie, s tim, ze tam bude muj system, aby bylo zrejme, kde v hierarchii je
+- verze ?
+> muze byt
+
 
 # Detekce problémů funkčnosti služby
-
-## Data
-
-[data 1](https://etlog.cesnet.cz/#/detection_data)
-[data 2](https://etlog.cesnet.cz/#/detection_data_grouped)
 
 > Podle me je to nepouzitelne. Bude treba popsat co jste zkusil a napsat ze to nevede k smysluplnym vysledkum. Nicmene mam pochybnosti o tom ze ty grafy jsou OK. Krajne podivne je eduroam.muni.cz - nedovedu najit kde jste pro 23.11. vzal ze meli jen 140 uspesnych prihlaseni.
 
 
-- pripominky?
-
-
 # Detekce uzivatelu v ruznych lokalitach soucasne
 
-- nazvy predmetu v menu - upravit?
 - pridat do repozitare zdrojovy json pro vypocet?
 - dokumentace transformace xml dat?
 - vystup transformace TODO
+> zdokumentovat
 - upravit popisky tabulky?
 - implicitne razeno dle uzivatelskeho jmena
 
 
+> tabulku predelat:
+> pridat sloupec pro datum
+> cas prvni autentizace a cas druhe autentizace
+> popisky upravit na cas 1. autentizace a cas 2. autentizace
+  > pouze instituce 1 a instituce 2
+> pridat mac adresu, ktera se poji k zaznamu => potencialne zmenit cele db schema
+> upravit cas do aktualni casove zony
+> pridat tlacitko na prehozeni obsahu poli navstivena instituce 1 a navstivena instituce 2
+> pridat vzdalenost do vysledne tabulky
+> cas i vzdalenost zaokrouhlit na cele jednotky
+> cas vypsat nejake inteligentne -> hodiny/minuty/sekundy .. 
+> revize detekcnich dat -> bude upravena struktura vstupniho jsonu
+
+
 # autentizace
 
-Pokud zatim nenastal zadny pokrok s debugem autentizace, tak aplikaci nechat v soucasnem stavu a
-pouze omezit pristupnost pomoci IP adres v iptables?
-
-Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
-
+bude zavreno na FW.
+> Pokud bude chtit videt vedouci, tak bude moznost.
 
 # Ostatní
 
@@ -45,9 +54,12 @@ Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
 > potencialne vyzkouset jiny process manager, ktery nebude mit problem zapisovat do souboru a bude spravne formatovat zpravy
 
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
+> nema cenu v praci popisovat
+
+> popsat, ze je pouzity systemd
 - Pridana dokumentace k frontendu - vyhovuje takto? ([zde](https://github.com/CESNET/etlog#frontend))
 - pdf DP do repozitare, jakmile bude odevzdano? jako dodatecna forma dokumentace?
-> ano
+> ano, muzu i zdrojaky
 
 # text prace
 
@@ -61,6 +73,8 @@ Takove reseni neni idealni, ale data alespon nebudou pristupna komukoliv.
 
 > soucasne zarizeni nema smysl resit - nema smysl protoze realny vysledek je k nicemu
 > -> poznamka k uzivatelum k ruznych lokalitach soucasne
+
+> zminit, ze puvodni data obsahovala bordel
 
 
 # TODO list
