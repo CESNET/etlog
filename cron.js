@@ -5,11 +5,12 @@ module.exports = function(database) {
   const failed_logins = require('./cron/failed_logins.js');
   const mac_count = require('./cron/mac_count.js');
   const roaming = require('./cron/roaming.js');
-  const service_state = require('./cron/service_state.js');
+  const concurrent_users = require('./cron/concurrent_users.js');
   const users_mac = require('./cron/users_mac.js');
   const heat_map = require('./cron/heat_map.js');
   const shared_mac = require('./cron/shared_mac.js');
-  const succ_logins = require('./cron/succ_logins.js');
+  const realm_logins = require('./cron/realm_logins.js');
+  const visinst_logins = require('./cron/visinst_logins.js');
   const request = require('./request');
   const retention = require('./cron/delete_logs.js')
   const unique_users = require('./cron/unique_users.js')
@@ -40,10 +41,14 @@ module.exports = function(database) {
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 35 02 * * *', function() {     // run at 02:35:00
-    succ_logins.process_current_data(database);
+    realm_logins.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 40 02 * * *', function() {     // run at 02:40:00
+    visinst_logins.process_current_data(database);
+  }, null, true, 'Europe/Prague');
+
+  new CronJob('0 45 02 * * *', function() {     // run at 02:45:00
     heat_map.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
@@ -51,13 +56,12 @@ module.exports = function(database) {
     unique_users.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
-  // TODO
   new CronJob('0 00 03 * * *', function() {     // run at 03:00:00
-  //service_state.process_current_data(database);
+    retention.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
-  new CronJob('0 30 03 * * *', function() {     // run at 03:30:00
-    retention.process_current_data(database);
+  new CronJob('0 10 03 * * *', function() {     // run at 03:10:00
+    concurrent_users.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------
