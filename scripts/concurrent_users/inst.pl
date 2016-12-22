@@ -156,9 +156,12 @@ for my $ir1 (sort keys %institutions) {
     #last if (scalar(@dist) > 1);
 };
 
-my $json = encode_json \@dist;
+my %export = ( revision => UnixDate(ParseDate('now'), '%Y%m%d%H%M%S'),
+	       data => \@dist );
 
-open(JSON, ">inst3.json");
+my $json = encode_json \%export;
+
+open(JSON, ">inst.json");
 print JSON $json;
 close(JSON);
 
