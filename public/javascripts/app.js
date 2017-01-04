@@ -1054,7 +1054,7 @@ function init_search($scope, $http)
     min_date : new Date($scope.min_date.getTime() + $scope.min_date.getTimezoneOffset() * -1 * 60 * 1000).toISOString(),           // 30 days ago
     max_date : new Date($scope.max_date.getTime() + $scope.max_date.getTimezoneOffset() * -1 * 60 * 1000).toISOString(),          // today
   };
-  
+
   // get db_data
   $http({
     method  : 'GET',
@@ -1147,14 +1147,6 @@ function set_utc($scope)
   $scope.min_date = new Date($scope.min_date.getTime() + $scope.min_date.getTimezoneOffset() * 60 * 1000);  // substract UTC offset
   $scope.max_date = new Date($scope.form_data.max_date);
   $scope.max_date = new Date($scope.max_date.getTime() + $scope.max_date.getTimezoneOffset() * 60 * 1000);  // substract UTC offset
-
-  console.log("form_data:");
-  console.log($scope.form_data.min_date);
-  console.log($scope.form_data.max_date);
-
-  console.log("scope:");
-  console.log($scope.min_date);
-  console.log($scope.max_date);
 }
 // --------------------------------------------------------------------------------------
 // get logs collection data
@@ -1166,8 +1158,6 @@ function get_logs($scope, $http, qs, callback)
   set_utc($scope);  // set internal variables and use them in query string
 
   var ts = "timestamp>=" + $scope.min_date.toISOString() + "&timestamp<" + $scope.max_date.toISOString();   // timestamp
-
-  console.log(ts);
 
   return $http({
     method  : 'GET',
@@ -1368,9 +1358,6 @@ function handle_pagination($scope, $http, data_func)
     $scope.paging.loading = true;
     $scope.paging.current_page = page_number;   // set current page
     var qs = $scope.add_paging($scope.qs, $scope.paging);    // save qs to $scope
-
-    // debug
-    console.log(qs);
 
     data_func($scope, $http, qs, function ($scope) { // get data from api
       // unset loading
