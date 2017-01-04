@@ -64,13 +64,14 @@ function init_search($scope, $http)
 {
   $scope.submitted = false; // form has not been submitted yet
 
-  $scope.form_data = {
-    min_date : new Date(new Date() - 30 * 86400000).toISOString(),                          // 30 days ago
-    max_date : new Date().toISOString(),                                                    // today
-  };
-  
   $scope.min_date = new Date(new Date() - 30 * 86400000);
   $scope.max_date = new Date();
+
+  // compensate for UTC offset here
+  $scope.form_data = {
+    min_date : new Date($scope.min_date.getTime() + $scope.min_date.getTimezoneOffset() * -1 * 60 * 1000).toISOString(),           // 30 days ago
+    max_date : new Date($scope.max_date.getTime() + $scope.max_date.getTimezoneOffset() * -1 * 60 * 1000).toISOString(),          // today
+  };
 
   // get db_data
   $http({
@@ -115,7 +116,8 @@ function setup_calendars_time($scope)
     maxDate: new Date(),                    // today
     minDate: $scope.db_data.mac_count.min,   // min from db
     enableTime: true,
-    time_24hr : true
+    time_24hr : true,
+    utc : true
   });
 
   flatpickr("#max_date", {
@@ -128,7 +130,8 @@ function setup_calendars_time($scope)
     maxDate: new Date(),                    // today
     minDate: $scope.db_data.mac_count.min,   // min from db
     enableTime: true,
-    time_24hr : true
+    time_24hr : true,
+    utc : true
   });
 }
 // --------------------------------------------------------------------------------------
@@ -154,12 +157,25 @@ function set_params($scope, $stateParams)
   }
 }
 // --------------------------------------------------------------------------------------
+// set internal variable from form data variables
+// --------------------------------------------------------------------------------------
+function set_utc($scope)
+{
+  $scope.min_date = new Date($scope.form_data.min_date);
+  $scope.min_date = new Date($scope.min_date.getTime() + $scope.min_date.getTimezoneOffset() * 60 * 1000);  // substract UTC offset
+  $scope.max_date = new Date($scope.form_data.max_date);
+  $scope.max_date = new Date($scope.max_date.getTime() + $scope.max_date.getTimezoneOffset() * 60 * 1000);  // substract UTC offset
+}
+// --------------------------------------------------------------------------------------
 // get logs collection data
 // --------------------------------------------------------------------------------------
 function get_logs($scope, $http, qs, callback)
 {
   $scope.table_data = [];
-  var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
+
+  set_utc($scope);  // set internal variables and use them in query string
+
+  var ts = "timestamp>=" + $scope.min_date.toISOString() + "&timestamp<" + $scope.max_date.toISOString();   // timestamp
 
   return $http({
     method  : 'GET',
