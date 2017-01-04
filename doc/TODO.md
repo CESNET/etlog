@@ -65,6 +65,8 @@ bude zavreno na FW.
 - snyk?
 - hsts?
 - minifikace js?
+- optimalizace pro mobilni zarizeni?
+- ceske realmy - odebrat omezeni na .cz?
 - ... ?
 
 
