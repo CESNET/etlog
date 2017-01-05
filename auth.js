@@ -13,17 +13,18 @@ module.exports = function(app, database) {
 // --------------------------------------------------------------------------------------
   // routing
   app.get('/login',
-    passport.authenticate(['ip', 'saml'], { failureRedirect: '/auth_fail', successRedirect: '/'})      // TODO
-    //function(req, res) {
+    passport.authenticate(['ip', 'saml']), //{ failureRedirect: '/auth_fail', successRedirect: '/'})      // TODO
+    function(req, res) {
     //  // If this function gets called, authentication was successful.
     //  //console.log("req: ");     // TODO
     //  //console.log(req);
     //  //console.log("res: ");
     //  //console.log(res);
-    //  console.log(req.user);
-    //  console.log("auth successful");
-    //  res.redirect('/');
-    //}
+    
+      console.log("auth successful");
+      console.log(req.user);
+      res.redirect('/');
+    }
   );
   // TODO - when is the defined strategy callback called ?
 
@@ -32,9 +33,10 @@ module.exports = function(app, database) {
 
   app.post('/login/callback',
     //passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }),
-    passport.authenticate('saml', { failureRedirect: '/auth_fail' }),       // TODO
+    passport.authenticate('saml'), //{ failureRedirect: '/auth_fail' }),       // TODO
     function(req, res) {
       console.log("post login callback");
+      console.log(req.user);
       res.redirect('/');
     }
   );
@@ -45,6 +47,7 @@ module.exports = function(app, database) {
   var pvk = fs.readFileSync('cert/etlog.cesnet.cz.key.pem', 'utf-8');
   var cert = fs.readFileSync('cert/etlog.cesnet.cz.crt.pem', 'utf-8');
   var idpcert = fs.readFileSync('cert/idp-cert.pem', 'utf-8');
+  //var idpcert = fs.readFileSync('cert/idp-cert2.pem', 'utf-8');
 
   var strategy = new saml_strategy({
       callbackUrl: 'https://etlog.cesnet.cz/login/callback',
@@ -62,12 +65,12 @@ module.exports = function(app, database) {
 
       // tady je treba se dostat k obsahu assertion - informace o prihlasenem uzivateli
       console.log(profile);
-      console.log(profile.getAssertionXml());
-      console.log("");
-      console.log("");
-      console.log("");
-      console.log("");
-      console.log(done());
+      //console.log(profile.getAssertionXml());
+      //console.log("");
+      //console.log("");
+      //console.log("");
+      //console.log("");
+      //console.log(done());
 
       //render("OK")
       //findByEmail(profile.email, function(err, user) {
@@ -75,6 +78,7 @@ module.exports = function(app, database) {
       //    return done(err);
       //  }
       //  return done(null, user);
+      done();
     });
 
 
