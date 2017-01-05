@@ -3489,6 +3489,25 @@ function additional_fields_concurrent_users($scope)
   };
 }
 // --------------------------------------------------------------------------------------
+// transform time information to local time and correct format
+// transform time difference to human readable time
+// --------------------------------------------------------------------------------------
+function transform_data(data)
+{
+  for(var item in data) {
+    // transform time info
+
+    data[item].timestamp_1 = data[item].timestamp_1.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_1.replace(/^.*T/, '').split(':')[1] + " "+ data[item].timestamp_1.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp_1.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp_1.replace(/T.*$/, '').split('-')[0];
+
+    data[item].timestamp_2 = data[item].timestamp_2.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_2.replace(/^.*T/, '').split(':')[1] + " "+ data[item].timestamp_2.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp_2.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp_2.replace(/T.*$/, '').split('-')[0];
+
+    // transform diff to human readable
+    // TODO
+  }
+
+  return data;
+}
+// --------------------------------------------------------------------------------------
 // get concurrent users data
 // --------------------------------------------------------------------------------------
 function get_concurrent_users($scope, $http, qs, callback)
@@ -3501,7 +3520,7 @@ function get_concurrent_users($scope, $http, qs, callback)
     url     : '/api/concurrent_users/' + qs + ts + "&sort=-username"      // always sort by username
   })
   .then(function(response) {
-    $scope.table_data = response.data;
+    $scope.table_data = transform_data(response.data);
     callback($scope);
   });
 }
