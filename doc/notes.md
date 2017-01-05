@@ -526,6 +526,14 @@ Collection has following structure:
 | time\_needed         | Number    | time needed to travel from visinst\_1 to visinst\_2 |
 
 
+###### Data update
+
+Input data are stored in `scripts/concurrent_users/inst.json`.
+Data are converted from source XML document which contains geographical data 
+for all institutions. Conversion script used is in `scripts/concurrent_users/inst.pl`.
+Each run of cron job which computes new collection data works with input json data.
+
+
 ##### unique\_users
 
 Collection contains unique mac addresses for realms for every day.
