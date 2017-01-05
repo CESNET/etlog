@@ -22,11 +22,6 @@
 > revize detekcnich dat -> bude upravena struktura vstupniho jsonu
 
 
-# autentizace
-
-bude zavreno na FW.
-> Pokud bude chtit videt vedouci, tak bude moznost.
-
 # Ostatní
 
 - nějakou logiku, která zapne aplikaci po pádu/restartu serveru.
