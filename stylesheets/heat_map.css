@@ -34,7 +34,9 @@ rect.cell-hover {
 text.mono {
   font-size: 9pt;
   font-family: Consolas, courier;
+  /*
   fill: #aaa;
+  */
 }
 
 text.text-selected {
