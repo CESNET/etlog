@@ -3,6 +3,7 @@
 - pridat do repozitare zdrojovy json pro vypocet?
 - upravit popisky tabulky?
 - implicitne razeno dle uzivatelskeho jmena
+- pridat filtrovani?
 
 
 > tabulku predelat:
