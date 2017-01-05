@@ -1,2 +1,3 @@
 cert
 *.swp
+public/partials/detection_data*
