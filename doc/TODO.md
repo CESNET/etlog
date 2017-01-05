@@ -1,9 +1,6 @@
 # Detekce uzivatelu v ruznych lokalitach soucasne
 
 - pridat do repozitare zdrojovy json pro vypocet?
-- dokumentace transformace xml dat?
-- vystup transformace TODO
-> zdokumentovat
 - upravit popisky tabulky?
 - implicitne razeno dle uzivatelskeho jmena
 
