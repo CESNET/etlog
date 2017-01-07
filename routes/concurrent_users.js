@@ -62,8 +62,32 @@ function search(req, res, next, query) {
       return;
     }
 
-    respond(items, res);
+    respond(convert(items), res);
   });
+}
+// --------------------------------------------------------------------------------------
+// convert timestamp in data
+// --------------------------------------------------------------------------------------
+function convert(data)
+{
+  var ret = [];
+
+  for(var item in data) {
+    data[item].timestamp_1 = convert_time(data[item].timestamp_1);
+    data[item].timestamp_2 = convert_time(data[item].timestamp_2);
+    ret.push(data[item]);
+  }
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// convert UTC to localtime based on input
+// --------------------------------------------------------------------------------------
+function convert_time(date)
+{
+  d = new Date(date);
+  d.setTime(d.getTime() + (-1 * d.getTimezoneOffset() * 60 * 1000));
+  return d;
 }
 // --------------------------------------------------------------------------------------
 // send data to user
