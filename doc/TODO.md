@@ -60,6 +60,8 @@
 - minifikace js?
 - optimalizace pro mobilni zarizeni?
 - ceske realmy - odebrat omezeni na .cz?
+- timeout db spojeni, automaticke znovu obnoveni?
+- cachovani vysledku vyhledavani?
 - ... ?
 
 
