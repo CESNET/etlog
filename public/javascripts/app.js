@@ -1011,7 +1011,6 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
     loading : false,
     total_items : 0
   };
-  $scope.title = "etlog: obecné vyhledávání";
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_search_submit($scope, $http, get_logs, $scope.paging, "logs");
   handle_pagination($scope, $http, get_logs);
@@ -1242,7 +1241,6 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
     loading : false,
     total_items : 0
   };
-  $scope.title = "etlog: počet zařízení";
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_table_submit($scope, $http, get_mac_count, $scope.paging, [ "username", "count" ], "mac_count");
   handle_pagination($scope, $http, get_mac_count);
@@ -1746,7 +1744,6 @@ angular.module('etlog').controller('failed_logins_controller', ['$scope', '$http
   addiational_fields_failed_logins($scope);   // set up additional form fields
   $scope.grouped = true;
   $scope.graph_title = "neúspěšná přihlášení";
-  $scope.title = "etlog: neúspěšná přihlášení";
   handle_submit($scope, $http, $q, get_failed_logins, graph, [ "username", "fail_count", "ok_count", "ratio" ]);
 }]);
 // --------------------------------------------------------------------------------------
@@ -1911,7 +1908,6 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
     loading : false,
     total_items : 0
   };
-  $scope.title = "etlog: sdílená zařízení";
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_table_submit($scope, $http, get_shared_mac, $scope.paging, [ "mac_address", "count" ], "shared_mac");
   handle_pagination($scope, $http, get_shared_mac);
@@ -2081,7 +2077,6 @@ angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$h
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
   };
   $scope.graph_title = "aktivita CZ eduroamu";
-  $scope.title = "etlog: aktivita CZ eduroamu";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   addiational_fields_roaming_activity($scope);   // set up additional form fields
@@ -2258,7 +2253,6 @@ angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope
     inst_count : 25
   };
   $scope.graph_title = "organizace nejvíce využívající roaming";
-  $scope.title = "etlog: organizace nejvíce využívající roaming";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_used_count, stacked_graph, "roaming_most_used", "used_count");
@@ -2417,7 +2411,6 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
     inst_count : 25
   };
   $scope.graph_title = "organizace nejvíce poskytující konektivitu";
-  $scope.title = "etlog: organizace nejvíce poskytující konektivitu";
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
@@ -2762,7 +2755,6 @@ function graph($scope)
 // heat map controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('heat_map_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
-  $scope.title = "etlog: mapa roamingu";
   $scope.form_data = {
     min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
@@ -3446,7 +3438,6 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
     loading : false,
     total_items : 0
   };
-  $scope.title = "etlog: uživatelé v různých lokalitách současně";
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_table_submit($scope, $http, get_concurrent_users, $scope.paging,  [ "username", "visinst_1", "visinst_2" ], "concurrent_users");
   handle_pagination($scope, $http, get_concurrent_users);
@@ -3529,7 +3520,6 @@ function get_concurrent_users($scope, $http, qs, callback)
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('concurrent_inst_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
-  $scope.title = "etlog: nejčastější souběžně vyskytující se instituce";
   handle_submit($scope, $http, $q, get_concurrent_inst, filter_table_data, []);
   handle_download($scope, [ "visinst_1", "visinst_2", "count" ]);
 }]);
