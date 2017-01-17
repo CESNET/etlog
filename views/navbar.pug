@@ -1,7 +1,7 @@
 //- taken from https://github.com/ALT-F1/bootstrap3-jade-node-express-grunt/blob/master/app/views/bootstrap3-templates/navbar-fixed-top.jade
 
 nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
-  .container
+  .container-fluid
     .navbar-header
       button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
         span.sr-only Toggle navigation
@@ -9,44 +9,50 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
       ul.nav.navbar-nav
 
         li(ng-class='{ active: is_active(["/search"])}')
-          a(ui-sref='search') obecné vyhledávání
+          a(ui-sref='search') Vyhledávání
 
-        li(ng-class='{ active: is_active(["/mac_count"])}')
-          a(ui-sref='mac_count') počet zařízení na uživatele
-
-        li(ng-class='{ active: is_active(["/shared_mac"])}')
-          a(ui-sref='shared_mac') sdílená zařízení
-
-        li(ng-class='{ active: is_active(["/failed_logins"])}')
-          a(ui-sref='failed_logins') neúspěšná přihlášení
-
-        li(ng-class='{ active: is_active(["/concurrent_users", "/concurrent_inst" ])}')
+        li(ng-class='{ active: is_active([ "/mac_count", "/shared_mac", "/concurrent_users", "/concurrent_inst", "/failed_logins", "/detection_data", "/detection_data_grouped" ])}')
           a.dropdown-toggle(href='#', data-toggle='dropdown')
-            | uživatelé v různých lokalitách současně
+            | Diagnostika
             span.caret
           ul.dropdown-menu(role='menu')
 
             li
-              a(ui-sref='concurrent_users') vyhledávání
+              a(ui-sref='mac_count') Počet zařízení na uživatele
 
             li
-              a(ui-sref='concurrent_inst') nejčastější instituce
+              a(ui-sref='shared_mac') Sdílená zařízení
 
-        li(ng-class='{ active: is_active(["/detection_data", "/detection_data_grouped" ])}')
-          a.dropdown-toggle(href='#', data-toggle='dropdown')
-            | počty přihlášení
-            span.caret
-          ul.dropdown-menu(role='menu')
+            li(ng-class='{ active: is_active([ "/concurrent_users", "/concurrent_inst" ])}')
+              a.dropdown-toggle(href='#', data-toggle='dropdown')
+                | Uživatelé v různých lokalitách současně
+                span.caret
+              ul.dropdown-menu(role='menu')
 
-            li
-              a(ui-sref='detection_data') absolutní počet
+                li
+                  a(ui-sref='concurrent_users') Vyhledávání
 
-            li
-              a(ui-sref='detection_data_grouped') normalizováno
+                li
+                  a(ui-sref='concurrent_inst') Nejčastější realmy
+
+            li(ng-class='{ active: is_active(["/failed_logins"])}')
+              a(ui-sref='failed_logins') Neúspěšná přihlášení
+
+            li(ng-class='{ active: is_active([ "/detection_data", "/detection_data_grouped" ])}')
+              a.dropdown-toggle(href='#', data-toggle='dropdown')
+                | Analýza trendů
+                span.caret
+              ul.dropdown-menu(role='menu')
+
+                li
+                  a(ui-sref='detection_data') Absolutní počty
+
+                li
+                  a(ui-sref='detection_data_grouped') Normalizováno
 
         li(ng-class='{ active: is_active(["/roaming_activity", "/heat_map", "/orgs_roaming_most_provided", "/orgs_roaming_most_used" ])}')
           a.dropdown-toggle(href='#', data-toggle='dropdown')
-            | roaming
+            | Statistiky
             span.caret
           ul.dropdown-menu(role='menu')
 
