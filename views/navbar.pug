@@ -1,7 +1,7 @@
 //- taken from https://github.com/ALT-F1/bootstrap3-jade-node-express-grunt/blob/master/app/views/bootstrap3-templates/navbar-fixed-top.jade
 
 nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
-  .container-fluid
+  .container
     .navbar-header
       button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
         span.sr-only Toggle navigation
@@ -57,14 +57,14 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
           ul.dropdown-menu(role='menu')
 
             li
-              a(ui-sref='roaming_activity') aktivita CZ eduroamu
+              a(ui-sref='roaming_activity') Aktivita CZ eduroamu
 
             li
-              a(ui-sref='heat_map') mapa roamingu
+              a(ui-sref='heat_map') Mapa roamingu
 
             li
-              a(ui-sref='orgs_roaming_most_provided') organizace nejvíce poskytující konektivitu
+              a(ui-sref='orgs_roaming_most_provided') Organizace nejvíce poskytující konektivitu
 
             li
-              a(ui-sref='orgs_roaming_most_used') organizace nejvíce využívající roaming
+              a(ui-sref='orgs_roaming_most_used') Organizace nejvíce využívající roaming
 
