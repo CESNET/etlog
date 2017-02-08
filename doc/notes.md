@@ -1,4 +1,4 @@
-# etlog - eduroam trafic log analysis
+# etlog - eduroam traffic log analysis
 
 ## Basic info
 
