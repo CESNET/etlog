@@ -152,8 +152,6 @@ Other tasks:
 |------------------|----------------------------------|
 | retention        |      every day at 03:00:00       |
 
-Task service state TODO
-
 Task retention deletes data from logs collections which are older than 365 days.
 
 Monthly report about failed logins is sent at 6:00 every first day of month.
