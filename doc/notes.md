@@ -21,6 +21,13 @@ It is listening for incoming connections on port 8080 for http connections and
 on port 8443 for https connections. Http connections are automatically redirected to https.
 Successful redicretion requires HTTP 1.1 host header.
 
+### User setup
+
+Add unprivileged user for application:
+```
+adduser etlog
+```
+
 ### Network setup
 
 Application is running by unprivileged user, so he can not use standard http and https port.
