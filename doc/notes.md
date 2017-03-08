@@ -94,6 +94,7 @@ filter f_etlog { facility(local0); };
 destination etlog_logs { file("/home/etlog/logs/systemd/log-$YEAR-$MONTH-$DAY" owner("etlog") group("etlog") perm(0600)); };
 
 log { source(s_src); filter(f_etlog); destination(etlog_logs); };
+^D
 ```
 Application log files are located in `/home/etlog/logs/systemd/`.
 
