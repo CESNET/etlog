@@ -20,6 +20,19 @@
 > revize detekcnich dat -> bude upravena struktura vstupniho jsonu
 
 
+# zlepseni detekce sdilenych uctu
+
+podklady:
+https://www.ietf.org/mail-archive/web/ipv6/current/msg24695.html
+http://searchsecurity.techtarget.com/tip/MAC-address-randomization-schemes-Examining-the-pros-and-cons
+http://papers.mathyvanhoef.com/asiaccs2016.pdf
+http://www.it.uc3m.es/cjbc/papers/pdf/2015_bernardos_cscn_privacy.pdf
+
+Pravdepodobne bylo by mozne alespon castecne zlepsit detekci randomizovanych adres na zaklade u/l bitu.
+
+Jak by mela byt detekce udelana? 
+Adresy, ktere nebudou mit locally administered bit nastaveny vyradit?
+
 # Ostatní
 
 - nějakou logiku, která zapne aplikaci po pádu/restartu serveru.
