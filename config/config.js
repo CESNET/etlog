@@ -8,8 +8,8 @@ module.exports = {
   // subject of failed logins report
   failed_logins_subj : "měsíční report - neúspěšná přihlášení",
   // ipv4 listening address
-  ipv4 : '78.128.211.129',
+  ipv4 : '78.128.211.150',
   // ipv6 listening address
-  ipv6 : '2001:718:1:1f:50:56ff:feee:129',
+  ipv6 : '2001:718:1:1f:50:56ff:feee:150',
 }
 // ==========================================================================================
