@@ -9,6 +9,7 @@ const debug = require('debug')('etlog:server');
 const http = require('http');
 const https = require('https');
 const fs = require( 'fs' );
+const config = require('./config/config.js');
 
 /**
  * Get port from environment and store in Express.
@@ -17,8 +18,8 @@ const fs = require( 'fs' );
 //var port = normalizePort(process.env.PORT || '3000');
 app.set('https_port', 8443);
 app.set('http_port', 8080);
-app.set('ipv4', '78.128.211.150');
-app.set('ipv6', '2001:718:1:1f:50:56ff:feee:150');
+app.set('ipv4', config.ipv4);
+app.set('ipv6', config.ipv6);
 
 
 /**
