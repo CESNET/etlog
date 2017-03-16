@@ -19,6 +19,10 @@
 > cas vypsat nejake inteligentne -> hodiny/minuty/sekundy .. 
 > revize detekcnich dat -> bude upravena struktura vstupniho jsonu
 
+> pridat moznost radit podle rozdilu casu
+
+> implicitne s hodnotou filtrovat casy, ktere se od casu mozneho presunu lisi velmi malo (napr < 5 min)
+
 
 # zlepseni detekce sdilenych uctu
 
