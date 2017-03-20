@@ -37,6 +37,11 @@ Pravdepodobne bylo by mozne alespon castecne zlepsit detekci randomizovanych adr
 Jak by mela byt detekce udelana? 
 Adresy, ktere nebudou mit locally administered bit nastaveny vyradit?
 
+# Nove
+
+pri copy paste mac adres z https://etlog.cesnet.cz/#/mac_count je to jeden velky blok cisel.
+
+
 # Ostatní
 
 - nějakou logiku, která zapne aplikaci po pádu/restartu serveru.
