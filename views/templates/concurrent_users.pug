@@ -73,26 +73,34 @@ div.container-fluid(ng-controller="concurrent_users_controller")
       thead
         tr
           th Uživatelské jméno:
+          th Datum:
           th Čas 1. autentizace:
           th Instituce 1:
           th Čas 2. autentizace:
           th Instituce 2:
+          th MAC adresa:
           th Rozdíl časů [s]:
           th Čas potřebný k přesunu [s]:
+          th Vzdálenost [m]:
       tbody(ng-show='!paging.loading')
         tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
           td
-            a(ui-sref='search({pn : row.username})' target='_blank')
+            a(ui-sref='search({pn : row.username, csi : row.mac_address})' target='_blank')
               | {{row.username}}
+          td {{row.timestamp}}
           td {{row.timestamp_1}}
           td {{row.visinst_1}}
           td {{row.timestamp_2}}
           td {{row.visinst_2}}
+          td
+            a(ui-sref='search({pn : row.username, csi : row.mac_address})' target='_blank')
+              | {{row.mac_address}}
           td {{row.time_difference}}
           td {{row.time_needed}}
+          td {{row.dist}}
       tbody(ng-show='paging.loading')
         tr
-          td.text-center(colspan='4')
+          td.text-center(colspan='8')
             .loading-indicator
 
     .form-group
