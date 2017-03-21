@@ -42,13 +42,14 @@ exp.process_old_data = function (database, callback) {
                                                                                     // search uses lower than max condition !
     // this date handling should guarantee correct interval for all processed records
 
+
     async.whilst(function () {
       return min < curr_min;
     },
     function(next) {
       async.series([
         function(done) {
-          search(database, data, min, max, done);     // calls done when finished
+          search(database, data.data, data.revision, min, max, done);     // calls done when finished
         },
         function(done) {
           min.setDate(min.getDate() + 1);  // continue
@@ -65,7 +66,8 @@ exp.process_old_data = function (database, callback) {
         console.error(err);
       else
         console.log("cron task concurrent_users finished processing old data");
-      callback(null, null);
+
+      update_revision(database, data.revision, callback);
     });
   });
 };
@@ -83,15 +85,31 @@ exp.process_current_data = function (database) {
   prev_min.setDate(prev_min.getDate() -1); // previous day hh:mm:ss:ms set to 00:00:00:000
   var prev_max = new Date(curr);           // current day hh:mm:ss:ms set to 00:00:00:000
                                            // search uses lower than max condition !
-  search(database, data, prev_min, prev_max);
+  search(database, data.data, data.revision, prev_min, prev_max);
+  update_revision(database, data.revision);
 };
+// --------------------------------------------------------------------------------------
+// update revision in db
+// --------------------------------------------------------------------------------------
+function update_revision(database, revision, callback)
+{
+  // add new revision to array, sort all ascending
+  database.concurrent_rev.update({}, { $addToSet : { revisions : { $each : [ revision ], $sort : 1 } } }, { upsert : true },
+  function(err, result) {
+    if(err)
+      console.error(err);
+
+    if(callback)
+      callback(null, null);
+  });
+}
 // --------------------------------------------------------------------------------------
 // search input data
 // --------------------------------------------------------------------------------------
-function search(database, data, min, max, done)
+function search(database, data, revision, min, max, done)
 {
   async.forEachOf(data, function (value_visinst_1, key_visinst_1, callback_visinst_1) {
-    async.forEachOf(data[key_visinst_1].institutions, function (value_visinst_2, key_visinst_2, callback_visinst_2) {
+    async.forEachOf(data[key_visinst_1].institutions, function (value_visinst_2, key_visinst_2, callback_visinst_2) {   // TODO - parallel here ?
       // "continue" implementation
       if(data[key_visinst_1].institutions[key_visinst_2].institution == data[key_visinst_1].institution)
         callback_visinst_2(null);
@@ -100,6 +118,7 @@ function search(database, data, min, max, done)
         dict = { 
           visinst_1 : data[key_visinst_1].institution, visinst_2 : data[key_visinst_1].institutions[key_visinst_2].institution,
           dist : data[key_visinst_1].institutions[key_visinst_2].dist, time : data[key_visinst_1].institutions[key_visinst_2].time,
+          revision : revision
         };
 
         search_db(database, dict, min, max, callback_visinst_2);        // search db
@@ -125,13 +144,13 @@ function search_db(database, data, min, max, done)
   database.logs.aggregate([ 
     // initial limit by timestamp, non empty pn and result
     { $match : { timestamp : { $gte : min, $lt : max }, pn : { $ne : "" }, result : "OK" } },
-    { $match : { pn : { $nin : [ /^anonymous@.*$/, /^@.*$/ ] } } }, // no anonymous users
-    { $match : { visinst : { $in : [ data.visinst_1, data.visinst_2 ] } } },       // limit by visinst
-    { $group : { _id : { pn : "$pn"} , visinst : { $addToSet : "$visinst" } } },   // group by pn, add visinst to array
-    { $match : { visinst : { $all : [ data.visinst_1, data.visinst_2 ] } } },       // both visinst have to match
+    { $match : { pn : { $nin : [ /^anonymous@.*$/, /^@.*$/ ] } } },                         // no anonymous users
+    { $match : { visinst : { $in : [ data.visinst_1, data.visinst_2 ] } } },                // limit by visinst
+    { $group : { _id : { pn : "$pn" } , visinst : { $addToSet : "$visinst" } } },           // group by pn, add visinst to array
+    { $match : { visinst : { $all : [ data.visinst_1, data.visinst_2 ] } } },               // both visinst have to match
     { $project : { pn : "$_id.pn", visited_count : { $size : "$visinst" }, _id : 0 } },     // project pn, get size of array
-    { $match : { visited_count : { $gt : 1 } } },                                  // more than one institution
-    { $project : { pn : 1 } }                                                      // project username
+    { $match : { visited_count : { $gt : 1 } } },                                           // more than one institution
+    { $project : { pn : 1 } }                                                               // project username
   ],
     function (err, items) {
       if(err == null) {
@@ -208,7 +227,10 @@ function analyze_data(database, items, data, min, done)
             visinst_1   : items[idx - 1].visinst,
             visinst_2   : items[idx].visinst,
             username    : items[idx].pn,
-            time_needed : data.time
+            mac_address : items[idx].csi,
+            time_needed : Math.round(data.time),
+            dist        : Math.round(data.dist),
+            revision    : data.revision
           };
 
           db_data.push(item);
