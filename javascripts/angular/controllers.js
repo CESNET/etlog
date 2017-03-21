@@ -2512,9 +2512,14 @@ function transform_data(data)
   for(var item in data) {
     // transform time info
 
-    data[item].timestamp_1 = data[item].timestamp_1.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_1.replace(/^.*T/, '').split(':')[1] + " "+ data[item].timestamp_1.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp_1.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp_1.replace(/T.*$/, '').split('-')[0];
+    // day.month.year
+    data[item].timestamp = data[item].timestamp.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp.replace(/T.*$/, '').split('-')[0];
 
-    data[item].timestamp_2 = data[item].timestamp_2.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_2.replace(/^.*T/, '').split(':')[1] + " "+ data[item].timestamp_2.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp_2.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp_2.replace(/T.*$/, '').split('-')[0];
+    // hours:minutes
+    data[item].timestamp_1 = data[item].timestamp_1.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_1.replace(/^.*T/, '').split(':')[1];
+
+    // hours:minutes
+    data[item].timestamp_2 = data[item].timestamp_2.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_2.replace(/^.*T/, '').split(':')[1];
 
     // transform diff to human readable
     // TODO
