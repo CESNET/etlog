@@ -161,13 +161,25 @@ var concurrent_users_schema = mongoose.Schema({
   visinst_1       : String,
   visinst_2       : String,
   username        : String,
-  time_needed     : Number
+  mac_address     : String,
+  time_needed     : Number,
+  dist            : Number,
+  revision        : Number,
 },
 { versionKey: false });
 // --------------------------------------------------------------------------------------
 exports.concurrent_users_schema = concurrent_users_schema;
 var concurrent_users = mongoose.model('concurrent_users', concurrent_users_schema, 'concurrent_users');
 exports.concurrent_users = concurrent_users;
+// --------------------------------------------------------------------------------------
+var concurrent_rev_schema = mongoose.Schema({
+  revisions       : Array,
+},
+{ versionKey: false });
+// --------------------------------------------------------------------------------------
+exports.concurrent_rev_schema = concurrent_rev_schema;
+var concurrent_rev = mongoose.model('concurrent_rev', concurrent_rev_schema, 'concurrent_rev');
+exports.concurrent_rev = concurrent_rev;
 // --------------------------------------------------------------------------------------
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 /*
