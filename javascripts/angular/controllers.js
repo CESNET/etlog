@@ -2445,7 +2445,7 @@ function stacked_graph($scope)
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
-  additional_fields_concurrent_users($scope);   // set up additional form fields
+  additional_fields_concurrent_users($http, $scope);   // set up additional form fields
   $scope.paging = {
     items_by_page : 10,
     current_page : 1,
@@ -2465,7 +2465,7 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
 // --------------------------------------------------------------------------------------
-function additional_fields_concurrent_users($scope)
+function additional_fields_concurrent_users($http, $scope)
 {
   $scope.options_added = false;
   $scope.options = {
@@ -2502,6 +2502,15 @@ function additional_fields_concurrent_users($scope)
     $scope.options.visinst_1.val = $scope.options.visinst_2.val;
     $scope.options.visinst_2.val = tmp;
   };
+
+  return $http({
+    method  : 'GET',
+    url     : '/api/concurrent_rev/'
+  })
+  .then(function(response) {
+    $scope.revisions = response.data;
+    $scope.selected_rev = $scope.revisions[0];
+  });
 }
 // --------------------------------------------------------------------------------------
 // transform time information to local time and correct format

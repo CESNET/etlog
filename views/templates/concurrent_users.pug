@@ -45,6 +45,12 @@ div.container-fluid(ng-controller="concurrent_users_controller")
                   input(type='radio', name='visinst_2', ng-model='options.visinst_2.sel', ng-value='type')
                   | {{options.visinst_2.type_names[$index]}}
 
+          .form-group
+            label.col-sm-2.control-label Revize dat:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                select.form-control(ng-model='selected_rev', ng-options='revision for revision in revisions')
+
         .form-group(ng-show='!options_added')
           label.col-sm-2.control-label Další možnosti
           .col-xs-2
