@@ -1542,6 +1542,9 @@ function get_days($scope)
 // --------------------------------------------------------------------------------------
 function setup_calendars($scope)
 {
+  // debug
+  console.log($scope.db_data);
+
   flatpickr("#min_date", {
     locale: "cs",
     defaultDate: $scope.form_data.min_date,
@@ -1549,7 +1552,7 @@ function setup_calendars($scope)
     altInput: true,
     altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min   // min from db
+    minDate: $scope.db_data.logs.min        // min from db
   });
 
   flatpickr("#max_date", {
@@ -1559,7 +1562,7 @@ function setup_calendars($scope)
     altInput: true,
     altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min   // min from db
+    minDate: $scope.db_data.logs.min        // min from db
   });
 }
 // --------------------------------------------------------------------------------------
@@ -3427,7 +3430,7 @@ function stacked_graph($scope)
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
-  additional_fields_concurrent_users($scope);   // set up additional form fields
+  additional_fields_concurrent_users($http, $scope);   // set up additional form fields
   $scope.paging = {
     items_by_page : 10,
     current_page : 1,
@@ -3439,7 +3442,7 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_concurrent_users, $scope.paging,  [ "username", "visinst_1", "visinst_2" ], "concurrent_users");
+  handle_table_submit($scope, $http, get_concurrent_users, $scope.paging, [ "username", "visinst_1", "visinst_2" ], "concurrent_users");
   handle_pagination($scope, $http, get_concurrent_users);
   //setup_filters($scope, $http, "concurrent_users");      // TODO?
   handle_download($scope, [ "username", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "time_difference", "time_needed" ]);
@@ -3447,7 +3450,7 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
 // --------------------------------------------------------------------------------------
-function additional_fields_concurrent_users($scope)
+function additional_fields_concurrent_users($http, $scope)
 {
   $scope.options_added = false;
   $scope.options = {
@@ -3478,6 +3481,21 @@ function additional_fields_concurrent_users($scope)
   $scope.delete_options = function() {
     $scope.options_added = false;
   };
+
+  $scope.swap = function() {
+    var tmp = $scope.options.visinst_1.val;
+    $scope.options.visinst_1.val = $scope.options.visinst_2.val;
+    $scope.options.visinst_2.val = tmp;
+  };
+
+  return $http({
+    method  : 'GET',
+    url     : '/api/concurrent_rev/'
+  })
+  .then(function(response) {
+    $scope.revisions = response.data;
+    $scope.selected_rev = $scope.revisions[0];
+  });
 }
 // --------------------------------------------------------------------------------------
 // transform time information to local time and correct format
@@ -3488,9 +3506,14 @@ function transform_data(data)
   for(var item in data) {
     // transform time info
 
-    data[item].timestamp_1 = data[item].timestamp_1.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_1.replace(/^.*T/, '').split(':')[1] + " "+ data[item].timestamp_1.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp_1.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp_1.replace(/T.*$/, '').split('-')[0];
+    // day.month.year
+    data[item].timestamp = data[item].timestamp.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp.replace(/T.*$/, '').split('-')[0];
 
-    data[item].timestamp_2 = data[item].timestamp_2.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_2.replace(/^.*T/, '').split(':')[1] + " "+ data[item].timestamp_2.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp_2.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp_2.replace(/T.*$/, '').split('-')[0];
+    // hours:minutes
+    data[item].timestamp_1 = data[item].timestamp_1.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_1.replace(/^.*T/, '').split(':')[1];
+
+    // hours:minutes
+    data[item].timestamp_2 = data[item].timestamp_2.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_2.replace(/^.*T/, '').split(':')[1];
 
     // transform diff to human readable
     // TODO
@@ -3508,7 +3531,7 @@ function get_concurrent_users($scope, $http, qs, callback)
 
   return $http({
     method  : 'GET',
-    url     : '/api/concurrent_users/' + qs + ts + "&sort=-username"      // always sort by username
+    url     : '/api/concurrent_users/' + qs + ts + "&revision=" + $scope.selected_rev + "&sort=-username"      // always sort by username
   })
   .then(function(response) {
     $scope.table_data = transform_data(response.data);
