@@ -2496,6 +2496,12 @@ function additional_fields_concurrent_users($scope)
   $scope.delete_options = function() {
     $scope.options_added = false;
   };
+
+  $scope.swap = function() {
+    var tmp = $scope.options.visinst_1.val;
+    $scope.options.visinst_1.val = $scope.options.visinst_2.val;
+    $scope.options.visinst_2.val = tmp;
+  };
 }
 // --------------------------------------------------------------------------------------
 // transform time information to local time and correct format
