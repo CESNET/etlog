@@ -522,15 +522,18 @@ Lowest distinction interval for timestamp is 24 hours.
 
 Collection has following structure:
 
-| field name           | data type |               note                                  |
-|----------------------|-----------|-----------------------------------------------------|
-| timestamp            | Date      |         timestamp                                   |
-| timestamp\_1         | Date      |  timestamp of first authentication                  |
-| timestamp\_2         | Date      |  timestamp of second authentication                 |
-| visinst\_1           | String    |  first visited institution                          |
-| visinst\_2           | String    |  second visited institution                         |
-| username             | String    |  username                                           |
-| time\_needed         | Number    | time needed to travel from visinst\_1 to visinst\_2 |
+| field name       | data type  |               note                                             |
+|------------------|------------|----------------------------------------------------------------|
+|  timestamp       | Date       | timestamp                                                      |
+|  timestamp\_1    | Date       | timestamp of first authentication                              |
+|  timestamp\_2    | Date       | timestamp of second authentication                             |
+|  visinst\_1      | String     | first visited institution                                      |
+|  visinst\_2      | String     | second visited institution                                     |
+|  username        | String     | username                                                       |
+|  mac\_address    | String     | MAC address related to incident                                |
+|  time\_needed    | Number     | time needed to travel from visinst\_1 to visinst\_2 in seconds |
+|  dist            | Number     | distance between institutions in meters                        |
+|  revision        | Number     | revision number                                                |
 
 
 ###### Data update
@@ -539,6 +542,19 @@ Input data are stored in `scripts/concurrent_users/inst.json`.
 Data are converted from source XML document which contains geographical data 
 for all institutions. Conversion script used is in `scripts/concurrent_users/inst.pl`.
 Each run of cron job which computes new collection data works with input json data.
+
+
+##### concurrent\_rev
+
+Collection contains all available revisions of concurrent\_users collection data.
+Data in this collection can be used to retrieve data from specific revision.
+
+Collection has following structure:
+
+| field name       | data type  |               note                                             |
+|------------------|------------|----------------------------------------------------------------|
+|  revisions       | Array      | Array of all available revisions                               |
+
 
 
 ##### unique\_users
