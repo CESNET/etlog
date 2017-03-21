@@ -2530,11 +2530,64 @@ function transform_data(data)
     // hours:minutes
     data[item].timestamp_2 = data[item].timestamp_2.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_2.replace(/^.*T/, '').split(':')[1];
 
-    // transform diff to human readable
-    // TODO
+    // time conversion
+    data[item].time_needed = hms_string(data[item].time_needed);
+    data[item].time_difference = hms_string(data[item].time_difference);
+
+    // distance conversion
+    data[item].dist = convert_dist(data[item].dist);
+
   }
 
   return data;
+}
+// --------------------------------------------------------------------------------------
+// return input converted to distance represented as string
+// --------------------------------------------------------------------------------------
+function convert_dist(input)
+{
+  var ret = "";
+
+  if(input >= 100000) {
+    ret += Math.round(input / 1000) + " km";
+    return ret;
+  }
+
+  if(input >= 10000) {
+    ret += (input / 1000).toFixed(1) +  " km";
+    return ret;
+  }
+
+  if(input >= 1000) {
+    ret += (input / 1000).toFixed(2) +  " km";
+    return ret;
+  }
+
+  ret += input +  " m";
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// return input converted to hours, minutes and seconds string
+// --------------------------------------------------------------------------------------
+function hms_string(input)
+{
+  var ret = "";
+
+  if(input >= 3600) {
+    ret += Math.floor(input / 3600) + " h ";
+    input = input % 3600;
+  }
+
+  if(input >= 60) {
+    ret += Math.floor(input / 60) + " m ";
+    input = input % 60;
+  }
+
+  if(input > 0)
+    ret += input + " s";
+
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 // get concurrent users data
