@@ -35,12 +35,15 @@ function search(req, res, next, query) {
     { $match : query.filter },      // filter by query
     { $project : { 
       _id : 0,
-      time_needed : 1,
-      username : 1,
+      timestamp   : 1,
       timestamp_1 : 1,
       timestamp_2 : 1,
-      visinst_1 : 1,
-      visinst_2 : 1,
+      visinst_1   : 1,
+      visinst_2   : 1,
+      username    : 1,
+      mac_address : 1,
+      time_needed : 1,
+      dist        : 1,
       time_difference : { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] }, // difference is in milliseconds
     } },
   ];
@@ -73,6 +76,7 @@ function convert(data)
   var ret = [];
 
   for(var item in data) {
+    data[item].timestamp = convert_time(data[item].timestamp);
     data[item].timestamp_1 = convert_time(data[item].timestamp_1);
     data[item].timestamp_2 = convert_time(data[item].timestamp_2);
     ret.push(data[item]);
