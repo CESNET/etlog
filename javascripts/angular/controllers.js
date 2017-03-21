@@ -2546,7 +2546,7 @@ function get_concurrent_users($scope, $http, qs, callback)
 
   return $http({
     method  : 'GET',
-    url     : '/api/concurrent_users/' + qs + ts + "&sort=-username"      // always sort by username
+    url     : '/api/concurrent_users/' + qs + ts + "&revision=" + $scope.selected_rev + "&sort=-username"      // always sort by username
   })
   .then(function(response) {
     $scope.table_data = transform_data(response.data);
