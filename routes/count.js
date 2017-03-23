@@ -190,7 +190,7 @@ router.get('/logs', function(req, res, next) {
 // --------------------------------------------------------------------------------------
 router.get('/concurrent_users', function(req, res, next) {
   try {
-    var query = get_qs(req, [ 'timestamp', 'username', 'visinst_1', 'visinst_2' ]); // array of valid filters
+    var query = get_qs(req, [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff" ]); // array of valid filters
   }
   catch(error) {
     var err = new Error(error.error);
@@ -199,21 +199,31 @@ router.get('/concurrent_users', function(req, res, next) {
     return;
   }
 
+  var cond = agg.check_filter(query.filter, [ "diff_needed_timediff" ]);
+
   // ===================================================
   // construct base query
   var aggregate_query = [
     { $match : query.filter },      // filter by query
     { $project : { 
       _id : 0,
-      time_needed : 1,
-      username : 1,
+      timestamp   : 1,
       timestamp_1 : 1,
       timestamp_2 : 1,
-      visinst_1 : 1,
-      visinst_2 : 1,
+      visinst_1   : 1,
+      visinst_2   : 1,
+      username    : 1,
+      mac_address : 1,
+      time_needed : 1,
+      dist        : 1,
       time_difference : { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] }, // difference is in milliseconds
+      diff_needed_timediff : { $subtract : [ "$time_needed", { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] } ] }
     } },
   ];
+
+  // ===================================================
+  // add condition from original filter if defined
+  agg.add_cond(aggregate_query, cond);
 
   // ===================================================
   // add other operators, if defined in query
