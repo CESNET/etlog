@@ -51,6 +51,15 @@ div.container-fluid(ng-controller="concurrent_users_controller")
               div(layout-gt-xs='row')
                 select.form-control(ng-model='selected_rev', ng-options='revision for revision in revisions')
 
+          .form-group
+            label.col-sm-2.control-label Rozdíl času přesunu a rozdílu časů:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                select.form-control(ng-model='diff_needed_timediff', ng-options='key as value for (value, key) in diff_dict')
+                .radio(ng-repeat='type in options.diff_needed_timediff.types track by $index')
+                  input(type='radio', name='diff_needed_timediff', ng-model='options.diff_needed_timediff.sel', ng-value='type')
+                  | {{options.diff_needed_timediff.type_names[$index]}}
+
         .form-group(ng-show='!options_added')
           label.col-sm-2.control-label Další možnosti
           .col-xs-2
@@ -85,9 +94,14 @@ div.container-fluid(ng-controller="concurrent_users_controller")
           th Čas 2. autentizace:
           th Instituce 2:
           th MAC adresa:
-          th Rozdíl časů [s]:
-          th Čas potřebný k přesunu [s]:
-          th Vzdálenost [m]:
+          th Rozdíl časů:
+          th Čas potřebný k přesunu:
+          th Vzdálenost:
+          th
+            a
+              i.fa.fa-chevron-down(ng-if='sort_dir', ng-show='sort_dir' ng-click='change_sort()')
+              i.fa.fa-chevron-up(ng-if='!sort_dir', ng-show='!sort_dir' ng-click='change_sort()')
+            b Rozdíl času přesunu a rozdílu časů:
       tbody(ng-show='!paging.loading')
         tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
           td
@@ -104,9 +118,10 @@ div.container-fluid(ng-controller="concurrent_users_controller")
           td {{row.time_difference}}
           td {{row.time_needed}}
           td {{row.dist}}
+          td {{row.diff_needed_timediff}}
       tbody(ng-show='paging.loading')
         tr
-          td.text-center(colspan='8')
+          td.text-center(colspan='11')
             .loading-indicator
 
     .form-group
