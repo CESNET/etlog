@@ -8,7 +8,7 @@ const agg = require('./aggregation');
 router.get('/', function(req, res, next) {
   try {
     var query = qp.parse_query_string(req.url,
-      [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision" ],
+      [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff" ],
       qp.validate_days);
   }
   catch(error) {
@@ -30,6 +30,13 @@ function search(req, res, next, query) {
   // this is defined by the query -> needs to be computed on the fly
 
   // ===================================================
+  // if query.filter contains some conditions for data eg. count,
+  // the condition must be applied to result of all records aggregated across given timestamps
+  // -> the condition must be applied after aggregation !
+
+  var cond = agg.check_filter(query.filter, [ "diff_needed_timediff" ]);
+
+  // ===================================================
   // construct base query
   var aggregate_query = [
     { $match : query.filter },      // filter by query
@@ -45,8 +52,13 @@ function search(req, res, next, query) {
       time_needed : 1,
       dist        : 1,
       time_difference : { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] }, // difference is in milliseconds
+      diff_needed_timediff : { $subtract : [ "$time_needed", { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] } ] }
     } },
   ];
+
+  // ===================================================
+  // add condition from original filter if defined
+  agg.add_cond(aggregate_query, cond);
 
   // ===================================================
   // add other operators, if defined in query
