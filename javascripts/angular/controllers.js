@@ -113,7 +113,7 @@ function setup_calendars_time($scope)
     altFormat: "H:i d.m.Y",
     dateFormat: "Y-m-dTH:i:S",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min,   // min from db
+    minDate: $scope.db_data.logs.min,       // min from db
     enableTime: true,
     time_24hr : true,
     utc : true
@@ -127,7 +127,7 @@ function setup_calendars_time($scope)
     altFormat: "H:i d.m.Y",
     dateFormat: "Y-m-dTH:i:S",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min,   // min from db
+    minDate: $scope.db_data.logs.min,       // min from db
     enableTime: true,
     time_24hr : true,
     utc : true
@@ -567,7 +567,7 @@ function setup_calendars($scope)
     altInput: true,
     altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min   // min from db
+    minDate: $scope.db_data.logs.min        // min from db
   });
 
   flatpickr("#max_date", {
@@ -577,7 +577,7 @@ function setup_calendars($scope)
     altInput: true,
     altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min   // min from db
+    minDate: $scope.db_data.logs.min        // min from db
   });
 }
 // --------------------------------------------------------------------------------------
