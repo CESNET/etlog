@@ -2417,28 +2417,6 @@ function stacked_graph($scope)
     });
 
   // ==================================================
-
-  // original tooltip
-  //// ==================================================
-  //// Prep the tooltip bits, initial display is hidden
-  //var tooltip = svg.append("g")
-  //  .attr("class", "tooltip")
-  //  .style("display", "none");
-  //
-  //tooltip.append("rect")
-  //  .attr("width", 30)
-  //  .attr("height", 20)
-  //  .attr("fill", "white")
-  //  .style("opacity", 0.5);
-
-  //tooltip.append("text")
-  //  .attr("x", 15)
-  //  .attr("dy", "1.2em")
-  //  .style("text-anchor", "middle")
-  //  .attr("font-size", "12px")
-  //  .attr("font-weight", "bold");
-
-  //// ==================================================
 }
 // --------------------------------------------------------------------------------------
 // concurrent users controller
