@@ -260,7 +260,7 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_mac_count, $scope.paging, [ "username", "count" ], "mac_count");
+  handle_table_submit($scope, $http, get_mac_count, null, $scope.paging, [ "username", "count" ], "mac_count");
   handle_pagination($scope, $http, get_mac_count);
   setup_filters($scope, $http, "mac_count");
   handle_download($scope, ["username", "count", "addrs" ]);
@@ -442,16 +442,20 @@ function init($scope, $http)
 // $scope
 // $http
 // data_func  - function which retrieves data for graph
+// custom_qs_func - custom function to build query string
 // paging     - paging information
 // form_items - array of form fields
 // coll_name  - name of the collection in api
 // --------------------------------------------------------------------------------------
-function handle_table_submit($scope, $http, data_func, paging, form_items, coll_name)
+function handle_table_submit($scope, $http, data_func, custom_qs_func, paging, form_items, coll_name)
 {
   $scope.submit = function (form) {
     if(form.$valid) {
       add_options($scope);        // add optional form fields
-      $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
+      if(custom_qs_func)
+        $scope.base_qs = custom_qs_func($scope, $scope.form_data, form_items);  // create custom query string
+      else
+        $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
       $scope.qs = $scope.base_qs;
       get_total_items($scope, $http, coll_name);        // set number of total items for paging
       $scope.get_page($http, $scope.paging.current_page, data_func);
@@ -927,7 +931,7 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_shared_mac, $scope.paging, [ "mac_address", "count" ], "shared_mac");
+  handle_table_submit($scope, $http, get_shared_mac, null, $scope.paging, [ "mac_address", "count" ], "shared_mac");
   handle_pagination($scope, $http, get_shared_mac);
   setup_filters($scope, $http, "shared_mac");
   handle_download($scope, ["mac_address", "count", "users"]);
