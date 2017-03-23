@@ -2457,7 +2457,7 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_concurrent_users, $scope.paging,  [ "username", "visinst_1", "visinst_2" ], "concurrent_users");
+  handle_table_submit($scope, $http, get_concurrent_users, $scope.paging, [ "username", "visinst_1", "visinst_2" ], "concurrent_users");
   handle_pagination($scope, $http, get_concurrent_users);
   //setup_filters($scope, $http, "concurrent_users");      // TODO?
   handle_download($scope, [ "username", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "time_difference", "time_needed" ]);
