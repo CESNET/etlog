@@ -1095,7 +1095,7 @@ function setup_calendars_time($scope)
     altFormat: "H:i d.m.Y",
     dateFormat: "Y-m-dTH:i:S",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min,   // min from db
+    minDate: $scope.db_data.logs.min,       // min from db
     enableTime: true,
     time_24hr : true,
     utc : true
@@ -1109,7 +1109,7 @@ function setup_calendars_time($scope)
     altFormat: "H:i d.m.Y",
     dateFormat: "Y-m-dTH:i:S",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min,   // min from db
+    minDate: $scope.db_data.logs.min,       // min from db
     enableTime: true,
     time_24hr : true,
     utc : true
@@ -1242,7 +1242,7 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_mac_count, $scope.paging, [ "username", "count" ], "mac_count");
+  handle_table_submit($scope, $http, get_mac_count, null, $scope.paging, [ "username", "count" ], "mac_count");
   handle_pagination($scope, $http, get_mac_count);
   setup_filters($scope, $http, "mac_count");
   handle_download($scope, ["username", "count", "addrs" ]);
@@ -1424,16 +1424,20 @@ function init($scope, $http)
 // $scope
 // $http
 // data_func  - function which retrieves data for graph
+// custom_qs_func - custom function to build query string
 // paging     - paging information
 // form_items - array of form fields
 // coll_name  - name of the collection in api
 // --------------------------------------------------------------------------------------
-function handle_table_submit($scope, $http, data_func, paging, form_items, coll_name)
+function handle_table_submit($scope, $http, data_func, custom_qs_func, paging, form_items, coll_name)
 {
   $scope.submit = function (form) {
     if(form.$valid) {
       add_options($scope);        // add optional form fields
-      $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
+      if(custom_qs_func)
+        $scope.base_qs = custom_qs_func($scope, $scope.form_data, form_items);  // create custom query string
+      else
+        $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
       $scope.qs = $scope.base_qs;
       get_total_items($scope, $http, coll_name);        // set number of total items for paging
       $scope.get_page($http, $scope.paging.current_page, data_func);
@@ -1542,9 +1546,6 @@ function get_days($scope)
 // --------------------------------------------------------------------------------------
 function setup_calendars($scope)
 {
-  // debug
-  console.log($scope.db_data);
-
   flatpickr("#min_date", {
     locale: "cs",
     defaultDate: $scope.form_data.min_date,
@@ -1912,7 +1913,7 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_shared_mac, $scope.paging, [ "mac_address", "count" ], "shared_mac");
+  handle_table_submit($scope, $http, get_shared_mac, null, $scope.paging, [ "mac_address", "count" ], "shared_mac");
   handle_pagination($scope, $http, get_shared_mac);
   setup_filters($scope, $http, "shared_mac");
   handle_download($scope, ["mac_address", "count", "users"]);
@@ -3402,28 +3403,37 @@ function stacked_graph($scope)
     });
 
   // ==================================================
+}
+// --------------------------------------------------------------------------------------
+// custom qs building function for concurrent users controller
+// --------------------------------------------------------------------------------------
+function build_qs_concurrent_users($scope, form_data, form_items)
+{
+  var ret = build_qs(form_data, form_items);
+  if(ret.length == 1)       // ?
+    ret += "revision=" + $scope.selected_rev + "&diff_needed_timediff>" + $scope.diff_needed_timediff + "&";
+  else
+    ret += "&revision=" + $scope.selected_rev + "&diff_needed_timediff>" + $scope.diff_needed_timediff + "&";
 
-  // original tooltip
-  //// ==================================================
-  //// Prep the tooltip bits, initial display is hidden
-  //var tooltip = svg.append("g")
-  //  .attr("class", "tooltip")
-  //  .style("display", "none");
-  //
-  //tooltip.append("rect")
-  //  .attr("width", 30)
-  //  .attr("height", 20)
-  //  .attr("fill", "white")
-  //  .style("opacity", 0.5);
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// handle sorting in concurrent users controller
+// --------------------------------------------------------------------------------------
+function handle_sort($scope, $http, data_func)
+{
+  $scope.sort = "&sort=-diff_needed_timediff";     // sort asccending by diff_needed_timediff
+  $scope.sort_dir = false;   // just for frontend icons
 
-  //tooltip.append("text")
-  //  .attr("x", 15)
-  //  .attr("dy", "1.2em")
-  //  .style("text-anchor", "middle")
-  //  .attr("font-size", "12px")
-  //  .attr("font-weight", "bold");
+  $scope.change_sort = function() {
+    if($scope.sort == "&sort=-diff_needed_timediff")
+      $scope.sort = "&sort=+diff_needed_timediff";
+    else
+      $scope.sort = "&sort=-diff_needed_timediff";
 
-  //// ==================================================
+    $scope.sort_dir = !$scope.sort_dir;     // negate sort direction
+    $scope.get_page($http, $scope.paging.current_page, data_func);  // get page for with new sorting
+  }
 }
 // --------------------------------------------------------------------------------------
 // concurrent users controller
@@ -3442,10 +3452,11 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_concurrent_users, $scope.paging, [ "username", "visinst_1", "visinst_2" ], "concurrent_users");
+  handle_table_submit($scope, $http, get_concurrent_users, build_qs_concurrent_users, $scope.paging, [ "username", "visinst_1", "visinst_2", "revision", "diff_needed_timediff" ], "concurrent_users");
   handle_pagination($scope, $http, get_concurrent_users);
   //setup_filters($scope, $http, "concurrent_users");      // TODO?
-  handle_download($scope, [ "username", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "time_difference", "time_needed" ]);
+  handle_download($scope, [ "username", "timestamp", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "mac_address", "time_difference", "time_needed", "dist", "diff_needed_timediff" ]);
+  handle_sort($scope, $http, get_concurrent_users);
 }]);
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
@@ -3488,7 +3499,7 @@ function additional_fields_concurrent_users($http, $scope)
     $scope.options.visinst_2.val = tmp;
   };
 
-  return $http({
+  $http({
     method  : 'GET',
     url     : '/api/concurrent_rev/'
   })
@@ -3496,6 +3507,13 @@ function additional_fields_concurrent_users($http, $scope)
     $scope.revisions = response.data;
     $scope.selected_rev = $scope.revisions[0];
   });
+
+  $scope.diff_dict = { "0 minut"  : 0,
+                       "5 minut"  : 300,
+                       "15 minut" : 900,
+                       "30 minut" : 1800,
+                       "60 minut" : 3600 };
+  $scope.diff_needed_timediff = $scope.diff_dict["5 minut"];   // default value to filter out bad service coverage
 }
 // --------------------------------------------------------------------------------------
 // transform time information to local time and correct format
@@ -3505,7 +3523,6 @@ function transform_data(data)
 {
   for(var item in data) {
     // transform time info
-
     // day.month.year
     data[item].timestamp = data[item].timestamp.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp.replace(/T.*$/, '').split('-')[0];
 
@@ -3515,11 +3532,65 @@ function transform_data(data)
     // hours:minutes
     data[item].timestamp_2 = data[item].timestamp_2.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_2.replace(/^.*T/, '').split(':')[1];
 
-    // transform diff to human readable
-    // TODO
+    // time conversion
+    data[item].time_needed = hms_string(data[item].time_needed);
+    data[item].time_difference = hms_string(data[item].time_difference);
+    data[item].diff_needed_timediff = hms_string(data[item].diff_needed_timediff);
+
+    // distance conversion
+    data[item].dist = convert_dist(data[item].dist);
+
   }
 
   return data;
+}
+// --------------------------------------------------------------------------------------
+// return input converted to distance represented as string
+// --------------------------------------------------------------------------------------
+function convert_dist(input)
+{
+  var ret = "";
+
+  if(input >= 100000) {
+    ret += Math.round(input / 1000) + " km";
+    return ret;
+  }
+
+  if(input >= 10000) {
+    ret += (input / 1000).toFixed(1) +  " km";
+    return ret;
+  }
+
+  if(input >= 1000) {
+    ret += (input / 1000).toFixed(2) +  " km";
+    return ret;
+  }
+
+  ret += input +  " m";
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// return input converted to hours, minutes and seconds string
+// --------------------------------------------------------------------------------------
+function hms_string(input)
+{
+  var ret = "";
+
+  if(input >= 3600) {
+    ret += Math.floor(input / 3600) + " h ";
+    input = input % 3600;
+  }
+
+  if(input >= 60) {
+    ret += Math.floor(input / 60) + " m ";
+    input = input % 60;
+  }
+
+  if(input > 0)
+    ret += input + " s";
+
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 // get concurrent users data
@@ -3531,7 +3602,7 @@ function get_concurrent_users($scope, $http, qs, callback)
 
   return $http({
     method  : 'GET',
-    url     : '/api/concurrent_users/' + qs + ts + "&revision=" + $scope.selected_rev + "&sort=-username"      // always sort by username
+    url     : '/api/concurrent_users/' + qs + ts + $scope.sort      // sort by diff_needed_timediff
   })
   .then(function(response) {
     $scope.table_data = transform_data(response.data);
