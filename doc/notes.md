@@ -1079,8 +1079,8 @@ Frontend has followind structure:
 | orgs\_roaming\_most\_used      | /#/orgs\_roaming\_most\_provided  | etlog: organizace nejvíce poskytující konektivitu  |
 | orgs\_roaming\_most\_provided  | /#/orgs\_roaming\_most\_used      | etlog: organizace nejvíce využívající roaming      |
 | roaming\_activity              | /#/roaming\_activity              | etlog: aktivita eduroamu                           |
-| detection\_data                | /#/detection\_data                |  etlog: absolutní počet přihlášení                 |
-| detection\_data\_grouped       | /#/detection\_data\_grouped       |  etlog: normalizovaný počet přihlíšení             |
+| detection\_data                | /#/detection\_data                | etlog: absolutní počet přihlášení                  |
+| detection\_data\_grouped       | /#/detection\_data\_grouped       | etlog: normalizovaný počet přihlíšení              |
 
 
 #### Backend
