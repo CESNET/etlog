@@ -949,7 +949,7 @@ Application api:
 
 | URL                             | params | query string variables                                 | note                   |
 |---------------------------------|--------|--------------------------------------------------------|------------------------|
-| /api/search/                    |        | timestamp, pn, [ 'csi', 'result', 'realm', 'visinst']  |                        |
+| /api/search/                    |        | timestamp, pn, [ csi, result, realm, visinst]          |                        |
 | /api/failed\_logins/            |        | timestamp, [ username, fail\_count, ok\_count, ratio ] |                        |
 | /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |                        |
 | /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
@@ -964,12 +964,12 @@ Application api:
 | /api/visinst\_logins            |        | tiemstamp, [ realm ]                                   |  |
 | /api/unique\_users/realm        |        | timestamp, realm                                       |  |
 | /api/unique\_users/visinst      |        | timestamp, realm                                       |  |
-| /api/concurrent\_users          |        | timestamp, [ username, visinst\_1, visinst\_2 ]        |  |
+| /api/concurrent\_users          |        | timestamp, [ username, visinst\_1, visinst\_2, revision, diff\_needed\_timediff ]        |  |
 | /api/concurrent\_inst           |        | timestamp                                              |  |
 | /api/count/mac\_count           |        | timestamp, [ username, count, addrs ]                  | returns count of records for mac\_count collection |
 | /api/count/shared\_mac          |        | timestamp, [ count, mac\_address, users ]              | returns count of records for shared\_mac collection|
-| /api/count/concurrent\_users    |        | timestamp, [ username, visinst\_1, visinst\_2 ]        | returns count of records for concurrent\_users collection  |
-| /api/count/logs                 |        | timestamp, [ 'pn', 'csi', 'realm', 'visinst', 'result' ] | returns count of records for logs collection |
+| /api/count/concurrent\_users    |        | timestamp, [ username, visinst\_1, visinst\_2, revision, diff\_needed\_timediff ]        | returns count of records for concurrent\_users collection  |
+| /api/count/logs                 |        | timestamp, [ pn, csi, realm, visinst, result ] | returns count of records for logs collection |
 
 
 
