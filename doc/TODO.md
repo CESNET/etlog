@@ -1,43 +1,8 @@
 # Detekce uzivatelu v ruznych lokalitach soucasne
 
-- pridat do repozitare zdrojovy json pro vypocet?
-- upravit popisky tabulky?
-- implicitne razeno dle uzivatelskeho jmena
-- pridat filtrovani?
+pripominky ?
 
-
-> tabulku predelat:
-> pridat sloupec pro datum
-> cas prvni autentizace a cas druhe autentizace
-> popisky upravit na cas 1. autentizace a cas 2. autentizace
-  > pouze instituce 1 a instituce 2
-> pridat mac adresu, ktera se poji k zaznamu => potencialne zmenit cele db schema
-> upravit cas do aktualni casove zony
-> pridat tlacitko na prehozeni obsahu poli navstivena instituce 1 a navstivena instituce 2
-> pridat vzdalenost do vysledne tabulky
-> cas i vzdalenost zaokrouhlit na cele jednotky
-> cas vypsat nejake inteligentne -> hodiny/minuty/sekundy .. 
-> revize detekcnich dat -> bude upravena struktura vstupniho jsonu
-
-> pridat moznost radit podle rozdilu casu
-
-> implicitne s hodnotou filtrovat casy, ktere se od casu mozneho presunu lisi velmi malo (napr < 5 min)
-
-
-# zlepseni detekce sdilenych uctu
-
-podklady:
-https://www.ietf.org/mail-archive/web/ipv6/current/msg24695.html
-http://searchsecurity.techtarget.com/tip/MAC-address-randomization-schemes-Examining-the-pros-and-cons
-http://papers.mathyvanhoef.com/asiaccs2016.pdf
-http://www.it.uc3m.es/cjbc/papers/pdf/2015_bernardos_cscn_privacy.pdf
-
-Pravdepodobne bylo by mozne alespon castecne zlepsit detekci randomizovanych adres na zaklade u/l bitu.
-
-Jak by mela byt detekce udelana? 
-Adresy, ktere nebudou mit locally administered bit nastaveny vyradit?
-
-# Nove
+# copy paste primo z webu
 
 pri copy paste mac adres z https://etlog.cesnet.cz/#/mac_count je to jeden velky blok cisel.
 
@@ -72,7 +37,6 @@ pri copy paste mac adres z https://etlog.cesnet.cz/#/mac_count je to jeden velky
 11. ...
 
 # TODO dobudoucna
-- vyvojovy server?
 - vyuzit http://bl.ocks.org/mbostock/34f08d5e11952a80609169b7917d4172 pro grafy?
 - lepsi reseni popisku na ose x pro intervaly < mesic?
 - mrizka v grafech?
