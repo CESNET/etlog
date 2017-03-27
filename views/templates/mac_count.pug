@@ -82,6 +82,8 @@ div.container-fluid(ng-controller="mac_count_controller")
               li(ng-repeat='addr in row.addrs')
                 a(ui-sref='search({pn : row.username, csi: addr})', target='_blank')
                   | {{addr}}
+                b
+                  | &nbsp;
       tbody(ng-show='paging.loading')
         tr
           td.text-center(colspan='4')
