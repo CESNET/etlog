@@ -6,8 +6,9 @@ pripominky ?
 
 # copy paste primo z webu
 
-pri copy paste mac adres z https://etlog.cesnet.cz/#/mac_count je to jeden velky blok cisel.
+nova verze nasazena [zde](https://etlog-dev.cesnet.cz/#/mac_count) a [zde](https://etlog-dev.cesnet.cz/#/shared_mac)
 
+pripominky ?
 
 # Ostatní
 
