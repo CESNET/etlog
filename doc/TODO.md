@@ -10,6 +10,12 @@ nova verze nasazena [zde](https://etlog-dev.cesnet.cz/#/mac_count) a [zde](https
 
 pripominky ?
 
+# download dat
+
+reseni [issue](https://github.com/CESNET/etlog/issues/1) nasazeno na [devu](https://etlog-dev.cesnet.cz/#/shared_mac)
+
+pripominky ?
+
 # Ostatní
 
 - nějakou logiku, která zapne aplikaci po pádu/restartu serveru.
