@@ -1284,7 +1284,7 @@ angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_used_count, stacked_graph, "roaming_most_used", "used_count");
-  handle_download($scope, $http, ["inst_name", "used_count", "unique_count"]);
+  handle_table_download($scope, ["inst_name", "used_count", "unique_count"]);
 }]);
 // --------------------------------------------------------------------------------------
 // initialize calendars
@@ -1442,7 +1442,7 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
-  handle_download($scope, $http, ["inst_name", "provided_count", "unique_count"]);
+  handle_table_download($scope, ["inst_name", "provided_count", "unique_count"]);
 }]);
 // --------------------------------------------------------------------------------------
 // create graph data for organizations most providing roaming
@@ -1517,6 +1517,25 @@ function remove_limit(url)
 // --------------------------------------------------------------------------------------
 // handle download button
 // order is array of keys
+// download only displayed data
+// --------------------------------------------------------------------------------------
+function handle_table_download($scope, order)
+{
+  $scope.download_data = function() {
+    var text = get_text(order, $scope.table_data);
+    // taken from https://codepen.io/YuvarajTana/pen/yNoNdZ
+    var a = $('<a/>', {
+      style:'display:none',
+      href:'data:application/octet-stream;base64,' + btoa(text),
+      download:'data.csv'
+    }).appendTo('body')
+    a[0].click()
+    a.remove();
+  }
+}
+// --------------------------------------------------------------------------------------
+// handle download button
+// order is array of keys
 // --------------------------------------------------------------------------------------
 function handle_download($scope, $http, order)
 {
@@ -1528,7 +1547,7 @@ function handle_download($scope, $http, order)
       url     : $scope.download_url
     })
     .then(function(response) {
-      var text = get_text($scope, order, response.data);
+      var text = get_text(order, response.data);
       // taken from https://codepen.io/YuvarajTana/pen/yNoNdZ
       var a = $('<a/>', {
         style:'display:none',
@@ -1543,7 +1562,7 @@ function handle_download($scope, $http, order)
 // --------------------------------------------------------------------------------------
 // generate csv from table data in defined order
 // --------------------------------------------------------------------------------------
-function get_text($scope, order, data)
+function get_text(order, data)
 {
   var text = "";
 
@@ -1568,8 +1587,8 @@ function get_text($scope, order, data)
 
   for(var item in data) {
     for(var key in order) {
-
       if(text.length > 0 && text[text.length - 1] != "\n") {   // continue
+
         if(data[item][order[key]].constructor === Array) // array
           text += ",\"" + data[item][order[key]] + "\"";      // close array into ""
         else
@@ -2660,7 +2679,7 @@ function get_concurrent_users($scope, $http, qs, callback)
 angular.module('etlog').controller('concurrent_inst_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
   handle_submit($scope, $http, $q, get_concurrent_inst, filter_table_data, []);
-  handle_download($scope, $http, [ "visinst_1", "visinst_2", "count" ]);
+  handle_table_download($scope, [ "visinst_1", "visinst_2", "count" ]);
 }]);
 // --------------------------------------------------------------------------------------
 // get concurrent inst data
