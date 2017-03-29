@@ -42,15 +42,16 @@ function search(req, res, next, query) {
     { $match : query.filter },      // filter by query
     { $project : { 
       _id : 0,
-      timestamp   : 1,
-      timestamp_1 : 1,
-      timestamp_2 : 1,
-      visinst_1   : 1,
-      visinst_2   : 1,
-      username    : 1,
-      mac_address : 1,
-      time_needed : 1,
-      dist        : 1,
+      timestamp     : 1,
+      timestamp_1   : 1,
+      timestamp_2   : 1,
+      visinst_1     : 1,
+      visinst_2     : 1,
+      username      : 1,
+      mac_address_1 : 1,
+      mac_address_2 : 1,
+      time_needed   : 1,
+      dist          : 1,
       time_difference : { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] }, // difference is in milliseconds
       diff_needed_timediff : { $subtract : [ "$time_needed", { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] } ] }
     } },

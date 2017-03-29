@@ -221,16 +221,17 @@ function analyze_data(database, items, data, min, done)
         // negative will be processed in reversed order
         if(items[idx].timestamp - items[idx -1].timestamp >= 0) {
           var item = {
-            timestamp   : min,
-            timestamp_1 : items[idx - 1].timestamp,
-            timestamp_2 : items[idx].timestamp,
-            visinst_1   : items[idx - 1].visinst,
-            visinst_2   : items[idx].visinst,
-            username    : items[idx].pn,
-            mac_address : items[idx].csi,
-            time_needed : Math.round(data.time),
-            dist        : Math.round(data.dist),
-            revision    : data.revision
+            timestamp     : min,
+            timestamp_1   : items[idx - 1].timestamp,
+            timestamp_2   : items[idx].timestamp,
+            visinst_1     : items[idx - 1].visinst,
+            visinst_2     : items[idx].visinst,
+            username      : items[idx].pn,
+            mac_address_1 : items[idx - 1].csi,
+            mac_address_2 : items[idx].csi,
+            time_needed   : Math.round(data.time),
+            dist          : Math.round(data.dist),
+            revision      : data.revision
           };
 
           db_data.push(item);
