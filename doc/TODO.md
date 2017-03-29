@@ -4,17 +4,23 @@ nova verze nasazena na [devu](https://etlog-dev.cesnet.cz/#/concurrent_users)
 
 pripominky ?
 
+v mailu
+
 # copy paste primo z webu
 
 nova verze nasazena [zde](https://etlog-dev.cesnet.cz/#/mac_count) a [zde](https://etlog-dev.cesnet.cz/#/shared_mac)
 
 pripominky ?
 
+Ok. Dekuji.
+
 # download dat
 
 reseni [issue](https://github.com/CESNET/etlog/issues/1) nasazeno na [devu](https://etlog-dev.cesnet.cz/#/shared_mac)
 
-pripominky ?
+pripominky?
+
+Ok. Dekuji.
 
 # Ostatní
 
