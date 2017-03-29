@@ -87,21 +87,25 @@ div.container-fluid(ng-controller="concurrent_users_controller")
     table.table.table-bordered.table-responsive#out
       thead
         tr
-          th Uživatelské jméno:
-          th Datum:
-          th Čas 1. autentizace:
-          th Instituce 1:
-          th Čas 2. autentizace:
-          th Instituce 2:
+          th(rowspan='2') Uživatelské jméno:
+          th(rowspan='2') Datum:
+          th(colspan='3') 1. autentizace:
+          th(colspan='3') 2. autentizace:
+          th(rowspan='2') Vzdálenost:
+          th(colspan='3') Čas:
+        tr
+          th Čas:
+          th Instituce:
           th MAC adresa:
-          th Rozdíl časů:
-          th Čas potřebný k přesunu:
-          th Vzdálenost:
-          th
+          th Čas:
+          th Instituce:
+          th MAC adresa:
+          th Teoretický:
+          th Dosažený:
+          th Rozdíl:
             a
               i.fa.fa-chevron-down(ng-if='sort_dir', ng-show='sort_dir' ng-click='change_sort()')
               i.fa.fa-chevron-up(ng-if='!sort_dir', ng-show='!sort_dir' ng-click='change_sort()')
-            b Rozdíl času přesunu a rozdílu časů:
       tbody(ng-show='!paging.loading')
         tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
           td
@@ -110,14 +114,17 @@ div.container-fluid(ng-controller="concurrent_users_controller")
           td {{row.timestamp}}
           td {{row.timestamp_1}}
           td {{row.visinst_1}}
+          td
+            a(ui-sref='search({pn : row.username, csi : row.mac_address_1})' target='_blank')
+              | {{row.mac_address_1}}
           td {{row.timestamp_2}}
           td {{row.visinst_2}}
           td
-            a(ui-sref='search({pn : row.username, csi : row.mac_address})' target='_blank')
-              | {{row.mac_address}}
-          td {{row.time_difference}}
-          td {{row.time_needed}}
+            a(ui-sref='search({pn : row.username, csi : row.mac_address_2})' target='_blank')
+              | {{row.mac_address_2}}
           td {{row.dist}}
+          td {{row.time_needed}}
+          td {{row.time_difference}}
           td {{row.diff_needed_timediff}}
       tbody(ng-show='paging.loading')
         tr
@@ -130,6 +137,7 @@ div.container-fluid(ng-controller="concurrent_users_controller")
 
     .text-center
       dir-pagination-controls(boundary-links='true', on-page-change='page_changed(newPageNumber)', template-url='partials/dirPagination.tpl.html')
+
 
 
 
