@@ -1015,7 +1015,7 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   handle_search_submit($scope, $http, get_logs, $scope.paging, "logs");
   handle_pagination($scope, $http, get_logs);
   setup_filters($scope, $http, "logs");
-  handle_sort($scope, $http, get_logs);
+  handle_sort_search($scope, $http, get_logs);
   set_params($scope, $stateParams); // set params passed from other views
   handle_download($scope, $http, ["result", "timestamp", "username", "mac_address", "realm", "visinst"]);
   handle_empty_form($scope);
@@ -1067,7 +1067,7 @@ function init_search($scope, $http)
 // --------------------------------------------------------------------------------------
 // handle sorting in search controller
 // --------------------------------------------------------------------------------------
-function handle_sort($scope, $http, data_func)
+function handle_sort_search($scope, $http, data_func)
 {
   $scope.sort = "&sort=-timestamp";     // sort asccending by timestamp
   $scope.sort_dir = false;   // just for frontend icons
