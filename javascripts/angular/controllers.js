@@ -2639,18 +2639,11 @@ function hms_string(input)
 {
   var ret = "";
 
-  if(input >= 3600) {
-    ret += Math.floor(input / 3600) + " h ";
-    input = input % 3600;
-  }
+  ret += Math.floor(input / 3600) + "h:";
+  input = input % 3600;
 
-  if(input >= 60) {
-    ret += Math.floor(input / 60) + " m ";
-    input = input % 60;
-  }
-
-  if(input > 0)
-    ret += input + " s";
+  ret += Math.floor(input / 60) + "m";
+  input = input % 60;
 
   return ret;
 }
