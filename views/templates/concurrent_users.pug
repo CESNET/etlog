@@ -51,7 +51,7 @@ div.container-fluid(ng-controller="concurrent_users_controller")
                 select.form-control(ng-model='selected_rev', ng-options='revision for revision in revisions')
 
           .form-group
-            label.col-sm-2.control-label Rozdíl času přesunu a rozdílu časů:
+            label.col-sm-2.control-label Rozdíl teoretického a dosaženého času:
             .col-xs-2
               div(layout-gt-xs='row')
                 select.form-control(ng-model='diff_needed_timediff', ng-options='key as value for (value, key) in diff_dict')
