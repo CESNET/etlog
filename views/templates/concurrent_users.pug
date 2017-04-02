@@ -59,6 +59,13 @@ div.container-fluid(ng-controller="concurrent_users_controller")
                   input(type='radio', name='diff_needed_timediff', ng-model='options.diff_needed_timediff.sel', ng-value='type')
                   | {{options.diff_needed_timediff.type_names[$index]}}
 
+          .form-group
+            label.col-sm-2.control-label MAC adresy:
+            .col-xs-2
+              select.form-control(ng-model='form_data.mac_diff')
+                each key, val in {"libovolné" : "", "stejné" : "==", "různé" : "!="}
+                  option(value = key) #{val}
+
         .form-group(ng-show='!options_added')
           label.col-sm-2.control-label Další možnosti
           .col-xs-2
