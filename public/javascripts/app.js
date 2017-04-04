@@ -3453,11 +3453,19 @@ function stacked_graph($scope)
 // --------------------------------------------------------------------------------------
 function build_qs_concurrent_users($scope, form_data, form_items)
 {
-  var ret = build_qs(form_data, form_items);
-  if(ret.length == 1)       // ?
-    ret += "revision=" + $scope.selected_rev + "&diff_needed_timediff>" + $scope.diff_needed_timediff + "&";
-  else
-    ret += "&revision=" + $scope.selected_rev + "&diff_needed_timediff>" + $scope.diff_needed_timediff + "&";
+  var ret = build_qs(form_data, Object.keys($scope.form_data));
+
+  ret += "revision=" + $scope.selected_rev + "&diff_needed_timediff>=" + $scope.diff_needed_timediff + "&";
+
+  switch($scope.form_data.mac_diff) {
+    case "==":  // same
+      ret += "mac_diff=false&";
+      break;
+
+    case "!=":  // different
+      ret += "mac_diff=true&";
+      break;
+  }
 
   return ret;
 }
@@ -3496,7 +3504,8 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_concurrent_users, build_qs_concurrent_users, $scope.paging, [ "username", "visinst_1", "visinst_2", "revision", "diff_needed_timediff" ], "concurrent_users");
+
+  handle_table_submit($scope, $http, get_concurrent_users, build_qs_concurrent_users, $scope.paging, [], "concurrent_users");
   handle_pagination($scope, $http, get_concurrent_users);
   //setup_filters($scope, $http, "concurrent_users");      // TODO?
   handle_download($scope, $http, [ "username", "timestamp", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "mac_address", "time_difference", "time_needed", "dist", "diff_needed_timediff" ]);
