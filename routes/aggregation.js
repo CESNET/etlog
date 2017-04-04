@@ -8,7 +8,7 @@ exp.check_filter = function(query, fields)
   var ret = {};
 
   for(var field in fields) {
-    if(query[fields[field]]) {
+    if(query[fields[field]] != undefined) {
       ret[fields[field]] = query[fields[field]];    // add to result
       delete query[fields[field]];                  // delete original item
     }
