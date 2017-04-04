@@ -2473,10 +2473,7 @@ function build_qs_concurrent_users($scope, form_data, form_items)
 {
   var ret = build_qs(form_data, Object.keys($scope.form_data));
 
-  if(ret.length == 1)       // ?
-    ret += "revision=" + $scope.selected_rev + "&diff_needed_timediff>=" + $scope.diff_needed_timediff + "&";
-  else
-    ret += "&revision=" + $scope.selected_rev + "&diff_needed_timediff>=" + $scope.diff_needed_timediff + "&";
+  ret += "revision=" + $scope.selected_rev + "&diff_needed_timediff>=" + $scope.diff_needed_timediff + "&";
 
   switch($scope.form_data.mac_diff) {
     case "==":  // same
