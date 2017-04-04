@@ -50,4 +50,12 @@ exp.add_cond = function(aggregate_query, cond)
   return aggregate_query;
 }
 // --------------------------------------------------------------------------------------
+// add stage to aggregation
+// --------------------------------------------------------------------------------------
+exp.add_stage = function(aggregate_query, stage)
+{
+  aggregate_query.push(stage);
+  return aggregate_query;
+}
+// --------------------------------------------------------------------------------------
 module.exports = exp;
