@@ -35,6 +35,7 @@ function search(req, res, next, query) {
   // -> the condition must be applied after aggregation !
 
   var cond = agg.check_filter(query.filter, [ "diff_needed_timediff" ]);
+  var mac_diff = agg.check_filter(query.filter, [ "mac_diff" ]);
 
   // ===================================================
   // construct base query
@@ -57,9 +58,19 @@ function search(req, res, next, query) {
     } },
   ];
 
+
   // ===================================================
   // add condition from original filter if defined
   agg.add_cond(aggregate_query, cond);
+
+  // ===================================================
+  // add redact stage if mac_diff is required
+  if(Object.keys(mac_diff).length > 0) {
+    if(mac_diff.mac_diff == true) // true - different mac addresses
+      agg.add_stage(aggregate_query, { "$redact" : { "$cond" : [ { "$ne" : [ "$mac_address_1", "$mac_address_2" ] }, "$$KEEP", "$$PRUNE" ] } });
+    else                          // false - same mac addresses
+      agg.add_stage(aggregate_query, { "$redact" : { "$cond" : [ { "$eq" : [ "$mac_address_1", "$mac_address_2" ] }, "$$KEEP", "$$PRUNE" ] } });
+  }
 
   // ===================================================
   // add other operators, if defined in query

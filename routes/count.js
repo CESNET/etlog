@@ -207,15 +207,16 @@ router.get('/concurrent_users', function(req, res, next) {
     { $match : query.filter },      // filter by query
     { $project : { 
       _id : 0,
-      timestamp   : 1,
-      timestamp_1 : 1,
-      timestamp_2 : 1,
-      visinst_1   : 1,
-      visinst_2   : 1,
-      username    : 1,
-      mac_address : 1,
-      time_needed : 1,
-      dist        : 1,
+      timestamp     : 1,
+      timestamp_1   : 1,
+      timestamp_2   : 1,
+      visinst_1     : 1,
+      visinst_2     : 1,
+      username      : 1,
+      mac_address_1 : 1,
+      mac_address_2 : 1,
+      time_needed   : 1,
+      dist          : 1,
       time_difference : { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] }, // difference is in milliseconds
       diff_needed_timediff : { $subtract : [ "$time_needed", { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] } ] }
     } },
@@ -224,6 +225,15 @@ router.get('/concurrent_users', function(req, res, next) {
   // ===================================================
   // add condition from original filter if defined
   agg.add_cond(aggregate_query, cond);
+
+  // ===================================================
+  // add redact stage if mac_diff is required
+  if(Object.keys(mac_diff).length > 0) {
+    if(mac_diff.mac_diff == true) // true - different mac addresses
+      agg.add_stage(aggregate_query, { "$redact" : { "$cond" : [ { "$ne" : [ "$mac_address_1", "$mac_address_2" ] }, "$$KEEP", "$$PRUNE" ] } });
+    else                          // false - same mac addresses
+      agg.add_stage(aggregate_query, { "$redact" : { "$cond" : [ { "$eq" : [ "$mac_address_1", "$mac_address_2" ] }, "$$KEEP", "$$PRUNE" ] } });
+  }
 
   // ===================================================
   // add other operators, if defined in query
