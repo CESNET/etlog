@@ -1015,9 +1015,9 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   handle_search_submit($scope, $http, get_logs, $scope.paging, "logs");
   handle_pagination($scope, $http, get_logs);
   setup_filters($scope, $http, "logs");
-  handle_sort($scope, $http, get_logs);
+  handle_sort_search($scope, $http, get_logs);
   set_params($scope, $stateParams); // set params passed from other views
-  handle_download($scope, ["result", "timestamp", "username", "mac_address", "realm", "visinst"]);
+  handle_download($scope, $http, ["result", "timestamp", "username", "mac_address", "realm", "visinst"]);
   handle_empty_form($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -1067,7 +1067,7 @@ function init_search($scope, $http)
 // --------------------------------------------------------------------------------------
 // handle sorting in search controller
 // --------------------------------------------------------------------------------------
-function handle_sort($scope, $http, data_func)
+function handle_sort_search($scope, $http, data_func)
 {
   $scope.sort = "&sort=-timestamp";     // sort asccending by timestamp
   $scope.sort_dir = false;   // just for frontend icons
@@ -1095,7 +1095,7 @@ function setup_calendars_time($scope)
     altFormat: "H:i d.m.Y",
     dateFormat: "Y-m-dTH:i:S",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min,   // min from db
+    minDate: $scope.db_data.logs.min,       // min from db
     enableTime: true,
     time_24hr : true,
     utc : true
@@ -1109,7 +1109,7 @@ function setup_calendars_time($scope)
     altFormat: "H:i d.m.Y",
     dateFormat: "Y-m-dTH:i:S",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min,   // min from db
+    minDate: $scope.db_data.logs.min,       // min from db
     enableTime: true,
     time_24hr : true,
     utc : true
@@ -1163,6 +1163,8 @@ function get_logs($scope, $http, qs, callback)
     url     : '/api/search/' + qs + ts + $scope.sort
   })
   .then(function(response) {
+    if(!$scope.download_url)
+      $scope.download_url = '/api/search/' + qs + ts + $scope.sort;   // set download url
     $scope.table_data = transform_timestamp(response.data);
     callback($scope);
   }, function (response) {
@@ -1242,10 +1244,10 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_mac_count, $scope.paging, [ "username", "count" ], "mac_count");
+  handle_table_submit($scope, $http, get_mac_count, null, $scope.paging, [ "username", "count" ], "mac_count");
   handle_pagination($scope, $http, get_mac_count);
   setup_filters($scope, $http, "mac_count");
-  handle_download($scope, ["username", "count", "addrs" ]);
+  handle_download($scope, $http, ["username", "count", "addrs" ]);
   handle_anon($scope);
 }]);
 // --------------------------------------------------------------------------------------
@@ -1424,16 +1426,20 @@ function init($scope, $http)
 // $scope
 // $http
 // data_func  - function which retrieves data for graph
+// custom_qs_func - custom function to build query string
 // paging     - paging information
 // form_items - array of form fields
 // coll_name  - name of the collection in api
 // --------------------------------------------------------------------------------------
-function handle_table_submit($scope, $http, data_func, paging, form_items, coll_name)
+function handle_table_submit($scope, $http, data_func, custom_qs_func, paging, form_items, coll_name)
 {
   $scope.submit = function (form) {
     if(form.$valid) {
       add_options($scope);        // add optional form fields
-      $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
+      if(custom_qs_func)
+        $scope.base_qs = custom_qs_func($scope, $scope.form_data, form_items);  // create custom query string
+      else
+        $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
       $scope.qs = $scope.base_qs;
       get_total_items($scope, $http, coll_name);        // set number of total items for paging
       $scope.get_page($http, $scope.paging.current_page, data_func);
@@ -1515,6 +1521,8 @@ function get_mac_count($scope, $http, qs, callback)
     url     : '/api/mac_count/' + qs + ts + "&sort=-count"      // always sort by mac address count
   })
   .then(function(response) {
+    if(!$scope.download_url)
+      $scope.download_url = '/api/mac_count/' + qs + ts + "&sort=-count";   // set download url
     $scope.table_data = response.data;
     callback($scope);
   });
@@ -1549,7 +1557,7 @@ function setup_calendars($scope)
     altInput: true,
     altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min   // min from db
+    minDate: $scope.db_data.logs.min        // min from db
   });
 
   flatpickr("#max_date", {
@@ -1559,7 +1567,7 @@ function setup_calendars($scope)
     altInput: true,
     altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.mac_count.min   // min from db
+    minDate: $scope.db_data.logs.min        // min from db
   });
 }
 // --------------------------------------------------------------------------------------
@@ -1909,10 +1917,10 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_shared_mac, $scope.paging, [ "mac_address", "count" ], "shared_mac");
+  handle_table_submit($scope, $http, get_shared_mac, null, $scope.paging, [ "mac_address", "count" ], "shared_mac");
   handle_pagination($scope, $http, get_shared_mac);
   setup_filters($scope, $http, "shared_mac");
-  handle_download($scope, ["mac_address", "count", "users"]);
+  handle_download($scope, $http, ["mac_address", "count", "users"]);
 }]);
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
@@ -1956,6 +1964,8 @@ function get_shared_mac($scope, $http, qs, callback)
     url     : '/api/shared_mac/' + qs + ts + "&sort=-count"      // always sort by mac address count
   })
   .then(function(response) {
+    if(!$scope.download_url)
+      $scope.download_url = '/api/shared_mac/' + qs + ts + "&sort=-count";   // set download url
     $scope.table_data = response.data;
     callback($scope);
   });
@@ -2256,7 +2266,7 @@ angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_used_count, stacked_graph, "roaming_most_used", "used_count");
-  handle_download($scope, ["inst_name", "used_count", "unique_count"]);
+  handle_table_download($scope, ["inst_name", "used_count", "unique_count"]);
 }]);
 // --------------------------------------------------------------------------------------
 // initialize calendars
@@ -2414,7 +2424,7 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
-  handle_download($scope, ["inst_name", "provided_count", "unique_count"]);
+  handle_table_download($scope, ["inst_name", "provided_count", "unique_count"]);
 }]);
 // --------------------------------------------------------------------------------------
 // create graph data for organizations most providing roaming
@@ -2475,13 +2485,26 @@ function add_unique(data, table_data, graph_data)
   }
 }
 // --------------------------------------------------------------------------------------
+// remove limit from download url
+// --------------------------------------------------------------------------------------
+function remove_limit(url)
+{
+  var ret;
+
+  ret = url.replace(/&limit=[0-9]+/, "");   // some params before limit
+  ret = ret.replace(/limit=[0-9]+&/, "");   // limit is first, remove followind &
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
 // handle download button
 // order is array of keys
+// download only displayed data
 // --------------------------------------------------------------------------------------
-function handle_download($scope, order)
+function handle_table_download($scope, order)
 {
   $scope.download_data = function() {
-    var text = get_text($scope, order);
+    var text = get_text(order, $scope.table_data);
     // taken from https://codepen.io/YuvarajTana/pen/yNoNdZ
     var a = $('<a/>', {
       style:'display:none',
@@ -2493,12 +2516,37 @@ function handle_download($scope, order)
   }
 }
 // --------------------------------------------------------------------------------------
+// handle download button
+// order is array of keys
+// --------------------------------------------------------------------------------------
+function handle_download($scope, $http, order)
+{
+  $scope.download_data = function() {
+    $scope.download_url = remove_limit($scope.download_url);
+
+    $http({
+      method  : 'GET',
+      url     : $scope.download_url
+    })
+    .then(function(response) {
+      var text = get_text(order, response.data);
+      // taken from https://codepen.io/YuvarajTana/pen/yNoNdZ
+      var a = $('<a/>', {
+        style:'display:none',
+        href:'data:application/octet-stream;base64,' + btoa(text),
+        download:'data.csv'
+      }).appendTo('body')
+      a[0].click()
+      a.remove();
+    });
+  }
+}
+// --------------------------------------------------------------------------------------
 // generate csv from table data in defined order
 // --------------------------------------------------------------------------------------
-function get_text($scope, order)
+function get_text(order, data)
 {
   var text = "";
-  var data = $scope.table_data;
 
   if(!data) { // no data present, do nothing
     return;
@@ -2521,8 +2569,8 @@ function get_text($scope, order)
 
   for(var item in data) {
     for(var key in order) {
-
       if(text.length > 0 && text[text.length - 1] != "\n") {   // continue
+
         if(data[item][order[key]].constructor === Array) // array
           text += ",\"" + data[item][order[key]] + "\"";      // close array into ""
         else
@@ -3399,35 +3447,52 @@ function stacked_graph($scope)
     });
 
   // ==================================================
+}
+// --------------------------------------------------------------------------------------
+// custom qs building function for concurrent users controller
+// --------------------------------------------------------------------------------------
+function build_qs_concurrent_users($scope, form_data, form_items)
+{
+  var ret = build_qs(form_data, Object.keys($scope.form_data));
 
-  // original tooltip
-  //// ==================================================
-  //// Prep the tooltip bits, initial display is hidden
-  //var tooltip = svg.append("g")
-  //  .attr("class", "tooltip")
-  //  .style("display", "none");
-  //
-  //tooltip.append("rect")
-  //  .attr("width", 30)
-  //  .attr("height", 20)
-  //  .attr("fill", "white")
-  //  .style("opacity", 0.5);
+  ret += "revision=" + $scope.selected_rev + "&diff_needed_timediff>=" + $scope.diff_needed_timediff + "&";
 
-  //tooltip.append("text")
-  //  .attr("x", 15)
-  //  .attr("dy", "1.2em")
-  //  .style("text-anchor", "middle")
-  //  .attr("font-size", "12px")
-  //  .attr("font-weight", "bold");
+  switch($scope.form_data.mac_diff) {
+    case "==":  // same
+      ret += "mac_diff=false&";
+      break;
 
-  //// ==================================================
+    case "!=":  // different
+      ret += "mac_diff=true&";
+      break;
+  }
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// handle sorting in concurrent users controller
+// --------------------------------------------------------------------------------------
+function handle_sort($scope, $http, data_func)
+{
+  $scope.sort = "&sort=-diff_needed_timediff";     // sort asccending by diff_needed_timediff
+  $scope.sort_dir = false;   // just for frontend icons
+
+  $scope.change_sort = function() {
+    if($scope.sort == "&sort=-diff_needed_timediff")
+      $scope.sort = "&sort=+diff_needed_timediff";
+    else
+      $scope.sort = "&sort=-diff_needed_timediff";
+
+    $scope.sort_dir = !$scope.sort_dir;     // negate sort direction
+    $scope.get_page($http, $scope.paging.current_page, data_func);  // get page for with new sorting
+  }
 }
 // --------------------------------------------------------------------------------------
 // concurrent users controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
-  additional_fields_concurrent_users($scope);   // set up additional form fields
+  additional_fields_concurrent_users($http, $scope);   // set up additional form fields
   $scope.paging = {
     items_by_page : 10,
     current_page : 1,
@@ -3439,15 +3504,17 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_concurrent_users, $scope.paging,  [ "username", "visinst_1", "visinst_2" ], "concurrent_users");
+
+  handle_table_submit($scope, $http, get_concurrent_users, build_qs_concurrent_users, $scope.paging, [], "concurrent_users");
   handle_pagination($scope, $http, get_concurrent_users);
   //setup_filters($scope, $http, "concurrent_users");      // TODO?
-  handle_download($scope, [ "username", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "time_difference", "time_needed" ]);
+  handle_download($scope, $http, [ "username", "timestamp", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "mac_address", "time_difference", "time_needed", "dist", "diff_needed_timediff" ]);
+  handle_sort($scope, $http, get_concurrent_users);
 }]);
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
 // --------------------------------------------------------------------------------------
-function additional_fields_concurrent_users($scope)
+function additional_fields_concurrent_users($http, $scope)
 {
   $scope.options_added = false;
   $scope.options = {
@@ -3478,6 +3545,28 @@ function additional_fields_concurrent_users($scope)
   $scope.delete_options = function() {
     $scope.options_added = false;
   };
+
+  $scope.swap = function() {
+    var tmp = $scope.options.visinst_1.val;
+    $scope.options.visinst_1.val = $scope.options.visinst_2.val;
+    $scope.options.visinst_2.val = tmp;
+  };
+
+  $http({
+    method  : 'GET',
+    url     : '/api/concurrent_rev/'
+  })
+  .then(function(response) {
+    $scope.revisions = response.data;
+    $scope.selected_rev = $scope.revisions[0];
+  });
+
+  $scope.diff_dict = { "0 minut"  : 0,
+                       "5 minut"  : 300,
+                       "15 minut" : 900,
+                       "30 minut" : 1800,
+                       "60 minut" : 3600 };
+  $scope.diff_needed_timediff = $scope.diff_dict["5 minut"];   // default value to filter out bad service coverage
 }
 // --------------------------------------------------------------------------------------
 // transform time information to local time and correct format
@@ -3487,16 +3576,71 @@ function transform_data(data)
 {
   for(var item in data) {
     // transform time info
+    // day.month.year
+    data[item].timestamp = data[item].timestamp.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp.replace(/T.*$/, '').split('-')[0];
 
-    data[item].timestamp_1 = data[item].timestamp_1.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_1.replace(/^.*T/, '').split(':')[1] + " "+ data[item].timestamp_1.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp_1.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp_1.replace(/T.*$/, '').split('-')[0];
+    // hours:minutes
+    data[item].timestamp_1 = data[item].timestamp_1.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_1.replace(/^.*T/, '').split(':')[1];
 
-    data[item].timestamp_2 = data[item].timestamp_2.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_2.replace(/^.*T/, '').split(':')[1] + " "+ data[item].timestamp_2.replace(/T.*$/, '').split('-')[2] + "." + data[item].timestamp_2.replace(/T.*$/, '').split('-')[1] + "." +  data[item].timestamp_2.replace(/T.*$/, '').split('-')[0];
+    // hours:minutes
+    data[item].timestamp_2 = data[item].timestamp_2.replace(/^.*T/, '').split(':')[0] + ":" + data[item].timestamp_2.replace(/^.*T/, '').split(':')[1];
 
-    // transform diff to human readable
-    // TODO
+    // time conversion
+    data[item].time_needed = hms_string(data[item].time_needed);
+    data[item].time_difference = hms_string(data[item].time_difference);
+    data[item].diff_needed_timediff = hms_string(data[item].diff_needed_timediff);
+
+    // distance conversion
+    data[item].dist = convert_dist(data[item].dist);
+
   }
 
   return data;
+}
+// --------------------------------------------------------------------------------------
+// return input converted to distance represented as string
+// --------------------------------------------------------------------------------------
+function convert_dist(input)
+{
+  var ret = "";
+
+  if(input >= 100000) {
+    ret += Math.round(input / 1000) + " km";
+    return ret;
+  }
+
+  if(input >= 10000) {
+    ret += (input / 1000).toFixed(1) +  " km";
+    return ret;
+  }
+
+  if(input >= 1000) {
+    ret += (input / 1000).toFixed(2) +  " km";
+    return ret;
+  }
+
+  ret += input +  " m";
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// return input converted to hours, minutes and seconds string
+// fixed format %h:%m
+// both hours and minutes are fixed to 2 digits
+// --------------------------------------------------------------------------------------
+function hms_string(input)
+{
+  var hours = Math.floor(input / 3600);
+  input = input % 3600;
+  if(hours < 10)
+    hours = "0" + hours;
+
+  var minutes = Math.floor(input / 60);
+  if(minutes < 10)
+    minutes = "0" + minutes;
+  input = input % 60;
+
+  return hours + ":" + minutes;
 }
 // --------------------------------------------------------------------------------------
 // get concurrent users data
@@ -3508,9 +3652,11 @@ function get_concurrent_users($scope, $http, qs, callback)
 
   return $http({
     method  : 'GET',
-    url     : '/api/concurrent_users/' + qs + ts + "&sort=-username"      // always sort by username
+    url     : '/api/concurrent_users/' + qs + ts + $scope.sort      // sort by diff_needed_timediff
   })
   .then(function(response) {
+    if(!$scope.download_url)
+      $scope.download_url = '/api/concurrent_users/' + qs + ts + $scope.sort;   // set download url
     $scope.table_data = transform_data(response.data);
     callback($scope);
   });
@@ -3521,7 +3667,7 @@ function get_concurrent_users($scope, $http, qs, callback)
 angular.module('etlog').controller('concurrent_inst_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
   handle_submit($scope, $http, $q, get_concurrent_inst, filter_table_data, []);
-  handle_download($scope, [ "visinst_1", "visinst_2", "count" ]);
+  handle_table_download($scope, [ "visinst_1", "visinst_2", "count" ]);
 }]);
 // --------------------------------------------------------------------------------------
 // get concurrent inst data
@@ -3536,6 +3682,8 @@ function get_concurrent_inst($scope, $http, qs, $q, callback)
     url     : '/api/concurrent_inst/' + qs + ts
   })
   .then(function(response) {
+    if(!$scope.download_url)
+      $scope.download_url = '/api/concurrent_users/' + qs + ts;   // set download url
     $scope.table_data = response.data;
     $scope.submitted = true;
     callback($scope);

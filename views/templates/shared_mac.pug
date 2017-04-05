@@ -79,6 +79,8 @@ div.container-fluid(ng-controller="shared_mac_controller")
               li(ng-repeat='user in row.users')
                 a(ui-sref='search({pn : user, csi: row.mac_address})', target='_blank')
                   | {{user}}
+                b
+                  | &nbsp;
       tbody(ng-show='paging.loading')
         tr
           td.text-center(colspan='4')

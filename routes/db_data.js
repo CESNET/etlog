@@ -8,13 +8,15 @@ const async = require( 'async' );
 router.get('/', function(req, res, next) {
   var ret = {};
   ret.logs = {};
-  ret.mac_count = {};
-  ret.roaming = {};
-  ret.failed_logins = {};
-  ret.shared_mac = {};
-  ret.heat_map = {};
-  ret.realm_logins = {};
-  ret.visinst_logins = {};
+
+  // is this really somehow useful ?
+  //ret.mac_count = {};
+  //ret.roaming = {};
+  //ret.failed_logins = {};
+  //ret.shared_mac = {};
+  //ret.heat_map = {};
+  //ret.realm_logins = {};
+  //ret.visinst_logins = {};
 
   async.series([
     function(done) {
@@ -31,104 +33,105 @@ router.get('/', function(req, res, next) {
         done(null);
       });
     },
-    function(done) {
-      req.db.mac_count.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.mac_count.min = convert(doc[0].timestamp).toISOString();
-      });
-      
-      req.db.mac_count.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.mac_count.max = convert(doc[0].timestamp).toISOString();
-        done(null);
-      });
-    },
-    function(done) {
-      req.db.roaming.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.roaming.min = convert(doc[0].timestamp).toISOString();
-      });
-      
-      req.db.roaming.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.roaming.max = convert(doc[0].timestamp).toISOString();
-        done(null);
-      });
-    },
-    function(done) {
-      req.db.failed_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.failed_logins.min = convert(doc[0].timestamp).toISOString();
-      });
-      
-      req.db.failed_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.failed_logins.max = convert(doc[0].timestamp).toISOString();
-        done(null);
-      });
-    },
-    function(done) {
-      req.db.shared_mac.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.shared_mac.min = convert(doc[0].timestamp).toISOString();
-      });
-      
-      req.db.shared_mac.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.shared_mac.max = convert(doc[0].timestamp).toISOString();
-        done(null);
-      });
-    },
-    function(done) {
-      req.db.heat_map.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.heat_map.min = convert(doc[0].timestamp).toISOString();
-      });
-      
-      req.db.heat_map.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.heat_map.max = convert(doc[0].timestamp).toISOString();
-        done(null);
-      });
-    },
-    function(done) {
-      req.db.realm_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.realm_logins.min = convert(doc[0].timestamp).toISOString();
-      });
+    // is this really somehow useful ?
+    //function(done) {
+    //  req.db.mac_count.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.mac_count.min = convert(doc[0].timestamp).toISOString();
+    //  });
+    //  
+    //  req.db.mac_count.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.mac_count.max = convert(doc[0].timestamp).toISOString();
+    //    done(null);
+    //  });
+    //},
+    //function(done) {
+    //  req.db.roaming.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.roaming.min = convert(doc[0].timestamp).toISOString();
+    //  });
+    //  
+    //  req.db.roaming.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.roaming.max = convert(doc[0].timestamp).toISOString();
+    //    done(null);
+    //  });
+    //},
+    //function(done) {
+    //  req.db.failed_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.failed_logins.min = convert(doc[0].timestamp).toISOString();
+    //  });
+    //  
+    //  req.db.failed_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.failed_logins.max = convert(doc[0].timestamp).toISOString();
+    //    done(null);
+    //  });
+    //},
+    //function(done) {
+    //  req.db.shared_mac.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.shared_mac.min = convert(doc[0].timestamp).toISOString();
+    //  });
+    //  
+    //  req.db.shared_mac.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.shared_mac.max = convert(doc[0].timestamp).toISOString();
+    //    done(null);
+    //  });
+    //},
+    //function(done) {
+    //  req.db.heat_map.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.heat_map.min = convert(doc[0].timestamp).toISOString();
+    //  });
+    //  
+    //  req.db.heat_map.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.heat_map.max = convert(doc[0].timestamp).toISOString();
+    //    done(null);
+    //  });
+    //},
+    //function(done) {
+    //  req.db.realm_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.realm_logins.min = convert(doc[0].timestamp).toISOString();
+    //  });
 
-      req.db.realm_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.realm_logins.max = convert(doc[0].timestamp).toISOString();
-        done(null);
-      });
-    },
-    function(done) {
-      req.db.visinst_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.visinst_logins.min = convert(doc[0].timestamp).toISOString();
-      });
+    //  req.db.realm_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.realm_logins.max = convert(doc[0].timestamp).toISOString();
+    //    done(null);
+    //  });
+    //},
+    //function(done) {
+    //  req.db.visinst_logins.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.visinst_logins.min = convert(doc[0].timestamp).toISOString();
+    //  });
 
-      req.db.visinst_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.visinst_logins.max = convert(doc[0].timestamp).toISOString();
-        done(null);
-      });
-    },
+    //  req.db.visinst_logins.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
+    //  { $project : { timestamp : 1, _id : 0 } } ],
+    //  function(err, doc) {
+    //    ret.visinst_logins.max = convert(doc[0].timestamp).toISOString();
+    //    done(null);
+    //  });
+    //},
     ],
     function(err1, items) {
       if(err1) {

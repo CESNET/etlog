@@ -28,6 +28,7 @@ module.exports = function(app, database) {
   app.use('/api/unique_users', require('./routes/unique_users'));                    // generic api for unique users
   app.use('/api/concurrent_users', require('./routes/concurrent_users'));            // generic api for concurrent users
   app.use('/api/concurrent_inst', require('./routes/concurrent_inst'));              // api for concurrent institutions
+  app.use('/api/concurrent_rev', require('./routes/concurrent_rev'));                // api for concurrent revisions
 
 // -----------------------------------------------------------
   // login routing is defined separately
