@@ -3625,18 +3625,22 @@ function convert_dist(input)
 }
 // --------------------------------------------------------------------------------------
 // return input converted to hours, minutes and seconds string
+// fixed format %h:%m
+// both hours and minutes are fixed to 2 digits
 // --------------------------------------------------------------------------------------
 function hms_string(input)
 {
-  var ret = "";
-
-  ret += Math.floor(input / 3600) + "h:";
+  var hours = Math.floor(input / 3600);
   input = input % 3600;
+  if(hours < 10)
+    hours = "0" + hours;
 
-  ret += Math.floor(input / 60) + "m";
+  var minutes = Math.floor(input / 60);
+  if(minutes < 10)
+    minutes = "0" + minutes;
   input = input % 60;
 
-  return ret;
+  return hours + ":" + minutes;
 }
 // --------------------------------------------------------------------------------------
 // get concurrent users data
