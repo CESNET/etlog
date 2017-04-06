@@ -200,6 +200,7 @@ router.get('/concurrent_users', function(req, res, next) {
   }
 
   var cond = agg.check_filter(query.filter, [ "diff_needed_timediff" ]);
+  var mac_diff = agg.check_filter(query.filter, [ "mac_diff" ]);
 
   // ===================================================
   // construct base query
