@@ -8,7 +8,7 @@ const agg = require('./aggregation');
 router.get('/', function(req, res, next) {
   try {
     var query = qp.parse_query_string(req.url,
-      [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff" ],
+      [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff", "mac_diff" ],
       qp.validate_days);
   }
   catch(error) {
