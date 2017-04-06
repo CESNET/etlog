@@ -190,7 +190,7 @@ router.get('/logs', function(req, res, next) {
 // --------------------------------------------------------------------------------------
 router.get('/concurrent_users', function(req, res, next) {
   try {
-    var query = get_qs(req, [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff" ]); // array of valid filters
+    var query = get_qs(req, [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff", "mac_diff" ]); // array of valid filters
   }
   catch(error) {
     var err = new Error(error.error);
