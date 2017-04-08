@@ -2576,7 +2576,7 @@ function additional_fields_concurrent_users($http, $scope)
   })
   .then(function(response) {
     $scope.revisions = response.data;
-    $scope.selected_rev = $scope.revisions[0];
+    $scope.selected_rev = $scope.revisions[$scope.revisions.length - 1];
   });
 
   $scope.diff_dict = { "0 minut"  : 0,
