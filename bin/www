@@ -40,7 +40,8 @@ var https_options = {
  * Create HTTPS server.
  */
 
-var server = https.createServer(https_options, app);
+//var server = https.createServer(https_options, app);
+var server = http.createServer(app);
 
 
 // Redirect to https
@@ -53,18 +54,18 @@ var handler = function (req, res) {
  * Create ipv4 HTTP server.
  */
 
-var http_server4 = http.createServer();
-http_server4.addListener("request", handler);
-http_server4.listen(app.get('http_port'), app.get('ipv4'));     // listen on ipv4 + http-alt
+//var http_server4 = http.createServer();
+//http_server4.addListener("request", handler);
+//http_server4.listen(app.get('http_port'), app.get('ipv4'));     // listen on ipv4 + http-alt
 
 
 /**
  * Create ipv6 HTTP server.
  */
 
-var http_server6 = http.createServer();
-http_server6.addListener("request", handler);
-http_server6.listen(app.get('http_port'), app.get('ipv6'));         // listen on ipv6 + http-alt
+//var http_server6 = http.createServer();
+//http_server6.addListener("request", handler);
+//http_server6.listen(app.get('http_port'), app.get('ipv6'));         // listen on ipv6 + http-alt
 
 
 /**
