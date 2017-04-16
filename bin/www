@@ -7,7 +7,6 @@
 const app = require('../app');
 const debug = require('debug')('etlog:server');
 const http = require('http');
-const https = require('https');
 const fs = require( 'fs' );
 const config = require('../config/config.js');
 
@@ -16,63 +15,19 @@ const config = require('../config/config.js');
  */
 
 //var port = normalizePort(process.env.PORT || '3000');
-app.set('https_port', 8443);
 app.set('http_port', 8080);
-app.set('ipv4', config.ipv4);
-app.set('ipv6', config.ipv6);
-
 
 /**
- * Set up HTTPS.
+ * Create HTTP server.
  */
 
-var https_options = {
-  key:  fs.readFileSync('cert/etlog.cesnet.cz.key.pem', 'utf-8'),
-  cert: fs.readFileSync('cert/etlog.cesnet.cz.crt.pem', 'utf-8'),
-  ca: [
-    fs.readFileSync('/etc/ssl/certs/TERENA_SSL_CA_2.pem', 'utf8'),
-    fs.readFileSync('/etc/ssl/certs/TERENA_SSL_CA_3.pem', 'utf8'),
-    fs.readFileSync('/etc/ssl/certs/USERTrust_RSA_Certification_Authority.pem', 'utf8')
-  ]
-};
-
-/**
- * Create HTTPS server.
- */
-
-//var server = https.createServer(https_options, app);
 var server = http.createServer(app);
-
-
-// Redirect to https
-var handler = function (req, res) {
-  res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });   // does not work for http 1.0 - no host http header
-  res.end();
-}
-
-/**
- * Create ipv4 HTTP server.
- */
-
-//var http_server4 = http.createServer();
-//http_server4.addListener("request", handler);
-//http_server4.listen(app.get('http_port'), app.get('ipv4'));     // listen on ipv4 + http-alt
-
-
-/**
- * Create ipv6 HTTP server.
- */
-
-//var http_server6 = http.createServer();
-//http_server6.addListener("request", handler);
-//http_server6.listen(app.get('http_port'), app.get('ipv6'));         // listen on ipv6 + http-alt
-
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(app.get('https_port'));
+server.listen(app.get('http_port'));
 server.on('error', onError);
 server.on('listening', onListening);
 
