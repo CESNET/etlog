@@ -17,9 +17,12 @@ etlog is a web application, which consists of Node.js, Express web application f
 ## Server setup
 
 The application is setup on Debian jessie. It is running as user etlog and it's root is in /home/etlog/etlog/.
-It is listening for incoming connections on port 8080 for http connections and 
-on port 8443 for https connections. Http connections are automatically redirected to https.
-Successful redicretion requires HTTP 1.1 host header.
+It is listening for incoming http connections on port 8080. Apache webserver is sitting in front of etlog
+and is doing a proxy for it.
+
+The main purpose of putting apache in front of the application itself is authentication.
+Apache uses shibd module for authentication in czech identitity feredation [eduid.cz](eduid.cz).
+Http connections are automatically forced to https by apache.
 
 ### User setup
 
