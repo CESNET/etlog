@@ -193,6 +193,9 @@ duply
 ncftp
 lftp
 libkrb5-dev
+libapache2-mod-shib2
+apache2
+libapache2-mod-proxy-html
 
 Other special packages along with installation are listed below.
   
