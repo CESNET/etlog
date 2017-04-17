@@ -33,6 +33,8 @@ adduser etlog
 
 ### Network setup
 
+TODO - firewall revision
+
 Application is running by unprivileged user, so he can not use standard http and https port.
 Instead ports 8080 and 8443 are used.
 Automatic port redirection to ports 8080 and 8443 is provided through iptables.
@@ -46,6 +48,12 @@ ip6tables -t nat -A PREROUTING -i eth0 -p tcp -d 2001:718:1:1f:50:56ff:feee:150/
 ip6tables -t nat -A PREROUTING -i eth0 -p tcp -d 2001:718:1:1f:50:56ff:feee:150/64 --dport 443 -j REDIRECT --to-port 8443
 ip6tables-save > /etc/iptables/rules.v6
 ```
+
+### Shibboleth setup
+TODO
+
+### Apache setup
+TODO
 
 ### Syslog setup
 
