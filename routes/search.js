@@ -35,13 +35,22 @@ router.get('/', function(req, res, next) {
 // search for given query
 // --------------------------------------------------------------------------------------
 function search(req, res, next, query) {
+  // exclude possible regex from
+  var regex = agg.check_regex(query.filter);
+
   // ===================================================
   // construct base query
   var aggregate_query = [
     {
       $match : query.filter       // filter by query
     },
-    {
+  ];
+
+  if(Object.keys(regex).length > 0) {
+    agg.add_stage(aggregate_query, { $match : regex });
+  }
+
+  agg.add_stage(aggregate_query, {
       $project :
         {
           timestamp : 1,
@@ -53,8 +62,7 @@ function search(req, res, next, query) {
           result : 1,
           _id : 0
         }
-    }
-  ];
+    });
 
   // ===================================================
   // add other operators, if defined in query
