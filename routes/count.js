@@ -6,15 +6,7 @@ const agg = require('./aggregation');
 // get count for mac count
 // --------------------------------------------------------------------------------------
 router.get('/mac_count', function(req, res, next) {
-  try {
-    var query = get_qs(req, [ 'timestamp', 'username', 'addrs', 'count' ]); // array of valid filters
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
+  var query = get_qs(req, [ 'timestamp', 'username', 'addrs', 'count' ]); // array of valid filters
 
   // ===================================================
   // matching of single value against array does not make sense
@@ -84,15 +76,7 @@ router.get('/mac_count', function(req, res, next) {
 // get count for shared mac
 // --------------------------------------------------------------------------------------
 router.get('/shared_mac', function(req, res, next) {
-  try {
-    var query = get_qs(req, ['timestamp', 'count', 'mac_address', 'users']); // array of valid filters
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
+  var query = get_qs(req, ['timestamp', 'count', 'mac_address', 'users']); // array of valid filters
 
   // ===================================================
   // matching of single value against array does not make sense
@@ -162,15 +146,7 @@ router.get('/shared_mac', function(req, res, next) {
 // get count for logs
 // --------------------------------------------------------------------------------------
 router.get('/logs', function(req, res, next) {
-  try {
-    var query = get_qs_interval(req, [ 'timestamp', 'pn', 'csi', 'realm', 'visinst', 'result' ]); // array of valid filters
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
+  var query = get_qs_interval(req, [ 'timestamp', 'pn', 'csi', 'realm', 'visinst', 'result' ]); // array of valid filters
 
   // exclude possible regex from
   var regex = agg.check_regex(query.filter);
@@ -216,15 +192,7 @@ router.get('/logs', function(req, res, next) {
 // get count for concurrent users
 // --------------------------------------------------------------------------------------
 router.get('/concurrent_users', function(req, res, next) {
-  try {
-    var query = get_qs(req, [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff", "mac_diff" ]); // array of valid filters
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
+  var query = get_qs(req, [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff", "mac_diff" ]); // array of valid filters
 
   var cond = agg.check_filter(query.filter, [ "diff_needed_timediff" ]);
   var mac_diff = agg.check_filter(query.filter, [ "mac_diff" ]);

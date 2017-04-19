@@ -6,18 +6,9 @@ const agg = require('./aggregation');
 // get data
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
-  try {
-    var query = qp.parse_query_string(req.url,
-      ['timestamp' ],
-      qp.validate_days);
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
-
+  var query = qp.parse_query_string(req.url,
+    ['timestamp' ],
+    qp.validate_days);
   search(req, res, next, query);     // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
