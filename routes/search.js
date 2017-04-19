@@ -6,18 +6,10 @@ const agg = require('./aggregation');
 // get data based on query
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
-  try {
-    var query = qp.parse_query_string(req.url,
-      ['pn', 'timestamp', 'csi', 'result', 'realm', 'visinst'],
-      qp.validate_interval,
-      false);       // no timestamp may be present in valid query
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
+  var query = qp.parse_query_string(req.url,
+    ['pn', 'timestamp', 'csi', 'result', 'realm', 'visinst'],
+    qp.validate_interval,
+    false);       // no timestamp may be present in valid query
 
   // TODO
   // permissions must be set that way, so the user can search only his mac adress and username
@@ -25,8 +17,8 @@ router.get('/', function(req, res, next) {
 
   if(Object.keys(query.filter).length == 0) {   // empty filter
     var err = new Error("Neplatný dotaz!");
-    next(err);
-    return;
+    err.status = 400;
+    throw err;
   }
 
   search(req, res, next, query);

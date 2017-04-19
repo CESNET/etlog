@@ -6,18 +6,9 @@ const agg = require('./aggregation');
 // get shared mac data
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
-  try {
-    var query = qp.parse_query_string(req.url,
-      ['timestamp', 'realm', 'institutions.realm', 'institutions.count'],
-      qp.validate_days);
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
-
+  var query = qp.parse_query_string(req.url,
+    ['timestamp', 'realm', 'institutions.realm', 'institutions.count'],
+    qp.validate_days);
   search_days(req, res, next, query);     // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------

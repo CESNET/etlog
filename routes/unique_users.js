@@ -6,36 +6,18 @@ const agg = require('./aggregation');
 // get unique users for realm
 // --------------------------------------------------------------------------------------
 router.get('/realm', function(req, res, next) {
-  try {
-    var query = qp.parse_query_string(req.url,
-      ['timestamp', 'realm' ],      // TODO - realm is mandatory here
-      qp.validate_days);
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
-
+  var query = qp.parse_query_string(req.url,
+    ['timestamp', 'realm' ],      // TODO - realm is mandatory here
+    qp.validate_days);
   search_realm(req, res, next, query);     // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // get unique users for visinst
 // --------------------------------------------------------------------------------------
 router.get('/visinst', function(req, res, next) {
-  try {
-    var query = qp.parse_query_string(req.url,
-      ['timestamp', 'realm' ],      // TODO - realm is mandatory here
-      qp.validate_days);
-  }
-  catch(error) {
-    var err = new Error(error.error);
-    err.status = 400;
-    next(err);
-    return;
-  }
-
+  var query = qp.parse_query_string(req.url,
+    ['timestamp', 'realm' ],      // TODO - realm is mandatory here
+    qp.validate_days);
   search_visinst(req, res, next, query);     // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
