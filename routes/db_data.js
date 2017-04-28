@@ -136,8 +136,8 @@ router.get('/', function(req, res, next) {
     function(err1, items) {
       if(err1) {
         var err2 = new Error();      // just to detect where the original error happened
-        console.error(err1);
         console.error(err2);
+        console.error(err1);
         next([err2, err1]);
         return;
       }

@@ -69,8 +69,8 @@ function search(req, res, next, query) {
   stream.on('error', function (err1) {
     if(err1) {
       var err2 = new Error();      // just to detect where the original error happened
-      console.error(err1);
       console.error(err2);
+      console.error(err1);
       next([err2, err1]);
       return;
     }
