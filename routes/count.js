@@ -159,6 +159,14 @@ router.get('/logs', function(req, res, next) {
     },
   ];
 
+  // before 460ec2438bd62a52d610c195270cb77fccc65051
+  // strange issue happenned here
+  // some long queries (~30+s) failed with timeout to mongodb
+  // it seems, that this is still somehow not solved - see https://github.com/Automattic/mongoose/issues/4789
+  // two stage regex matching should avoid this even for long queries
+  //
+
+
   if(Object.keys(regex).length > 0) {
     agg.add_stage(aggregate_query, { $match : regex });
   }
