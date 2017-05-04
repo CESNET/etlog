@@ -41,6 +41,9 @@ function get_longest(data)
 // --------------------------------------------------------------------------------------
 function failed_to_human_readable(data, sum)
 {
+  if(data.length == 0 || sum == 0)
+    return; // no data available
+
   var ret = "";
   var longest = get_longest(data);  // longest username found
   // data are already sorted - first one contains highest count
