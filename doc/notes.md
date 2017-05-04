@@ -54,6 +54,17 @@ TODO
 
 ### Apache setup
 TODO
+- set mpm instead of prefork (https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig)
+```
+Finally, on non-Windows systems you should make sure Apache is configured in so-called "worker" mode, using the "worker" MPM, either via a setting in an OS-supplied file like /etc/sysconfig/httpd or in the Apache configuration directly. Many servers come incorrectly configured in "prefork" mode, which emulates Apache 1.3's process model and causes vastly greater resource usage inside the shibd daemon.
+```
+
+```
+a2dismod mpm_prefork
+a2enmod mpm_worker
+service apache2 restart
+apachectl -M | grep worker
+```
 
 ### Syslog setup
 
