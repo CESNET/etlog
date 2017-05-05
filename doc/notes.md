@@ -53,7 +53,31 @@ ip6tables-save > /etc/iptables/rules.v6
 TODO
 
 ### Apache setup
+
+Installation of apache webserver:
+```
+apt-get install apache2 libapache2-mod-proxy-html
+```
+
+Setup server certificate in `/etc/ssl/certs/etlog.cesnet.cz.crt.pem`
+and private key in `/etc/ssl/private/etlog.cesnet.cz.key.pem`.
+
+SSL default vhost and module are enabled by:
+```
+a2enmod ssl
+a2ensite default-ssl
+service apache2 restart
+```
+
+Proxy is enabled by:
+```
+a2enmod proxy
+a2enmod proxy_http
+service apache2 restart
+```
 TODO
+
+
 - set mpm instead of prefork (https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig)
 ```
 Finally, on non-Windows systems you should make sure Apache is configured in so-called "worker" mode, using the "worker" MPM, either via a setting in an OS-supplied file like /etc/sysconfig/httpd or in the Apache configuration directly. Many servers come incorrectly configured in "prefork" mode, which emulates Apache 1.3's process model and causes vastly greater resource usage inside the shibd daemon.
@@ -218,6 +242,9 @@ libkrb5-dev
 libapache2-mod-shib2
 apache2
 libapache2-mod-proxy-html
+apache2-bin
+apache2-data
+apache2-utils
 
 Other special packages along with installation are listed below.
   
