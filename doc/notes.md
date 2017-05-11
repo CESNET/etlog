@@ -61,6 +61,12 @@ apt-get install apache2 libapache2-mod-proxy-html
 
 Setup server certificate in `/etc/ssl/certs/etlog.cesnet.cz.crt.pem`
 and private key in `/etc/ssl/private/etlog.cesnet.cz.key.pem`.
+Add intermediade certificate to `/etc/ssl/certs/etlog.cesnet.cz.crt.pem`:
+```
+cd tmp
+wget https://pki.cesnet.cz/certs/TERENA_SSL_CA_3.pem
+cat TERENA_SSL_CA_3.pem >> /etc/ssl/certs/etlog.cesnet.cz.crt.pem
+```
 
 SSL default vhost and module are enabled by:
 ```
@@ -75,8 +81,80 @@ a2enmod proxy
 a2enmod proxy_http
 service apache2 restart
 ```
-TODO
 
+Configuration for default ssl apache vhost - `/etc/apache2/sites-enabled/default-ssl.conf`:
+```
+<VirtualHost *:80>
+	ServerAdmin machv@cesnet.cz
+	ServerName etlog.cesnet.cz
+	Redirect permanent "/" "https://etlog.cesnet.cz"
+</VirtualHost>
+
+<IfModule mod_ssl.c>
+	<VirtualHost _default_:443>
+		ServerAdmin machv@cesnet.cz
+		ServerName etlog.cesnet.cz
+		DocumentRoot /var/www/html
+
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+		SSLEngine on
+
+		SSLProtocol All -SSLv2 -SSLv3
+		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
+		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
+
+		BrowserMatch "MSIE [2-6]" \
+				nokeepalive ssl-unclean-shutdown \
+				downgrade-1.0 force-response-1.0
+		# MSIE 7 and newer should be able to use keepalive
+		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+		<Location />
+			# konfigurace shibbolethu pro /
+			AuthType shibboleth
+			Require shibboleth
+			ShibRequestSetting requireSession 1
+
+			# predani prommene prostredi REMOTE_USER
+			# neni jasne, proc toto funguje
+			#RequestHeader set REMOTE_USER %{REMOTE_USER}s
+
+			# nastaveni hlavicky remote_user pomoci promenne prostredi eppn
+			# pro nastaveni dalsich hlavicek je treba dodat direktivu pro dalsi promenne prostredi
+			RequestHeader set REMOTE_USER %{eppn}e
+
+			# proxy
+			ProxyPass http://127.0.0.1:8080/
+			ProxyPassReverse http://127.0.0.1:8080/
+		</Location>
+
+		#<Location /shib>
+		#	# konfigurace shibbolethu pro /
+		#	AuthType shibboleth
+		#	Require shibboleth
+		#	ShibRequestSetting requireSession 1
+		#</Location>
+
+		ProxyRequests Off
+		RemoteIPHeader X-Forwarded-For
+
+		## proxy vyjimky pro /shib
+		#ProxyPass /shib !
+		#ProxyPass /Shibboleth.sso/Login !
+		#ProxyPass /Shibboleth.sso/SAML2/POST !
+
+		#ProxyPass / http://127.0.0.1:8443/
+		#ProxyPassReverse / http://127.0.0.1:8443/
+		#
+	</VirtualHost>
+</IfModule>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+```
+
+TODO
 
 - set mpm instead of prefork (https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig)
 ```
