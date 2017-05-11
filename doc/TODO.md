@@ -8,15 +8,21 @@
 - federace
   - xml data - vyznam
   - xml data pridat do federace?
+- firewall
+  - revize
+  - nasledne nasazeni na produkci spolu s autentizaci
+  - pridat do dokumentace?
 
 
 # etlog (produkce)
 - monitoring
   - nechat skript pro konkrolu read only disku
-  - zbytek obslehnout z wiki
+  - zbytek obslehnout z wiki - https://wiki.cesnet.cz/doku.php?id=sd:monitorovani_sluzeb:servery:homeproj.cesnet.cz
   - skript pro monitorovani stari dat v db (> 1 hod)
   - notifikace pouze mailem
   - seznam spravcu?
+  - na devu nema smysl nasazovat
+  - postup "registrace"
 
 - obecne vyhledavani
   - "opraveny" s regularnim vyrazem
