@@ -61,6 +61,7 @@ apt-get install apache2 libapache2-mod-proxy-html
 
 Setup server certificate in `/etc/ssl/certs/etlog.cesnet.cz.crt.pem`
 and private key in `/etc/ssl/private/etlog.cesnet.cz.key.pem`.
+
 Add intermediade certificate to `/etc/ssl/certs/etlog.cesnet.cz.crt.pem`:
 ```
 cd tmp
