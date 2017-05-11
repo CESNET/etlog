@@ -1,3 +1,15 @@
+# etlog-dev
+
+
+# etlog (produkce)
+- monitoring
+  - nechat skript pro konkrolu read only disku
+  - zbytek obslehnout z wiki
+  - skript pro monitorovani stari dat v db (> 1 hod)
+  - notifikace pouze mailem
+  - seznam spravcu?
+
+
 # Ostatní
 
 - nějakou logiku, která zapne aplikaci po pádu/restartu serveru.
