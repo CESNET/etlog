@@ -1,4 +1,13 @@
 # etlog-dev
+- konfigurace apache
+  - vsechny atributy, ktere maji byt dostupne v aplikaci musi byt nakonfigurovane v apachi
+  - remote user pomoci promenne prostredi eppn, ktera je vytvorena z promenne REMOTE\_USER
+  - REMOTE\_USER je dostupna jako SSL environment variable (dokumentace https://httpd.apache.org/docs/current/mod/mod_headers.html#header)
+  - dokumentace rika:
+> The %s format specifier is only available in Apache 2.1 and later; it can be used instead of %e to avoid the overhead of enabling SSLOptions +StdEnvVars. If SSLOptions +StdEnvVars must be enabled anyway for some other reason, %e will be more efficient than %s.
+- federace
+  - xml data - vyznam
+  - xml data pridat do federace?
 
 
 # etlog (produkce)
@@ -8,6 +17,10 @@
   - skript pro monitorovani stari dat v db (> 1 hod)
   - notifikace pouze mailem
   - seznam spravcu?
+
+- obecne vyhledavani
+  - "opraveny" s regularnim vyrazem
+  - k cemu je dotaz pro /@realm.tld/, kdyz je mozne presne specifikovat realm?
 
 
 # Ostatní
