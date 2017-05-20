@@ -41,11 +41,6 @@ function setup_user_roles($scope, $http)
   }
 }
 // --------------------------------------------------------------------------------------
-// index controller
-// --------------------------------------------------------------------------------------
-angular.module('etlog').controller('index_controller', ['$scope', '$http', function ($scope, $http) {
-}]);
-// --------------------------------------------------------------------------------------
 // search controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', function ($scope, $http, $stateParams) {
