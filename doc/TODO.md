@@ -5,6 +5,14 @@
   - revize
   - nasledne nasazeni na produkci spolu s autentizaci
   - pridat do dokumentace?
+- prava/role
+  - uzivatel - nejake pripominky?
+    - v db existuji informace o mapovani uzivatel - pouzivane mac adresy
+    - pokud bude zamcene uzivatelske jmeno tak funkcionalita vyse nema smysl
+  - realm\_admin
+    - obecne vyhledavani
+      - seznam spravovanych domen (vazane na stejnou promennou jako realm) + uzivatelske jmeno?
+      - jine reseni?
 
 
 # etlog (produkce)
