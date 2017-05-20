@@ -62,6 +62,9 @@ function set_display_role(user)
 
   if(user.display_role == "user")
     user.display_role = "uživatel";     // only to display correct language variant in frontend
+
+  if(user.display_role == "realm_admin")
+    user.display_role = "realm admin";     // no undescore
 }
 // --------------------------------------------------------------------------------------
 // set user role
