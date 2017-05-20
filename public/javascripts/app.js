@@ -1038,7 +1038,7 @@ function watch_user($scope, $rootScope)
   });
 }
 // --------------------------------------------------------------------------------------
-// setup form to correspond ot user role 
+// setup form to correspond ot user role
 // --------------------------------------------------------------------------------------
 function form_set_role($scope, $rootScope)
 {
@@ -1046,11 +1046,11 @@ function form_set_role($scope, $rootScope)
     case "user":
       $scope.form_data.pn = $scope.user.username;
       break;
-     
+
     case "realm_admin":
       $scope.form_data.pn = ""; // clear
       break;
-     
+
     case "admin":
       $scope.form_data.pn = ""; // clear
       break;
