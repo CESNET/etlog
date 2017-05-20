@@ -983,7 +983,7 @@ etlog.run(['$rootScope', function($rootScope) {
 // --------------------------------------------------------------------------------------
 // header controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('header_controller', ['$scope', '$location', function ($scope, $location) {
+angular.module('etlog').controller('header_controller', ['$scope', '$http', '$location', function ($scope, $http, $location) {
   $scope.is_active = function(navbar_path) {
     for(var item in navbar_path) {      // iterate array of acceptable values
       if(navbar_path[item] === $location.path())
@@ -992,12 +992,36 @@ angular.module('etlog').controller('header_controller', ['$scope', '$location', 
 
     return false;   // return false if not
   }
+
+  setup_user_roles($scope, $http);
 }]);
 // --------------------------------------------------------------------------------------
-// index controller
+// get basic info about the user
+// setup user roles
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('index_controller', ['$scope', '$http', function ($scope, $http) {
-}]);
+function setup_user_roles($scope, $http)
+{
+  if(!$scope.user) {
+    // get basic user info
+    $http({
+      method  : 'GET',
+      url     : '/api/user/info'
+    })
+    .then(function(response) {
+      $scope.user = response.data;
+    });
+  }
+
+  $scope.change_role = function(role) {
+    $http({
+      method  : 'GET',
+      url     : '/api/user/set_role/' + role
+    })
+    .then(function(response) {
+      $scope.user = response.data;
+    });
+  }
+}
 // --------------------------------------------------------------------------------------
 // search controller
 // --------------------------------------------------------------------------------------
