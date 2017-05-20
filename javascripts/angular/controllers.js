@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------
 // header controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('header_controller', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+angular.module('etlog').controller('header_controller', ['$scope', '$http', '$location', '$rootScope', function ($scope, $http, $location, $rootScope) {
   $scope.is_active = function(navbar_path) {
     for(var item in navbar_path) {      // iterate array of acceptable values
       if(navbar_path[item] === $location.path())
@@ -11,40 +11,59 @@ angular.module('etlog').controller('header_controller', ['$scope', '$http', '$lo
     return false;   // return false if not
   }
 
-  setup_user_roles($scope, $http);
+  setup_user_roles($rootScope, $scope, $http);
 }]);
 // --------------------------------------------------------------------------------------
 // get basic info about the user
 // setup user roles
 // --------------------------------------------------------------------------------------
-function setup_user_roles($scope, $http)
+function setup_user_roles($rootScope, $scope, $http)
 {
-  if(!$scope.user) {
-    // get basic user info
-    $http({
-      method  : 'GET',
-      url     : '/api/user/info'
-    })
-    .then(function(response) {
-      $scope.user = response.data;
-    });
-  }
-
   $scope.change_role = function(role) {
     $http({
       method  : 'GET',
       url     : '/api/user/set_role/' + role
     })
     .then(function(response) {
-      $scope.user = response.data;
+      $rootScope.user = response.data;
     });
+  }
+}
+// --------------------------------------------------------------------------------------
+// watch rooscope user variable for changes
+// TODO - array of functions as third param to be generic?
+// --------------------------------------------------------------------------------------
+function watch_user($scope, $rootScope)
+{
+  $rootScope.$watch('user.role', function() {
+    form_set_role($scope, $rootScope);
+  });
+}
+// --------------------------------------------------------------------------------------
+// setup form to correspond ot user role
+// --------------------------------------------------------------------------------------
+function form_set_role($scope, $rootScope)
+{
+  switch($scope.user.role) {
+    case "user":
+      $scope.form_data.pn = $scope.user.username;
+      break;
+
+    case "realm_admin":
+      $scope.form_data.pn = ""; // clear
+      break;
+
+    case "admin":
+      $scope.form_data.pn = ""; // clear
+      break;
   }
 }
 // --------------------------------------------------------------------------------------
 // search controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', function ($scope, $http, $stateParams) {
+angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', '$rootScope', function ($scope, $http, $stateParams, $rootScope) {
   init_search($scope, $http);
+  watch_user($scope, $rootScope);
   $scope.paging = {
     items_by_page : 10,
     current_page : 1,
