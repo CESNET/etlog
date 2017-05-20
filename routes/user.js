@@ -1,6 +1,7 @@
 // --------------------------------------------------------------------------------------
 const express = require('express');
 const router = express.Router();
+const config = require('../config/config');
 // --------------------------------------------------------------------------------------
 // return basic info about user
 // --------------------------------------------------------------------------------------
@@ -41,14 +42,30 @@ function parse_groups(group_list)
 
   var list = group_list.split(";");
 
-  for(var item in list) {
-    if(list[item] == "einfra:eduroamAdmins")
-      ret.push("realm_admin", "admin");   // global admin is also a realm admin
-    
-    // TODO
-    // TODO - array of realms the admin is administrating
-    //if(list[item] == "einfra:realmAdmins")
-    //  ret.push(["realm_admin"]);   // realm admin
+  // realm_admins
+  for(var group in config.realm_admin_groups) {
+    for(var item in list) {
+      if(list[item] == group) {
+        // TODO - array of realms the admin is administrating
+        ret.push("realm_admin");   // global admin is also a realm admin
+        break;
+      }
+    }
+  }
+
+  // admins
+  for(var group in config.admin_groups) {
+    for(var item in list) {
+      if(list[item] == group) {
+        if(ret.indexOf("realm_admin") == -1)
+          ret.push("realm_admin", "admin");   // global admin is also a realm admin
+
+        else
+          ret.push("admin");   // realm admin included from previous loop
+
+        break;
+      }
+    }
   }
 
   return ret;
