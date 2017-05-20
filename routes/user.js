@@ -77,7 +77,7 @@ function set_user_role(headers, params)
 
     case "realm_admin":
       if(user.groups.length > 1)
-        user.role = "real_admin";       // only realm_admin or admin can become realm_admin
+        user.role = "realm_admin";       // only realm_admin or admin can become realm_admin
       break;
 
     case "admin":
