@@ -54,6 +54,10 @@ TODO
 
 ### Apache setup
 
+Apache in conjuction with shibboleth is responsible for authentication of users into the application.
+After successful autentication apache proxies request to the application webserver.
+
+
 Installation of apache webserver:
 ```
 apt-get install apache2 libapache2-mod-proxy-html
@@ -83,18 +87,20 @@ a2enmod proxy_http
 service apache2 restart
 ```
 
-Configuration for default ssl apache vhost - `/etc/apache2/sites-enabled/default-ssl.conf`:
+Configuration for default ssl apache vhost is in `/etc/apache2/sites-enabled/default-ssl.conf`.
+Set the configuration as below:
+
 ```
 <VirtualHost *:80>
 	ServerAdmin machv@cesnet.cz
-	ServerName etlog.cesnet.cz
-	Redirect permanent "/" "https://etlog.cesnet.cz"
+	ServerName etlog-dev.cesnet.cz
+	Redirect permanent "/" "https://etlog-dev.cesnet.cz"
 </VirtualHost>
 
 <IfModule mod_ssl.c>
 	<VirtualHost _default_:443>
 		ServerAdmin machv@cesnet.cz
-		ServerName etlog.cesnet.cz
+		ServerName etlog-dev.cesnet.cz
 		DocumentRoot /var/www/html
 
 		ErrorLog ${APACHE_LOG_DIR}/error.log
@@ -103,8 +109,8 @@ Configuration for default ssl apache vhost - `/etc/apache2/sites-enabled/default
 
 		SSLProtocol All -SSLv2 -SSLv3
 		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
-		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
-		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
+		SSLCertificateFile	/etc/ssl/certs/etlog-dev.cesnet.cz.crt.pem
+		SSLCertificateKeyFile /etc/ssl/private/etlog-dev.cesnet.cz.key.pem
 
 		BrowserMatch "MSIE [2-6]" \
 				nokeepalive ssl-unclean-shutdown \
@@ -118,49 +124,32 @@ Configuration for default ssl apache vhost - `/etc/apache2/sites-enabled/default
 			Require shibboleth
 			ShibRequestSetting requireSession 1
 
-			# predani prommene prostredi REMOTE_USER
-			# neni jasne, proc toto funguje
-			#RequestHeader set REMOTE_USER %{REMOTE_USER}s
+			# predani SSL prommene prostredi REMOTE_USER
+			RequestHeader set REMOTE_USER %{REMOTE_USER}s
 
-			# nastaveni hlavicky remote_user pomoci promenne prostredi eppn
-			# pro nastaveni dalsich hlavicek je treba dodat direktivu pro dalsi promenne prostredi
-			RequestHeader set REMOTE_USER %{eppn}e
+			# pro nastaveni dalsich hlavicek je treba dodat direktivu pro kokretni promenne prostredi
+			RequestHeader set PerunUniqueGroupName %{PerunUniqueGroupName}e
 
 			# proxy
 			ProxyPass http://127.0.0.1:8080/
 			ProxyPassReverse http://127.0.0.1:8080/
 		</Location>
 
-		#<Location /shib>
-		#	# konfigurace shibbolethu pro /
-		#	AuthType shibboleth
-		#	Require shibboleth
-		#	ShibRequestSetting requireSession 1
-		#</Location>
-
 		ProxyRequests Off
 		RemoteIPHeader X-Forwarded-For
-
-		## proxy vyjimky pro /shib
-		#ProxyPass /shib !
-		#ProxyPass /Shibboleth.sso/Login !
-		#ProxyPass /Shibboleth.sso/SAML2/POST !
-
-		#ProxyPass / http://127.0.0.1:8443/
-		#ProxyPassReverse / http://127.0.0.1:8443/
-		#
 	</VirtualHost>
 </IfModule>
 
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 ```
 
-TODO
-
-- set mpm instead of prefork (https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig)
+Additional settings are needed according to [https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig](https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig). The page says:
+>
 ```
 Finally, on non-Windows systems you should make sure Apache is configured in so-called "worker" mode, using the "worker" MPM, either via a setting in an OS-supplied file like /etc/sysconfig/httpd or in the Apache configuration directly. Many servers come incorrectly configured in "prefork" mode, which emulates Apache 1.3's process model and causes vastly greater resource usage inside the shibd daemon.
 ```
+
+Enable mpm-worker by:
 
 ```
 a2dismod mpm_prefork
