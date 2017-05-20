@@ -76,13 +76,13 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
                 | Role: {{user.display_role}}
                 span.caret
               ul.dropdown-menu(role='menu')
-                li(ng-show='user.groups[0]')
+                li
                   a(ng-click='change_role("user")', href='#') Zobrazit jako uživatel
 
-                li(ng-show='user.groups[1]')
+                li
                   a(ng-click='change_role("realm_admin")', href='#') Zobrazit jako realm admin
 
-                li(ng-show='user.groups[2]')
+                li(ng-show='user.groups.length > 2')
                   a(ng-click='change_role("admin")', href='#') Zobrazit jako admin
 
 
