@@ -856,6 +856,20 @@ Monthly reports configuration is located in `config/config.js`.
 [Link](https://github.com/CESNET/etlog/blob/master/request.js#L78) to the code generating the report content.
 
 
+### Privilege levels
+
+The application contains three privilege levels - user, realm admin and admin.
+The user is just a regular user with no special permissions. The user is least privileged one.
+The Realm admin is an admin of some specific realm(s).
+The admin is a global admin of all existing realms.
+
+#### Mapping users to privileges
+
+The autentication mechanism can provide addionational information about users.
+Based on the provided information the user can be recognized as realm admin or admin.
+Mapping of the groups provided by autentication process to privilege levels is defined in `config/config.js`.
+
+
 ### Application structure
 
 ```
