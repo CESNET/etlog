@@ -24,7 +24,7 @@ div.container-fluid(ng-controller="search_controller")
             each key, val in {"nezadáno" : "", "OK" : "OK", "FAIL" : "FAIL", "TIMEOUT" : "TIMEOUT"}
               option(value = key) #{val}
 
-      .form-group
+      .form-group(ng-show='user.role != "user"')
         label.col-sm-2.control-label(for = 'realm') Realm:
         .col-xs-2
           input.form-control(type = 'text', placeholder = 'příklad.cz', ng-model='form_data.realm')
