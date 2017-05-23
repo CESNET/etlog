@@ -50,7 +50,8 @@ ip6tables-save > /etc/iptables/rules.v6
 ```
 
 ### Shibboleth setup
-TODO
+
+Documentation used for sbibboleth setup is located at [http://www.eduid.cz/cs/tech/sp/shibboleth] (http://www.eduid.cz/cs/tech/sp/shibboleth).
 
 ### Apache setup
 
