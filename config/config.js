@@ -11,5 +11,13 @@ module.exports = {
   ipv4 : '127.0.0.1',
   // ipv6 listening address
   ipv6 : '::1',
+// ==========================================================================================
+  // mapping of groups to privilege levels
+  // defines where to look for additional privilege information
+  role_groups : [ "perununiquegroupname" ],
+  // defines mapping to realm admin privilege level
+  realm_admin_groups : [ "einfra:eduroamAdmins" ],
+  // defines mapping to admin privilege level
+  admin_groups : [ "einfra:eduroamManagers" ],
 }
 // ==========================================================================================

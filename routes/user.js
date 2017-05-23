@@ -27,7 +27,13 @@ function get_user(headers)
   //user.last_name = headers["sn"];
 
   user.username = headers["remote_user"];
-  user.groups = parse_groups(headers["perununiquegroupname"]);
+  user.groups = [];
+  for(var group in config.role_groups) {
+    var temp = parse_groups(headers[config.role_groups[group]]);
+
+    for(role in temp)
+      user.groups.push(temp[role]);
+  }
   user.role = user.groups[user.groups.length - 1];      // default role is the highest available
   set_display_role(user);
 
