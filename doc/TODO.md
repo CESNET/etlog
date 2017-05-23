@@ -42,12 +42,6 @@
 - Pridana dokumentace k frontendu - vyhovuje takto? ([zde](https://github.com/CESNET/etlog#frontend))
 
 
-# TODO list
-1. Autentizace
-  - použít rozcestník
-2. přstupová práva
-3. sshguard + FW -> semik
-
 # TODO dobudoucna
 - vyuzit http://bl.ocks.org/mbostock/34f08d5e11952a80609169b7917d4172 pro grafy?
 - lepsi reseni popisku na ose x pro intervaly < mesic?
