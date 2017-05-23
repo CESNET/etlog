@@ -27,6 +27,7 @@ function get_user(headers)
   //user.last_name = headers["sn"];
 
   user.username = headers["remote_user"];
+  user.identities = get_eduroam_identities(headers);
   user.groups = [];
   for(var group in config.role_groups) {
     var temp = parse_groups(headers[config.role_groups[group]]);
@@ -35,6 +36,7 @@ function get_user(headers)
       user.groups.push(temp[role]);
   }
   user.role = user.groups[user.groups.length - 1];      // default role is the highest available
+  set_realms(user);
   set_display_role(user);
 
   return user;
@@ -77,6 +79,41 @@ function parse_groups(group_list)
   return ret;
 }
 // --------------------------------------------------------------------------------------
+// get eduroam identity
+// may be different from username and one user may have more identities
+// --------------------------------------------------------------------------------------
+function get_eduroam_identities(headers)
+{
+  var ret = [];
+
+  // "hack" using remote_user/eppn for now
+  ret.push(headers["remote_user"]);
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// set array of administered realms if the user is realm admin
+// --------------------------------------------------------------------------------------
+function set_realms(user)
+{
+  if(user.role != "realm_admin")
+    return;     // applies only for realm admin
+
+  user.administed_realms = get_administered_realms(user.username);
+}
+// --------------------------------------------------------------------------------------
+// get array of administered realms for given username
+// --------------------------------------------------------------------------------------
+function get_administered_realms(username)
+{
+  var ret = [];
+
+  // "hack" using remote_user/eppn for now
+  ret.push(username.replace(/.*@/, ""));
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
 // set display role
 // --------------------------------------------------------------------------------------
 function set_display_role(user)
@@ -113,6 +150,7 @@ function set_user_role(headers, params)
   }
 
   set_display_role(user);
+  set_realms(user);
 
   return user;
 }
