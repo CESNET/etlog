@@ -7,13 +7,7 @@
   - nasledne nasazeni na produkci spolu s autentizaci
   - pridat do dokumentace?
 - prava/role
-  - uzivatel - nejake pripominky?
-    - v db existuji informace o mapovani uzivatel - pouzivane mac adresy
-    - pokud bude zamcene uzivatelske jmeno tak funkcionalita vyse nema smysl
-  - realm\_admin
-    - obecne vyhledavani
-      - seznam spravovanych domen (vazane na stejnou promennou jako realm) + uzivatelske jmeno?
-      - jine reseni?
+  - v db existuji informace o mapovani uzivatel - pouzivane mac adresy
 
 
 # etlog (produkce)
@@ -27,8 +21,7 @@
   - postup "registrace"
 
 - obecne vyhledavani
-  - "opraveny" s regularnim vyrazem
-  - k cemu je dotaz pro /@realm.tld/, kdyz je mozne presne specifikovat realm?
+  - opravit dotaz s regularnim vyrazem
 
 
 # Ostatní
