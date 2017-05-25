@@ -46,7 +46,7 @@ function form_set_role($scope, $rootScope)
 {
   switch($scope.user.role) {
     case "user":
-      $scope.form_data.pn = $scope.user.username;
+      $scope.form_data.pn = $scope.user.identities[0];  // set first identity
       break;
 
     case "realm_admin":

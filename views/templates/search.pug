@@ -5,7 +5,7 @@ div.container-fluid(ng-controller="search_controller")
       .form-group
         label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
         .col-xs-3
-          input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', ng-show='user.role == "user"', disabled)
+          select.form-control(ng-model='form_data.pn', ng-options='identity for identity in user.identities', ng-show='user.role == "user"')
           input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', ng-show='user.role != "user"')
 
       .form-group
