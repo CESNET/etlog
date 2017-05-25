@@ -6,12 +6,8 @@ div.container-fluid(ng-controller="search_controller")
         label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
         .col-xs-3
           input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', ng-show='user.role == "user"', disabled)
-          input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', ng-show='user.role == "realm_admin"')
-          input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', ng-show='user.role == "admin"')
+          input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', ng-show='user.role != "user"')
 
-      //- TODO - add check if username matches the current user logged in !
-      //- what if the user spoofs the field?
-      
       .form-group
         label.col-sm-2.control-label(for = 'mac_address') MAC adresa:
         .col-xs-2
