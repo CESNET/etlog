@@ -19,6 +19,7 @@
     "debug": "~2.1.1",
     "express": "~4.12.2",
     "express-restify-mongoose": "^4.1.1",
+    "express-session": "^1.15.3",
     "file-stream-rotator": "0.0.7",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^2.0.13",
