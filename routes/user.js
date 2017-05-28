@@ -57,7 +57,6 @@ function parse_groups(group_list)
   for(var group in config.realm_admin_groups) {
     for(var item in list) {
       if(list[item] == config.realm_admin_groups[group]) {
-        // TODO - array of realms the admin is administrating
         ret.push("realm_admin");   // global admin is also a realm admin
         break;
       }
