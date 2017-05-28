@@ -8,6 +8,15 @@
   - pridat do dokumentace?
 - prava/role
   - v db existuji informace o mapovani uzivatel - pouzivane mac adresy
+- filtrace na zaklade roli (backend)
+  - filtrovano:
+    - obecne vyhledavani
+    - pocet zarizeni na uzivatele
+    - sdilena zarizeni
+    - uzivatele v ruznych lokalitach soucasne - vyhledavani
+- neuspesna prihlaseni nejsou nijak filtrovana
+  - ve frontendu se prima ziskana data transformuji na graf
+  - omezit? jak?
 
 
 # etlog (produkce)
