@@ -6,13 +6,16 @@ const config = require('../config/config');
 // return basic info about user
 // --------------------------------------------------------------------------------------
 router.get('/info', function(req, res, next) {
-  respond(get_user(req.headers), res);
+  if(!req.session.user)
+    req.session.user = get_user(req.headers);
+  respond(req.session.user, res);
 });
 // --------------------------------------------------------------------------------------
 // return basic info about user
 // --------------------------------------------------------------------------------------
 router.get('/set_role/:role', function(req, res, next) {
-  respond(set_user_role(req.headers, req.params), res);
+  req.session.user = set_user_role(req.headers, req.params);
+  respond(req.session.user, res);
 });
 // --------------------------------------------------------------------------------------
 // get basic user info
