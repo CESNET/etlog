@@ -1,4 +1,6 @@
 const express = require('express');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
@@ -7,12 +9,22 @@ const bodyParser = require('body-parser');
 const database = require( './db' );
 const fs = require( 'fs' );
 const rotator = require('file-stream-rotator')
+const secrets = require('./config/secrets')
 // --------------------------------------------------------------------------------------
 // call express
 var app = express();
 
 // connect to the database
 database.connect();
+
+// init session
+app.set('trust proxy', 1)       // app is behind a proxy
+app.use(session({ secret : secrets.session,
+                  secure : true,
+                  resave : false,
+                  saveUninitialized : false,
+                  store : new MongoStore({ db : 'SessionStore', url : 'mongodb://localhost:27017/etlog' }),
+                }));
 
 // --------------------------------------------------------------------------------------
 // view engine setup
