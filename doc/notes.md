@@ -241,7 +241,7 @@ Crontab contents:
 #### Node.js
 
 Setup is defined in cron.js.
-Table below defined how tasks are run.
+Table below defines how tasks are run.
 
 Every task in the table below generates data for collection of the same name.
 
