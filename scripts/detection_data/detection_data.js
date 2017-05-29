@@ -8,16 +8,17 @@ const D3Node = require('d3-node')
 const async = require('async');
 const request = require('request');
 const deasync = require('deasync');
-const url_base = 'https://etlog.cesnet.cz:8443/api';
+const url_base = 'https://127.0.0.1/api';
 const database = require( '../../db' );
 const fs = require('fs');
+const config = require('../../config/config');
 // --------------------------------------------------------------------------------------
 // get data for every realm
 // --------------------------------------------------------------------------------------
 function get_data(database, grouped, callback)
 {
-  var min = new Date(new Date() - 60 * 86400000);   // 60 days ago
-  var max = new Date();     // today
+  var min = new Date(2017,1,1);   // 60 days ago
+  var max = new Date(2017,2,2);     // today
   
   // get realm list sorted by failed auth count for previous 60 days
   database.visinst_logins.aggregate([ 
@@ -394,7 +395,10 @@ function request_data(url, date, realm)
   query += "&realm=" + realm;   // limit by realm
 
   request.get({
-    url: url_base + url + query     // use query string here for simple usage
+    url: url_base + url + query,     // use query string here for simple usage
+    headers : {
+      Host : config.server_name
+    }
   }, function (error, response, body) {
     if(error)
       console.error(error);

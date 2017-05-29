@@ -11,6 +11,8 @@ module.exports = {
   ipv4 : '127.0.0.1',
   // ipv6 listening address
   ipv6 : '::1',
+  // server dns name
+  server_name : 'etlog-dev.cesnet.cz',
 // ==========================================================================================
   // mapping of groups to privilege levels
   // defines where to look for additional privilege information
