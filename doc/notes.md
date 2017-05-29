@@ -139,6 +139,36 @@ Set the configuration as below:
 		ProxyRequests Off
 		RemoteIPHeader X-Forwarded-For
 	</VirtualHost>
+
+    <VirtualHost 127.0.0.1:443>
+		ServerAdmin machv@cesnet.cz
+		ServerName etlog-dev.cesnet.cz
+		DocumentRoot /var/www/html
+
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+		SSLEngine on
+
+		SSLProtocol All -SSLv2 -SSLv3
+		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+		SSLCertificateFile	/etc/ssl/certs/etlog-dev.cesnet.cz.crt.pem
+		SSLCertificateKeyFile /etc/ssl/private/etlog-dev.cesnet.cz.key.pem
+
+		BrowserMatch "MSIE [2-6]" \
+				nokeepalive ssl-unclean-shutdown \
+				downgrade-1.0 force-response-1.0
+		# MSIE 7 and newer should be able to use keepalive
+		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+		<Location />
+			# proxy
+			ProxyPass http://127.0.0.1:8080/
+			ProxyPassReverse http://127.0.0.1:8080/
+		</Location>
+
+		ProxyRequests Off
+		RemoteIPHeader X-Forwarded-For
+	</VirtualHost>
 </IfModule>
 
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
