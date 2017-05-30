@@ -523,6 +523,11 @@ function get_total_items($scope, $http, coll_name)
   })
   .then(function(response) {
     $scope.paging.total_items = response.data;
+  },
+  function (response) {
+    $scope.error = true;   // error occured
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
   });
 }
 // --------------------------------------------------------------------------------------
