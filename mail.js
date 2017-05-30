@@ -63,7 +63,7 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
 module.exports.send_error_report = function (data)
 {
   var subj = "hlášení o chybě";
-  recipients = [ 'vac.mach@sh.cvut.cz' ];
+  recipients = [ 'machv@cesnet.cz' ];
   var mail_data = "";
 
   for(var item in data) {
