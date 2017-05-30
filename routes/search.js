@@ -11,10 +11,6 @@ router.get('/', function(req, res, next) {
     qp.validate_interval,
     false);       // no timestamp may be present in valid query
 
-  // TODO
-  // permissions must be set that way, so the user can search only his mac adress and username
-  // TODO - username must be always set in frontend !
-
   if(Object.keys(query.filter).length == 0) {   // empty filter
     var err = new Error("Neplatný dotaz!");
     err.status = 400;
