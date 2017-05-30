@@ -193,9 +193,15 @@ mongoose.connection.once('open', function (callback) {
 // --------------------------------------------------------------------------------------
 exports.connect = function()
 {
-  mongoose.connect('mongodb://localhost/etlog');
-  //mongoose.connect('mongodb://localhost/etlog?socketTimeoutMS=150000');
-  // set to generate realms for heat map
+  mongoose.connect('mongodb://localhost/etlog', {
+    server : {
+      socketOptions : {
+        socketTimeoutMS: 0,
+        connectTimeoutMS: 5000,
+        keepAlive: 300000
+      }
+    }
+  });
 }
 // --------------------------------------------------------------------------------------
 // disconnect from the databse
