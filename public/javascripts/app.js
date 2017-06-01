@@ -1031,10 +1031,12 @@ function setup_user_roles($rootScope, $scope, $http)
 // watch rooscope user variable for changes
 // TODO - array of functions as third param to be generic?
 // --------------------------------------------------------------------------------------
-function watch_user($scope, $rootScope)
+function watch_user($scope, $rootScope, $stateParams)
 {
   $rootScope.$watch('user.role', function() {
     form_set_role($scope, $rootScope);
+    set_params($scope, $stateParams); // set params passed from other views 
+                                      // needed because user role can unset pn
   });
 }
 // --------------------------------------------------------------------------------------
@@ -1042,6 +1044,8 @@ function watch_user($scope, $rootScope)
 // --------------------------------------------------------------------------------------
 function form_set_role($scope, $rootScope)
 {
+  console.log("zmena uzivatele");
+
   switch($scope.user.role) {
     case "user":
       $scope.form_data.pn = $scope.user.identities[0];  // set first identity
@@ -1061,7 +1065,7 @@ function form_set_role($scope, $rootScope)
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', '$rootScope', function ($scope, $http, $stateParams, $rootScope) {
   init_search($scope, $http);
-  watch_user($scope, $rootScope);
+  watch_user($scope, $rootScope, $stateParams);
   $scope.paging = {
     items_by_page : 10,
     current_page : 1,
@@ -1179,8 +1183,12 @@ function setup_calendars_time($scope)
 // --------------------------------------------------------------------------------------
 function set_params($scope, $stateParams)
 {
+  // debug
+  console.log($stateParams);
   var keys = Object.keys($stateParams);
   var empty = true;
+
+  console.log($scope.form_data);
 
   for(var key in keys) {
     if($stateParams[keys[key]]) {
@@ -1188,11 +1196,15 @@ function set_params($scope, $stateParams)
       $scope.form_data[keys[key]] = $stateParams[keys[key]];
     }
   }
+  
+  console.log($scope.form_data);
 
   if(!empty) {    // params not empty
+    console.log($scope.form_data.pn);
     $scope.$watch('main_form', function(main_form) {
       if(main_form)
         $scope.submit(main_form); // automatically click search button when form is ready
+      console.log($scope.form_data.pn);
     });
   }
 }

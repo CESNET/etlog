@@ -33,10 +33,12 @@ function setup_user_roles($rootScope, $scope, $http)
 // watch rooscope user variable for changes
 // TODO - array of functions as third param to be generic?
 // --------------------------------------------------------------------------------------
-function watch_user($scope, $rootScope)
+function watch_user($scope, $rootScope, $stateParams)
 {
   $rootScope.$watch('user.role', function() {
     form_set_role($scope, $rootScope);
+    set_params($scope, $stateParams); // set params passed from other views
+                                      // needed because user role can unset pn
   });
 }
 // --------------------------------------------------------------------------------------
@@ -63,7 +65,7 @@ function form_set_role($scope, $rootScope)
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', '$rootScope', function ($scope, $http, $stateParams, $rootScope) {
   init_search($scope, $http);
-  watch_user($scope, $rootScope);
+  watch_user($scope, $rootScope, $stateParams);
   $scope.paging = {
     items_by_page : 10,
     current_page : 1,
