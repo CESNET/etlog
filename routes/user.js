@@ -101,7 +101,7 @@ function set_realms(user)
   if(user.role != "realm_admin")
     return;     // applies only for realm admin
 
-  user.administed_realms = get_administered_realms(user.username);
+  user.administered_realms = get_administered_realms(user.username);
 }
 // --------------------------------------------------------------------------------------
 // get array of administered realms for given username
