@@ -124,7 +124,7 @@ function filter_data(req, data)
 
         for(var user in data[item].users)
           if(data[item].users[user].replace(/^.*@/, "") != req.session.user.administered_realms[realm])
-            tmp.users[user] = tmp.users[user].replace(/^.*@/, "filtered@");
+            tmp.users[user] = tmp.users[user].replace(/^.*@/, "*filtered*@");
 
         ret.push(tmp);
       }
