@@ -76,9 +76,13 @@ div.container-fluid(ng-controller="shared_mac_controller")
           td {{row.count}}
           td
             ul.list-inline
-              li(ng-repeat='user in row.users track by $index')
-                a(ui-sref='search({pn : user, csi: row.mac_address})', target='_blank')
+              li(ng-repeat='user in row.users track by $index' ng-if='!check_filtered(user)')
+                a(ui-sref='search({pn : user, csi: row.mac_address})', target='_blank', ng-if='!check_filtered(user)')
                   | {{row.users[$index]}}
+                b
+                  | &nbsp;
+              li(ng-repeat='user in row.users track by $index' ng-if='check_filtered(user)')
+                | {{row.users[$index]}}
                 b
                   | &nbsp;
       tbody(ng-show='paging.loading')

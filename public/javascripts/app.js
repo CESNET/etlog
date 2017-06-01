@@ -2014,6 +2014,10 @@ function addiational_fields_shared_mac($scope)
   $scope.delete_options = function() {
     $scope.options_added = false;
   };
+
+  $scope.check_filtered = function(username) {
+    return /^\*filtered\*@.*$/.test(username);
+  }
 }
 // --------------------------------------------------------------------------------------
 // get shared mac data
