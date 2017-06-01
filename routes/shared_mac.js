@@ -118,12 +118,12 @@ function filter_data(req, data)
     return ret;
 
   else if(req.session.user.role == "realm_admin") {
-    for(var realm in req.session.user.administed_realms)
+    for(var realm in req.session.user.administered_realms)
       for(var item in data) {
         tmp = data[item];
 
         for(var user in data[item].users)
-          if(data[item].users[user].replace(/^.*@/, "") != req.session.user.administed_realms[realm])
+          if(data[item].users[user].replace(/^.*@/, "") != req.session.user.administered_realms[realm])
             tmp.users[user] = tmp.users[user].replace(/^.*@/, "filtered@");
 
         ret.push(tmp);
