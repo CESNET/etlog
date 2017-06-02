@@ -78,10 +78,6 @@ function get_realms()
       else  # first administator
         realms[$realm]="$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')"
       fi
-
-      ## debug
-      #echo "realm: $realm"
-      #echo "manager: $(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//')"
     fi
   done <<< "$all_info"
 }
