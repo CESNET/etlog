@@ -341,6 +341,11 @@ libapache2-mod-proxy-html
 apache2-bin
 apache2-data
 apache2-utils
+ldapscripts
+ldap-utils
+ldapscripts
+pwgen
+sharutils
 
 Other special packages along with installation are listed below.
   
