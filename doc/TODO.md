@@ -1,22 +1,10 @@
 # etlog-dev
-- konfigurace apache
-  - jak resit periodicke generovani dat -> dotazy ktere dela aplikace sama na sebe -> nebude nastaven remote user
-  - dva ruzne vhosty - jeden jako _default_:443, druhy jako localhost:443?
 - firewall
   - revize
   - nasledne nasazeni na produkci spolu s autentizaci
   - pridat do dokumentace?
 - prava/role
   - v db existuji informace o mapovani uzivatel - pouzivane mac adresy
-- filtrace na zaklade roli (backend)
-  - filtrovano:
-    - obecne vyhledavani
-    - pocet zarizeni na uzivatele
-    - sdilena zarizeni
-    - uzivatele v ruznych lokalitach soucasne - vyhledavani
-- neuspesna prihlaseni nejsou nijak filtrovana
-  - ve frontendu se prima ziskana data transformuji na graf
-  - omezit? jak?
 
 
 # etlog (produkce)
@@ -28,9 +16,6 @@
   - seznam spravcu?
   - na devu nema smysl nasazovat
   - postup "registrace"
-
-- obecne vyhledavani
-  - opravit dotaz s regularnim vyrazem
 
 
 # Ostatní
