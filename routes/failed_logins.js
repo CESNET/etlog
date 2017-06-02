@@ -105,9 +105,20 @@ function search_days(req, res, next, query) {
   });
 
   stream.on('end', function(items) {
-    respond(round_ratio(data), res);
+    respond(filter(round_ratio(data)), res);
   });
 
+}
+// --------------------------------------------------------------------------------------
+// filter data regardless of user permissions
+// --------------------------------------------------------------------------------------
+function filter(data)
+{
+  var ret = data;
+  for(var item in data) {
+    ret[item].username = "x";     // filter out username
+  }
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 // send data to user
