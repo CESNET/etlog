@@ -6,12 +6,12 @@ div.container-fluid(ng-controller="search_controller")
         label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
         .col-xs-3
           select.form-control(ng-model='form_data.pn', ng-options='identity for identity in user.identities', ng-show='user.role == "user"')
-          input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', ng-show='user.role != "user"')
+          input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', ng-show='user.role != "user"', data-toggle="popover", data-content="Taktéž lze vyhledávat pomocí regulárního výrazu. Fungují všechny obvyklé regulární výrazy. Hledaný výraz je třeba uvavřít do lomítek")
 
       .form-group
         label.col-sm-2.control-label(for = 'mac_address') MAC adresa:
         .col-xs-2
-          input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model='form_data.csi')
+          input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model='form_data.csi', data-toggle="popover", data-content="Lze použít libovolný formát adresy.")
 
       .form-group
         label.col-sm-2.control-label(for = 'result') Výsledek autentizace:

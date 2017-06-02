@@ -87,7 +87,17 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   set_params($scope, $stateParams); // set params passed from other views
   handle_download($scope, $http, ["result", "timestamp", "username", "mac_address", "realm", "visinst"]);
   handle_empty_form($scope);
+  popover();
 }]);
+// --------------------------------------------------------------------------------------
+// display popovers
+// --------------------------------------------------------------------------------------
+function popover()
+{
+  $(document).ready(function(){
+    $('[data-toggle="popover"]').popover();
+  });
+}
 // --------------------------------------------------------------------------------------
 // checks if form is empty or not
 // --------------------------------------------------------------------------------------
