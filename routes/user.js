@@ -88,8 +88,14 @@ function get_eduroam_identities(headers)
 {
   var ret = [];
 
-  // "hack" using remote_user/eppn for now
-  ret.push(headers["remote_user"]);
+  if(headers["eduroamuid"]) {    // special eduroam identity attribute
+    var identities = headers["eduroamuid"].split(';');
+    for(var id in identities) {
+      ret.push(identities[id]);
+    }
+  }
+  else   // "hack" using remote_user/eppn for users, which do not supply eduroamuid attribute
+    ret.push(headers["remote_user"]);
 
   return ret;
 }
