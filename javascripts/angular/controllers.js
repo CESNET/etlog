@@ -132,6 +132,9 @@ function init_search($scope, $http)
     max_date : new Date($scope.max_date.getTime() + $scope.max_date.getTimezoneOffset() * -1 * 60 * 1000).toISOString(),          // today
   };
 
+  if($scope.user.role == "user")        // set identity for user
+    $scope.form_data.pn = $scope.user.identities[0];  // set first identity
+
   // get db_data
   $http({
     method  : 'GET',
