@@ -35,7 +35,10 @@ function setup_user_roles($rootScope, $scope, $http)
 // --------------------------------------------------------------------------------------
 function watch_user($scope, $rootScope, $stateParams)
 {
-  $rootScope.$watch('user.role', function() {
+  $rootScope.$watch('user.role', function(new_val, old_val) {
+    if(new_val === old_val) // no change
+      return;
+
     form_set_role($scope, $rootScope);
     set_params($scope, $stateParams); // set params passed from other views
                                       // needed because user role can unset pn
@@ -46,6 +49,8 @@ function watch_user($scope, $rootScope, $stateParams)
 // --------------------------------------------------------------------------------------
 function form_set_role($scope, $rootScope)
 {
+  $scope.user = $rootScope.user;
+
   switch($scope.user.role) {
     case "user":
       $scope.form_data.pn = $scope.user.identities[0];  // set first identity

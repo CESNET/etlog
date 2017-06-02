@@ -1033,9 +1033,12 @@ function setup_user_roles($rootScope, $scope, $http)
 // --------------------------------------------------------------------------------------
 function watch_user($scope, $rootScope, $stateParams)
 {
-  $rootScope.$watch('user.role', function() {
+  $rootScope.$watch('user.role', function(new_val, old_val) {
+    if(new_val === old_val) // no change
+      return;
+
     form_set_role($scope, $rootScope);
-    set_params($scope, $stateParams); // set params passed from other views 
+    set_params($scope, $stateParams); // set params passed from other views
                                       // needed because user role can unset pn
   });
 }
@@ -1044,7 +1047,7 @@ function watch_user($scope, $rootScope, $stateParams)
 // --------------------------------------------------------------------------------------
 function form_set_role($scope, $rootScope)
 {
-  console.log("zmena uzivatele");
+  $scope.user = $rootScope.user;
 
   switch($scope.user.role) {
     case "user":
@@ -1183,12 +1186,8 @@ function setup_calendars_time($scope)
 // --------------------------------------------------------------------------------------
 function set_params($scope, $stateParams)
 {
-  // debug
-  console.log($stateParams);
   var keys = Object.keys($stateParams);
   var empty = true;
-
-  console.log($scope.form_data);
 
   for(var key in keys) {
     if($stateParams[keys[key]]) {
@@ -1196,15 +1195,11 @@ function set_params($scope, $stateParams)
       $scope.form_data[keys[key]] = $stateParams[keys[key]];
     }
   }
-  
-  console.log($scope.form_data);
 
   if(!empty) {    // params not empty
-    console.log($scope.form_data.pn);
     $scope.$watch('main_form', function(main_form) {
       if(main_form)
         $scope.submit(main_form); // automatically click search button when form is ready
-      console.log($scope.form_data.pn);
     });
   }
 }
