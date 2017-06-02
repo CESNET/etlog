@@ -19,7 +19,7 @@ div.container-fluid(ng-controller="shared_mac_controller")
           label.col-sm-2.control-label MAC adresa:
           .col-xs-2
             div(layout-gt-xs='row')
-              input.form-control(type='text', ng-model='options.mac_address.val')
+              input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model='options.mac_address.val', data-toggle="popover", data-content="Lze použít libovolný formát adresy.")
               .radio(ng-repeat='type in options.mac_address.types track by $index')
                 input(type='radio', name='mac_address', ng-model='options.mac_address.sel', ng-value='type')
                 | {{options.mac_address.type_names[$index]}}

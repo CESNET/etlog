@@ -1004,6 +1004,7 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
   handle_pagination($scope, $http, get_shared_mac);
   setup_filters($scope, $http, "shared_mac");
   handle_download($scope, $http, ["mac_address", "count", "users"]);
+  popover();
 }]);
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
