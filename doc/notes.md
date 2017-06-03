@@ -213,7 +213,7 @@ log { source(net); destination(fticks); };
 service syslog-ng restart
 
 su - etlog
-mkdir -p ~/logs/{fticks,transform,mongo,invalid_records,systemd}
+mkdir -p ~/logs/{fticks,transform,mongo,invalid_records,systemd,ldap}
 ```
 
 The code above installs certificates required for syslog tls connection.
@@ -221,6 +221,7 @@ Next part installs syslog-ng and creates it's configuration.
 last part creates directories `/home/etlog/logs/fticks`, `/home/etlog/logs/transform`,
 `/home/etlog/logs/mongo` and .`/home/etlog/logs/invalid_records`
 Log files created by syslog are located in `/home/etlog/logs/fticks`.
+Ldap related files are in `/home/etlog/logs/ldap`.
 
 
 #### Systemd log files
