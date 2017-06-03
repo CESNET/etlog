@@ -506,46 +506,6 @@ Collection has following structure:
 | addrs      |   Array   |      array of user's mac addresses  |
 
 
-##### privileged\_ips
-
-Collection containing privileged ip addresses, which will bypass
-saml authentication. Address authentication is done using module passport-ip.
-Addresses must be in commonly used slash format:
-
-ipv4 addresses format:
-
-```
-'192.168.1.1/32'
-'10.0.0.0/8'
-```
-
-ipv6 addresses format:
-
-```
-'2001:718:2:1::1/128'
-'2001:718:2:1::/64'
-```
-
-Collection has following structure:
-
-| field name | data type |               note               |
-|------------|-----------|----------------------------------|
-| ip         |   String  |  string representing ip address  |
-
-
-###### data insertion/update
-
-After data update, the application must be restarted.
-Privileged ip addresses are loaded only on application startup.
-Localhost address is added for cron tasks to use application api.
-Data can be inserted by accesing mongo shell and using commands:
-
-```
-use etlog
-db.privileged_ips.insert({ip : '127.0.0.1/32'})
-db.privileged_ips.insert({ip : '192.168.1.1/32'})
-```
-
 ##### mac\_count
 
 Collection contains mapping of users and mac addresses, which they used for successful authentication, for every day.
