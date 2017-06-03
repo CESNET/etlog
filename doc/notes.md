@@ -494,6 +494,7 @@ Collection has following structure:
 | pn         |   String  |      username                    |
 | result     |   String  |      result of authentication    |
 
+
 ##### users\_mac
 
 Collection defines binding between user and all mac addresses, which he used for successful authentication to eduroam.
@@ -622,7 +623,6 @@ Collection has following structure:
 
 ##### concurrent\_users
 
-
 Collection contains data about users which logged in different locations concurrently.
 For the user to be in the collection the time difference of
 authentication in first visisted institution and the second visisted instituon
@@ -669,7 +669,6 @@ Collection has following structure:
 | field name       | data type  |               note                                             |
 |------------------|------------|----------------------------------------------------------------|
 |  revisions       | Array      | Array of all available revisions                               |
-
 
 
 ##### unique\_users
