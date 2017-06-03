@@ -130,6 +130,7 @@ Set the configuration as below:
 
 			# pro nastaveni dalsich hlavicek je treba dodat direktivu pro kokretni promenne prostredi
 			RequestHeader set PerunUniqueGroupName %{PerunUniqueGroupName}e
+			RequestHeader set eduroamUID %{eduroamUID}e
 
 			# proxy
 			ProxyPass http://127.0.0.1:8080/
