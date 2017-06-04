@@ -6,7 +6,8 @@
 # ==========================================================================================
 function main()
 {
-  if [[ check_state ]]
+  check_state
+  if [[ $? -eq 0 ]]
   then
     get_realms
     json=$(print_json)
@@ -18,7 +19,8 @@ function main()
 # ==========================================================================================
 function update_db()
 {
-  if [[ check_db ]]     # check if database is empty
+  check_db
+  if [[ $? -eq 0 ]]     # check if database is empty
   then                  # insert new data
     while read line
     do
@@ -43,7 +45,8 @@ function check_state()
   last_max=$(cat $etlog_log_root/ldap/last_timestamp)
 
   # first verify there is some content in the database
-  if [[ check_db ]]
+  check_db
+  if [[ $? -eq 0 ]]
   then
     return $retval  # database empty, request database update
   fi
