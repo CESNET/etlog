@@ -1,50 +1,94 @@
 #!/bin/bash
 #
 # script for realm admins synchronization
+# this script is intended to be run by cron in regular intervals
 #
 # ==========================================================================================
 function main()
 {
-  # all information regarding realm admins retrivied from ldap
-  all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn manager)
-  get_realms
-  realms_to_admins
-  print_json
+  if [[ check_state ]]
+  then
+    get_realms
+    json=$(print_json)
+    update_db
+  fi
 }
 # ==========================================================================================
-# convert structure one realm multiple admins to
-# admin multiple realms
+# update database contents
 # ==========================================================================================
-function realms_to_admins()
+function update_db()
 {
-  for key in ${!realms[@]}
+  while read line
   do
-    for admin in ${realms[$key]}
-    do
-      if [[ ${#admins[$admin]} -gt 0 ]] # not empty
-      then
-        admins[$admin]="${admins[$admin]} $key"
-      else                              # empty
-        admins[$admin]="$key"
-      fi
-    done
-  done
+    mongo etlog -quiet -eval "$line"
+  done <<< "$json"
+}
+# ==========================================================================================
+# check database state, check highest available timestamp
+# return value:
+# 0 - database update required
+# 1 - database update not required
+# ==========================================================================================
+function check_state()
+{
+  retval=0
+  last_max=$(cat $etlog_log_root/ldap/last_timestamp)
+
+  # first verify there is some content in the database
+  if [[ check_db ]]
+  then
+    return $retval  # database empty, request database update
+  fi
+
+  if [[ "$last_max" == "" ]]    # empty
+  then
+    last_max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+  else      # last timestamp not empty
+
+    max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+    if [[ $last_max -le $max ]]
+    then
+      retval=1  # not necessary to update
+    else    # greater
+      retval=0  # request update
+    fi
+  fi
+
+  echo $last_max > $etlog_log_root/ldap/last_timestamp
+  return $retval
+}
+# ==========================================================================================
+# check if there are realm admins in the database
+# return value:
+# 0 - collection realm_admins does not contain other realm admins than for realm "cz"
+# 1 - collection realm_admins contains other realm admins than for realm "cz"
+# ==========================================================================================
+function check_db()
+{
+  out="$(mongo etlog -quiet -eval 'db.realm_admins.find({realm : { $ne : "cz" } })')"    # get data from db
+
+  if [[ "$out" == "" ]]
+  then
+    return 0
+  else
+    return 1
+  fi
 }
 # ==========================================================================================
 # output stored information as json
 # ==========================================================================================
 function print_json()
 {
-  for admin in ${!admins[@]}
+  for realm in ${!realms[@]}
   do
-    echo -n "{ admin: \"$admin\", administered_realms: ["
+    echo -n "db.realm_admins.update({ realm: \"$realm\", admins: ["
     
-    for realm in ${admins[$admin]}
+    for admin in ${realms[$realm]}
     do
-      echo -n "\"$realm\", "
+      echo -n "\"$admin\", "
     done
     
-    echo "] }"
+    echo "] })"
   done
 }
 # ==========================================================================================
@@ -54,6 +98,8 @@ function print_json()
 # ==========================================================================================
 function get_realms()
 {
+  # all information regarding realm admins retrivied from ldap
+  all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn manager)
   local in_realm=false
   local realm
 
@@ -86,6 +132,7 @@ function get_realms()
 # key is realm
 # values are the administators for corresponding realm
 declare -gA realms
-declare -gA admins
+# etlog log root
+etlog_log_root="/home/etlog/logs"
 main
 # ==========================================================================================
