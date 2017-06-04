@@ -10,6 +10,7 @@ function main()
   if [[ $? -eq 0 ]]
   then
     get_realms
+    realms_to_admins
     json=$(print_json)
     update_db
   fi
@@ -24,12 +25,12 @@ function update_db()
   then                  # insert new data
     while read line
     do
-      mongo etlog -quiet -eval "db.realm_admins.insert($line)"
+      mongo etlog -quiet -eval "db.realm_admin_logins.insert($line)"
     done <<< "$json"
   else                  # update old data
     while read line
     do
-      mongo etlog -quiet -eval "db.realm_admins.update($line)"
+      mongo etlog -quiet -eval "db.realm_admin_logins.update($line)"
     done <<< "$json"
   fi
 }
@@ -71,32 +72,51 @@ function check_state()
 # ==========================================================================================
 # check if there are realm admins in the database
 # return value:
-# 0 - collection realm_admins does not contain other realm admins than for realm "cz"
-# 1 - collection realm_admins contains other realm admins than for realm "cz"
+# 0 - collection realm_admin_logins contains no data
+# 1 - collection realm_admin_logins contains some data
 # ==========================================================================================
 function check_db()
 {
-  out="$(mongo etlog -quiet -eval 'db.realm_admins.find({realm : { $ne : "cz" } })')"    # get data from db
+  out="$(mongo etlog -quiet -eval 'db.realm_admin_logins.count({})')"    # get data from db
 
-  if [[ "$out" == "" ]]
+  if [[ $out -eq 0 ]]
   then
     return 0
   else
     return 1
   fi
 }
+ # ==========================================================================================
+# convert structure one realm multiple admins to
+# admin multiple realms
+# ==========================================================================================
+function realms_to_admins()
+{
+  for key in ${!realms[@]}
+  do
+    for admin in ${realms[$key]}
+    do
+      if [[ ${#admins[$admin]} -gt 0 ]] # not empty
+      then
+        admins[$admin]="${admins[$admin]} $key"
+      else                              # empty
+        admins[$admin]="$key"
+      fi
+    done
+  done
+}
 # ==========================================================================================
 # output stored information as json
 # ==========================================================================================
 function print_json()
 {
-  for realm in ${!realms[@]}
+  for admin in ${!admins[@]}
   do
-    echo -n "{ realm: \"$realm\", admins: ["
+    echo -n "{ admin: \"$admin\", administered_realms: ["
     
-    for admin in ${realms[$realm]}
+    for realm in ${admins[$admin]}
     do
-      echo -n "\"$admin\", "
+      echo -n "\"$realm\", "
     done
     
     echo "] }"
@@ -143,6 +163,7 @@ function get_realms()
 # key is realm
 # values are the administators for corresponding realm
 declare -gA realms
+declare -gA admins
 # etlog log root
 etlog_log_root="/home/etlog/logs"
 main
