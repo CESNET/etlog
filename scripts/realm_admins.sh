@@ -18,10 +18,18 @@ function main()
 # ==========================================================================================
 function update_db()
 {
-  while read line
-  do
-    mongo etlog -quiet -eval "$line"
-  done <<< "$json"
+  if [[ check_db ]]     # check if database is empty
+  then                  # insert new data
+    while read line
+    do
+      mongo etlog -quiet -eval "db.realm_admins.insert($line)"
+    done <<< "$json"
+  else                  # update old data
+    while read line
+    do
+      mongo etlog -quiet -eval "db.realm_admins.update($line)"
+    done <<< "$json"
+  fi
 }
 # ==========================================================================================
 # check database state, check highest available timestamp
@@ -81,14 +89,14 @@ function print_json()
 {
   for realm in ${!realms[@]}
   do
-    echo -n "db.realm_admins.update({ realm: \"$realm\", admins: ["
+    echo -n "{ realm: \"$realm\", admins: ["
     
     for admin in ${realms[$realm]}
     do
       echo -n "\"$admin\", "
     done
     
-    echo "] })"
+    echo "] }"
   done
 }
 # ==========================================================================================
