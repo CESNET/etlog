@@ -7,21 +7,21 @@ const config = require('../config/config');
 // --------------------------------------------------------------------------------------
 router.get('/info', function(req, res, next) {
   if(!req.session.user)
-    req.session.user = get_user(req.headers);
+    req.session.user = get_user(req);
   respond(req.session.user, res);
 });
 // --------------------------------------------------------------------------------------
 // return basic info about user
 // --------------------------------------------------------------------------------------
 router.get('/set_role/:role', function(req, res, next) {
-  req.session.user = set_user_role(req.headers, req.params);
+  req.session.user = set_user_role(req);
   respond(req.session.user, res);
 });
 // --------------------------------------------------------------------------------------
 // get basic user info
 // return object with all important properties
 // --------------------------------------------------------------------------------------
-function get_user(headers)
+function get_user(req)
 {
   var user = {};
 
@@ -29,17 +29,17 @@ function get_user(headers)
   //user.display_name = headers["displayname"];
   //user.last_name = headers["sn"];
 
-  user.username = headers["remote_user"];
-  user.identities = get_eduroam_identities(headers);
+  user.username = req.headers["remote_user"];
+  user.identities = get_eduroam_identities(req.headers);
   user.groups = [];
   for(var group in config.role_groups) {
-    var temp = parse_groups(headers[config.role_groups[group]]);
+    var temp = parse_groups(req.headers[config.role_groups[group]]);
 
     for(role in temp)
       user.groups.push(temp[role]);
   }
   user.role = user.groups[user.groups.length - 1];      // default role is the highest available
-  set_realms(user);
+  set_realms(req, user);
   set_display_role(user);
 
   return user;
@@ -137,11 +137,11 @@ function set_display_role(user)
 // --------------------------------------------------------------------------------------
 // set user role
 // --------------------------------------------------------------------------------------
-function set_user_role(headers, params)
+function set_user_role(req)
 {
-  var user = get_user(headers);
+  var user = get_user(req);
 
-  switch(params.role) {
+  switch(req.params.role) {
     case "user":
       user.role = "user";       // anyone with higher privs can be a user
       break;
@@ -157,8 +157,8 @@ function set_user_role(headers, params)
       break;
   }
 
+  set_realms(user, req);
   set_display_role(user);
-  set_realms(user);
 
   return user;
 }
