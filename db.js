@@ -26,15 +26,6 @@ exports.users_mac_schema = users_mac_schema;
 var users_mac = mongoose.model('users_mac', users_mac_schema, 'users_mac');
 exports.users_mac = users_mac;
 // --------------------------------------------------------------------------------------
-var privileged_ips_schema = mongoose.Schema({
-  ip : String
-},
-{ versionKey: false });
-// --------------------------------------------------------------------------------------
-exports.privileged_ips_schema = privileged_ips_schema;
-var privileged_ips = mongoose.model('privileged_ips', privileged_ips_schema, 'privileged_ips');
-exports.privileged_ips = privileged_ips;
-// --------------------------------------------------------------------------------------
 var mac_count_schema = mongoose.Schema({
   username  : String,
   count     : Number,
