@@ -804,6 +804,11 @@ One record may look like:
 }
 ```
 
+##### sessions
+Collection contains user sessions. Collection data are managed by connect-mongo.
+Data are updated dynamically based on user authentication and role changes.
+All relevant information for each authenticated user is stored.
+
 
 #### Indexes
 
