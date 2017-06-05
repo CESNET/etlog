@@ -33,21 +33,10 @@ adduser etlog
 
 ### Network setup
 
-TODO - firewall revision
-
 Application is running by unprivileged user, so he can not use standard http and https port.
-Instead ports 8080 and 8443 are used.
-Automatic port redirection to ports 8080 and 8443 is provided through iptables.
-Persistence of rules is ensured by iptables-persistent debian package:
-```
-apt-get install iptables-persistent
-iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80  -j REDIRECT --to-port 8080
-iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8443
-iptables-save > /etc/iptables/rules.v4
-ip6tables -t nat -A PREROUTING -i eth0 -p tcp -d 2001:718:1:1f:50:56ff:feee:150/64 --dport 80  -j REDIRECT --to-port 8080
-ip6tables -t nat -A PREROUTING -i eth0 -p tcp -d 2001:718:1:1f:50:56ff:feee:150/64 --dport 443 -j REDIRECT --to-port 8443
-ip6tables-save > /etc/iptables/rules.v6
-```
+Instead port 8080 is used. Apache webserver is in front of application web server.
+Apache proxies all incoming request to the application web server.
+Automatic redirection from port 80 to port 443 is handled by apache.
 
 ### Shibboleth setup
 
