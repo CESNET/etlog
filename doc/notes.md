@@ -820,6 +820,7 @@ Following indexes are used:
 | visinst\_logins   | _id, timestamp, realm                                      |         |
 | unique\_users     | _id, timestamp, realm                                      |         |
 | concurrent\_users | _id, timestamp, username                                   |         |
+| sessions          | _id, expires                                               |         |
 
 
 ### Reports
