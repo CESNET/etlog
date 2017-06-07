@@ -19,6 +19,70 @@ router.get('/set_role/:role', function(req, res, next) {
   respond(req.session.user, res);
 });
 // --------------------------------------------------------------------------------------
+// return user notifications
+// --------------------------------------------------------------------------------------
+router.get('/notifications', function(req, res, next) {
+  if(!req.session.user)
+    req.session.user = get_user(req);
+
+  get_notifications(req, res, respond);
+});
+// --------------------------------------------------------------------------------------
+// update user notifications
+// --------------------------------------------------------------------------------------
+router.put('/notifications', function(req, res, next) {
+  if(!req.session.user)
+    req.session.user = get_user(req);
+
+  update_notifications(req);
+  respond(null, res);
+});
+// --------------------------------------------------------------------------------------
+// update user notifications
+// --------------------------------------------------------------------------------------
+function update_notifications(req)
+{
+  var notifications = req.body;
+
+  // search for realm admins locally in the database
+  for(var item in notifications) {
+    req.db.realm_admins.update({ "admin" : req.session.user.username, "realm" : notifications[item].realm }, { $set : notifications[item] }, function(err1, items) {
+      if(err1) {
+        var err2 = new Error();      // just to detect where the original error happened
+        console.error(err2);
+        console.error(err1);
+        next([err2, err1]);
+        return;
+      }
+    });
+  }
+}
+// --------------------------------------------------------------------------------------
+// get list of notifications for user
+// --------------------------------------------------------------------------------------
+function get_notifications(req, res, respond)
+{
+  if(req.session.user.role != "realm_admin") {       // notifications allowed for realm admins only
+    respond([], res);
+    return;
+  }
+
+  // TODO - exception for "cz"?
+
+  // search for realm admins locally in the database
+  req.db.realm_admins.find({ "admin" : req.session.user.username }, { _id: 0, realm : 1, notify_enabled : 1 }, function(err1, items) {
+    if(err1) {
+      var err2 = new Error();      // just to detect where the original error happened
+      console.error(err2);
+      console.error(err1);
+      next([err2, err1]);
+      return;
+    }
+
+    respond(items, res);
+  });
+}
+// --------------------------------------------------------------------------------------
 // get basic user info
 // return object with all important properties
 // --------------------------------------------------------------------------------------

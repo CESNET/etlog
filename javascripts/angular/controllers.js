@@ -2814,5 +2814,40 @@ function compare_count(a, b)
   return b.count - a.count
 }
 // --------------------------------------------------------------------------------------
+// notifications controller
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('notifications_controller', ['$scope', '$http', function ($scope, $http) {
+  get_notifications($scope, $http);
+  save_notification($scope, $http);
+}]);
+// --------------------------------------------------------------------------------------
+// get notifications from backend
+// --------------------------------------------------------------------------------------
+function get_notifications($scope, $http)
+{
+  $http({
+    method  : 'GET',
+    url     : '/api/user/notifications'
+  })
+  .then(function(response) {
+    $scope.notifications = response.data;
+  });
+}
+// --------------------------------------------------------------------------------------
+// save notifications on backend
+// --------------------------------------------------------------------------------------
+function save_notification($scope, $http)
+{
+  $scope.submit = function() {
+    $http({
+      method  : 'PUT',
+      url     : '/api/user/notifications',
+      data    : $scope.notifications
+    })
+    .then(function(response) {
+    });
+  }
+}
+// --------------------------------------------------------------------------------------
 
 

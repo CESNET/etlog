@@ -1,0 +1,18 @@
+div.container-fluid(ng-controller="notifications_controller")
+  div
+    h4 správa notifikací
+    form.form-horizontal(ng-submit="submit(main_form)" name="main_form", ng-model='form', novalidate)
+      .form-group
+        label.col-sm-3.control-label Měsíční reporty o neúspěšných přihlášeních:
+
+      .form-group(ng-repeat='notification in notifications')
+        label.col-sm-2.control-label realm: {{notification.realm}}
+        .col-xs-2
+          div(layout-gt-xs='row')
+            .checkbox
+              input(type="checkbox", ng-model='notification.notify_enabled')
+
+      .form-group
+        .col-sm-offset-2.col-sm-10
+          button.btn.btn-default(type="submit") Uložit
+
