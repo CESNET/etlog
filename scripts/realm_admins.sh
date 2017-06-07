@@ -9,10 +9,10 @@ function main()
   check_state
   if [[ $? -eq 0 ]]
   then
-    get_realms
-    realms_to_admins
-    json=$(print_json)
-    update_db
+   get_realms
+   realms_to_admins
+   realm_admin_logins=$(print_json)
+   update_db
   fi
 }
 # ==========================================================================================
@@ -26,12 +26,12 @@ function update_db()
     while read line
     do
       mongo etlog -quiet -eval "db.realm_admin_logins.insert($line)"
-    done <<< "$json"
+    done <<< "$realm_admin_logins"
   else                  # update old data
     while read line
     do
-      mongo etlog -quiet -eval "db.realm_admin_logins.update($line)"
-    done <<< "$json"
+      mongo etlog -quiet -eval "db.realm_admin_logins.update($(echo "$line" | sed 's/,.*$}/ }/'), $line)"
+    done <<< "$realm_admin_logins"
   fi
 }
 # ==========================================================================================
@@ -131,30 +131,44 @@ function get_realms()
 {
   # all information regarding realm admins retrivied from ldap
   all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn manager)
-  local in_realm=false
-  local realm
+  local in_object=false
+  local realm_list
 
   while read line
   do
+
     if [[ $line =~ ^$ ]]  # empty line
     then
-      in_realm=false
+      in_object=false
+      realm_list=""
     fi
 
     if [[ $line =~ ^"cn: ".*$ ]]  # realm
     then
-      in_realm=true
-      realm=$(echo $line | sed 's/cn: //')
+      in_object=true
+
+      if [[ ${#realm_list} -eq 0 ]]
+      then
+        realm_list=$(echo $line | sed 's/cn: //')   # first realm
+      else
+        realm_list="$realm_list $(echo $line | sed 's/cn: //')"  # add next realm
+      fi
     fi
 
-    if [[ $line =~ ^"manager: ".*$ && in_realm ]]   # realm administrator
+    if [[ $line =~ ^"manager: ".*$ && in_object ]]   # realm administrator
     then
-      if [[ ${#realms[$realm]} -gt 0 ]] # not first administrator
-      then
-        realms[$realm]="${realms[$realm]} $(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')"
-      else  # first administator
-        realms[$realm]="$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')"
-      fi
+
+      for realm in $realm_list            # iterate all realms from current object
+      do
+
+        if [[ ${#realms[$realm]} -gt 0 ]] # not first administrator
+        then
+          realms[$realm]="${realms[$realm]} $(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')"
+        else  # first administator
+          realms[$realm]="$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')"
+        fi
+
+      done
     fi
   done <<< "$all_info"
 }
@@ -163,6 +177,8 @@ function get_realms()
 # key is realm
 # values are the administators for corresponding realm
 declare -gA realms
+# key is admin
+# values are the realms for corresponding admin
 declare -gA admins
 # etlog log root
 etlog_log_root="/home/etlog/logs"
