@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const config = require('../config/config');
+const deasync = require('deasync');
 // --------------------------------------------------------------------------------------
 // return basic info about user
 // --------------------------------------------------------------------------------------
@@ -25,15 +26,11 @@ function get_user(req)
 {
   var user = {};
 
-  // characters can be incorrectly encoded - should be utf-8, but in fact are iso 8859-1
-  //user.display_name = headers["displayname"];
-  //user.last_name = headers["sn"];
-
   user.username = req.headers["remote_user"];
   user.identities = get_eduroam_identities(req.headers);
   user.groups = [];
   for(var group in config.role_groups) {
-    var temp = parse_groups(req.headers[config.role_groups[group]]);
+    var temp = parse_groups(req, user.username, req.headers[config.role_groups[group]]);
 
     for(role in temp)
       user.groups.push(temp[role]);
@@ -47,21 +44,30 @@ function get_user(req)
 // --------------------------------------------------------------------------------------
 // returns list of users permission
 // --------------------------------------------------------------------------------------
-function parse_groups(group_list)
+function parse_groups(req, username, group_list)
 {
   var ret = [ "user" ];         // everyone is at least a user
-
+  var done = false;
   var list = group_list.split(";");
 
-  // realm_admins
-  for(var group in config.realm_admin_groups) {
-    for(var item in list) {
-      if(list[item] == config.realm_admin_groups[group]) {
-        ret.push("realm_admin");
-        break;
-      }
+  // search for realm admins locally in the database
+  req.db.realm_admin_logins.find({ "admin" : username }, function(err1, items) {
+    if(err1) {
+      var err2 = new Error();      // just to detect where the original error happened
+      console.error(err2);
+      console.error(err1);
+      next([err2, err1]);
+      return;
     }
-  }
+
+    if(items.length > 0)    // username has realm admin privilege
+      ret.push("realm_admin");
+    done = true;
+  });
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
 
   // admins
   for(var group in config.admin_groups) {
@@ -102,22 +108,42 @@ function get_eduroam_identities(headers)
 // --------------------------------------------------------------------------------------
 // set array of administered realms if the user is realm admin
 // --------------------------------------------------------------------------------------
-function set_realms(user)
+function set_realms(req, user)
 {
   if(user.role != "realm_admin")
     return;     // applies only for realm admin
 
-  user.administered_realms = get_administered_realms(user.username);
+  user.administered_realms = get_administered_realms(req, user.username);
 }
 // --------------------------------------------------------------------------------------
 // get array of administered realms for given username
 // --------------------------------------------------------------------------------------
-function get_administered_realms(username)
+function get_administered_realms(req, username)
 {
+  var done = false;
   var ret = [];
 
-  // "hack" using remote_user/eppn for now
-  ret.push(username.replace(/.*@/, ""));
+  req.db.realm_admin_logins.find({ "admin" : username }, { _id : 0, administered_realms : 1 }, function(err1, items) {
+    if(err1) {
+      var err2 = new Error();      // just to detect where the original error happened
+      console.error(err2);
+      console.error(err1);
+      next([err2, err1]);
+      return;
+    }
+
+    if(items.length > 0)    // array of administered realms
+      ret = items[0].administered_realms;
+    else                    // "hack" using remote_user/eppn for now
+      ret.push(username.replace(/.*@/, ""));
+
+    done = true;
+  });
+
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
 
   return ret;
 }
@@ -157,7 +183,7 @@ function set_user_role(req)
       break;
   }
 
-  set_realms(user, req);
+  set_realms(req, user);
   set_display_role(user);
 
   return user;
