@@ -74,8 +74,9 @@ var failed_logins = mongoose.model('failed_logins', failed_logins_schema, 'faile
 exports.failed_logins = failed_logins;
 // --------------------------------------------------------------------------------------
 var realm_admins_schema = mongoose.Schema({
-  realm       : String,
-  admins      : Array
+  realm          : String,
+  admin          : String,
+  notify_enabled : Boolean
 },
 { versionKey: false });
 // --------------------------------------------------------------------------------------
