@@ -1079,7 +1079,6 @@ Application api:
 | /api/shared\_mac/               |        | timestamp, [ count, mac\_address, users ]              |                        |
 | /api/heat\_map/                 |        | timestamp, [ realm, institutions.realm, institutions.count ] |                  |
 | /api/succ\_logins/              |        | timestamp, [ username, count ]                         |                        |
-| /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
 | /api/realms/                    |        |                                                        | url returning list of realms from realms collection |
 | /api/realm\_logins              |        | timestamp, [ realm ]                                   |  |
