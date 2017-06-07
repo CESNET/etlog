@@ -1189,7 +1189,7 @@ which is not able to use templating engine.
 AngularJS is a complete JavaScript-based open-source front-end web application framework.
 It enables dynamic content manipulation throught html element attributes.
 
-Frontend has followind structure:
+Frontend has following structure:
 
 | state                          | url                               |     title                                          |
 |--------------------------------|-----------------------------------|----------------------------------------------------|
