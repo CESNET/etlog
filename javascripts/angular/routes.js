@@ -73,5 +73,11 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
     templateUrl: '/partials/concurrent_inst.html',
     title : 'etlog: nejčastější souběžně vyskytující se instituce'
   })
+
+  .state('notifications', {
+    url: '/notifications',
+    templateUrl: '/partials/notifications.html',
+    title : 'etlog: správa notifikací'
+  })
 });
 // --------------------------------------------------------------------------------------
