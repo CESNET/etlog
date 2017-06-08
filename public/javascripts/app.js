@@ -973,12 +973,46 @@ var etlog = angular.module('etlog', ['ui.router', 'angularUtils.directives.dirPa
 // --------------------------------------------------------------------------------------
 // set page title
 // --------------------------------------------------------------------------------------
-etlog.run(['$rootScope', '$http', function($rootScope, $http) {
+etlog.run(['$rootScope', '$http', '$state', function($rootScope, $http, $state) {
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
     $rootScope.title = toState.title;   // set current state title
   });
   get_user_info($rootScope, $http);
+  check_state_permissions($rootScope, $state, $http);
 }]);
+// --------------------------------------------------------------------------------------
+// check the user has correct permissions to enter desired state
+// --------------------------------------------------------------------------------------
+function check_state_permissions($rootScope, $state, $http)
+{
+  $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+    get_permissions($http, function(data) {
+      var highest = data[data.length - 1];  // highest available privilege
+
+      if(toState.allowed && toState.allowed.indexOf(highest) == -1) {
+        event.preventDefault();
+
+        if(!fromState.name)     // no previous state
+          $state.go('search');  // "default" state
+        else
+          $state.go(fromState.name);    // go to previous state
+      }
+    });
+  });
+}
+// --------------------------------------------------------------------------------------
+// get user permissions from backend
+// --------------------------------------------------------------------------------------
+function get_permissions($http, callback)
+{
+  $http({
+    method  : 'GET',
+    url     : '/api/user/permissions'
+  })
+    .then(function(response) {
+      callback(response.data);
+  });
+}
 // --------------------------------------------------------------------------------------
 // get basic user info
 // --------------------------------------------------------------------------------------
@@ -1093,7 +1127,7 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
 function popover()
 {
   $(document).ready(function(){
-    $('[data-toggle="popover"]').popover();
+    $('[data-toggle="popover"]').popover({ trigger: "hover" });
   });
 }
 // --------------------------------------------------------------------------------------
@@ -3812,6 +3846,41 @@ function compare_count(a, b)
   return b.count - a.count
 }
 // --------------------------------------------------------------------------------------
+// notifications controller
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('notifications_controller', ['$scope', '$http', function ($scope, $http) {
+  get_notifications($scope, $http);
+  save_notification($scope, $http);
+}]);
+// --------------------------------------------------------------------------------------
+// get notifications from backend
+// --------------------------------------------------------------------------------------
+function get_notifications($scope, $http)
+{
+  $http({
+    method  : 'GET',
+    url     : '/api/user/notifications'
+  })
+  .then(function(response) {
+    $scope.notifications = response.data;
+  });
+}
+// --------------------------------------------------------------------------------------
+// save notifications on backend
+// --------------------------------------------------------------------------------------
+function save_notification($scope, $http)
+{
+  $scope.submit = function() {
+    $http({
+      method  : 'PUT',
+      url     : '/api/user/notifications',
+      data    : $scope.notifications
+    })
+    .then(function(response) {
+    });
+  }
+}
+// --------------------------------------------------------------------------------------
 
 
 
@@ -3828,19 +3897,22 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   .state('mac_count', {
     url: '/mac_count',
     templateUrl: '/partials/mac_count.html',
-    title : 'etlog: počet zařízení'
+    title : 'etlog: počet zařízení',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 
   .state('shared_mac', {
     url: '/shared_mac',
     templateUrl: '/partials/shared_mac.html',
-    title : 'etlog: sdílená zařízení'
+    title : 'etlog: sdílená zařízení',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 
   .state('failed_logins', {
     url: '/failed_logins',
     templateUrl: '/partials/failed_logins.html',
-    title : 'etlog: neúspěšná přihlášení'
+    title : 'etlog: neúspěšná přihlášení',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 
   .state('heat_map', {
@@ -3870,25 +3942,36 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   .state('detection_data', {
     url: '/detection_data',
     templateUrl: '/partials/detection_data.html',
-    title : 'etlog: absolutní počet přihlášení'
+    title : 'etlog: absolutní počet přihlášení',
+    allowed : [ 'admin' ]
   })
 
   .state('detection_data_grouped', {
     url: '/detection_data_grouped',
     templateUrl: '/partials/detection_data_grouped.html',
-    title : 'etlog: normalizovaný počet přihlíšení'
+    title : 'etlog: normalizovaný počet přihlíšení',
+    allowed : [ 'admin' ]
   })
 
   .state('concurrent_users', {
     url: '/concurrent_users',
     templateUrl: '/partials/concurrent_users.html',
-    title : 'etlog: uživatelé v různých lokalitách současně'
+    title : 'etlog: uživatelé v různých lokalitách současně',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 
   .state('concurrent_inst', {
     url: '/concurrent_inst',
     templateUrl: '/partials/concurrent_inst.html',
-    title : 'etlog: nejčastější souběžně vyskytující se instituce'
+    title : 'etlog: nejčastější souběžně vyskytující se instituce',
+    allowed : [ 'realm_admin', 'admin' ]
+  })
+
+  .state('notifications', {
+    url: '/notifications',
+    templateUrl: '/partials/notifications.html',
+    title : 'etlog: správa notifikací',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 });
 // --------------------------------------------------------------------------------------
