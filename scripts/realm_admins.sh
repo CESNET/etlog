@@ -51,6 +51,7 @@ function check_state()
 {
   retval=0
   last_max=$(cat $etlog_log_root/ldap/last_timestamp)
+  last_res=$(cat $etlog_log_root/ldap/last_results)     # result count
 
   # first verify there is some content in the database
   check_db
@@ -59,13 +60,27 @@ function check_state()
     return $retval  # database empty, request database update
   fi
 
-  if [[ "$last_max" == "" ]]    # empty
+  if [[ "$last_max" == "" || "$last_res" == "" ]]    # empty
   then
-    last_max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
-  else      # last timestamp not empty
+    if [[ "$last_max" == "" ]]  # last max empty
+    then
+      last_max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+
+    else    # last res empty
+      last_res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
+    fi
+
+    echo $last_max > $etlog_log_root/ldap/last_timestamp
+    echo $last_res > $etlog_log_root/ldap/last_res
+    return 1
+  else      # last timestamp and last res not empty
 
     max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+    res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
     if [[ $last_max -le $max ]]
+    then
+      retval=1  # not necessary to update
+    elif [[  $res -ne $last_res ]]      # result count not equal last result count
     then
       retval=1  # not necessary to update
     else    # greater
@@ -73,7 +88,8 @@ function check_state()
     fi
   fi
 
-  echo $last_max > $etlog_log_root/ldap/last_timestamp
+  echo $max > $etlog_log_root/ldap/timestamp
+  echo $res > $etlog_log_root/ldap/res
   return $retval
 }
 # ==========================================================================================
