@@ -6,14 +6,23 @@
 # ==========================================================================================
 function main()
 {
-  check_state
-  if [[ $? -eq 0 ]]
+  if [[ "$1" == "force" ]]
   then
-    get_realms
-    realms_to_admins
-    realm_admin_logins=$(print_json)
-    realm_admins=$(realm_admins_json)
-    update_db
+      get_realms
+      realms_to_admins
+      realm_admin_logins=$(print_json)
+      realm_admins=$(realm_admins_json)
+      update_db
+  else
+    check_state
+    if [[ $? -eq 0 ]]
+    then
+      get_realms
+      realms_to_admins
+      realm_admin_logins=$(print_json)
+      realm_admins=$(realm_admins_json)
+      update_db
+    fi
   fi
 }
 # ==========================================================================================
@@ -238,5 +247,7 @@ declare -gA admins
 etlog_log_root="/home/etlog/logs"
 # notify default state
 notify_default=false
-main
+# enable first parameter to be passed to main
+# may be used to force synchronization
+main $1
 # ==========================================================================================
