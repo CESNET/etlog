@@ -19,6 +19,15 @@ router.get('/set_role/:role', function(req, res, next) {
   respond(req.session.user, res);
 });
 // --------------------------------------------------------------------------------------
+// return user permissions
+// --------------------------------------------------------------------------------------
+router.get('/permissions', function(req, res, next) {
+  if(!req.session.user)
+    req.session.user = get_user(req);
+
+  get_permissions(req, res, respond);
+});
+// --------------------------------------------------------------------------------------
 // return user notifications
 // --------------------------------------------------------------------------------------
 router.get('/notifications', function(req, res, next) {
@@ -81,6 +90,13 @@ function get_notifications(req, res, respond)
 
     respond(items, res);
   });
+}
+// --------------------------------------------------------------------------------------
+// get list of permissions for user
+// --------------------------------------------------------------------------------------
+function get_permissions(req, res, respond)
+{
+  respond(req.session.user.groups, res);
 }
 // --------------------------------------------------------------------------------------
 // get basic user info
