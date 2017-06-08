@@ -9,10 +9,11 @@ function main()
   check_state
   if [[ $? -eq 0 ]]
   then
-   get_realms
-   realms_to_admins
-   realm_admin_logins=$(print_json)
-   update_db
+    get_realms
+    realms_to_admins
+    realm_admin_logins=$(print_json)
+    realm_admins=$(realm_admins_json)
+    update_db
   fi
 }
 # ==========================================================================================
@@ -33,6 +34,12 @@ function update_db()
       mongo etlog -quiet -eval "db.realm_admin_logins.update($(echo "$line" | sed 's/,.*}$/ }/'), $line)"
     done <<< "$realm_admin_logins"
   fi
+
+  # update realm_admins
+  while read line
+  do
+    mongo etlog -quiet -eval "db.realm_admins.update($(echo "$line" | sed 's/, notify.*}$/ }/'), $line, { upsert : true })"
+  done <<< "$realm_admins"
 }
 # ==========================================================================================
 # check database state, check highest available timestamp
@@ -103,6 +110,37 @@ function realms_to_admins()
         admins[$admin]="$key"
       fi
     done
+  done
+}
+# ==========================================================================================
+# output stored information as json
+# ==========================================================================================
+function realm_admins_json()
+{
+  for admin in ${!admins[@]}
+  do
+    mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} preferedMail | grep "preferedMail: " | cut -d " " -f 2)
+
+    if [[ $mail == "" ]]
+    then
+      :
+      # TODO - co delat, pokud neni mail nastaven:
+      # - kontakt vubec nepridavat?
+      # - pridat kontakt, mail nechat prazdny nebo tam nastavit nejaky nesmysl a nastavit notify_enabled v tomto pripade vzdy na false?
+    else
+      for realm in ${admins[$admin]}
+      do
+        # set original value from database if exists
+        notify="$(mongo etlog -quiet -eval "db.realm_admins.find({ admin: \"$admin\", realm: \"$realm\" }, { _id: 0, notify_enabled : 1 })" | cut -d ":" -f 2 | sed 's/}//')"
+
+        if [[ $notify == "" ]]
+        then
+          notify=$notify_default    # set default value when empty
+        fi
+
+        echo "{ admin: \"$mail\", realm: \"$realm\", notify_enabled: $notify }"
+      done
+    fi
   done
 }
 # ==========================================================================================
@@ -182,5 +220,7 @@ declare -gA realms
 declare -gA admins
 # etlog log root
 etlog_log_root="/home/etlog/logs"
+# notify default state
+notify_default=false
 main
 # ==========================================================================================
