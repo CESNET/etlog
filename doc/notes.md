@@ -40,7 +40,7 @@ Automatic redirection from port 80 to port 443 is handled by apache.
 
 ### Shibboleth setup
 
-Documentation used for sbibboleth setup is located at [http://www.eduid.cz/cs/tech/sp/shibboleth] (http://www.eduid.cz/cs/tech/sp/shibboleth).
+Documentation used for sbibboleth setup is located at [http://www.eduid.cz/cs/tech/sp/shibboleth](http://www.eduid.cz/cs/tech/sp/shibboleth).
 
 ### Apache setup
 
