@@ -51,13 +51,11 @@ module.exports.send_mail = function (subject, recipients, data)
 // --------------------------------------------------------------------------------------
 module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
 {
-  database.realm_admins.find({}, { realm : 1, admin : 1, notify_enabled : 1, _id : 0 },
+  database.realm_admins.find({ notify_enabled : true }, { realm : 1, admin : 1, _id : 0 },
   function(err, items) {
     for(var dict in items) {
-      if(items[dict].notify_enabled) {
-        // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
-        module.exports.send_mail(config.failed_logins_subj, items[dict].admin, data_func(database, items[dict].realm, limit));
-      }
+      // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
+      module.exports.send_mail(config.failed_logins_subj, items[dict].admin, data_func(database, items[dict].realm, limit));
     }
   });
 }
