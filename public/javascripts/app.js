@@ -1029,6 +1029,25 @@ function get_user_info($rootScope, $http)
   }
 }
 // --------------------------------------------------------------------------------------
+// http interceptor to solve expired shibboleth sessions
+// --------------------------------------------------------------------------------------
+etlog.factory('session_timeout_interceptor', function($q, $window) {
+  return {
+   // XMLHttpRequest cannot load https://ds.eduid.cz/wayf.php?filter=..... No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'https://etlog-dev.cesnet.cz' is therefore not allowed access.
+   // not a clean solution for reauthenticating the user if the SP session expires but it works
+   'responseError': function(rejection) {
+      console.log("responseError");
+      console.log(rejection);
+      $window.location.reload();    // reaload the page to force the reauthentication on idp
+      return $q.reject(rejection);
+    }
+  };
+});
+// --------------------------------------------------------------------------------------
+etlog.config(['$httpProvider', function($httpProvider) {
+  $httpProvider.interceptors.push('session_timeout_interceptor');
+}]);
+// --------------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------------
 // header controller
