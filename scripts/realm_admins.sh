@@ -204,9 +204,8 @@ function get_realms()
     then
       in_object=false
       realm_list=""
-    fi
 
-    if [[ $line =~ ^"cn: ".*$ ]]  # realm
+    elif [[ $line =~ ^"cn: ".*$ ]]  # realm
     then
       in_object=true
 
@@ -216,19 +215,26 @@ function get_realms()
       else
         realm_list="$realm_list $(echo $line | sed 's/cn: //')"  # add next realm
       fi
-    fi
 
-    if [[ $line =~ ^"manager: ".*$ && in_object ]]   # realm administrator
+    elif [[ $line =~ ^"manager: ".*$ && in_object ]]   # realm administrator
     then
+      if [[ $line =~ ^"manager: uid="[[:alpha:]]+",".*$ ]]      # old state
+      then
+        manager=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')
+      else                                           # new state - use eduPersonPrincipalNames
+        # TODO - test
+        $uid=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//') # get uid
+        manager=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=$uid eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | head -1 | cut -d " " -f 2)
+      fi
 
       for realm in $realm_list            # iterate all realms from current object
       do
 
         if [[ ${#realms[$realm]} -gt 0 ]] # not first administrator
         then
-          realms[$realm]="${realms[$realm]} $(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')"
+          realms[$realm]="${realms[$realm]} $manager"
         else  # first administator
-          realms[$realm]="$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')"
+          realms[$realm]="$manager"
         fi
 
       done
