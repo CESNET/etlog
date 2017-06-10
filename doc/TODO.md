@@ -1,12 +1,3 @@
-# etlog-dev
-- firewall
-  - revize
-  - nasledne nasazeni na produkci spolu s autentizaci
-  - pridat do dokumentace?
-- prava/role
-  - v db existuji informace o mapovani uzivatel - pouzivane mac adresy
-
-
 # etlog (produkce)
 - monitoring
   - nechat skript pro konkrolu read only disku
