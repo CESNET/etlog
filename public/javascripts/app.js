@@ -1072,7 +1072,7 @@ function setup_user_roles($rootScope, $scope, $http)
 {
   $scope.change_role = function(role) {
     $http({
-      method  : 'GET',
+      method  : 'PUT',
       url     : '/api/user/set_role/' + role
     })
     .then(function(response) {

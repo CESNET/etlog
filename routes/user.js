@@ -14,7 +14,7 @@ router.get('/info', function(req, res, next) {
 // --------------------------------------------------------------------------------------
 // return basic info about user
 // --------------------------------------------------------------------------------------
-router.get('/set_role/:role', function(req, res, next) {
+router.put('/set_role/:role', function(req, res, next) {
   req.session.user = set_user_role(req);
   respond(req.session.user, res);
 });
