@@ -50,9 +50,17 @@ var access_log = rotator.getStream({
 // --------------------------------------------------------------------------------------
 // uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.ico'));
+// custom logging
+logger.token('user_role', function (req, res) {
+  if(req.session && req.session.user && req.session.user.role)
+    return req.session.user.role;
+  else
+    return "";
+});
+
 // Standard Apache combined log output with added response time and status
 // output to access log
-app.use(logger(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time[3] ms :status', { stream : access_log }));
+app.use(logger(':remote-addr - :req[remote_user] ":user_role" [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time[3] ms :status', { stream : access_log }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
