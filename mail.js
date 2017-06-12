@@ -14,8 +14,8 @@ function set_up_mailer()
   
   // setup e-mail data with unicode symbols
   var mail_options = {
-    from: 'etlog@etlog.cesnet.cz <etlog@etlog.cesnet.cz>', // sender address
-    //cc: 'vac.mach@sh.cvut.cz',  // copy
+    from: config.mail_from_address,         // sender address
+    replyTo: config.mail_replyto_address    // reply to
   };
 
   return {
@@ -26,12 +26,15 @@ function set_up_mailer()
 // --------------------------------------------------------------------------------------
 // send mail with defined subject and data
 // --------------------------------------------------------------------------------------
-module.exports.send_mail = function (subject, recipients, data)
+module.exports.send_mail = function (subject, recipients, data, bcc)
 {
   var mailer = set_up_mailer();     // set up
   mailer.mail_options.subject = subject;  // set mail subject
   mailer.mail_options.text = data;  // set mail text
   mailer.mail_options.to = recipients;   // set recipients
+
+  if(bcc)       // set up bcc if provided
+    mailer.mail_options.bcc = bcc;
 
   // send mail with defined transport object
   mailer.transporter.sendMail(mailer.mail_options, function(error, info) {
@@ -51,11 +54,19 @@ module.exports.send_mail = function (subject, recipients, data)
 // --------------------------------------------------------------------------------------
 module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
 {
+  var bcc = config.radius_admin;
+
   database.realm_admins.find({ notify_enabled : true }, { realm : 1, admin : 1, _id : 0 },
   function(err, items) {
     for(var dict in items) {
-      // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
-      module.exports.send_mail(config.failed_logins_subj, items[dict].admin, data_func(database, items[dict].realm, limit));
+      if(items[dict].realm == "cz") {       // exception for "cz" realm
+        module.exports.send_mail(config.failed_logins_subj, items[dict].admin, data_func(database, items[dict].realm, limit));
+      }
+      else {
+        // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
+        module.exports.send_mail(config.failed_logins_subj + " | " + items[dict].realm,         // specify realm in subject
+                                 items[dict].admin, data_func(database, items[dict].realm, limit), bcc);
+      }
     }
   });
 }
