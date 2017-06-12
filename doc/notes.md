@@ -707,10 +707,11 @@ If realm is defined, the the administrators can be notified about events in thei
 
 Collection has following structure:
 
-| field name | data type |               note                                                            |
-|------------|-----------|-------------------------------------------------------------------------------|
-| realm      |   string  |          realm                                                                |
-| admins     |   Array   |   array containing email addresses of administrator(s) of corresponding realm |
+| field name       | data type |               note                          |
+|------------------|-----------|---------------------------------------------|
+| realm            |   String  |              realm                          |
+| admin            |   String  |   administrator's email address             |
+| notify\_enabled  |   Boolean |   flag if administrator should be notified  |
 
 
 Data insertion may done easily by:
