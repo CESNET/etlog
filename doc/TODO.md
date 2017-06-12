@@ -10,10 +10,6 @@
 > potencialne vyzkouset jiny process manager, ktery nebude mit problem zapisovat do souboru a bude spravne formatovat zpravy
 
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
-> nema cenu v praci popisovat
-
-> popsat, ze je pouzity systemd
-- Pridana dokumentace k frontendu - vyhovuje takto? ([zde](https://github.com/CESNET/etlog#frontend))
 
 
 # TODO dobudoucna
@@ -26,7 +22,6 @@
 - minifikace js?
 - optimalizace pro mobilni zarizeni?
 - ceske realmy - odebrat omezeni na .cz?
-- timeout db spojeni, automaticke znovu obnoveni?
 - cachovani vysledku vyhledavani?
 - ... ?
 
