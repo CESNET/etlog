@@ -2819,6 +2819,7 @@ function compare_count(a, b)
 angular.module('etlog').controller('notifications_controller', ['$scope', '$http', function ($scope, $http) {
   get_notifications($scope, $http);
   save_notification($scope, $http);
+  popover_manual();
 }]);
 // --------------------------------------------------------------------------------------
 // get notifications from backend
@@ -2845,8 +2846,21 @@ function save_notification($scope, $http)
       data    : $scope.notifications
     })
     .then(function(response) {
+      $('[data-toggle="popover"]').popover('show'); // inform the user
+      setTimeout(function () {
+        $('[data-toggle="popover"]').popover('hide');
+      }, 1000);
     });
   }
+}
+// --------------------------------------------------------------------------------------
+// display popovers
+// --------------------------------------------------------------------------------------
+function popover_manual()
+{
+  $(document).ready(function(){
+    $('[data-toggle="popover"]').popover({ trigger: 'manual' });
+  });
 }
 // --------------------------------------------------------------------------------------
 
