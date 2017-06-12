@@ -219,13 +219,15 @@ function get_realms()
 
     elif [[ $line =~ ^"manager: ".*$ && in_object ]]   # realm administrator
     then
-      if [[ $line =~ ^"manager: uid="[[:alpha:]]+",".*$ ]]      # old state
+      if [[ $line =~ ^"manager: uid="[[:digit:]]+",".*$ ]]      # uid contains only digits, new state - use eduPersonPrincipalName
       then
-        manager=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')
-      else                                           # new state - use eduPersonPrincipalNames
         # TODO - test
-        $uid=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//') # get uid
-        manager=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=$uid eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | head -1 | cut -d " " -f 2)
+        # TODO - multiple identities can be used
+        #uid=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//') # get uid
+        #manager=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=$uid eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | head -1 | cut -d " " -f 2)
+        :
+      else                                           # old state
+        manager=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')
       fi
 
       for realm in $realm_list            # iterate all realms from current object
