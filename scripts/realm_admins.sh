@@ -144,7 +144,8 @@ function realm_admins_json()
 {
   for admin in ${!admins[@]}
   do
-    mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} preferedMail | grep "preferedMail: " | cut -d " " -f 2)
+    # take $admin's first mail
+    mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
 
     if [[ $mail == "" ]]
     then
