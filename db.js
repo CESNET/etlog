@@ -27,7 +27,8 @@ var users_mac = mongoose.model('users_mac', users_mac_schema, 'users_mac');
 exports.users_mac = users_mac;
 // --------------------------------------------------------------------------------------
 var realm_admin_logins_schema = mongoose.Schema({
-  admin : String,
+  admin_login_ids : Array,
+  admin_notify_address : String,
   administered_realms : Array
 },
 { versionKey: false });
