@@ -124,16 +124,108 @@ function check_db()
 # ==========================================================================================
 function realms_to_admins()
 {
+  local tmp
+
   for key in ${!realms[@]}
   do
     for admin in ${realms[$key]}
     do
+      # check if current processed admin key exists in array uids
+      # =============================================================
+      if [[ -n ${uids[$admin]} ]]    # uid
+      then
+        tmp=$admin
+        admin=""
+
+        for id in ${uids[$tmp]}  # iterate all identities available for uid
+        do
+          if [[ ${#admin} -eq 0 ]]  # empty
+          then
+            admin="$id"
+          else                      # not empty
+            admin="$admin $id"
+          fi
+        done
+
+        # take $admin's first mail
+        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b uid=$tmp,ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz -s base mail | grep "mail: " | head -1 | cut -d " " -f 2)
+      else
+        # take $admin's first mail
+        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
+      fi
+
+      # set mail to global array
+      # =============================================================
+
+      if [[ $mail == "" ]]
+      then
+        continue  # all valid admins must have mail set
+      else
+        admin_mails["$admin"]=$mail
+      fi
+
+      # map realms to admins
+      # =============================================================
       if [[ ${#admins[$admin]} -gt 0 ]] # not empty
       then
-        admins[$admin]="${admins[$admin]} $key"
+        admins["$admin"]="${admins["$admin"]} $key"
       else                              # empty
-        admins[$admin]="$key"
+        admins["$admin"]="$key"
       fi
+    done
+  done
+
+  merge_common
+}
+# ==========================================================================================
+# merge by common admin_login_id values
+# new way using eduPersonPrincipalNames and old way may have
+# common intersection when both used on one realm
+# ==========================================================================================
+function merge_common()
+{
+  local realms
+  local present
+
+  for admin in "${!admins[@]}"
+  do
+    for id in $admin
+    do
+      # $id matches @cesnet.cz && $admin contains more identities && $id exists in admins array
+      if [[ $id =~ ^.*@cesnet.cz && $(echo $admin | wc -w) -gt 1 && -n ${admins[$id]} ]]
+      then
+        realms=${admins[$admin]}    # original realms
+
+        # iterate all realms on duplicit identity
+        for realm in ${admins[$id]}
+        do
+          present=false
+
+          # iterate all original realms
+          for orig in $realms
+          do
+            if [[ $orig == $realm ]]
+            then
+              present=true
+              break
+            fi
+          done
+
+          if [[ $present == true ]]
+          then
+            continue
+          else
+            realms="$realms $realm" # add realm
+          fi
+
+        done
+
+        admins[$admin]="$realms"    # update realm list
+
+        # unset original @cesnet.cz key
+        unset admins[$id]
+      fi
+
     done
   done
 }
@@ -142,31 +234,20 @@ function realms_to_admins()
 # ==========================================================================================
 function realm_admins_json()
 {
-  for admin in ${!admins[@]}
+  for admin in "${!admins[@]}"
   do
-    # take $admin's first mail
-    mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
+    for realm in ${admins[$admin]}
+    do
+      # set original value from database if exists
+      notify="$(mongo etlog -quiet -eval "db.realm_admins.find({ admin: \"${admin_mails[$admin]}\", realm: \"$realm\" }, { _id: 0, notify_enabled : 1 })" | cut -d " " -f 4)"
 
-    if [[ $mail == "" ]]
-    then
-      :
-      # TODO - co delat, pokud neni mail nastaven:
-      # - kontakt vubec nepridavat?
-      # - pridat kontakt, mail nechat prazdny nebo tam nastavit nejaky nesmysl a nastavit notify_enabled v tomto pripade vzdy na false?
-    else
-      for realm in ${admins[$admin]}
-      do
-        # set original value from database if exists
-        notify="$(mongo etlog -quiet -eval "db.realm_admins.find({ admin: \"$admin\", realm: \"$realm\" }, { _id: 0, notify_enabled : 1 })" | cut -d ":" -f 2 | sed 's/}//')"
+      if [[ $notify == "" ]]
+      then
+        notify=$notify_default    # set default value when empty
+      fi
 
-        if [[ $notify == "" ]]
-        then
-          notify=$notify_default    # set default value when empty
-        fi
-
-        echo "{ admin: \"$mail\", realm: \"$realm\", notify_enabled: $notify }"
-      done
-    fi
+      echo "{ admin: \"${admin_mails[$admin]}\", realm: \"$realm\", notify_enabled: $notify }"
+    done
   done
 }
 # ==========================================================================================
@@ -174,16 +255,24 @@ function realm_admins_json()
 # ==========================================================================================
 function print_json()
 {
-  for admin in ${!admins[@]}
+  local tmp
+
+  for admin in "${!admins[@]}"
   do
-    echo -n "{ admin: \"$admin\", administered_realms: ["
+    echo -n "{ admin_login_ids: [ "
+    for id in $admin
+    do
+      echo -n "\"$id\", "
+    done
+
+    echo -n "] , administered_realms: ["
     
     for realm in ${admins[$admin]}
     do
       echo -n "\"$realm\", "
     done
     
-    echo "] }"
+    echo "], \"admin_notify_address\": \"${admin_mails["$admin"]}\" }"
   done
 }
 # ==========================================================================================
@@ -197,6 +286,10 @@ function get_realms()
   all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn manager)
   local in_object=false
   local realm_list
+  local uid
+  local sb
+  local identities
+  local manager
 
   while read line
   do
@@ -221,11 +314,15 @@ function get_realms()
     then
       if [[ $line =~ ^"manager: uid="[[:digit:]]+",".*$ ]]      # uid contains only digits, new state - use eduPersonPrincipalName
       then
-        # TODO - test
-        # TODO - multiple identities can be used
-        #uid=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//') # get uid
-        #manager=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=$uid eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | head -1 | cut -d " " -f 2)
-        :
+
+        sb=$(echo $line | sed 's/manager: //') # get search base
+        uid=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//') # get uid
+
+        # use whole line as search base
+        identities=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b $sb -s base eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | cut -d " " -f 2 | tr "\n" " ")
+        uids[$uid]=$identities     # save mapping of uid to user identities
+        identities=""              # clear for next admin
+        manager=$uid               # save uid as reference in array instead of values
       else                                           # old state
         manager=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')
       fi
@@ -252,6 +349,12 @@ declare -gA realms
 # key is admin
 # values are the realms for corresponding admin
 declare -gA admins
+# key is uid
+# values are the available eduPersonPrincipalName values
+declare -gA uids
+# key is uid or username
+# value is notification mail
+declare -gA admin_mails
 # etlog log root
 etlog_log_root="/home/etlog/logs"
 # notify default state
