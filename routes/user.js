@@ -54,7 +54,8 @@ function update_notifications(req)
 
   // search for realm admins locally in the database
   for(var item in notifications) {
-    req.db.realm_admins.update({ "admin" : req.session.user.username, "realm" : notifications[item].realm }, { $set : notifications[item] }, function(err1, items) {
+    req.db.realm_admins.update({ "admin" : req.session.user.notify_address, "realm" : notifications[item].realm },
+                               { $set : notifications[item] }, function(err1, items) {
       if(err1) {
         var err2 = new Error();      // just to detect where the original error happened
         console.error(err2);
@@ -75,10 +76,8 @@ function get_notifications(req, res, respond)
     return;
   }
 
-  // TODO - exception for "cz"?
-
   // search for realm admins locally in the database
-  req.db.realm_admins.find({ "admin" : req.session.user.username }, { _id: 0, realm : 1, notify_enabled : 1 }, function(err1, items) {
+  req.db.realm_admins.find({ "admin" : req.session.user.notify_address }, { _id: 0, realm : 1, notify_enabled : 1 }, function(err1, items) {
     if(err1) {
       var err2 = new Error();      // just to detect where the original error happened
       console.error(err2);
