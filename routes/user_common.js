@@ -150,7 +150,7 @@ function get_notify_address(req, username)
     }
 
     if(items.length > 0)
-      ret = items[0];
+      ret = items[0].admin_notify_address;
     done = true;
   });
 
