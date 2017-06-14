@@ -96,9 +96,9 @@ function filter_data(req, data)
   }
 
   else if(req.session.user.role == "realm_admin") {
-    for(var realm in req.session.user.administed_realms)
+    for(var realm in req.session.user.administered_realms)
       for(var item in data)
-        if(data[item].realm == req.session.user.administed_realms[realm])
+        if(data[item].realm == req.session.user.administered_realms[realm])
           ret.push(data[item]);
   }
 

@@ -124,9 +124,9 @@ function filter_data(req, data)
     return ret;
 
   else if(req.session.user.role == "realm_admin") {
-    for(var realm in req.session.user.administed_realms)
+    for(var realm in req.session.user.administered_realms)
       for(var item in data)
-        if(data[item].username.replace(/^.*@/, "") == req.session.user.administed_realms[realm])
+        if(data[item].username.replace(/^.*@/, "") == req.session.user.administered_realms[realm])
           ret.push(data[item]);
   }
 
