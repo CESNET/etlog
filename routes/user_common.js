@@ -99,6 +99,7 @@ function set_realms(req, user)
     return;     // applies only for realm admin
 
   user.administered_realms = get_administered_realms(req, user.username);
+  user.notify_address = get_notify_address(req, user.username);
 }
 // --------------------------------------------------------------------------------------
 // get array of administered realms for given username
@@ -108,7 +109,7 @@ function get_administered_realms(req, username)
   var done = false;
   var ret = [];
 
-  req.db.realm_admin_logins.find({ "admin" : username }, { _id : 0, administered_realms : 1 }, function(err1, items) {
+  req.db.realm_admin_logins.find({ "admin_login_ids" : username }, { _id : 0, administered_realms : 1 }, function(err1, items) {
     if(err1) {
       var err2 = new Error();      // just to detect where the original error happened
       console.error(err2);
@@ -122,6 +123,34 @@ function get_administered_realms(req, username)
     else                    // "hack" using remote_user/eppn for now
       ret.push(username.replace(/.*@/, ""));
 
+    done = true;
+  });
+
+  deasync.loopWhile(function() {
+    return !done;
+  });
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// get notify address for given username
+// --------------------------------------------------------------------------------------
+function get_notify_address(req, username)
+{
+  var done = false;
+  var ret;
+
+  req.db.realm_admin_logins.find({ "admin_login_ids" : username }, { _id : 0, admin_notify_address : 1 }, function(err1, items) {
+    if(err1) {
+      var err2 = new Error();      // just to detect where the original error happened
+      console.error(err2);
+      console.error(err1);
+      next([err2, err1]);
+      return;
+    }
+
+    if(items.length > 0)
+      ret = items[0];
     done = true;
   });
 
