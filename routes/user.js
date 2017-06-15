@@ -11,7 +11,7 @@ router.get('/info', function(req, res, next) {
   respond(req.session.user, res);
 });
 // --------------------------------------------------------------------------------------
-// return basic info about user
+// change user role
 // --------------------------------------------------------------------------------------
 router.put('/set_role/:role', function(req, res, next) {
   req.session.user = user.set_user_role(req);
