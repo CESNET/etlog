@@ -2773,8 +2773,6 @@ function get_concurrent_inst($scope, $http, qs, $q, callback)
     url     : '/api/concurrent_inst/' + qs + ts
   })
   .then(function(response) {
-    if(!$scope.download_url)
-      $scope.download_url = '/api/concurrent_users/' + qs + ts;   // set download url
     $scope.table_data = response.data;
     $scope.submitted = true;
     callback($scope);
