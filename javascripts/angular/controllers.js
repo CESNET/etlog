@@ -45,7 +45,7 @@ function watch_user($scope, $rootScope, $stateParams)
   });
 }
 // --------------------------------------------------------------------------------------
-// setup form to correspond ot user role
+// setup form to correspond to user role
 // --------------------------------------------------------------------------------------
 function form_set_role($scope, $rootScope)
 {
@@ -72,7 +72,7 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   init_search($scope, $http);
   watch_user($scope, $rootScope, $stateParams);
   $scope.paging = {
-    items_by_page : 10,
+    items_by_page : $scope.user.items_by_page || 10,
     current_page : 1,
     filters : {         // must match route qs names
     },
@@ -315,7 +315,7 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
   init($scope, $http);
   addiational_fields_mac_count($scope);   // set up additional form fields
   $scope.paging = {
-    items_by_page : 10,
+    items_by_page : $scope.user.items_by_page || 10,
     current_page : 1,
     filters : {         // must match route qs names
       username : "",
@@ -478,6 +478,27 @@ function handle_pagination($scope, $http, data_func)
 
     return ret;
   }
+
+  // ==========================================
+  $scope.$watch('paging.items_by_page', function(new_val, old_val) {
+    if(new_val === old_val) // no change
+      return;
+
+    update_user_paging($scope, $http);
+  });
+}
+// --------------------------------------------------------------------------------------
+// save current items_by_page value to user session
+// --------------------------------------------------------------------------------------
+function update_user_paging($scope, $http)
+{
+  // get db_data
+  $http({
+    method  : 'PUT',
+    url     : '/api/user/settings/' + $scope.paging.items_by_page
+  })
+  .then(function(response) {
+  });
 }
 // --------------------------------------------------------------------------------------
 // initialize
@@ -993,7 +1014,7 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
   init($scope, $http);
   addiational_fields_shared_mac($scope);   // set up additional form fields
   $scope.paging = {
-    items_by_page : 10,
+    items_by_page : $scope.user.items_by_page || 10,
     current_page : 1,
     filters : {         // must match route qs names
       mac_address : "",
@@ -2585,7 +2606,7 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
   init($scope, $http);
   additional_fields_concurrent_users($http, $scope);   // set up additional form fields
   $scope.paging = {
-    items_by_page : 10,
+    items_by_page : $scope.user.items_by_page || 10,
     current_page : 1,
     filters : {         // must match route qs names
       //username : "",

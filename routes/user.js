@@ -11,6 +11,13 @@ router.get('/info', function(req, res, next) {
   respond(req.session.user, res);
 });
 // --------------------------------------------------------------------------------------
+// change user settings
+// --------------------------------------------------------------------------------------
+router.put('/settings/:paging', function(req, res, next) {
+  req.session.user = user.set_paging(req);
+  respond(req.session.user, res);
+});
+// --------------------------------------------------------------------------------------
 // change user role
 // --------------------------------------------------------------------------------------
 router.put('/set_role/:role', function(req, res, next) {

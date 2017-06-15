@@ -202,4 +202,13 @@ exp.set_user_role = function(req)
   return user;
 }
 // --------------------------------------------------------------------------------------
+// set items per page for user
+// --------------------------------------------------------------------------------------
+exp.set_paging = function(req)
+{
+  var user = exp.get_user(req);
+  user.items_by_page = req.params.paging;
+  return user;
+}
+// --------------------------------------------------------------------------------------
 module.exports = exp;
