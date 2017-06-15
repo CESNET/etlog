@@ -57,7 +57,9 @@ div.container-fluid(ng-controller="shared_mac_controller")
       label záznamů na stránku:
         select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes')
 
-    table.table.table-bordered.table-responsive#out
+    h4(ng-show='paging.total_items == 0') Zadaným parametrům vyhledávání neodpovídají žádné záznamy.
+
+    table.table.table-bordered.table-responsive#out(ng-show='paging.loading || paging.total_items > 0')
       thead
         tr
           th MAC adresa:
