@@ -171,6 +171,8 @@ router.get('/logs', function(req, res, next) {
     agg.add_stage(aggregate_query, { $match : regex });
   }
 
+  filter_by_username(req, aggregate_query);
+
   agg.add_stage(aggregate_query, {
       $project :
         {
@@ -194,7 +196,7 @@ router.get('/logs', function(req, res, next) {
   aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
   aggregate_query.push({ $project : { count : 1, _id : 0 } });
 
-  get_record_count(req.db.logs, req, res, next, aggregate_query, transform, filter_by_username);       // perform search with constructed mongo query
+  get_record_count(req.db.logs, req, res, next, aggregate_query, transform);       // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // get count for concurrent users
@@ -289,7 +291,7 @@ function get_qs_interval(req, filters)
 // --------------------------------------------------------------------------------------
 // return count of record for specified timestamp interval
 // --------------------------------------------------------------------------------------
-function get_record_count(collection, req, res, next, aggregate_query, transform_fn, filter_fn)
+function get_record_count(collection, req, res, next, aggregate_query, transform_fn)
 {
   collection.aggregate(aggregate_query,
   function(err1, items) {
@@ -301,10 +303,7 @@ function get_record_count(collection, req, res, next, aggregate_query, transform
       return;
     };
 
-    if(filter_fn)
-      respond(filter_fn(req, transform_fn(items)), res)
-    else
-      respond(transform_fn(items), res)
+    respond(transform_fn(items), res);
   });
 }
 // --------------------------------------------------------------------------------------
@@ -312,27 +311,15 @@ function get_record_count(collection, req, res, next, aggregate_query, transform
 // user: only his records
 // realm admin: only records for all administered realms
 // --------------------------------------------------------------------------------------
-function filter_by_username(req, data)
+function filter_by_username(req, aggregate_query)
 {
-  var ret = [];
+  if(req.session.user.role == "user")
+    agg.add_stage(aggregate_query, { $match : { "pn" : req.session.user.username }});
 
-  if(req.session.user.role == "user") {
-    for(var item in data)
-      if(data[item].username == req.session.user.username)
-        ret.push(data[item]);
-  }
+  else if(req.session.user.role == "realm_admin")
+    agg.add_stage(aggregate_query, { $match : { "realm" : { $in : req.session.user.administered_realms }}});
 
-  else if(req.session.user.role == "realm_admin") {
-    for(var realm in req.session.user.administered_realms)
-      for(var item in data)
-        if(data[item].realm == req.session.user.administered_realms[realm])
-          ret.push(data[item]);
-  }
-
-  else if(req.session.user.role == "admin")  // no filtration
-    return data;
-
-  return ret;
+  // no filtration for administator
 }
 // --------------------------------------------------------------------------------------
 // filter results so each user can search only relevant records
