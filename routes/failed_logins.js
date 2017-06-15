@@ -116,7 +116,7 @@ function filter(data)
 {
   var ret = data;
   for(var item in data) {
-    ret[item].username = "x";     // filter out username
+    ret[item].username = "";     // filter out username
   }
   return ret;
 }
