@@ -106,6 +106,13 @@ router.get('/shared_mac', function(req, res, next) {
 
   // ===================================================
 
+  if(req.session.user.role == "user") {
+    respond(0, res);
+    return;
+  }
+
+  // ===================================================
+
   var aggregate_query = [
     {
       $match : query.filter       // filter by query
@@ -240,6 +247,14 @@ router.get('/concurrent_users', function(req, res, next) {
   // ===================================================
   // add condition from original filter if defined
   agg.add_cond(aggregate_query, cond);
+
+  // ===================================================
+  if(req.session.user.role == "user") {
+    respond(0, res);
+    return;
+  }
+
+  filter_mac_count(req, aggregate_query);
 
   // ===================================================
   // add redact stage if mac_diff is required
