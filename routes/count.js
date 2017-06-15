@@ -148,7 +148,7 @@ router.get('/shared_mac', function(req, res, next) {
 router.get('/logs', function(req, res, next) {
   var query = get_qs_interval(req, [ 'timestamp', 'pn', 'csi', 'realm', 'visinst', 'result' ]); // array of valid filters
 
-  // exclude possible regex from
+  // exclude possible regex from filter
   var regex = agg.check_regex(query.filter);
 
   // ===================================================
