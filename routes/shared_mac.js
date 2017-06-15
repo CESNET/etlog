@@ -113,23 +113,32 @@ function filter_data(req, data)
 {
   var ret = [];
   var tmp;
+  var matched;
 
   if(req.session.user.role == "user")
     return ret;
 
   else if(req.session.user.role == "realm_admin") {
-    for(var realm in req.session.user.administered_realms)
-      for(var item in data) {
-        tmp = data[item];
+    for(var item in data) {
+      tmp = data[item];
 
-        for(var user in data[item].users)
-          if(data[item].users[user].replace(/^.*@/, "") != req.session.user.administered_realms[realm])
+      for(var user in data[item].users) {
+        matched = false;        // not matched by default
+
+        for(var realm in req.session.user.administered_realms)
+          if(data[item].users[user].replace(/^.*@/, "") == req.session.user.administered_realms[realm]) {       // one of the admin's realms matches
+            matched = true;
+            break;
+          }
+
+          if(!matched)   // filter out
             tmp.users[user] = tmp.users[user].replace(/^.*@/, "*filtered*@");
-
-
-        if(ret.indexOf(tmp) == -1)    // add new item
-          ret.push(tmp);
       }
+
+
+      if(ret.indexOf(tmp) == -1)    // add new item
+        ret.push(tmp);
+    }
   }
 
   else if(req.session.user.role == "admin")  // no filtration
