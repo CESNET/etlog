@@ -62,6 +62,15 @@ router.get('/mac_count', function(req, res, next) {
   ];
 
   // ===================================================
+
+  if(req.session.user.role == "user") {
+    respond(0, res);
+    return;
+  }
+
+  filter_mac_count(req, aggregate_query);
+
+  // ===================================================
   // add condition from original filter if defined
   agg.add_cond(aggregate_query, cond);
 
@@ -325,24 +334,20 @@ function filter_by_username(req, aggregate_query)
 // filter results so each user can search only relevant records
 // realm admin: only records for all administered realms
 // --------------------------------------------------------------------------------------
-function filter_mac_count(req, data)
+function filter_mac_count(req, aggregate_query)
 {
-  var ret = [];
+  var stage;
+  var arr = [];
 
-  if(req.session.user.role == "user")
-    return ret;
-
-  else if(req.session.user.role == "realm_admin") {
+  if(req.session.user.role == "realm_admin") {
     for(var realm in req.session.user.administered_realms)
-      for(var item in data)
-        if(data[item].username.replace(/^.*@/, "") == req.session.user.administered_realms[realm])
-          ret.push(data[item]);
+      arr.push(new RegExp("^.*@" + req.session.user.administered_realms[realm]) + "$");
+
+    stage = { $match : { "username" : { $in : arr }}};
+    agg.add_stage(aggregate_query, stage);
   }
 
-  else if(req.session.user.role == "admin")  // no filtration
-    return data;
-
-  return ret;
+  // no filtration for administator
 }
 // --------------------------------------------------------------------------------------
 // send data to user
