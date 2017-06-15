@@ -126,7 +126,9 @@ function filter_data(req, data)
           if(data[item].users[user].replace(/^.*@/, "") != req.session.user.administered_realms[realm])
             tmp.users[user] = tmp.users[user].replace(/^.*@/, "*filtered*@");
 
-        ret.push(tmp);
+
+        if(ret.indexOf(tmp) == -1)    // add new item
+          ret.push(tmp);
       }
   }
 
