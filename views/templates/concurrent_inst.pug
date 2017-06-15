@@ -23,7 +23,8 @@ div.container-fluid(ng-controller="concurrent_inst_controller")
     .loading-indicator(ng-show='loading')
 
     div
-      table.table.table-bordered.table-responsive
+      h4(ng-show='table_length == 0') Zadaným parametrům vyhledávání neodpovídají žádné záznamy.
+      table.table.table-bordered.table-responsive(ng-show='paging.loading || table_length > 0')
         thead
           tr
             th Název instituce 1:
@@ -39,7 +40,7 @@ div.container-fluid(ng-controller="concurrent_inst_controller")
             td.text-center(colspan='4')
               .loading-indicator
 
-    .form-group
+    .form-group(ng-show='table_length > 0')
       .col-xs-2
         button.btn.btn-default(type='button' ng-click='download_data()') Uložit data
 
