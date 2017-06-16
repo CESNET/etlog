@@ -67,8 +67,6 @@ etlog.factory('expired_sessions_interceptor', function($q, $window) {
    // XMLHttpRequest cannot load https://ds.eduid.cz/wayf.php?filter=..... No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'https://etlog-dev.cesnet.cz' is therefore not allowed access.
    // not a clean solution for reauthenticating the user if the SP session expires but it works
    'responseError': function(rejection) {
-      console.log("responseError");
-      console.log(rejection);
       $window.location.reload();    // reaload the page to force the reauthentication on idp
       return $q.reject(rejection);
     }
