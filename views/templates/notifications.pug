@@ -5,12 +5,17 @@ div.container-fluid(ng-controller="notifications_controller")
       .form-group
         label.col-sm-3.control-label Měsíční reporty o neúspěšných přihlášeních:
 
+      .form-group
+        label.col-sm-2.control-label Realm
+        .col-xs-2
+          div(layout-gt-xs='row')
+
       .form-group(ng-repeat='notification in notifications')
-        label.col-sm-2.control-label realm: {{notification.realm}}
+        label.col-sm-2.control-label.notification(for="{{notification.realm}}") {{notification.realm}}
         .col-xs-2
           div(layout-gt-xs='row')
             .checkbox
-              input(type="checkbox", ng-model='notification.notify_enabled')
+              input(type="checkbox", id="{{notification.realm}}", ng-model='notification.notify_enabled')
 
       .form-group
         .col-sm-offset-2.col-sm-10
