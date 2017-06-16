@@ -8,22 +8,25 @@ function main()
 {
   if [[ "$1" == "force" ]]
   then
-      get_realms
-      realms_to_admins
-      realm_admin_logins=$(print_json)
-      realm_admins=$(realm_admins_json)
-      update_db
+      force_update
   else
     check_state
     if [[ $? -eq 0 ]]
     then
-      get_realms
-      realms_to_admins
-      realm_admin_logins=$(print_json)
-      realm_admins=$(realm_admins_json)
-      update_db
+      force_update
     fi
   fi
+}
+# ==========================================================================================
+# force update
+# ==========================================================================================
+function force_update()
+{
+  get_realms
+  realms_to_admins
+  realm_admin_logins=$(print_json)
+  realm_admins=$(realm_admins_json)
+  update_db
 }
 # ==========================================================================================
 # update database contents
