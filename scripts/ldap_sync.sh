@@ -43,7 +43,7 @@ function update_db()
   else                  # update old data
     while read line
     do
-      mongo etlog -quiet -eval "db.realm_admin_logins.update($(echo "$line" | sed 's/,.*}$/ }/'), $line)"
+      mongo etlog -quiet -eval "db.realm_admin_logins.update($(echo "$line" | sed 's/\],.*}$/]}/'), $line)"
     done <<< "$realm_admin_logins"
   fi
 
@@ -268,7 +268,7 @@ function print_json()
       echo -n "\"$id\", "
     done
 
-    echo -n "] , administered_realms: ["
+    echo -n "], administered_realms: ["
     
     for realm in ${admins[$admin]}
     do
