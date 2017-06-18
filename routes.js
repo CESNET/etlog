@@ -1,15 +1,5 @@
 module.exports = function(app, database) {
 // -----------------------------------------------------------
-  // TODO
-  // prepend authentication to all routes
- 
-  // TODO
-  // use permissions - [ user, administrator ]
-  //
-  // all routes may be used by administrator
-  //
-  // only specific routes may be used by user
-
   // set up routes
 // -----------------------------------------------------------
   app.use('/', require('./routes/index'));                                           // title page
@@ -29,12 +19,6 @@ module.exports = function(app, database) {
   app.use('/api/concurrent_users', require('./routes/concurrent_users'));            // generic api for concurrent users
   app.use('/api/concurrent_inst', require('./routes/concurrent_inst'));              // api for concurrent institutions
   app.use('/api/concurrent_rev', require('./routes/concurrent_rev'));                // api for concurrent revisions
-
+  app.use('/api/user', require('./routes/user'));                                    // api for user managament
 // -----------------------------------------------------------
-  // login routing is defined separately
-  // see auth.js
-
-  // saml test
-  app.use('/auth_fail', require('./routes/auth_fail'));
-  //app.use('/login/callback', require('./routes/callback'));
 }

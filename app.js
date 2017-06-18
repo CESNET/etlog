@@ -1,4 +1,6 @@
 const express = require('express');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
@@ -7,12 +9,22 @@ const bodyParser = require('body-parser');
 const database = require( './db' );
 const fs = require( 'fs' );
 const rotator = require('file-stream-rotator')
+const secrets = require('./config/secrets')
 // --------------------------------------------------------------------------------------
 // call express
 var app = express();
 
 // connect to the database
 database.connect();
+
+// init session
+app.set('trust proxy', 1)       // app is behind a proxy
+app.use(session({ secret : secrets.session,
+                  secure : true,
+                  resave : false,
+                  saveUninitialized : false,
+                  store : new MongoStore({ db : 'SessionStore', url : 'mongodb://localhost:27017/etlog' }),
+                }));
 
 // --------------------------------------------------------------------------------------
 // view engine setup
@@ -38,15 +50,21 @@ var access_log = rotator.getStream({
 // --------------------------------------------------------------------------------------
 // uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.ico'));
+// custom logging
+logger.token('user_role', function (req, res) {
+  if(req.session && req.session.user && req.session.user.role)
+    return req.session.user.role;
+  else
+    return "";
+});
+
 // Standard Apache combined log output with added response time and status
 // output to access log
-app.use(logger(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time[3] ms :status', { stream : access_log }));
+app.use(logger(':remote-addr - :req[remote_user] ":user_role" [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time[3] ms :status', { stream : access_log }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-const saml = require('./auth')(app, database);          // SAML + IP based auth
 
 // --------------------------------------------------------------------------------------
 // Make our db accessible to our router

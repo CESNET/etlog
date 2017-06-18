@@ -11,10 +11,6 @@ router.get('/', function(req, res, next) {
     qp.validate_interval,
     false);       // no timestamp may be present in valid query
 
-  // TODO
-  // permissions must be set that way, so the user can search only his mac adress and username
-  // TODO - username must be always set in frontend !
-
   if(Object.keys(query.filter).length == 0) {   // empty filter
     var err = new Error("Neplatný dotaz!");
     err.status = 400;
@@ -81,8 +77,35 @@ function search(req, res, next, query) {
   });
 
   stream.on('end', function(items) {
-    respond(convert(data), res);
+    respond(filter_data(req, convert(data)), res);
   });
+}
+// --------------------------------------------------------------------------------------
+// filter results so each user can search only relevant records
+// user: only his records
+// realm admin: only records for all administered realms
+// --------------------------------------------------------------------------------------
+function filter_data(req, data)
+{
+  var ret = [];
+
+  if(req.session.user.role == "user") {
+    for(var item in data)
+      if(data[item].username == req.session.user.username)
+        ret.push(data[item]);
+  }
+
+  else if(req.session.user.role == "realm_admin") {
+    for(var realm in req.session.user.administered_realms)
+      for(var item in data)
+        if(data[item].realm == req.session.user.administered_realms[realm])
+          ret.push(data[item]);
+  }
+
+  else if(req.session.user.role == "admin")  // no filtration
+    return data;
+
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 // convert timestamp in data

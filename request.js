@@ -8,14 +8,21 @@ const url_base = 'https://etlog.cesnet.cz:8443/api';
 // parameters:
 // realm = limit query only to this realm
 // limit = limit number of results
-//  limit number of results
 // --------------------------------------------------------------------------------------
 exp.get_failed_logins_monthly = function(database, realm, limit)
 {
+  var ret = "";
+
   var fail = exp.get_all_failed_logins_monthly(database, realm, limit);
   var sum = exp.get_failed_login_count_monthly(database);
 
-  return failed_to_human_readable(fail, sum);
+  if(realm != "cz") {
+    ret += "neúspěšná přihlášení pro realm " + realm + "\n\n" ;
+    ret += "==============================================================================\n\n";
+  }
+
+  ret += failed_to_human_readable(fail, sum);
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 // return longest username in data
@@ -41,6 +48,9 @@ function get_longest(data)
 // --------------------------------------------------------------------------------------
 function failed_to_human_readable(data, sum)
 {
+  if(data.length == 0 || sum == 0)
+    return; // no data available
+
   var ret = "";
   var longest = get_longest(data);  // longest username found
   // data are already sorted - first one contains highest count

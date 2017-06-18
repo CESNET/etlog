@@ -5,15 +5,13 @@ div.container-fluid(ng-controller="search_controller")
       .form-group
         label.col-sm-2.control-label(for = 'username') Uživatelské jméno:
         .col-xs-3
-          input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn')
+          select.form-control(ng-model='form_data.pn', ng-options='identity for identity in user.identities', ng-show='user.role == "user"')
+          input.form-control(type = 'text', placeholder = 'uživatel@příklad.cz', ng-model='form_data.pn', ng-show='user.role != "user"', data-toggle="popover", data-content="Taktéž lze vyhledávat pomocí regulárního výrazu. Fungují všechny obvyklé regulární výrazy. Hledaný výraz je třeba uvavřít do lomítek.")
 
-      //- TODO - add check if username matches the current user logged in !
-      //- what if the user spoofs the field?
-      
       .form-group
         label.col-sm-2.control-label(for = 'mac_address') MAC adresa:
         .col-xs-2
-          input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model='form_data.csi')
+          input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model='form_data.csi', data-toggle="popover", data-content="Lze použít libovolný formát adresy.")
 
       .form-group
         label.col-sm-2.control-label(for = 'result') Výsledek autentizace:
@@ -22,7 +20,7 @@ div.container-fluid(ng-controller="search_controller")
             each key, val in {"nezadáno" : "", "OK" : "OK", "FAIL" : "FAIL", "TIMEOUT" : "TIMEOUT"}
               option(value = key) #{val}
 
-      .form-group
+      .form-group(ng-show='user.role != "user"')
         label.col-sm-2.control-label(for = 'realm') Realm:
         .col-xs-2
           input.form-control(type = 'text', placeholder = 'příklad.cz', ng-model='form_data.realm')
@@ -54,9 +52,11 @@ div.container-fluid(ng-controller="search_controller")
     .form-group
       .col-xs-2
       label záznamů na stránku:
-        select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes')
+        select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes track by $index')
 
-    table.table.table-bordered.table-responsive#out
+    h4(ng-show='paging.total_items == 0 && !paging.loading') Zadaným parametrům vyhledávání neodpovídají žádné záznamy.
+
+    table.table.table-bordered.table-responsive#out(ng-show='paging.loading || paging.total_items > 0')
       thead
         tr
           th Výsledek autentizace:
@@ -84,7 +84,7 @@ div.container-fluid(ng-controller="search_controller")
           td.text-center(colspan='6')
             .loading-indicator
 
-    .form-group
+    .form-group(ng-show='paging.total_items > 0')
       .col-xs-2
         button.btn.btn-default(type='button' ng-click='download_data()') Uložit data
 
@@ -93,6 +93,6 @@ div.container-fluid(ng-controller="search_controller")
 
   .text-danger(ng-show='error')
     p
-      | Při vyhledávání došlo k chybě.
+      | Při vyhledávání došlo k chybě. Zkuste blíže specifikovat výsledky. V případě že potíže přetrvávají, kontaktujte správce aplikace.
 
 

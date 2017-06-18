@@ -43,8 +43,21 @@ function search(req, res, next, query) {
       return;
     }
 
-    respond(items, res);
+    respond(filter_data(req, items), res);
   });
+}
+// --------------------------------------------------------------------------------------
+// filter results so each user can search only relevant records
+// realm admin: only records for all administered realms
+// --------------------------------------------------------------------------------------
+function filter_data(req, data)
+{
+  var ret = [];
+
+  if(req.session.user.role == "user")
+    return ret;
+
+  return data;  // no filtration othewrise
 }
 // --------------------------------------------------------------------------------------
 // send data to user

@@ -1,3 +1,5 @@
 cert
 *.swp
 public/partials/detection_data*
+config/secrets.js
+config/ldap_secret

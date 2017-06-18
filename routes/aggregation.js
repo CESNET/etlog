@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------
-// check if any of fileds is present in query
+// check if any of fieds is present in query
 // if so, delete it and return as dict for
 // further processing
 // --------------------------------------------------------------------------------------

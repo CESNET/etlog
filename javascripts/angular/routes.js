@@ -11,19 +11,22 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   .state('mac_count', {
     url: '/mac_count',
     templateUrl: '/partials/mac_count.html',
-    title : 'etlog: počet zařízení'
+    title : 'etlog: počet zařízení',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 
   .state('shared_mac', {
     url: '/shared_mac',
     templateUrl: '/partials/shared_mac.html',
-    title : 'etlog: sdílená zařízení'
+    title : 'etlog: sdílená zařízení',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 
   .state('failed_logins', {
     url: '/failed_logins',
     templateUrl: '/partials/failed_logins.html',
-    title : 'etlog: neúspěšná přihlášení'
+    title : 'etlog: neúspěšná přihlášení',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 
   .state('heat_map', {
@@ -53,25 +56,36 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
   .state('detection_data', {
     url: '/detection_data',
     templateUrl: '/partials/detection_data.html',
-    title : 'etlog: absolutní počet přihlášení'
+    title : 'etlog: absolutní počet přihlášení',
+    allowed : [ 'admin' ]
   })
 
   .state('detection_data_grouped', {
     url: '/detection_data_grouped',
     templateUrl: '/partials/detection_data_grouped.html',
-    title : 'etlog: normalizovaný počet přihlíšení'
+    title : 'etlog: normalizovaný počet přihlíšení',
+    allowed : [ 'admin' ]
   })
 
   .state('concurrent_users', {
     url: '/concurrent_users',
     templateUrl: '/partials/concurrent_users.html',
-    title : 'etlog: uživatelé v různých lokalitách současně'
+    title : 'etlog: uživatelé v různých lokalitách současně',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 
   .state('concurrent_inst', {
     url: '/concurrent_inst',
     templateUrl: '/partials/concurrent_inst.html',
-    title : 'etlog: nejčastější souběžně vyskytující se instituce'
+    title : 'etlog: nejčastější souběžně vyskytující se instituce',
+    allowed : [ 'realm_admin', 'admin' ]
+  })
+
+  .state('notifications', {
+    url: '/notifications',
+    templateUrl: '/partials/notifications.html',
+    title : 'etlog: správa notifikací',
+    allowed : [ 'realm_admin', 'admin' ]
   })
 });
 // --------------------------------------------------------------------------------------

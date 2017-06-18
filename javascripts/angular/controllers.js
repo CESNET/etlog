@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------
 // header controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('header_controller', ['$scope', '$location', function ($scope, $location) {
+angular.module('etlog').controller('header_controller', ['$scope', '$http', '$location', '$rootScope', function ($scope, $http, $location, $rootScope) {
   $scope.is_active = function(navbar_path) {
     for(var item in navbar_path) {      // iterate array of acceptable values
       if(navbar_path[item] === $location.path())
@@ -10,19 +10,69 @@ angular.module('etlog').controller('header_controller', ['$scope', '$location', 
 
     return false;   // return false if not
   }
+
+  setup_user_roles($rootScope, $scope, $http);
 }]);
 // --------------------------------------------------------------------------------------
-// index controller
+// get basic info about the user
+// setup user roles
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('index_controller', ['$scope', '$http', function ($scope, $http) {
-}]);
+function setup_user_roles($rootScope, $scope, $http)
+{
+  $scope.change_role = function(role) {
+    $http({
+      method  : 'PUT',
+      url     : '/api/user/set_role/' + role
+    })
+    .then(function(response) {
+      $rootScope.user = response.data;
+    });
+  }
+}
+// --------------------------------------------------------------------------------------
+// watch rooscope user variable for changes
+// TODO - array of functions as third param to be generic?
+// --------------------------------------------------------------------------------------
+function watch_user($scope, $rootScope, $stateParams)
+{
+  $rootScope.$watch('user.role', function(new_val, old_val) {
+    if(new_val === old_val) // no change
+      return;
+
+    form_set_role($scope, $rootScope);
+    set_params($scope, $stateParams); // set params passed from other views
+                                      // needed because user role can unset pn
+  });
+}
+// --------------------------------------------------------------------------------------
+// setup form to correspond to user role
+// --------------------------------------------------------------------------------------
+function form_set_role($scope, $rootScope)
+{
+  $scope.user = $rootScope.user;
+
+  switch($scope.user.role) {
+    case "user":
+      $scope.form_data.pn = $scope.user.identities[0];  // set first identity
+      break;
+
+    case "realm_admin":
+      $scope.form_data.pn = ""; // clear
+      break;
+
+    case "admin":
+      $scope.form_data.pn = ""; // clear
+      break;
+  }
+}
 // --------------------------------------------------------------------------------------
 // search controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', function ($scope, $http, $stateParams) {
+angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', '$rootScope', function ($scope, $http, $stateParams, $rootScope) {
   init_search($scope, $http);
+  watch_user($scope, $rootScope, $stateParams);
   $scope.paging = {
-    items_by_page : 10,
+    items_by_page : $scope.user.items_by_page || 10,
     current_page : 1,
     filters : {         // must match route qs names
     },
@@ -37,7 +87,17 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   set_params($scope, $stateParams); // set params passed from other views
   handle_download($scope, $http, ["result", "timestamp", "username", "mac_address", "realm", "visinst"]);
   handle_empty_form($scope);
+  popover();
 }]);
+// --------------------------------------------------------------------------------------
+// display popovers
+// --------------------------------------------------------------------------------------
+function popover()
+{
+  $(document).ready(function(){
+    $('[data-toggle="popover"]').popover({ trigger: "hover" });
+  });
+}
 // --------------------------------------------------------------------------------------
 // checks if form is empty or not
 // --------------------------------------------------------------------------------------
@@ -71,6 +131,9 @@ function init_search($scope, $http)
     min_date : new Date($scope.min_date.getTime() + $scope.min_date.getTimezoneOffset() * -1 * 60 * 1000).toISOString(),           // 30 days ago
     max_date : new Date($scope.max_date.getTime() + $scope.max_date.getTimezoneOffset() * -1 * 60 * 1000).toISOString(),          // today
   };
+
+  if($scope.user.role == "user")        // set identity for user
+    $scope.form_data.pn = $scope.user.identities[0];  // set first identity
 
   // get db_data
   $http({
@@ -208,6 +271,7 @@ function transform_timestamp(data)
 function handle_search_submit($scope, $http, data_func, paging, coll_name)
 {
   $scope.submit = function (form) {
+    $scope.paging.total_items = 0;      // no items yet
     $scope.error = false; // begin submitting - no error yet
     $scope.base_qs = build_qs_search($scope.form_data);  // create query string
     $scope.qs = $scope.base_qs;
@@ -252,7 +316,7 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
   init($scope, $http);
   addiational_fields_mac_count($scope);   // set up additional form fields
   $scope.paging = {
-    items_by_page : 10,
+    items_by_page : $scope.user.items_by_page || 10,
     current_page : 1,
     filters : {         // must match route qs names
       username : "",
@@ -415,6 +479,27 @@ function handle_pagination($scope, $http, data_func)
 
     return ret;
   }
+
+  // ==========================================
+  $scope.$watch('paging.items_by_page', function(new_val, old_val) {
+    if(new_val === old_val) // no change
+      return;
+
+    update_user_paging($scope, $http);
+  });
+}
+// --------------------------------------------------------------------------------------
+// save current items_by_page value to user session
+// --------------------------------------------------------------------------------------
+function update_user_paging($scope, $http)
+{
+  // get db_data
+  $http({
+    method  : 'PUT',
+    url     : '/api/user/settings/' + $scope.paging.items_by_page
+  })
+  .then(function(response) {
+  });
 }
 // --------------------------------------------------------------------------------------
 // initialize
@@ -480,6 +565,11 @@ function get_total_items($scope, $http, coll_name)
   })
   .then(function(response) {
     $scope.paging.total_items = response.data;
+  },
+  function (response) {
+    $scope.error = true;   // error occured
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
   });
 }
 // --------------------------------------------------------------------------------------
@@ -497,6 +587,7 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
   $scope.submit = function (form) {
     if(form.$valid) {
       // set loading animation
+      $scope.paging.total_items = 0;      // no items yet
       $scope.loading = true;
       add_options($scope);        // add optional form fields
       get_days($scope);                           // get array of days in specified interval
@@ -925,7 +1016,7 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
   init($scope, $http);
   addiational_fields_shared_mac($scope);   // set up additional form fields
   $scope.paging = {
-    items_by_page : 10,
+    items_by_page : $scope.user.items_by_page || 10,
     current_page : 1,
     filters : {         // must match route qs names
       mac_address : "",
@@ -939,6 +1030,7 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
   handle_pagination($scope, $http, get_shared_mac);
   setup_filters($scope, $http, "shared_mac");
   handle_download($scope, $http, ["mac_address", "count", "users"]);
+  popover();
 }]);
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
@@ -968,6 +1060,10 @@ function addiational_fields_shared_mac($scope)
   $scope.delete_options = function() {
     $scope.options_added = false;
   };
+
+  $scope.check_filtered = function(username) {
+    return /^\*filtered\*@.*$/.test(username);
+  }
 }
 // --------------------------------------------------------------------------------------
 // get shared mac data
@@ -2512,7 +2608,7 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
   init($scope, $http);
   additional_fields_concurrent_users($http, $scope);   // set up additional form fields
   $scope.paging = {
-    items_by_page : 10,
+    items_by_page : $scope.user.items_by_page || 10,
     current_page : 1,
     filters : {         // must match route qs names
       //username : "",
@@ -2700,8 +2796,6 @@ function get_concurrent_inst($scope, $http, qs, $q, callback)
     url     : '/api/concurrent_inst/' + qs + ts
   })
   .then(function(response) {
-    if(!$scope.download_url)
-      $scope.download_url = '/api/concurrent_users/' + qs + ts;   // set download url
     $scope.table_data = response.data;
     $scope.submitted = true;
     callback($scope);
@@ -2739,6 +2833,55 @@ function filter_table_data($scope)
 function compare_count(a, b)
 {
   return b.count - a.count
+}
+// --------------------------------------------------------------------------------------
+// notifications controller
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('notifications_controller', ['$scope', '$http', function ($scope, $http) {
+  get_notifications($scope, $http);
+  save_notification($scope, $http);
+  popover_manual();
+}]);
+// --------------------------------------------------------------------------------------
+// get notifications from backend
+// --------------------------------------------------------------------------------------
+function get_notifications($scope, $http)
+{
+  $http({
+    method  : 'GET',
+    url     : '/api/user/notifications'
+  })
+  .then(function(response) {
+    $scope.notifications = response.data;
+  });
+}
+// --------------------------------------------------------------------------------------
+// save notifications on backend
+// --------------------------------------------------------------------------------------
+function save_notification($scope, $http)
+{
+  $scope.submit = function() {
+    $http({
+      method  : 'PUT',
+      url     : '/api/user/notifications',
+      data    : $scope.notifications
+    })
+    .then(function(response) {
+      $('[data-toggle="popover"]').popover('show'); // inform the user
+      setTimeout(function () {
+        $('[data-toggle="popover"]').popover('hide');
+      }, 1000);
+    });
+  }
+}
+// --------------------------------------------------------------------------------------
+// display popovers
+// --------------------------------------------------------------------------------------
+function popover_manual()
+{
+  $(document).ready(function(){
+    $('[data-toggle="popover"]').popover({ trigger: 'manual' });
+  });
 }
 // --------------------------------------------------------------------------------------
 

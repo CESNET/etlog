@@ -19,7 +19,7 @@ div.container-fluid(ng-controller="shared_mac_controller")
           label.col-sm-2.control-label MAC adresa:
           .col-xs-2
             div(layout-gt-xs='row')
-              input.form-control(type='text', ng-model='options.mac_address.val')
+              input.form-control(type = 'text', placeholder = '12:34:56:78:ab:cd', ng-model='options.mac_address.val', data-toggle="popover", data-content="Lze použít libovolný formát adresy.")
               .radio(ng-repeat='type in options.mac_address.types track by $index')
                 input(type='radio', name='mac_address', ng-model='options.mac_address.sel', ng-value='type')
                 | {{options.mac_address.type_names[$index]}}
@@ -55,9 +55,11 @@ div.container-fluid(ng-controller="shared_mac_controller")
     .form-group
       .col-xs-2
       label záznamů na stránku:
-        select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes')
+        select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes track by $index')
 
-    table.table.table-bordered.table-responsive#out
+    h4(ng-show='paging.total_items == 0 && !paging.loading') Zadaným parametrům vyhledávání neodpovídají žádné záznamy.
+
+    table.table.table-bordered.table-responsive#out(ng-show='paging.loading || paging.total_items > 0')
       thead
         tr
           th MAC adresa:
@@ -76,9 +78,13 @@ div.container-fluid(ng-controller="shared_mac_controller")
           td {{row.count}}
           td
             ul.list-inline
-              li(ng-repeat='user in row.users')
-                a(ui-sref='search({pn : user, csi: row.mac_address})', target='_blank')
-                  | {{user}}
+              li(ng-repeat='user in row.users track by $index' ng-if='!check_filtered(user)')
+                a(ui-sref='search({pn : user, csi: row.mac_address})', target='_blank', ng-if='!check_filtered(user)')
+                  | {{row.users[$index]}}
+                b
+                  | &nbsp;
+              li(ng-repeat='user in row.users track by $index' ng-if='check_filtered(user)')
+                | {{row.users[$index]}}
                 b
                   | &nbsp;
       tbody(ng-show='paging.loading')

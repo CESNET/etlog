@@ -102,8 +102,49 @@ function search_days(req, res, next, query) {
   });
 
   stream.on('end', function(items) {
-    respond(data, res);
+    respond(filter_data(req, data), res);
   });
+}
+// --------------------------------------------------------------------------------------
+// filter results so each user can search only relevant records
+// realm admin: only records for all administered realms
+// --------------------------------------------------------------------------------------
+function filter_data(req, data)
+{
+  var ret = [];
+  var tmp;
+  var matched;
+
+  if(req.session.user.role == "user")
+    return ret;
+
+  else if(req.session.user.role == "realm_admin") {
+    for(var item in data) {
+      tmp = data[item];
+
+      for(var user in data[item].users) {
+        matched = false;        // not matched by default
+
+        for(var realm in req.session.user.administered_realms)
+          if(data[item].users[user].replace(/^.*@/, "") == req.session.user.administered_realms[realm]) {       // one of the admin's realms matches
+            matched = true;
+            break;
+          }
+
+          if(!matched)   // filter out
+            tmp.users[user] = tmp.users[user].replace(/^.*@/, "*filtered*@");
+      }
+
+
+      if(ret.indexOf(tmp) == -1)    // add new item
+        ret.push(tmp);
+    }
+  }
+
+  else if(req.session.user.role == "admin")  // no filtration
+    return data;
+
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 // send data to user

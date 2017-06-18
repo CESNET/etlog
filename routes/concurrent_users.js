@@ -80,7 +80,7 @@ function search(req, res, next, query) {
       return;
     }
 
-    respond(convert(items), res);
+    respond(filter_data(req, convert(items)), res);
   });
 }
 // --------------------------------------------------------------------------------------
@@ -107,6 +107,29 @@ function convert_time(date)
   d = new Date(date);
   d.setTime(d.getTime() + (-1 * d.getTimezoneOffset() * 60 * 1000));
   return d;
+}
+// --------------------------------------------------------------------------------------
+// filter results so each user can search only relevant records
+// realm admin: only records for all administered realms
+// --------------------------------------------------------------------------------------
+function filter_data(req, data)
+{
+  var ret = [];
+
+  if(req.session.user.role == "user")
+    return ret;
+
+  else if(req.session.user.role == "realm_admin") {
+    for(var realm in req.session.user.administered_realms)
+      for(var item in data)
+        if(data[item].realm == req.session.user.administered_realms[realm])
+          ret.push(data[item]);
+  }
+
+  else if(req.session.user.role == "admin")  // no filtration
+    return data;
+
+  return ret;
 }
 // --------------------------------------------------------------------------------------
 // send data to user

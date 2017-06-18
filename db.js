@@ -26,14 +26,16 @@ exports.users_mac_schema = users_mac_schema;
 var users_mac = mongoose.model('users_mac', users_mac_schema, 'users_mac');
 exports.users_mac = users_mac;
 // --------------------------------------------------------------------------------------
-var privileged_ips_schema = mongoose.Schema({
-  ip : String
+var realm_admin_logins_schema = mongoose.Schema({
+  admin_login_ids : Array,
+  admin_notify_address : String,
+  administered_realms : Array
 },
 { versionKey: false });
 // --------------------------------------------------------------------------------------
-exports.privileged_ips_schema = privileged_ips_schema;
-var privileged_ips = mongoose.model('privileged_ips', privileged_ips_schema, 'privileged_ips');
-exports.privileged_ips = privileged_ips;
+exports.realm_admin_logins_schema = realm_admin_logins_schema;
+var realm_admin_logins = mongoose.model('realm_admin_logins', realm_admin_logins_schema, 'realm_admin_logins');
+exports.realm_admin_logins = realm_admin_logins;
 // --------------------------------------------------------------------------------------
 var mac_count_schema = mongoose.Schema({
   username  : String,
@@ -73,8 +75,9 @@ var failed_logins = mongoose.model('failed_logins', failed_logins_schema, 'faile
 exports.failed_logins = failed_logins;
 // --------------------------------------------------------------------------------------
 var realm_admins_schema = mongoose.Schema({
-  realm       : String,
-  admins      : Array
+  realm          : String,
+  admin          : String,
+  notify_enabled : Boolean
 },
 { versionKey: false });
 // --------------------------------------------------------------------------------------
@@ -193,9 +196,15 @@ mongoose.connection.once('open', function (callback) {
 // --------------------------------------------------------------------------------------
 exports.connect = function()
 {
-  mongoose.connect('mongodb://localhost/etlog');
-  //mongoose.connect('mongodb://localhost/etlog?socketTimeoutMS=150000');
-  // set to generate realms for heat map
+  mongoose.connect('mongodb://localhost/etlog', {
+    server : {
+      socketOptions : {
+        socketTimeoutMS: 0,
+        connectTimeoutMS: 5000,
+        keepAlive: 300000
+      }
+    }
+  });
 }
 // --------------------------------------------------------------------------------------
 // disconnect from the databse

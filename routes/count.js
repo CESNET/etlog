@@ -62,6 +62,15 @@ router.get('/mac_count', function(req, res, next) {
   ];
 
   // ===================================================
+
+  if(req.session.user.role == "user") {
+    respond(0, res);
+    return;
+  }
+
+  filter_mac_count(req, aggregate_query);
+
+  // ===================================================
   // add condition from original filter if defined
   agg.add_cond(aggregate_query, cond);
 
@@ -70,7 +79,7 @@ router.get('/mac_count', function(req, res, next) {
   aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
   aggregate_query.push({ $project : { count : 1, _id : 0 } });
 
-  get_record_count(req.db.mac_count, res, next, aggregate_query, transform);       // perform search with constructed mongo query
+  get_record_count(req.db.mac_count, req, res, next, aggregate_query, transform, filter_mac_count);       // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // get count for shared mac
@@ -94,6 +103,13 @@ router.get('/shared_mac', function(req, res, next) {
   // -> the condition must be applied after aggregation !
 
   var cond = agg.check_filter(query.filter, [ "count" ]);
+
+  // ===================================================
+
+  if(req.session.user.role == "user") {
+    respond(0, res);
+    return;
+  }
 
   // ===================================================
 
@@ -140,7 +156,7 @@ router.get('/shared_mac', function(req, res, next) {
   aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
   aggregate_query.push({ $project : { count : 1, _id : 0 } });
 
-  get_record_count(req.db.shared_mac, res, next, aggregate_query, transform);       // perform search with constructed mongo query
+  get_record_count(req.db.shared_mac, req, res, next, aggregate_query, transform);       // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // get count for logs
@@ -148,7 +164,7 @@ router.get('/shared_mac', function(req, res, next) {
 router.get('/logs', function(req, res, next) {
   var query = get_qs_interval(req, [ 'timestamp', 'pn', 'csi', 'realm', 'visinst', 'result' ]); // array of valid filters
 
-  // exclude possible regex from
+  // exclude possible regex from filter
   var regex = agg.check_regex(query.filter);
 
   // ===================================================
@@ -170,6 +186,8 @@ router.get('/logs', function(req, res, next) {
   if(Object.keys(regex).length > 0) {
     agg.add_stage(aggregate_query, { $match : regex });
   }
+
+  filter_by_username(req, aggregate_query);
 
   agg.add_stage(aggregate_query, {
       $project :
@@ -194,7 +212,7 @@ router.get('/logs', function(req, res, next) {
   aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
   aggregate_query.push({ $project : { count : 1, _id : 0 } });
 
-  get_record_count(req.db.logs, res, next, aggregate_query, transform);       // perform search with constructed mongo query
+  get_record_count(req.db.logs, req, res, next, aggregate_query, transform);       // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 // get count for concurrent users
@@ -231,6 +249,14 @@ router.get('/concurrent_users', function(req, res, next) {
   agg.add_cond(aggregate_query, cond);
 
   // ===================================================
+  if(req.session.user.role == "user") {
+    respond(0, res);
+    return;
+  }
+
+  filter_mac_count(req, aggregate_query);
+
+  // ===================================================
   // add redact stage if mac_diff is required
   if(Object.keys(mac_diff).length > 0) {
     if(mac_diff.mac_diff == true) // true - different mac addresses
@@ -248,7 +274,7 @@ router.get('/concurrent_users', function(req, res, next) {
   aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
   aggregate_query.push({ $project : { count : 1, _id : 0 } });
 
-  get_record_count(req.db.concurrent_users, res, next, aggregate_query, transform);       // perform search with constructed mongo query
+  get_record_count(req.db.concurrent_users, req, res, next, aggregate_query, transform, filter_by_username);       // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
 
@@ -289,7 +315,7 @@ function get_qs_interval(req, filters)
 // --------------------------------------------------------------------------------------
 // return count of record for specified timestamp interval
 // --------------------------------------------------------------------------------------
-function get_record_count(collection, res, next, aggregate_query, transform_fn)
+function get_record_count(collection, req, res, next, aggregate_query, transform_fn)
 {
   collection.aggregate(aggregate_query,
   function(err1, items) {
@@ -301,8 +327,42 @@ function get_record_count(collection, res, next, aggregate_query, transform_fn)
       return;
     };
 
-    respond(transform_fn(items), res)
+    respond(transform_fn(items), res);
   });
+}
+// --------------------------------------------------------------------------------------
+// filter results so each user can search only relevant records
+// user: only his records
+// realm admin: only records for all administered realms
+// --------------------------------------------------------------------------------------
+function filter_by_username(req, aggregate_query)
+{
+  if(req.session.user.role == "user")
+    agg.add_stage(aggregate_query, { $match : { "pn" : req.session.user.username }});
+
+  else if(req.session.user.role == "realm_admin")
+    agg.add_stage(aggregate_query, { $match : { "realm" : { $in : req.session.user.administered_realms }}});
+
+  // no filtration for administator
+}
+// --------------------------------------------------------------------------------------
+// filter results so each user can search only relevant records
+// realm admin: only records for all administered realms
+// --------------------------------------------------------------------------------------
+function filter_mac_count(req, aggregate_query)
+{
+  var stage;
+  var arr = [];
+
+  if(req.session.user.role == "realm_admin") {
+    for(var realm in req.session.user.administered_realms)
+      arr.push(new RegExp("^.*@" + req.session.user.administered_realms[realm]) + "$");
+
+    stage = { $match : { "username" : { $in : arr }}};
+    agg.add_stage(aggregate_query, stage);
+  }
+
+  // no filtration for administator
 }
 // --------------------------------------------------------------------------------------
 // send data to user
