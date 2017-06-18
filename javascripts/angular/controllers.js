@@ -271,6 +271,7 @@ function transform_timestamp(data)
 function handle_search_submit($scope, $http, data_func, paging, coll_name)
 {
   $scope.submit = function (form) {
+    $scope.paging.total_items = 0;      // no items yet
     $scope.error = false; // begin submitting - no error yet
     $scope.base_qs = build_qs_search($scope.form_data);  // create query string
     $scope.qs = $scope.base_qs;
@@ -586,6 +587,7 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
   $scope.submit = function (form) {
     if(form.$valid) {
       // set loading animation
+      $scope.paging.total_items = 0;      // no items yet
       $scope.loading = true;
       add_options($scope);        // add optional form fields
       get_days($scope);                           // get array of days in specified interval
