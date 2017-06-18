@@ -395,7 +395,7 @@ declare -gA admin_mails
 # etlog log root
 etlog_log_root="/home/etlog/logs"
 # etlog root
-etlog_root="/home/etlog/"
+etlog_root="/home/etlog/etlog/"
 # notify default state
 notify_default=false
 main
