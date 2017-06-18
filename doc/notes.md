@@ -22,7 +22,6 @@ and is doing a proxy for it.
 
 The main purpose of putting apache in front of the application itself is authentication.
 Apache uses shibd module for authentication in czech identitity feredation [eduid.cz](eduid.cz).
-Http connections are automatically forced to https by apache.
 
 ### User setup
 
@@ -33,7 +32,7 @@ adduser etlog
 
 ### Network setup
 
-Application is running by unprivileged user, so he can not use standard http and https port.
+Application is running by unprivileged user, so he can not use standard http and https ports.
 Instead port 8080 is used. Apache webserver is in front of application web server.
 Apache proxies all incoming request to the application web server.
 Automatic redirection from port 80 to port 443 is handled by apache.
@@ -58,7 +57,7 @@ and private key in `/etc/ssl/private/etlog.cesnet.cz.key.pem`.
 
 Add intermediade certificate to `/etc/ssl/certs/etlog.cesnet.cz.crt.pem`:
 ```
-cd tmp
+cd /tmp
 wget https://pki.cesnet.cz/certs/TERENA_SSL_CA_3.pem
 cat TERENA_SSL_CA_3.pem >> /etc/ssl/certs/etlog.cesnet.cz.crt.pem
 ```
