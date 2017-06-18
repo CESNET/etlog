@@ -17,7 +17,7 @@ etlog is a web application, which consists of Node.js, Express web application f
 ## Server setup
 
 The application is setup on Debian jessie. It is running as user etlog and it's root is in /home/etlog/etlog/.
-It is listening for incoming http connections on port 8080. Apache webserver is sitting in front of etlog
+It is listening for incoming http connections on port 8080. Apache webserver is in front of the apllication
 and is doing a proxy for it.
 
 The main purpose of putting apache in front of the application itself is authentication.
