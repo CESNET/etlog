@@ -6,7 +6,13 @@
 # ==========================================================================================
 function main()
 {
-  if [[ "$1" == "force" ]]
+  local last
+  local curr
+
+  last=$(date -d "5 minutes ago" "+%Y-%m-%d")  # %Y-%m-%d 5 minutes ago
+  curr=$(date "+%Y-%m-%d")                     # %Y-%m-%d now
+
+  if [[ $last != $curr ]]   # update once every day
   then
       force_update
   else
@@ -390,7 +396,5 @@ declare -gA admin_mails
 etlog_log_root="/home/etlog/logs"
 # notify default state
 notify_default=false
-# enable first parameter to be passed to main
-# may be used to force synchronization
-main $1
+main
 # ==========================================================================================
