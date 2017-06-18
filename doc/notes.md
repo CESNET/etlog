@@ -179,6 +179,7 @@ Enable mpm-worker by:
 
 ```
 a2dismod mpm_prefork
+a2dismod mpm_event
 a2enmod mpm_worker
 service apache2 restart
 apachectl -M | grep worker
