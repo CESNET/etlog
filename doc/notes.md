@@ -60,6 +60,8 @@ Add intermediade certificate to `/etc/ssl/certs/etlog.cesnet.cz.crt.pem`:
 cd /tmp
 wget https://pki.cesnet.cz/certs/TERENA_SSL_CA_3.pem
 cat TERENA_SSL_CA_3.pem >> /etc/ssl/certs/etlog.cesnet.cz.crt.pem
+rm TERENA_SSL_CA_3.pem
+cd
 ```
 
 SSL default vhost and module are enabled by:
@@ -83,13 +85,13 @@ Set the configuration as below:
 <VirtualHost *:80>
 	ServerAdmin machv@cesnet.cz
 	ServerName etlog-dev.cesnet.cz
-	Redirect permanent "/" "https://etlog-dev.cesnet.cz"
+	Redirect permanent "/" "https://etlog.cesnet.cz"
 </VirtualHost>
 
 <IfModule mod_ssl.c>
 	<VirtualHost _default_:443>
 		ServerAdmin machv@cesnet.cz
-		ServerName etlog-dev.cesnet.cz
+		ServerName etlog.cesnet.cz
 		DocumentRoot /var/www/html
 
 		ErrorLog ${APACHE_LOG_DIR}/error.log
@@ -98,8 +100,8 @@ Set the configuration as below:
 
 		SSLProtocol All -SSLv2 -SSLv3
 		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
-		SSLCertificateFile	/etc/ssl/certs/etlog-dev.cesnet.cz.crt.pem
-		SSLCertificateKeyFile /etc/ssl/private/etlog-dev.cesnet.cz.key.pem
+		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
+		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
 
 		BrowserMatch "MSIE [2-6]" \
 				nokeepalive ssl-unclean-shutdown \
@@ -131,7 +133,7 @@ Set the configuration as below:
 
     <VirtualHost 127.0.0.1:443>
 		ServerAdmin machv@cesnet.cz
-		ServerName etlog-dev.cesnet.cz
+		ServerName etlog.cesnet.cz
 		DocumentRoot /var/www/html
 
 		ErrorLog ${APACHE_LOG_DIR}/error.log
@@ -140,8 +142,8 @@ Set the configuration as below:
 
 		SSLProtocol All -SSLv2 -SSLv3
 		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
-		SSLCertificateFile	/etc/ssl/certs/etlog-dev.cesnet.cz.crt.pem
-		SSLCertificateKeyFile /etc/ssl/private/etlog-dev.cesnet.cz.key.pem
+		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
+		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
 
 		BrowserMatch "MSIE [2-6]" \
 				nokeepalive ssl-unclean-shutdown \
