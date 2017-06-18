@@ -256,7 +256,6 @@ Crontab contains following jobs:
 | `/home/etlog/etlog/scripts/data_import.sh`            | every 5 minutes       | new data importing                       |
 | `/home/etlog/etlog/scripts/realm_admins.sh`           | every 5 minutes       | ldap synchronization                     |
 | `/home/etlog/etlog/scripts/invalid_records.sh`        | every day at 1:00     | generating of files with invalid records |
-| `/home/etlog/etlog/scripts/realm_admins.sh force`     | every day at 4:42     | force ldap synchronization               |
 | `/home/etlog/etlog/scripts/invalid_records_mail.sh`   | every monday at 6:00  | sending report about invalid records     |
 | `/home/etlog/etlog/scripts/archive.sh`                | every monday at 6:05  | archiving old log files                  |
 | `/home/etlog/etlog/scripts/detection_data/create_detection_data.sh &>/dev/null`| every monday at 6:10  | generating login count graphs  |
@@ -264,12 +263,11 @@ Crontab contains following jobs:
 Crontab contents:
 ```
 */5 *  *   *   *     /home/etlog/etlog/scripts/data_import.sh
+*/5 *  *   *   *     /home/etlog/etlog/scripts/realm_admins.sh
 0   1  *   *   *     /home/etlog/etlog/scripts/invalid_records.sh
 0   6  *   *   1     /home/etlog/etlog/scripts/invalid_records_mail.sh
 5   6  *   *   1     /home/etlog/etlog/scripts/archive.sh
 10  6  *   *   1     /home/etlog/etlog/scripts/detection_data/create_detection_data.sh &>/dev/null
-*/5 *  *   *   *     /home/etlog/etlog/scripts/realm_admins.sh
-42  4  *   *   *     /home/etlog/etlog/scripts/realm_admins.sh force
 ```
 
 #### Node.js
