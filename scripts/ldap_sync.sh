@@ -90,10 +90,10 @@ function check_state()
   then
     if [[ "$last_max" == "" ]]  # last max empty
     then
-      last_max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+      last_max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
 
     else    # last res empty
-      last_res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
+      last_res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
     fi
 
     echo $last_max > $etlog_log_root/ldap/last_timestamp
@@ -101,8 +101,8 @@ function check_state()
     return 1
   else      # last timestamp and last res not empty
 
-    max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
-    res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
+    max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+    res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
     if [[ $last_max -le $max ]]
     then
       retval=1  # not necessary to update
@@ -165,10 +165,10 @@ function realms_to_admins()
         done
 
         # take $admin's first mail
-        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b uid=$tmp,ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz -s base mail | grep "mail: " | head -1 | cut -d " " -f 2)
+        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b uid=$tmp,ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz -s base mail | grep "mail: " | head -1 | cut -d " " -f 2)
       else
         # take $admin's first mail
-        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
+        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
       fi
 
       # set mail to global array
@@ -305,7 +305,7 @@ function delete_realms()
 function get_realm_list()
 {
   local realm_list
-  realm_list=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn | grep "cn: " | cut -d " " -f2 | tr "\n" " ")
+  realm_list=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn | grep "cn: " | cut -d " " -f2 | tr "\n" " ")
 
   for realm in $realm_list
   do
@@ -320,7 +320,7 @@ function get_realm_list()
 function get_realms()
 {
   # all information regarding realm admins retrivied from ldap
-  all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn manager)
+  all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn manager)
   local in_object=false
   local realm_list
   local uid
@@ -356,7 +356,7 @@ function get_realms()
         uid=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//') # get uid
 
         # use whole line as search base
-        identities=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b $sb -s base eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | cut -d " " -f 2 | tr "\n" " ")
+        identities=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b $sb -s base eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | cut -d " " -f 2 | tr "\n" " ")
         uids[$uid]=$identities     # save mapping of uid to user identities
         identities=""              # clear for next admin
         manager=$uid               # save uid as reference in array instead of values
@@ -394,6 +394,8 @@ declare -gA uids
 declare -gA admin_mails
 # etlog log root
 etlog_log_root="/home/etlog/logs"
+# etlog root
+etlog_root="/home/etlog/"
 # notify default state
 notify_default=false
 main
