@@ -78,13 +78,20 @@ a2enmod proxy_http
 service apache2 restart
 ```
 
+Headers and remote ip are enabled by:
+```
+a2enmod headers
+a2enmod remoteip
+service apache2 restart
+```
+
 Configuration for default ssl apache vhost is in `/etc/apache2/sites-enabled/default-ssl.conf`.
 Set the configuration as below:
 
 ```
 <VirtualHost *:80>
 	ServerAdmin machv@cesnet.cz
-	ServerName etlog-dev.cesnet.cz
+	ServerName etlog.cesnet.cz
 	Redirect permanent "/" "https://etlog.cesnet.cz"
 </VirtualHost>
 
