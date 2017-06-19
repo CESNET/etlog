@@ -81,7 +81,7 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_search_submit($scope, $http, get_logs, $scope.paging, "logs");
-  handle_pagination($scope, $http, get_logs);
+  handle_pagination($scope, $http, $rootScope, get_logs);
   setup_filters($scope, $http, "logs");
   handle_sort_search($scope, $http, get_logs);
   set_params($scope, $stateParams); // set params passed from other views
@@ -312,7 +312,8 @@ function normalize_mac(data)
 // --------------------------------------------------------------------------------------
 // mac count table controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', function ($scope, $http) {
+angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', '$rootScope', function ($scope, $http, $rootScope) {
+  console.log($scope.user);
   init($scope, $http);
   addiational_fields_mac_count($scope);   // set up additional form fields
   $scope.paging = {
@@ -327,7 +328,7 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', f
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_table_submit($scope, $http, get_mac_count, null, $scope.paging, [ "username", "count" ], "mac_count");
-  handle_pagination($scope, $http, get_mac_count);
+  handle_pagination($scope, $http, $rootScope, get_mac_count);
   setup_filters($scope, $http, "mac_count");
   handle_download($scope, $http, ["username", "count", "addrs" ]);
   handle_anon($scope);
@@ -429,7 +430,7 @@ function set_filter($scope, filter, var_name)
 // $http
 // data_func - function which retrieves data by url
 // --------------------------------------------------------------------------------------
-function handle_pagination($scope, $http, data_func)
+function handle_pagination($scope, $http, $rootScope, data_func)
 {
   $scope.page_changed = function(newPageNumber) {
     get_page($http, newPageNumber, data_func);
@@ -485,13 +486,13 @@ function handle_pagination($scope, $http, data_func)
     if(new_val === old_val) // no change
       return;
 
-    update_user_paging($scope, $http);
+    update_user_paging($scope, $http, $rootScope);
   });
 }
 // --------------------------------------------------------------------------------------
 // save current items_by_page value to user session
 // --------------------------------------------------------------------------------------
-function update_user_paging($scope, $http)
+function update_user_paging($scope, $http, $rootScope)
 {
   // get db_data
   $http({
@@ -500,6 +501,7 @@ function update_user_paging($scope, $http)
   })
   .then(function(response) {
     $scope.user = response.data;       // save updated value to scope
+    $rootScope.user = response.data;    // update value in all views
   });
 }
 // --------------------------------------------------------------------------------------
@@ -1013,7 +1015,7 @@ function sum_fail_count(data)
 // --------------------------------------------------------------------------------------
 // shared mac controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', function ($scope, $http) {
+angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', '$rootScope', function ($scope, $http, $rootScope) {
   init($scope, $http);
   addiational_fields_shared_mac($scope);   // set up additional form fields
   $scope.paging = {
@@ -1028,7 +1030,7 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
   handle_table_submit($scope, $http, get_shared_mac, null, $scope.paging, [ "mac_address", "count" ], "shared_mac");
-  handle_pagination($scope, $http, get_shared_mac);
+  handle_pagination($scope, $http, $rootScope, get_shared_mac);
   setup_filters($scope, $http, "shared_mac");
   handle_download($scope, $http, ["mac_address", "count", "users"]);
   popover();
@@ -2605,7 +2607,7 @@ function handle_sort($scope, $http, data_func)
 // --------------------------------------------------------------------------------------
 // concurrent users controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$http', '$q', '$rootScope', function ($scope, $http, $q, $rootScope) {
   init($scope, $http);
   additional_fields_concurrent_users($http, $scope);   // set up additional form fields
   $scope.paging = {
@@ -2621,7 +2623,7 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
   $scope.page_sizes = [ 10, 20, 50, 100 ];
 
   handle_table_submit($scope, $http, get_concurrent_users, build_qs_concurrent_users, $scope.paging, [], "concurrent_users");
-  handle_pagination($scope, $http, get_concurrent_users);
+  handle_pagination($scope, $http, $rootScope, get_concurrent_users);
   //setup_filters($scope, $http, "concurrent_users");      // TODO?
   handle_download($scope, $http, [ "username", "timestamp", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "mac_address", "time_difference", "time_needed", "dist", "diff_needed_timediff" ]);
   handle_sort($scope, $http, get_concurrent_users);
