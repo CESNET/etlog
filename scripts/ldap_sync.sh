@@ -64,7 +64,7 @@ function update_db()
   delete_realms
   while read line
   do
-    mongo etlog -quiet -eval "db.realm_admins.insert($line)"
+    mongo etlog -quiet -eval "db.realms.insert($line)"
   done <<< "$realm_list"
 }
 # ==========================================================================================
