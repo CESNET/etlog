@@ -1233,6 +1233,7 @@ Frontend has following structure:
 | roaming\_activity              | /#/roaming\_activity              | etlog: aktivita eduroamu                           |
 | detection\_data                | /#/detection\_data                | etlog: absolutní počet přihlášení                  |
 | detection\_data\_grouped       | /#/detection\_data\_grouped       | etlog: normalizovaný počet přihlíšení              |
+| notifications                  | /#/notifications                  | etlog: správa notifikací                           |
 
 
 #### Backend
