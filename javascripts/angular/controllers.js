@@ -499,6 +499,7 @@ function update_user_paging($scope, $http)
     url     : '/api/user/settings/' + $scope.paging.items_by_page
   })
   .then(function(response) {
+    $scope.user = response.data;       // save updated value to scope
   });
 }
 // --------------------------------------------------------------------------------------
