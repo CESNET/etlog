@@ -207,7 +207,7 @@ exp.set_user_role = function(req)
 exp.set_paging = function(req)
 {
   var user = exp.get_user(req);
-  user.items_by_page = req.params.paging;
+  user.items_by_page = parseInt(req.params.paging, 10);
   return user;
 }
 // --------------------------------------------------------------------------------------

@@ -58,7 +58,7 @@ div.container-fluid(ng-controller="mac_count_controller")
     .form-group
       .col-xs-2
       label záznamů na stránku:
-        select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes track by $index')
+        select.form-control(ng-model='paging.items_by_page', ng-options='size for size in page_sizes')
 
     h4(ng-show='paging.total_items == 0 && !paging.loading') Zadaným parametrům vyhledávání neodpovídají žádné záznamy.
 
