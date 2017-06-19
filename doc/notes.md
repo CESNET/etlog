@@ -865,9 +865,9 @@ It contains information about invalid records of past week.
 
 #### Monthly reports
 
-Monthly report is sent to all administrators defined in [realm_admins](#realm_admins).
-It contains 100 most users with most failed logins from corresponding realm.
-Limit of 100 users is defined in [cron.js](https://github.com/CESNET/etlog/blob/master/cron.js#L15).
+Monthly report is sent to all administrators defined in [realm_admins](#realm_admins) which have notify_enabled flag set to true.
+It contains 100 users with most failed logins from corresponding realm.
+Limit of 100 users is defined in [config.js](https://github.com/CESNET/etlog/blob/master/config/config.js#L7).
 
 #### Configuration
 
