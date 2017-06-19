@@ -5,11 +5,7 @@
     - V zurnalu nejaky vystup sice je, ale do logu se nedostane. Je tudiz problem v tom, ze zurnal se nezapisuje na disk? (`/etc/systemd/journald.conf` - #SystemMaxUse=)
     - pomoci loggeru lze do souboru zapsat bez problemu : `logger -p local0.info test`
     - je treba resit rotovani logu? syslog sam zajisti novy soubor pro kazdy den.
-> zkontrolovat, jak budou formatovany zpravy
-
-> potencialne vyzkouset jiny process manager, ktery nebude mit problem zapisovat do souboru a bude spravne formatovat zpravy
-
-- syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel - semik
+- syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel
 
 
 # TODO dobudoucna
@@ -21,8 +17,6 @@
 - hsts?
 - minifikace js?
 - optimalizace pro mobilni zarizeni?
-- ceske realmy - odebrat omezeni na .cz?
-- cachovani vysledku vyhledavani?
 - ... ?
 
 
