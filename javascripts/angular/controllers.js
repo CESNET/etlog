@@ -590,8 +590,10 @@ function handle_submit($scope, $http, $q, data_func, graph_func, form_items)
   $scope.submit = function (form) {
     if(form.$valid) {
       // set loading animation
-      $scope.paging.total_items = 0;      // no items yet
       $scope.loading = true;
+      if($scope.paging)
+        $scope.paging.total_items = 0;      // no items yet
+
       add_options($scope);        // add optional form fields
       get_days($scope);                           // get array of days in specified interval
       qs = build_qs($scope.form_data, form_items);  // create query string
