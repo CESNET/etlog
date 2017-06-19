@@ -1244,9 +1244,6 @@ This section describes classic html pages.
 | URL             | explanation                                                        |
 |-----------------|--------------------------------------------------------------------|
 | /               | title page                                                         |
-| /login          | login page                                                         |
-| /login/callback | page where the user is redirected after successful authentication  |
-| /auth\_fail     | page where the user is redirected when authentication fails        |
 
 
 ### System intergation
