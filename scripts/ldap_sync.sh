@@ -97,7 +97,7 @@ function check_state()
     fi
 
     echo $last_max > $etlog_log_root/ldap/last_timestamp
-    echo $last_res > $etlog_log_root/ldap/last_res
+    echo $last_res > $etlog_log_root/ldap/last_results
     return 1
   else      # last timestamp and last res not empty
 
@@ -114,8 +114,8 @@ function check_state()
     fi
   fi
 
-  echo $max > $etlog_log_root/ldap/timestamp
-  echo $res > $etlog_log_root/ldap/res
+  echo $max > $etlog_log_root/ldap/last_timestamp
+  echo $res > $etlog_log_root/ldap/last_results
   return $retval
 }
 # ==========================================================================================
