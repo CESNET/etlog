@@ -743,6 +743,22 @@ use etlog
 db.realm_admins.remove({realm : "cvut.cz"})
 ```
 
+##### realm\_admin\_logins
+
+Collection contains unique mac addresses for realms for every day.
+Addresses of users from the realm are in array used\_addrs.
+Addresses of users from other instituions which used realm as visinst are in array provided\_addrs;
+
+
+Collection has following structure:
+
+| field name             | data type |               note                        |
+|------------------------|-----------|-------------------------------------------|
+| admin\_login\_ids      | Array     |  Array of possible login identities       |
+| admin\_notify\_address | String    |  admin's email address                    |
+| administered\_realms   | Array     |  Array of realms which the admin manages  |
+
+
 
 ##### shared\_mac
 Collection contains records about mac addresses, which have been used for successfull authnetication
