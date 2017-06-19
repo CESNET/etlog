@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------
-angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
+angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
   $stateProvider
 
   .state('search', {
@@ -87,5 +87,5 @@ angular.module('etlog').config(function($stateProvider, $urlRouterProvider) {
     title : 'etlog: správa notifikací',
     allowed : [ 'realm_admin', 'admin' ]
   })
-});
+}]);
 // --------------------------------------------------------------------------------------
