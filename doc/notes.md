@@ -67,6 +67,7 @@ cd
 SSL default vhost and module are enabled by:
 ```
 a2enmod ssl
+a2dissite 000-default
 a2ensite default-ssl
 service apache2 restart
 ```
