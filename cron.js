@@ -16,7 +16,7 @@ module.exports = function(database) {
   const unique_users = require('./cron/unique_users.js')
   const config = require('./config/config.js');
 // --------------------------------------------------------------------------------------
-  new CronJob('0 00 06 1 * *', function() {     // run once a month
+  new CronJob('0 59 05 1 * *', function() {     // run once a month
     mail.send_mail_to_realm_admins(database, request.get_failed_logins_monthly, config.failed_logins_lines);
   }, null, true, 'Europe/Prague');
 // --------------------------------------------------------------------------------------
