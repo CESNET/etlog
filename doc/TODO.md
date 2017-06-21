@@ -15,7 +15,6 @@
 - lokalizace?
 - snyk?
 - hsts?
-- minifikace js?
 - optimalizace pro mobilni zarizeni?
 - ... ?
 
