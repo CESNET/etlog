@@ -255,7 +255,8 @@ Crontab contains following jobs:
 |   command                                             | interval              |              description                 |
 |-------------------------------------------------------|-----------------------|------------------------------------------|
 | `/home/etlog/etlog/scripts/data_import.sh`            | every 5 minutes       | new data importing                       |
-| `/home/etlog/etlog/scripts/ldap_sync.sh`              | every 5 minutes       | ldap synchronization                     |
+| `/home/etlog/etlog/scripts/ldap/admins.sh`            | every 5 minutes       | ldap synchronization                     |
+| `/home/etlog/etlog/scripts/ldap/realms.sh`            | every day at 0:30     | all known czech realms synchronization   |
 | `/home/etlog/etlog/scripts/invalid_records.sh`        | every day at 1:00     | generating of files with invalid records |
 | `/home/etlog/etlog/scripts/invalid_records_mail.sh`   | every monday at 6:00  | sending report about invalid records     |
 | `/home/etlog/etlog/scripts/archive.sh`                | every monday at 6:05  | archiving old log files                  |
@@ -264,7 +265,8 @@ Crontab contains following jobs:
 Crontab contents:
 ```
 */5 *  *   *   *     /home/etlog/etlog/scripts/data_import.sh
-*/5 *  *   *   *     /home/etlog/etlog/scripts/ldap_sync.sh
+*/5 *  *   *   *     /home/etlog/etlog/scripts/ldap/admins.sh
+30  0  *   *   *     /home/etlog/etlog/scripts/ldap/realms.sh
 0   1  *   *   *     /home/etlog/etlog/scripts/invalid_records.sh
 0   6  *   *   1     /home/etlog/etlog/scripts/invalid_records_mail.sh
 5   6  *   *   1     /home/etlog/etlog/scripts/archive.sh
