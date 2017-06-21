@@ -9,6 +9,11 @@ function main()
   local last
   local curr
 
+  if [[ -e $etlog_log_root/ldap/sync_disabled ]]    # synchronization disabled by app
+  then
+    exit 0
+  fi
+
   last=$(date -d "5 minutes ago" "+%Y-%m-%d")  # %Y-%m-%d 5 minutes ago
   curr=$(date "+%Y-%m-%d")                     # %Y-%m-%d now
 
