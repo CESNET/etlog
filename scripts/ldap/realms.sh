@@ -44,4 +44,4 @@ function get_realm_list()
 # ==========================================================================================
 # etlog root
 etlog_root="/home/etlog/etlog/"
-main
+main &>/dev/null
