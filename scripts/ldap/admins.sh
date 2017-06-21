@@ -32,7 +32,6 @@ function force_update()
   realms_to_admins
   realm_admin_logins=$(print_json)
   realm_admins=$(realm_admins_json)
-  realm_list=$(get_realm_list)
   update_db
 }
 # ==========================================================================================
@@ -59,13 +58,6 @@ function update_db()
   do
     mongo etlog -quiet -eval "db.realm_admins.update($(echo "$line" | sed 's/, notify.*}$/ }/'), $line, { upsert : true })"
   done <<< "$realm_admins"
-
-  # update realms
-  delete_realms
-  while read line
-  do
-    mongo etlog -quiet -eval "db.realms.insert($line)"
-  done <<< "$realm_list"
 }
 # ==========================================================================================
 # check database state, check highest available timestamp
@@ -290,26 +282,6 @@ function print_json()
     done
     
     echo "], \"admin_notify_address\": \"${admin_mails["$admin"]}\" }"
-  done
-}
-# ==========================================================================================
-# delete all records from realms collections
-# ==========================================================================================
-function delete_realms()
-{
-  mongo etlog -quiet -eval "db.realms.remove({})"
-}
-# ==========================================================================================
-# get all known czech realms
-# ==========================================================================================
-function get_realm_list()
-{
-  local realm_list
-  realm_list=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn | grep "cn: " | cut -d " " -f2 | tr "\n" " ")
-
-  for realm in $realm_list
-  do
-    echo "{ \"realm\" : \"$realm\" }"
   done
 }
 # ==========================================================================================
