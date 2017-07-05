@@ -833,13 +833,25 @@ Collection has following structure:
 
 
 ##### realms
-Collection contains all knows realms from Czech republic (ending with '.cz').
+Collection contains all known realms from Czech republic.
 
 Collection has following structure:
 
 | field name   | data type |             note             |
 |--------------|-----------|------------------------------|
 | realm        | String    |             realm            |
+
+
+##### privileged\_ips
+Collection contains all IP addresses, which are allowed to do machine processing of data.
+
+Collection has following structure:
+
+| field name   | data type |             note             |
+|--------------|-----------|------------------------------|
+| ip           | String    |          IP address          |
+| hostname     | String    |    hostname of IP address    |
+| comment      | String    |          comment             |
 
 
 ##### heat\_map
