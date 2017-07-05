@@ -79,7 +79,7 @@ function filter_data(req, data)
 function check_privileged_ips(req, ip, callback)
 {
   // search for privileged ip
-  req.db.privileged_ips.find({ "ip" : ip }, { ip : 1, _id : 0 } function(err1, items) {
+  req.db.privileged_ips.find({ "ip" : ip }, { ip : 1, _id : 0 }, function(err1, items) {
     if(err1) {
       var err2 = new Error();      // just to detect where the original error happened
       console.error(err2);
