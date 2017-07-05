@@ -1260,6 +1260,7 @@ File contents:
 ```
 [Service]
 ExecStart=/usr/bin/npm --prefix /home/etlog/etlog/ start
+WorkingDirectory=/home/etlog/etlog/
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
