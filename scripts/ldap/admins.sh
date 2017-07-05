@@ -38,6 +38,7 @@ function force_update()
   realm_admin_logins=$(print_json)
   realm_admins=$(realm_admins_json)
   update_db
+  delete_expired
 }
 # ==========================================================================================
 # update database contents
@@ -63,6 +64,30 @@ function update_db()
   do
     mongo etlog -quiet -eval "db.realm_admins.update($(echo "$line" | sed 's/, notify.*}$/ }/'), $line, { upsert : true })"
   done <<< "$realm_admins"
+}
+# ==========================================================================================
+# delete expired admins
+# ==========================================================================================
+function delete_expired()
+{
+  local out
+
+  # search for all realm admins
+  # iterate all lines one by one
+  # if line does not exist in $realm_admins, delete it
+  out=$(mongo etlog -quiet -eval 'DBQuery.shellBatchSize = 5000;
+  db.realm_admins.find({ "realm" : { $ne : "cz" } })')  # exception for realm "cz"
+
+  # update realm_admins
+  while read line
+  do
+    line=$(echo $line | sed 's/^.*, "admin" :/admin:/; s/, "notify_enabled".*$//; s/"realm" :/realm:/')   # transform for matching
+
+    if [[ "$(echo "$realm_admins" | grep "$line")" == "" ]] # admin does not exist in $realm_admins
+    then
+      mongo etlog -quiet -eval "db.realm_admins.remove({$line})"    # delete
+    fi
+  done <<< "$out"
 }
 # ==========================================================================================
 # check database state, check highest available timestamp
