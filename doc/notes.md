@@ -97,6 +97,8 @@ Set the configuration as below:
 </VirtualHost>
 
 <IfModule mod_ssl.c>
+
+	# aplikacni virtualhost
 	<VirtualHost _default_:443>
 		ServerAdmin machv@cesnet.cz
 		ServerName etlog.cesnet.cz
@@ -139,7 +141,39 @@ Set the configuration as below:
 		RemoteIPHeader X-Forwarded-For
 	</VirtualHost>
 
+    # virtualhost pro nrpe
     <VirtualHost 127.0.0.1:443>
+		ServerAdmin machv@cesnet.cz
+		ServerName etlog.cesnet.cz
+		DocumentRoot /var/www/html
+
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+		SSLEngine on
+
+		SSLProtocol All -SSLv2 -SSLv3
+		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
+		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
+
+		BrowserMatch "MSIE [2-6]" \
+				nokeepalive ssl-unclean-shutdown \
+				downgrade-1.0 force-response-1.0
+		# MSIE 7 and newer should be able to use keepalive
+		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+		<Location />
+			# proxy
+			ProxyPass http://127.0.0.1:8080/
+			ProxyPassReverse http://127.0.0.1:8080/
+		</Location>
+
+		ProxyRequests Off
+		RemoteIPHeader X-Forwarded-For
+	</VirtualHost>
+
+    # virtualhost pro ermon.cesnet.cz
+    <VirtualHost etlog.cesnet.cz:8443>
 		ServerAdmin machv@cesnet.cz
 		ServerName etlog.cesnet.cz
 		DocumentRoot /var/www/html
@@ -172,6 +206,28 @@ Set the configuration as below:
 
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 ```
+
+Set listening ports in `/etc/apache2/ports.conf`:
+```
+# If you just change the port or add more ports here, you will likely also
+# have to change the VirtualHost statement in
+# /etc/apache2/sites-enabled/000-default.conf
+
+Listen 80
+
+<IfModule ssl_module>
+	Listen 443
+	Listen 8443
+</IfModule>
+
+<IfModule mod_gnutls.c>
+	Listen 443
+	Listen 8443
+</IfModule>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+```
+
 
 Additional settings are needed according to [https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig](https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig). The page says:
 > Finally, on non-Windows systems you should make sure Apache is configured in so-called "worker" mode, using the "worker" MPM, either via a setting in an OS-supplied file like /etc/sysconfig/httpd or in the Apache configuration directly. Many servers come incorrectly configured in "prefork" mode, which emulates Apache 1.3's process model and causes vastly greater resource usage inside the shibd daemon.
