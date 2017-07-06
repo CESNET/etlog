@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const qp = require('./query_parser');
 const agg = require('./aggregation');
+const deasync = require('deasync');
 // --------------------------------------------------------------------------------------
 // get data
 // --------------------------------------------------------------------------------------
@@ -53,6 +54,7 @@ function search(req, res, next, query) {
 function filter_data(req, data)
 {
   var ret = [];
+  var done = false;
 
   if(!req.headers["remote_user"]) {     // remote user not set for machine processing
     var ip = req.headers['x-forwarded-for'] ||
@@ -62,10 +64,16 @@ function filter_data(req, data)
 
     check_privileged_ips(req, ip, function(found) {
       if(found)
-        return data;      // no filtering for machine processing
-      else
-        return ret;      // not found in privileged ips
+        ret = data;      // no filtering for machine processing
+
+      done = true;
     });
+
+    deasync.loopWhile(function() {
+      return !done;
+    });
+
+    return ret;     // filter based on ip
   }
 
   else if(req.session.user.role == "user")
