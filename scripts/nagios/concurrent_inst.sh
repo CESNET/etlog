@@ -40,10 +40,10 @@ function get_data()
   get_revision
 
   # get data for visinst_1
-  data=$(curl "https://$hostname:8443/api/concurrent_inst/?revision=$revision&time_needed_timediff>=$time_diff&timestamp>=$min&timestamp<=$max&visinst_1=$realm" 2>/dev/null)
+  data=$(curl "https://$hostname:8443/api/concurrent_inst/?revision=$revision&diff_needed_timediff>=$time_diff&timestamp>=$min&timestamp<=$max&visinst_1=$realm" 2>/dev/null)
 
   # get data for visinst_2
-  data=$data$(curl "https://$hostname:8443/api/concurrent_inst/?revision=$revision&time_needed_timediff>=$time_diff&timestamp>=$min&timestamp<=$max&visinst_2=$realm" 2>/dev/null)
+  data=$data$(curl "https://$hostname:8443/api/concurrent_inst/?revision=$revision&diff_needed_timediff>=$time_diff&timestamp>=$min&timestamp<=$max&visinst_2=$realm" 2>/dev/null)
 
   data=$(echo $data | sed -e 's/},{/\n/g; s/\[{//; s/}\]//g; s/\[{/\n/')   # convert to lines and remove brackets
 }
