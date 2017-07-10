@@ -358,7 +358,7 @@ Other tasks:
 
 Task retention deletes data from logs collections which are older than 365 days.
 
-Monthly report about failed logins is sent at 6:00 every first day of month.
+Monthly report about failed logins is sent at 5:59 every first day of month.
 For details see [reports](#reports).
 
 ### Mail setup
