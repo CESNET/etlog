@@ -18,7 +18,7 @@ module.exports = {
   // ipv6 listening address
   ipv6 : '::1',
   // server dns name
-  server_name : 'etlog.cesnet.cz',
+  server_name : 'etlog-dev.cesnet.cz',
   // etlog log root
   etlog_log_root : '/home/etlog/logs/',
 // ==========================================================================================
