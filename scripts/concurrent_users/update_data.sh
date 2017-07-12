@@ -49,11 +49,13 @@ function get_data()
 function update_data()
 {
   wget $location -O $concurrent_users_dir/institution.xml # get new data, possible overwrite old
-  $concurrent_users_dir/inst.pl # update data
+  $concurrent_users_dir/inst.pl             # update source data
+  # update database - 14 days ago, hours, minutes and seconds set to 0
+  $concurrent_users_dir/update_database.js "$(date -d "14 days ago" "+%Y-%m-%d") 00:00:00" "$(date "+%Y-%m-%d") 00:00:00"
 }
 # ==========================================================================================
 # "working directory"
-concurrent_users_dir="/home/etlog/etlog/script/concurrent_users/"
+concurrent_users_dir="/home/etlog/etlog/scripts/concurrent_users"
 main &>/dev/null
 # ==========================================================================================
 
