@@ -10,7 +10,7 @@ module.exports = {
   // email of national radius admin
   radius_admin : "jan.tomasek@cesnet.cz",
   // from email address set for outgoing mails
-  mail_from_address: 'etlog@etlog.cesnet.cz <etlog@etlog.cesnet.cz>',
+  mail_from_address: 'etlog@etlog-dev.cesnet.cz <etlog@etlog-dev.cesnet.cz>',
   // reply to email address set for outgoing mails
   mail_replyto_address: 'info@eduroam.cz',
   // ipv4 listening address
