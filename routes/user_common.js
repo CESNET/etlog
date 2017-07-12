@@ -36,7 +36,7 @@ function parse_groups(req, username, group_list)
   var list = group_list.split(";");
 
   // search for realm admins locally in the database
-  req.db.realm_admin_logins.find({ "admin" : username }, function(err1, items) {
+  req.db.realm_admin_logins.find({ "admin_login_ids" : username }, function(err1, items) {
     if(err1) {
       var err2 = new Error();      // just to detect where the original error happened
       console.error(err2);
@@ -207,7 +207,7 @@ exp.set_user_role = function(req)
 exp.set_paging = function(req)
 {
   var user = exp.get_user(req);
-  user.items_by_page = req.params.paging;
+  user.items_by_page = parseInt(req.params.paging, 10);
   return user;
 }
 // --------------------------------------------------------------------------------------

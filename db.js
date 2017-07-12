@@ -185,6 +185,17 @@ exports.concurrent_rev_schema = concurrent_rev_schema;
 var concurrent_rev = mongoose.model('concurrent_rev', concurrent_rev_schema, 'concurrent_rev');
 exports.concurrent_rev = concurrent_rev;
 // --------------------------------------------------------------------------------------
+var privileged_ips_schema = mongoose.Schema({
+  ip       : String,
+  hostname : String,
+  comment  : String,
+},
+{ versionKey: false });
+// --------------------------------------------------------------------------------------
+exports.privileged_ips_schema = privileged_ips_schema;
+var privileged_ips = mongoose.model('privileged_ips', privileged_ips_schema, 'privileged_ips');
+exports.privileged_ips = privileged_ips;
+// --------------------------------------------------------------------------------------
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 /*
 mongoose.connection.once('open', function (callback) {

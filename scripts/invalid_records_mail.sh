@@ -25,10 +25,10 @@ function count_imported()
 # ==========================================================================================
 function set_recipients()
 {
-  out="$(mongo etlog -quiet -eval 'db.realm_admins.find({ realm : "cz" }, { admins : 1, _id : 0 })')"    # get data from db
+  out="$(mongo etlog -quiet -eval 'db.realm_admins.find({ realm : "cz" }, { admin : 1, _id : 0 })')"    # get data from db
   # $out may look like:
-  # '{ "admins" : [ "jan.tomasek@cesnet.cz" ] }'
-  to=$(echo "$out" | sed 's/.*\[ //; s/\].*$//; s/[",]//g')
+  # '{ "admin" : "jan.tomasek@cesnet.cz" }'
+  to=$(echo "$out" | cut -d ' ' -f 4 | sed 's/"//g')
 }
 # ==========================================================================================
 # email template function

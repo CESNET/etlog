@@ -17,9 +17,11 @@ etlog is a web application, which consists of Node.js, Express web application f
 ## Server setup
 
 The application is setup on Debian jessie. It is running as user etlog and it's root is in /home/etlog/etlog/.
-It is listening for incoming connections on port 8080 for http connections and 
-on port 8443 for https connections. Http connections are automatically redirected to https.
-Successful redicretion requires HTTP 1.1 host header.
+It is listening for incoming http connections on port 8080. Apache webserver is in front of the apllication
+and is doing a proxy for it.
+
+The main purpose of putting apache in front of the application itself is authentication.
+Apache uses shibd module for authentication in czech identitity feredation [eduid.cz](eduid.cz).
 
 ### User setup
 
@@ -30,18 +32,214 @@ adduser etlog
 
 ### Network setup
 
-Application is running by unprivileged user, so he can not use standard http and https port.
-Instead ports 8080 and 8443 are used.
-Automatic port redirection to ports 8080 and 8443 is provided through iptables.
-Persistence of rules is ensured by iptables-persistent debian package:
+Application is running by unprivileged user, so he can not use standard http and https ports.
+Instead port 8080 is used. Apache webserver is in front of application web server.
+Apache proxies all incoming request to the application web server.
+Automatic redirection from port 80 to port 443 is handled by apache.
+
+### Shibboleth setup
+
+Documentation used for sbibboleth setup is located at [http://www.eduid.cz/cs/tech/sp/shibboleth](http://www.eduid.cz/cs/tech/sp/shibboleth).
+
+### Apache setup
+
+Apache in conjuction with shibboleth is responsible for authentication of users into the application.
+After successful autentication apache proxies request to the application webserver.
+
+
+Installation of apache webserver:
 ```
-apt-get install iptables-persistent
-iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80  -j REDIRECT --to-port 8080
-iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8443
-iptables-save > /etc/iptables/rules.v4
-ip6tables -t nat -A PREROUTING -i eth0 -p tcp -d 2001:718:1:1f:50:56ff:feee:150/64 --dport 80  -j REDIRECT --to-port 8080
-ip6tables -t nat -A PREROUTING -i eth0 -p tcp -d 2001:718:1:1f:50:56ff:feee:150/64 --dport 443 -j REDIRECT --to-port 8443
-ip6tables-save > /etc/iptables/rules.v6
+apt-get install apache2 libapache2-mod-proxy-html
+```
+
+Setup server certificate in `/etc/ssl/certs/etlog.cesnet.cz.crt.pem`
+and private key in `/etc/ssl/private/etlog.cesnet.cz.key.pem`.
+
+Add intermediade certificate to `/etc/ssl/certs/etlog.cesnet.cz.crt.pem`:
+```
+cd /tmp
+wget https://pki.cesnet.cz/certs/TERENA_SSL_CA_3.pem
+cat TERENA_SSL_CA_3.pem >> /etc/ssl/certs/etlog.cesnet.cz.crt.pem
+rm TERENA_SSL_CA_3.pem
+cd
+```
+
+SSL default vhost and module are enabled by:
+```
+a2enmod ssl
+a2dissite 000-default
+a2ensite default-ssl
+service apache2 restart
+```
+
+Proxy is enabled by:
+```
+a2enmod proxy
+a2enmod proxy_http
+service apache2 restart
+```
+
+Headers and remote ip are enabled by:
+```
+a2enmod headers
+a2enmod remoteip
+service apache2 restart
+```
+
+Configuration for default ssl apache vhost is in `/etc/apache2/sites-enabled/default-ssl.conf`.
+Set the configuration as below:
+
+```
+<VirtualHost *:80>
+	ServerAdmin machv@cesnet.cz
+	ServerName etlog.cesnet.cz
+	Redirect permanent "/" "https://etlog.cesnet.cz"
+</VirtualHost>
+
+<IfModule mod_ssl.c>
+
+	# aplikacni virtualhost
+	<VirtualHost _default_:443>
+		ServerAdmin machv@cesnet.cz
+		ServerName etlog.cesnet.cz
+		DocumentRoot /var/www/html
+
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+		SSLEngine on
+
+		SSLProtocol All -SSLv2 -SSLv3
+		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
+		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
+
+		BrowserMatch "MSIE [2-6]" \
+				nokeepalive ssl-unclean-shutdown \
+				downgrade-1.0 force-response-1.0
+		# MSIE 7 and newer should be able to use keepalive
+		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+		<Location />
+			# konfigurace shibbolethu pro /
+			AuthType shibboleth
+			Require shibboleth
+			ShibRequestSetting requireSession 1
+
+			# predani SSL prommene prostredi REMOTE_USER
+			RequestHeader set REMOTE_USER %{REMOTE_USER}s
+
+			# pro nastaveni dalsich hlavicek je treba dodat direktivu pro kokretni promenne prostredi
+			RequestHeader set PerunUniqueGroupName %{PerunUniqueGroupName}e
+			RequestHeader set eduroamUID %{eduroamUID}e
+
+			# proxy
+			ProxyPass http://127.0.0.1:8080/
+			ProxyPassReverse http://127.0.0.1:8080/
+		</Location>
+
+		ProxyRequests Off
+		RemoteIPHeader X-Forwarded-For
+	</VirtualHost>
+
+    # virtualhost pro nrpe
+    <VirtualHost 127.0.0.1:443>
+		ServerAdmin machv@cesnet.cz
+		ServerName etlog.cesnet.cz
+		DocumentRoot /var/www/html
+
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+		SSLEngine on
+
+		SSLProtocol All -SSLv2 -SSLv3
+		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
+		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
+
+		BrowserMatch "MSIE [2-6]" \
+				nokeepalive ssl-unclean-shutdown \
+				downgrade-1.0 force-response-1.0
+		# MSIE 7 and newer should be able to use keepalive
+		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+		<Location />
+			# proxy
+			ProxyPass http://127.0.0.1:8080/
+			ProxyPassReverse http://127.0.0.1:8080/
+		</Location>
+
+		ProxyRequests Off
+		RemoteIPHeader X-Forwarded-For
+	</VirtualHost>
+
+    # virtualhost pro ermon.cesnet.cz
+    <VirtualHost etlog.cesnet.cz:8443>
+		ServerAdmin machv@cesnet.cz
+		ServerName etlog.cesnet.cz
+		DocumentRoot /var/www/html
+
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+		SSLEngine on
+
+		SSLProtocol All -SSLv2 -SSLv3
+		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
+		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
+
+		BrowserMatch "MSIE [2-6]" \
+				nokeepalive ssl-unclean-shutdown \
+				downgrade-1.0 force-response-1.0
+		# MSIE 7 and newer should be able to use keepalive
+		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+		<Location />
+			# proxy
+			ProxyPass http://127.0.0.1:8080/
+			ProxyPassReverse http://127.0.0.1:8080/
+		</Location>
+
+		ProxyRequests Off
+		RemoteIPHeader X-Forwarded-For
+	</VirtualHost>
+</IfModule>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+```
+
+Set listening ports in `/etc/apache2/ports.conf`:
+```
+# If you just change the port or add more ports here, you will likely also
+# have to change the VirtualHost statement in
+# /etc/apache2/sites-enabled/000-default.conf
+
+Listen 80
+
+<IfModule ssl_module>
+	Listen 443
+	Listen 8443
+</IfModule>
+
+<IfModule mod_gnutls.c>
+	Listen 443
+	Listen 8443
+</IfModule>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+```
+
+
+Additional settings are needed according to [https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig](https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig). The page says:
+> Finally, on non-Windows systems you should make sure Apache is configured in so-called "worker" mode, using the "worker" MPM, either via a setting in an OS-supplied file like /etc/sysconfig/httpd or in the Apache configuration directly. Many servers come incorrectly configured in "prefork" mode, which emulates Apache 1.3's process model and causes vastly greater resource usage inside the shibd daemon.
+
+Enable mpm-worker by:
+
+```
+a2dismod mpm_prefork
+a2dismod mpm_event
+a2enmod mpm_worker
+service apache2 restart
+apachectl -M | grep worker
 ```
 
 ### Syslog setup
@@ -71,7 +269,7 @@ log { source(net); destination(fticks); };
 service syslog-ng restart
 
 su - etlog
-mkdir -p ~/logs/{fticks,transform,mongo,invalid_records,systemd}
+mkdir -p ~/logs/{fticks,transform,mongo,invalid_records,systemd,ldap}
 ```
 
 The code above installs certificates required for syslog tls connection.
@@ -79,6 +277,7 @@ Next part installs syslog-ng and creates it's configuration.
 last part creates directories `/home/etlog/logs/fticks`, `/home/etlog/logs/transform`,
 `/home/etlog/logs/mongo` and .`/home/etlog/logs/invalid_records`
 Log files created by syslog are located in `/home/etlog/logs/fticks`.
+Ldap related files are in `/home/etlog/logs/ldap`.
 
 
 #### Systemd log files
@@ -112,6 +311,8 @@ Crontab contains following jobs:
 |   command                                             | interval              |              description                 |
 |-------------------------------------------------------|-----------------------|------------------------------------------|
 | `/home/etlog/etlog/scripts/data_import.sh`            | every 5 minutes       | new data importing                       |
+| `/home/etlog/etlog/scripts/ldap/admins.sh`            | every 5 minutes       | ldap synchronization                     |
+| `/home/etlog/etlog/scripts/ldap/realms.sh`            | every day at 0:30     | all known czech realms synchronization   |
 | `/home/etlog/etlog/scripts/invalid_records.sh`        | every day at 1:00     | generating of files with invalid records |
 | `/home/etlog/etlog/scripts/invalid_records_mail.sh`   | every monday at 6:00  | sending report about invalid records     |
 | `/home/etlog/etlog/scripts/archive.sh`                | every monday at 6:05  | archiving old log files                  |
@@ -120,6 +321,8 @@ Crontab contains following jobs:
 Crontab contents:
 ```
 */5 *  *   *   *     /home/etlog/etlog/scripts/data_import.sh
+*/5 *  *   *   *     /home/etlog/etlog/scripts/ldap/admins.sh
+30  0  *   *   *     /home/etlog/etlog/scripts/ldap/realms.sh
 0   1  *   *   *     /home/etlog/etlog/scripts/invalid_records.sh
 0   6  *   *   1     /home/etlog/etlog/scripts/invalid_records_mail.sh
 5   6  *   *   1     /home/etlog/etlog/scripts/archive.sh
@@ -129,7 +332,7 @@ Crontab contents:
 #### Node.js
 
 Setup is defined in cron.js.
-Table below defined how tasks are run.
+Table below defines how tasks are run.
 
 Every task in the table below generates data for collection of the same name.
 
@@ -155,7 +358,7 @@ Other tasks:
 
 Task retention deletes data from logs collections which are older than 365 days.
 
-Monthly report about failed logins is sent at 6:00 every first day of month.
+Monthly report about failed logins is sent at 5:59 every first day of month.
 For details see [reports](#reports).
 
 ### Mail setup
@@ -193,6 +396,17 @@ duply
 ncftp
 lftp
 libkrb5-dev
+libapache2-mod-shib2
+apache2
+libapache2-mod-proxy-html
+apache2-bin
+apache2-data
+apache2-utils
+ldapscripts
+ldap-utils
+ldapscripts
+pwgen
+sharutils
 
 Other special packages along with installation are listed below.
   
@@ -339,6 +553,7 @@ Collection has following structure:
 | pn         |   String  |      username                    |
 | result     |   String  |      result of authentication    |
 
+
 ##### users\_mac
 
 Collection defines binding between user and all mac addresses, which he used for successful authentication to eduroam.
@@ -350,46 +565,6 @@ Collection has following structure:
 | username   |   String  |      username                       |
 | addrs      |   Array   |      array of user's mac addresses  |
 
-
-##### privileged\_ips
-
-Collection containing privileged ip addresses, which will bypass
-saml authentication. Address authentication is done using module passport-ip.
-Addresses must be in commonly used slash format:
-
-ipv4 addresses format:
-
-```
-'192.168.1.1/32'
-'10.0.0.0/8'
-```
-
-ipv6 addresses format:
-
-```
-'2001:718:2:1::1/128'
-'2001:718:2:1::/64'
-```
-
-Collection has following structure:
-
-| field name | data type |               note               |
-|------------|-----------|----------------------------------|
-| ip         |   String  |  string representing ip address  |
-
-
-###### data insertion/update
-
-After data update, the application must be restarted.
-Privileged ip addresses are loaded only on application startup.
-Localhost address is added for cron tasks to use application api.
-Data can be inserted by accesing mongo shell and using commands:
-
-```
-use etlog
-db.privileged_ips.insert({ip : '127.0.0.1/32'})
-db.privileged_ips.insert({ip : '192.168.1.1/32'})
-```
 
 ##### mac\_count
 
@@ -507,7 +682,6 @@ Collection has following structure:
 
 ##### concurrent\_users
 
-
 Collection contains data about users which logged in different locations concurrently.
 For the user to be in the collection the time difference of
 authentication in first visisted institution and the second visisted instituon
@@ -522,15 +696,18 @@ Lowest distinction interval for timestamp is 24 hours.
 
 Collection has following structure:
 
-| field name           | data type |               note                                  |
-|----------------------|-----------|-----------------------------------------------------|
-| timestamp            | Date      |         timestamp                                   |
-| timestamp\_1         | Date      |  timestamp of first authentication                  |
-| timestamp\_2         | Date      |  timestamp of second authentication                 |
-| visinst\_1           | String    |  first visited institution                          |
-| visinst\_2           | String    |  second visited institution                         |
-| username             | String    |  username                                           |
-| time\_needed         | Number    | time needed to travel from visinst\_1 to visinst\_2 |
+| field name       | data type  |               note                                             |
+|------------------|------------|----------------------------------------------------------------|
+|  timestamp       | Date       | timestamp                                                      |
+|  timestamp\_1    | Date       | timestamp of first authentication                              |
+|  timestamp\_2    | Date       | timestamp of second authentication                             |
+|  visinst\_1      | String     | first visited institution                                      |
+|  visinst\_2      | String     | second visited institution                                     |
+|  username        | String     | username                                                       |
+|  mac\_address    | String     | MAC address related to incident                                |
+|  time\_needed    | Number     | time needed to travel from visinst\_1 to visinst\_2 in seconds |
+|  dist            | Number     | distance between institutions in meters                        |
+|  revision        | Number     | revision number                                                |
 
 
 ###### Data update
@@ -539,6 +716,18 @@ Input data are stored in `scripts/concurrent_users/inst.json`.
 Data are converted from source XML document which contains geographical data 
 for all institutions. Conversion script used is in `scripts/concurrent_users/inst.pl`.
 Each run of cron job which computes new collection data works with input json data.
+
+
+##### concurrent\_rev
+
+Collection contains all available revisions of concurrent\_users collection data.
+Data in this collection can be used to retrieve data from specific revision.
+
+Collection has following structure:
+
+| field name       | data type  |               note                                             |
+|------------------|------------|----------------------------------------------------------------|
+|  revisions       | Array      | Array of all available revisions                               |
 
 
 ##### unique\_users
@@ -584,10 +773,11 @@ If realm is defined, the the administrators can be notified about events in thei
 
 Collection has following structure:
 
-| field name | data type |               note                                                            |
-|------------|-----------|-------------------------------------------------------------------------------|
-| realm      |   string  |          realm                                                                |
-| admins     |   Array   |   array containing email addresses of administrator(s) of corresponding realm |
+| field name       | data type |               note                          |
+|------------------|-----------|---------------------------------------------|
+| realm            |   String  |              realm                          |
+| admin            |   String  |   administrator's email address             |
+| notify\_enabled  |   Boolean |   flag if administrator should be notified  |
 
 
 Data insertion may done easily by:
@@ -611,6 +801,22 @@ use etlog
 db.realm_admins.remove({realm : "cvut.cz"})
 ```
 
+##### realm\_admin\_logins
+
+Collection contains unique mac addresses for realms for every day.
+Addresses of users from the realm are in array used\_addrs.
+Addresses of users from other instituions which used realm as visinst are in array provided\_addrs;
+
+
+Collection has following structure:
+
+| field name             | data type |               note                        |
+|------------------------|-----------|-------------------------------------------|
+| admin\_login\_ids      | Array     |  Array of possible login identities       |
+| admin\_notify\_address | String    |  admin's email address                    |
+| administered\_realms   | Array     |  Array of realms which the admin manages  |
+
+
 
 ##### shared\_mac
 Collection contains records about mac addresses, which have been used for successfull authnetication
@@ -627,13 +833,25 @@ Collection has following structure:
 
 
 ##### realms
-Collection contains all knows realms from Czech republic (ending with '.cz').
+Collection contains all known realms from Czech republic.
 
 Collection has following structure:
 
 | field name   | data type |             note             |
 |--------------|-----------|------------------------------|
 | realm        | String    |             realm            |
+
+
+##### privileged\_ips
+Collection contains all IP addresses, which are allowed to do machine processing of data.
+
+Collection has following structure:
+
+| field name   | data type |             note             |
+|--------------|-----------|------------------------------|
+| ip           | String    |          IP address          |
+| hostname     | String    |    hostname of IP address    |
+| comment      | String    |          comment             |
 
 
 ##### heat\_map
@@ -674,28 +892,35 @@ One record may look like:
 }
 ```
 
+##### sessions
+Collection contains user sessions. Collection data are managed by connect-mongo.
+Data are updated dynamically based on user authentication and role changes.
+All relevant information for each authenticated user is stored.
+
 
 #### Indexes
 
 Indexes are used to speed up queries.
 Following indexes are used:
 
-| collection name   | indexed fields                                             |   note  |
-|-------------------|------------------------------------------------------------|---------|
-| failed\_logins    | _id, timestamp                                             |         |
-| logs              | _id, timestamp, realm, visinst, pn, csi, result            |         |
-| realms            | _id, realm                                                 |         |
-| mac\_count        | _id, timestamp                                             |         |
-| shared\_mac       | _id, mac\_address                                          |         |
-| privileged\_ips   | _id                                                        |         |
-| realm\_admins     | _id                                                        |         |
-| roaming           | _id, timestamp                                             |         |
-| users\_mac        | _id, username                                              |         |
-| heat\_map         | _id, timestamp, realm                                      |         |
-| realm\_logins     | _id, timestamp, realm                                      |         |
-| visinst\_logins   | _id, timestamp, realm                                      |         |
-| unique\_users     | _id, timestamp, realm                                      |         |
-| concurrent\_users | _id, timestamp, username                                   |         |
+| collection name       | indexed fields                                             |   note  |
+|-----------------------|------------------------------------------------------------|---------|
+| failed\_logins        | _id, timestamp                                             |         |
+| logs                  | _id, timestamp, realm, visinst, pn, csi, result            |         |
+| realms                | _id, realm                                                 |         |
+| mac\_count            | _id, timestamp                                             |         |
+| shared\_mac           | _id, mac\_address                                          |         |
+| privileged\_ips       | _id                                                        |         |
+| realm\_admins         | _id                                                        |         |
+| roaming               | _id, timestamp                                             |         |
+| users\_mac            | _id, username                                              |         |
+| heat\_map             | _id, timestamp, realm                                      |         |
+| realm\_logins         | _id, timestamp, realm                                      |         |
+| visinst\_logins       | _id, timestamp, realm                                      |         |
+| unique\_users         | _id, timestamp, realm                                      |         |
+| concurrent\_users     | _id, timestamp, username                                   |         |
+| sessions              | _id, expires                                               |         |
+| realm\_admin\_logins  | _id, admin                                                 |         |
 
 
 ### Reports
@@ -710,9 +935,9 @@ It contains information about invalid records of past week.
 
 #### Monthly reports
 
-Monthly report is sent to all administrators defined in [realm_admins](#realm_admins).
-It contains 100 most users with most failed logins from corresponding realm.
-Limit of 100 users is defined in [cron.js](https://github.com/CESNET/etlog/blob/master/cron.js#L15).
+Monthly report is sent to all administrators defined in [realm_admins](#realm_admins) which have notify_enabled flag set to true.
+It contains 100 users with most failed logins from corresponding realm.
+Limit of 100 users is defined in [config.js](https://github.com/CESNET/etlog/blob/master/config/config.js#L7).
 
 #### Configuration
 
@@ -721,6 +946,20 @@ Weekly reports configuration is located in `config/invalid_records_mail`.
 [Link](https://github.com/CESNET/etlog/blob/master/scripts/invalid_records_mail.sh#L45) to the code generating the report content.
 Monthly reports configuration is located in `config/config.js`.
 [Link](https://github.com/CESNET/etlog/blob/master/request.js#L78) to the code generating the report content.
+
+
+### Privilege levels
+
+The application contains three privilege levels - user, realm admin and admin.
+The user is just a regular user with no special permissions. The user is least privileged one.
+The Realm admin is an admin of some specific realm(s).
+The admin is a global admin of all existing realms.
+
+#### Mapping users to privileges
+
+The autentication mechanism can provide addionational information about users.
+Based on the provided information the user can be recognized as realm admin or admin.
+Mapping of the groups provided by autentication process to privilege levels is defined in `config/config.js`.
 
 
 ### Application structure
@@ -933,7 +1172,7 @@ Application api:
 
 | URL                             | params | query string variables                                 | note                   |
 |---------------------------------|--------|--------------------------------------------------------|------------------------|
-| /api/search/                    |        | timestamp, pn, [ 'csi', 'result', 'realm', 'visinst']  |                        |
+| /api/search/                    |        | timestamp, pn, [ csi, result, realm, visinst]          |                        |
 | /api/failed\_logins/            |        | timestamp, [ username, fail\_count, ok\_count, ratio ] |                        |
 | /api/mac\_count/                |        | timestamp, [ username, count, addrs ]                  |                        |
 | /api/roaming/most\_provided/    |        | timestamp, [ inst\_name, provided\_count ]             |                        |
@@ -941,19 +1180,18 @@ Application api:
 | /api/shared\_mac/               |        | timestamp, [ count, mac\_address, users ]              |                        |
 | /api/heat\_map/                 |        | timestamp, [ realm, institutions.realm, institutions.count ] |                  |
 | /api/succ\_logins/              |        | timestamp, [ username, count ]                         |                        |
-| /api/saml/metadata              |        |                                                        | url with saml metadata |
 | /api/db\_data/                  |        |                                                        | url with current data state |
 | /api/realms/                    |        |                                                        | url returning list of realms from realms collection |
 | /api/realm\_logins              |        | timestamp, [ realm ]                                   |  |
 | /api/visinst\_logins            |        | tiemstamp, [ realm ]                                   |  |
 | /api/unique\_users/realm        |        | timestamp, realm                                       |  |
 | /api/unique\_users/visinst      |        | timestamp, realm                                       |  |
-| /api/concurrent\_users          |        | timestamp, [ username, visinst\_1, visinst\_2 ]        |  |
+| /api/concurrent\_users          |        | timestamp, [ username, visinst\_1, visinst\_2, revision, diff\_needed\_timediff ]        |  |
 | /api/concurrent\_inst           |        | timestamp                                              |  |
 | /api/count/mac\_count           |        | timestamp, [ username, count, addrs ]                  | returns count of records for mac\_count collection |
 | /api/count/shared\_mac          |        | timestamp, [ count, mac\_address, users ]              | returns count of records for shared\_mac collection|
-| /api/count/concurrent\_users    |        | timestamp, [ username, visinst\_1, visinst\_2 ]        | returns count of records for concurrent\_users collection  |
-| /api/count/logs                 |        | timestamp, [ 'pn', 'csi', 'realm', 'visinst', 'result' ] | returns count of records for logs collection |
+| /api/count/concurrent\_users    |        | timestamp, [ username, visinst\_1, visinst\_2, revision, diff\_needed\_timediff ]        | returns count of records for concurrent\_users collection  |
+| /api/count/logs                 |        | timestamp, [ pn, csi, realm, visinst, result ] | returns count of records for logs collection |
 
 
 
@@ -1051,7 +1289,7 @@ which is not able to use templating engine.
 AngularJS is a complete JavaScript-based open-source front-end web application framework.
 It enables dynamic content manipulation throught html element attributes.
 
-Frontend has followind structure:
+Frontend has following structure:
 
 | state                          | url                               |     title                                          |
 |--------------------------------|-----------------------------------|----------------------------------------------------|
@@ -1063,8 +1301,9 @@ Frontend has followind structure:
 | orgs\_roaming\_most\_used      | /#/orgs\_roaming\_most\_provided  | etlog: organizace nejvíce poskytující konektivitu  |
 | orgs\_roaming\_most\_provided  | /#/orgs\_roaming\_most\_used      | etlog: organizace nejvíce využívající roaming      |
 | roaming\_activity              | /#/roaming\_activity              | etlog: aktivita eduroamu                           |
-| detection\_data                | /#/detection\_data                |  etlog: absolutní počet přihlášení                 |
-| detection\_data\_grouped       | /#/detection\_data\_grouped       |  etlog: normalizovaný počet přihlíšení             |
+| detection\_data                | /#/detection\_data                | etlog: absolutní počet přihlášení                  |
+| detection\_data\_grouped       | /#/detection\_data\_grouped       | etlog: normalizovaný počet přihlíšení              |
+| notifications                  | /#/notifications                  | etlog: správa notifikací                           |
 
 
 #### Backend
@@ -1076,9 +1315,6 @@ This section describes classic html pages.
 | URL             | explanation                                                        |
 |-----------------|--------------------------------------------------------------------|
 | /               | title page                                                         |
-| /login          | login page                                                         |
-| /login/callback | page where the user is redirected after successful authentication  |
-| /auth\_fail     | page where the user is redirected when authentication fails        |
 
 
 ### System intergation
@@ -1092,6 +1328,7 @@ File contents:
 ```
 [Service]
 ExecStart=/usr/bin/npm --prefix /home/etlog/etlog/ start
+WorkingDirectory=/home/etlog/etlog/
 Restart=always
 StandardOutput=syslog
 StandardError=syslog

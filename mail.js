@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const config = require('./config/config.js');
+const fs = require('fs');
 // --------------------------------------------------------------------------------------
 function set_up_mailer()
 {
@@ -56,6 +57,8 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
 {
   var bcc = config.radius_admin;
 
+  disable_admins_sync();    // disable synchronization when sending notifications
+
   database.realm_admins.find({ notify_enabled : true }, { realm : 1, admin : 1, _id : 0 },
   function(err, items) {
     for(var dict in items) {
@@ -67,6 +70,30 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
         module.exports.send_mail(config.failed_logins_subj + " | " + items[dict].realm,         // specify realm in subject
                                  items[dict].admin, data_func(database, items[dict].realm, limit), bcc);
       }
+    }
+
+    enable_admins_sync();   // enable synchronization
+  });
+}
+// --------------------------------------------------------------------------------------
+// enable realm admins synchronization
+// --------------------------------------------------------------------------------------
+function enable_admins_sync()
+{
+  fs.unlink(config.etlog_log_root + "/ldap/sync_disabled", function(err) {
+    if(err) {
+      console.eror(err);
+    }
+  });
+}
+// --------------------------------------------------------------------------------------
+// disable realm admins synchronization
+// --------------------------------------------------------------------------------------
+function disable_admins_sync()
+{
+  fs.writeFile(config.etlog_log_root + "/ldap/sync_disabled", "", function(err) {
+    if(err) {
+      console.eror(err);
     }
   });
 }

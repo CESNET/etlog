@@ -62,7 +62,7 @@ function get_user_info($rootScope, $http)
 // --------------------------------------------------------------------------------------
 // http interceptor to solve expired shibboleth sessions
 // --------------------------------------------------------------------------------------
-angular.module('etlog').factory('expired_sessions_interceptor', function($q, $window) {
+angular.module('etlog').factory('expired_sessions_interceptor', ['$q', '$window', function($q, $window) {
   return {
     // XMLHttpRequest cannot load https://ds.eduid.cz/wayf.php?filter=..... No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'https://etlog-dev.cesnet.cz' is therefore not allowed access.
     // not a clean solution for reauthenticating the user if the SP session expires but it works
@@ -71,7 +71,7 @@ angular.module('etlog').factory('expired_sessions_interceptor', function($q, $wi
       return $q.reject(rejection);
     }
   };
-});
+}]);
 // --------------------------------------------------------------------------------------
 angular.module('etlog').config(['$httpProvider', function($httpProvider) {
   $httpProvider.interceptors.push('expired_sessions_interceptor');

@@ -6,7 +6,18 @@
 # ==========================================================================================
 function main()
 {
-  if [[ "$1" == "force" ]]
+  local last
+  local curr
+
+  if [[ -e $etlog_log_root/ldap/sync_disabled ]]    # synchronization disabled by app
+  then
+    exit 0
+  fi
+
+  last=$(date -d "5 minutes ago" "+%Y-%m-%d")  # %Y-%m-%d 5 minutes ago
+  curr=$(date "+%Y-%m-%d")                     # %Y-%m-%d now
+
+  if [[ $last != $curr ]]   # update once every day
   then
       force_update
   else
@@ -26,8 +37,8 @@ function force_update()
   realms_to_admins
   realm_admin_logins=$(print_json)
   realm_admins=$(realm_admins_json)
-  realm_list=$(get_realm_list)
   update_db
+  delete_expired
 }
 # ==========================================================================================
 # update database contents
@@ -53,13 +64,30 @@ function update_db()
   do
     mongo etlog -quiet -eval "db.realm_admins.update($(echo "$line" | sed 's/, notify.*}$/ }/'), $line, { upsert : true })"
   done <<< "$realm_admins"
+}
+# ==========================================================================================
+# delete expired admins
+# ==========================================================================================
+function delete_expired()
+{
+  local out
 
-  # update realms
-  delete_realms
+  # search for all realm admins
+  # iterate all lines one by one
+  # if line does not exist in $realm_admins, delete it
+  out=$(mongo etlog -quiet -eval 'DBQuery.shellBatchSize = 5000;
+  db.realm_admins.find({ "realm" : { $ne : "cz" } })')  # exception for realm "cz"
+
+  # update realm_admins
   while read line
   do
-    mongo etlog -quiet -eval "db.realm_admins.insert($line)"
-  done <<< "$realm_list"
+    line=$(echo $line | sed 's/^.*, "admin" :/admin:/; s/, "notify_enabled".*$//; s/"realm" :/realm:/')   # transform for matching
+
+    if [[ "$(echo "$realm_admins" | grep "$line")" == "" ]] # admin does not exist in $realm_admins
+    then
+      mongo etlog -quiet -eval "db.realm_admins.remove({$line})"    # delete
+    fi
+  done <<< "$out"
 }
 # ==========================================================================================
 # check database state, check highest available timestamp
@@ -84,19 +112,19 @@ function check_state()
   then
     if [[ "$last_max" == "" ]]  # last max empty
     then
-      last_max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+      last_max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
 
     else    # last res empty
-      last_res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
+      last_res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
     fi
 
     echo $last_max > $etlog_log_root/ldap/last_timestamp
-    echo $last_res > $etlog_log_root/ldap/last_res
+    echo $last_res > $etlog_log_root/ldap/last_results
     return 1
   else      # last timestamp and last res not empty
 
-    max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
-    res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
+    max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+    res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
     if [[ $last_max -le $max ]]
     then
       retval=1  # not necessary to update
@@ -108,8 +136,8 @@ function check_state()
     fi
   fi
 
-  echo $max > $etlog_log_root/ldap/timestamp
-  echo $res > $etlog_log_root/ldap/res
+  echo $max > $etlog_log_root/ldap/last_timestamp
+  echo $res > $etlog_log_root/ldap/last_results
   return $retval
 }
 # ==========================================================================================
@@ -159,10 +187,10 @@ function realms_to_admins()
         done
 
         # take $admin's first mail
-        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b uid=$tmp,ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz -s base mail | grep "mail: " | head -1 | cut -d " " -f 2)
+        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b uid=$tmp,ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz -s base mail | grep "mail: " | head -1 | cut -d " " -f 2)
       else
         # take $admin's first mail
-        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
+        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
       fi
 
       # set mail to global array
@@ -287,26 +315,6 @@ function print_json()
   done
 }
 # ==========================================================================================
-# delete all records from realms collections
-# ==========================================================================================
-function delete_realms()
-{
-  mongo etlog -quiet -eval "db.realms.remove({})"
-}
-# ==========================================================================================
-# get all known czech realms
-# ==========================================================================================
-function get_realm_list()
-{
-  local realm_list
-  realm_list=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn | grep "cn: " | cut -d " " -f2 | tr "\n" " ")
-
-  for realm in $realm_list
-  do
-    echo "{ \"realm\" : \"$realm\" }"
-  done
-}
-# ==========================================================================================
 # read input information line by line
 # if in realm, add all managers to current realm
 # realms are divided by empty line 
@@ -314,7 +322,7 @@ function get_realm_list()
 function get_realms()
 {
   # all information regarding realm admins retrivied from ldap
-  all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn manager)
+  all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn manager)
   local in_object=false
   local realm_list
   local uid
@@ -350,7 +358,7 @@ function get_realms()
         uid=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//') # get uid
 
         # use whole line as search base
-        identities=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b $sb -s base eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | cut -d " " -f 2 | tr "\n" " ")
+        identities=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b $sb -s base eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | cut -d " " -f 2 | tr "\n" " ")
         uids[$uid]=$identities     # save mapping of uid to user identities
         identities=""              # clear for next admin
         manager=$uid               # save uid as reference in array instead of values
@@ -388,9 +396,9 @@ declare -gA uids
 declare -gA admin_mails
 # etlog log root
 etlog_log_root="/home/etlog/logs"
+# etlog root
+etlog_root="/home/etlog/etlog/"
 # notify default state
 notify_default=false
-# enable first parameter to be passed to main
-# may be used to force synchronization
-main $1
+main &>/dev/null
 # ==========================================================================================
