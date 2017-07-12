@@ -6,69 +6,37 @@ var exp = {}
 // --------------------------------------------------------------------------------------
 // perform mac address counting
 // --------------------------------------------------------------------------------------
-exp.process_old_data = function (database, callback) {
+exp.process_old_data = function (database, min, total_max, callback) {
   // find the lowest date in database and go from that date to present
   var data = JSON.parse(fs.readFileSync(data_file, 'utf8'));
-  var date;
-  var current = new Date();
-  var curr_min = new Date(current.getFullYear(), current.getMonth(), current.getUTCDate(), 0, 0, 0, 0);   // current day hh:mm:ss:ms set to 00:00:00:000
+  var max = new Date(min);
+  max.setDate(max.getDate() + 1);   // next day
 
-
-  // find all, sort by timestamp, display only timestamp, display one document only
-  database.logs.find({}).sort({"timestamp" : 1}).limit(1).select({"timestamp" : 1, "_id" : 0}).exec(
-  function(err, doc) {
-    var date = doc;
-
-    date = String(date[0]["timestamp"]);    // get only string representation of date
-
-    var fields = date.split(" ");
-    var months = {      // months dict for date constructor
-      "Jan" : 0,
-      "Feb" : 1,
-      "Mar" : 2,
-      "Apr" : 3,
-      "May" : 4,
-      "Jun" : 5,
-      "Jul" : 6,
-      "Aug" : 7,
-      "Sep" : 8,
-      "Oct" : 9,
-      "Nov" : 10,
-      "Dec" : 11
-    }
-
-    var min = new Date(fields[3], months[fields[1]], fields[2], 0, 0, 0, 0);        // hh:mm:ss:ms set to 0
-    var max = new Date(fields[3], months[fields[1]], Number(fields[2]) + 1, 0, 0, 0, 0);    // next day, hh:mm:ss:ms set to 0
-                                                                                    // search uses lower than max condition !
-    // this date handling should guarantee correct interval for all processed records
-
-
-    async.whilst(function () {
-      return min < curr_min;
-    },
-    function(next) {
-      async.series([
-        function(done) {
-          search(database, data.data, data.revision, min, max, done);     // calls done when finished
-        },
-        function(done) {
-          min.setDate(min.getDate() + 1);  // continue
-          max.setDate(max.getDate() + 1);  // continue
-          done(null);                      // done
-        }
-        ],
-        function(err, results) {
-          next();   // next whilst iteration
-      });
-    },
-    function(err) {
-      if(err)
-        console.error(err);
-      else
-        console.log("cron task concurrent_users finished processing old data");
-
-      update_revision(database, data.revision, callback);
+  async.whilst(function () {
+    return min <= total_max;
+  },
+  function(next) {
+    async.series([
+      function(done) {
+        search(database, data.data, data.revision, min, max, done);     // calls done when finished
+      },
+      function(done) {
+        min.setDate(min.getDate() + 1);  // continue
+        max.setDate(max.getDate() + 1);  // continue
+        done(null);                      // done
+      }
+      ],
+      function(err, results) {
+        next();   // next whilst iteration
     });
+  },
+  function(err) {
+    if(err)
+      console.error(err);
+    else
+      console.log("cron task concurrent_users finished processing old data");
+
+    update_revision(database, data.revision, callback);
   });
 };
 // --------------------------------------------------------------------------------------
