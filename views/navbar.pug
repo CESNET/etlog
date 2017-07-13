@@ -6,6 +6,7 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
       button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
         span.sr-only Toggle navigation
     .navbar-collapse.collapse.ng-scope(ng-controller='header_controller')
+      img.navbar-brand(src='eduroam.png', alt='logo služby eduroam')
       ul.nav.navbar-nav
 
         li(ng-class='{ active: is_active(["/search"])}')
