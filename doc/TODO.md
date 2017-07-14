@@ -9,14 +9,6 @@
 
 
 # TODO dobudoucna
-- vyuzit http://bl.ocks.org/mbostock/34f08d5e11952a80609169b7917d4172 pro grafy?
-- lepsi reseni popisku na ose x pro intervaly < mesic?
-- mrizka v grafech?
-- lokalizace?
-- snyk?
 - hsts?
-- optimalizace pro mobilni zarizeni?
-- ... ?
-
 
 
