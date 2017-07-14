@@ -7,8 +7,3 @@
     - je treba resit rotovani logu? syslog sam zajisti novy soubor pro kazdy den.
 - syslog - klic musi byt citelny pro vsechny, aby syslog poslouchal/bezel
 
-
-# TODO dobudoucna
-- hsts?
-
-
