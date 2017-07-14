@@ -119,6 +119,9 @@ Set the configuration as below:
 		# MSIE 7 and newer should be able to use keepalive
 		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
+		# HSTS
+		Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+
 		<Location />
 			# konfigurace shibbolethu pro /
 			AuthType shibboleth
@@ -162,6 +165,9 @@ Set the configuration as below:
 		# MSIE 7 and newer should be able to use keepalive
 		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
+		# HSTS
+		Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+
 		<Location />
 			# proxy
 			ProxyPass http://127.0.0.1:8080/
@@ -192,6 +198,9 @@ Set the configuration as below:
 				downgrade-1.0 force-response-1.0
 		# MSIE 7 and newer should be able to use keepalive
 		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+		# HSTS
+		Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
 
 		<Location />
 			# proxy
