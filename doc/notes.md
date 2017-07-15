@@ -142,6 +142,7 @@ Set the configuration as below:
 
 		ProxyRequests Off
 		RemoteIPHeader X-Forwarded-For
+		RequestHeader set X-Forwarded-Proto "https"
 	</VirtualHost>
 
     # virtualhost pro nrpe
@@ -176,6 +177,7 @@ Set the configuration as below:
 
 		ProxyRequests Off
 		RemoteIPHeader X-Forwarded-For
+		RequestHeader set X-Forwarded-Proto "https"
 	</VirtualHost>
 
     # virtualhost pro ermon.cesnet.cz
@@ -210,6 +212,7 @@ Set the configuration as below:
 
 		ProxyRequests Off
 		RemoteIPHeader X-Forwarded-For
+		RequestHeader set X-Forwarded-Proto "https"
 	</VirtualHost>
 </IfModule>
 
