@@ -119,6 +119,9 @@ Set the configuration as below:
 		# MSIE 7 and newer should be able to use keepalive
 		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
+		# HSTS
+		Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+
 		<Location />
 			# konfigurace shibbolethu pro /
 			AuthType shibboleth
@@ -139,6 +142,7 @@ Set the configuration as below:
 
 		ProxyRequests Off
 		RemoteIPHeader X-Forwarded-For
+		RequestHeader set X-Forwarded-Proto "https"
 	</VirtualHost>
 
     # virtualhost pro nrpe
@@ -162,6 +166,9 @@ Set the configuration as below:
 		# MSIE 7 and newer should be able to use keepalive
 		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
+		# HSTS
+		Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+
 		<Location />
 			# proxy
 			ProxyPass http://127.0.0.1:8080/
@@ -170,6 +177,7 @@ Set the configuration as below:
 
 		ProxyRequests Off
 		RemoteIPHeader X-Forwarded-For
+		RequestHeader set X-Forwarded-Proto "https"
 	</VirtualHost>
 
     # virtualhost pro ermon.cesnet.cz
@@ -193,6 +201,9 @@ Set the configuration as below:
 		# MSIE 7 and newer should be able to use keepalive
 		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
+		# HSTS
+		Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+
 		<Location />
 			# proxy
 			ProxyPass http://127.0.0.1:8080/
@@ -201,6 +212,7 @@ Set the configuration as below:
 
 		ProxyRequests Off
 		RemoteIPHeader X-Forwarded-For
+		RequestHeader set X-Forwarded-Proto "https"
 	</VirtualHost>
 </IfModule>
 
@@ -226,6 +238,30 @@ Listen 80
 </IfModule>
 
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+```
+
+Configure apache log rotation in `/etc/logrotate.d/apache2`:
+```
+/var/log/apache2/*.log {
+	monthly
+	missingok
+	rotate 12
+	compress
+	delaycompress
+	notifempty
+	create 640 root adm
+	sharedscripts
+	postrotate
+                if /etc/init.d/apache2 status > /dev/null ; then \
+                    /etc/init.d/apache2 reload > /dev/null; \
+                fi;
+	endscript
+	prerotate
+		if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+			run-parts /etc/logrotate.d/httpd-prerotate; \
+		fi; \
+	endscript
+}
 ```
 
 
