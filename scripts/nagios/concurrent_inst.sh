@@ -11,6 +11,7 @@
 # =======================================================================================================
 function main()
 {
+  usage $@
   get_data
   process_data
   check_threshold
@@ -52,8 +53,13 @@ function get_data()
 # =======================================================================================================
 function process_data()
 {
-  total_count=$(echo "$data" | cut -d '"' -f 3 )
-  total_count=$(echo $total_count | sed 's/://g; s/,//g; s/ / + /g' | bc) # get total count
+  if [[ "$data" != "[][]" ]]
+  then
+    total_count=$(echo "$data" | cut -d '"' -f 3 )
+    total_count=$(echo $total_count | sed 's/://g; s/,//g; s/ / + /g' | bc) # get total count
+  else
+    total_count=-1      # indicate unknown realm or no data
+  fi
 }
 # =======================================================================================================
 function check_threshold()
@@ -66,9 +72,26 @@ function check_threshold()
   then
     echo "WARNING: $total_count users moving too fast for realm $realm | $total_count"
     exit 1
+  elif [[ $total_count -lt 0 ]]
+    then
+    echo "UNKNOWN: Unknown realm $realm or no data available for realm $realm"
+    exit 3
   else
     echo "OK: $total_count users moving too fast for realm $realm | $total_count"
     exit 0
+  fi
+}
+# =======================================================================================================
+# print usage
+# =======================================================================================================
+function usage()
+{
+  if [[ $# -lt 3 ]]
+  then
+    echo "usage: $0 realm warning_threshold critical_threshold"
+    echo ""
+    echo "example: $0 cesnet.cz 50 100"
+    exit 1
   fi
 }
 # =======================================================================================================
@@ -76,5 +99,5 @@ realm=$1
 warning=$2
 critical=$3
 # =======================================================================================================
-main
+main $@
 # =======================================================================================================
