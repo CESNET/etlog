@@ -21,9 +21,11 @@ database.connect();
 app.set('trust proxy', 1)       // app is behind a proxy
 app.use(session({ secret : secrets.session,
                   secure : true,
+                  cookie: { secure: true },
+                  proxy: true,
                   resave : false,
                   saveUninitialized : false,
-                  store : new MongoStore({ db : 'SessionStore', url : 'mongodb://localhost:27017/etlog' }),
+                  store : new MongoStore({ db : 'SessionStore', url : 'mongodb://localhost:27017/etlog', ttl: 30 * 24 * 60 * 60 }),
                 }));
 
 // --------------------------------------------------------------------------------------

@@ -313,7 +313,6 @@ function normalize_mac(data)
 // mac count table controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', '$rootScope', function ($scope, $http, $rootScope) {
-  console.log($scope.user);
   init($scope, $http);
   addiational_fields_mac_count($scope);   // set up additional form fields
   $scope.paging = {
