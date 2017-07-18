@@ -91,8 +91,9 @@ function filter_data(req, data)
 
   if(req.session.user.role == "user") {
     for(var item in data)
-      if(data[item].username == req.session.user.username)
-        ret.push(data[item]);
+      for(var id in req.session.user.identities)
+        if(data[item].username == req.session.user.identities[id])  // match against identities not username !
+          ret.push(data[item]);
   }
 
   else if(req.session.user.role == "realm_admin") {

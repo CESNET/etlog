@@ -79,7 +79,7 @@ function get_eduroam_identities(headers)
 {
   var ret = [];
 
-  if(headers["eduroamuid"]) {    // special eduroam identity attribute
+  if(headers["eduroamuid"] != "(null)") {    // special eduroam identity attribute
     var identities = headers["eduroamuid"].split(';');
     for(var id in identities) {
       ret.push(identities[id]);
