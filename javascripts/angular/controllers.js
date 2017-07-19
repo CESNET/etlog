@@ -493,7 +493,6 @@ function handle_pagination($scope, $http, $rootScope, data_func)
 // --------------------------------------------------------------------------------------
 function update_user_paging($scope, $http, $rootScope)
 {
-  // get db_data
   $http({
     method  : 'PUT',
     url     : '/api/user/settings/' + $scope.paging.items_by_page
