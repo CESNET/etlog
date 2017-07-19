@@ -1659,6 +1659,65 @@ function handle_download($scope, $http, order)
   }
 }
 // --------------------------------------------------------------------------------------
+// handle download button for heat map
+// --------------------------------------------------------------------------------------
+function handle_download_heat_map($scope)
+{
+  $scope.download_data = function() {
+    // taken from https://codepen.io/YuvarajTana/pen/yNoNdZ
+    var text = get_text_heat_map($scope);
+    var a = $('<a/>', {
+      style:'display:none',
+      href:'data:application/octet-stream;base64,' + btoa(text),
+      download:'data.csv'
+    }).appendTo('body')
+    a[0].click()
+    a.remove();
+  }
+}
+// --------------------------------------------------------------------------------------
+// generate csv from heat map data
+// --------------------------------------------------------------------------------------
+function get_text_heat_map($scope)
+{
+  var text = "\"\",";
+  var line = 0;
+
+  if(!$scope.graph_data) { // no data present, do nothing
+    return;
+  }
+
+  // create csv header
+  // ============================
+
+  for(var key in $scope.visinst) {
+    if(key == $scope.visinst.length - 1)
+      text += $scope.visinst[key];
+
+    else
+      text += $scope.visinst[key] + ",";
+  }
+  text += "\n";
+
+  // add data
+  // ============================
+
+  for(var realm in $scope.realms) {
+    for(var visinst in $scope.visinst) {
+      if(text.length > 0 && text[text.length - 1] != "\n") {   // continue
+        text += "," + $scope.graph_data[Number(visinst) + (realm * $scope.visinst.length)].value;     // can be accesed as 1D linear array
+      }
+      else {    // beginning of line
+        text += $scope.realms[line++];  // output realm and increment line number
+        text += "," + $scope.graph_data[Number(visinst) + (realm * $scope.visinst.length)].value;     // can be accesed as 1D linear array
+      }
+    }
+    text += "\n";
+  }
+
+  return text;
+}
+// --------------------------------------------------------------------------------------
 // generate csv from table data in defined order
 // --------------------------------------------------------------------------------------
 function get_text(order, data)
@@ -1927,6 +1986,7 @@ angular.module('etlog').controller('heat_map_controller', ['$scope', '$http', '$
   init_calendar($scope, $http);
   addiational_fields_heat_map($scope);
   handle_submit_heat_map($scope, $http, $q, get_heat_map, graph_heat_map);
+  handle_download_heat_map($scope);
 }]);
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
@@ -2006,7 +2066,7 @@ function get_heat_map($scope, $http, $q, callback)
         }
 
         set_missing($scope, $scope.realms);
-        sort_by_row($scope.graph_data);     // sort data by rows
+        sort_heat_data($scope.graph_data);     // sort data by cols and rows
         callback($scope);
       });
     }
@@ -2017,7 +2077,7 @@ function get_heat_map($scope, $http, $q, callback)
       }
 
       set_missing($scope, $scope.realms);
-      sort_by_row($scope.graph_data);     // sort data by rows
+      sort_heat_data($scope.graph_data);     // sort data by cols and rows
       callback($scope);
     }
   });
@@ -2150,18 +2210,22 @@ function set_missing($scope, realms)
   }
 }
 // --------------------------------------------------------------------------------------
-// sort data by row number
+// sort data by column and row number
 // --------------------------------------------------------------------------------------
-function sort_by_row(data)
+function sort_heat_data(data)
 {
-  data.sort(compare_row);
+  data.sort(compare_heat_data);
 }
 // --------------------------------------------------------------------------------------
 // compare heat map data based on row
+// sort first by row, then by col
 // --------------------------------------------------------------------------------------
-function compare_row(a, b)
+function compare_heat_data(a, b)
 {
-  return a.row - b.row
+  if(a.row == b.row)  // col is equal
+    return a.col - b.col;
+  else  // row differs
+    return a.row - b.row;
 }
 // --------------------------------------------------------------------------------------
 // returns index in realms array

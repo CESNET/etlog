@@ -56,4 +56,7 @@ div.container-fluid(ng-controller="heat_map_controller")
         span#value
     .loading-indicator(ng-show='loading')
     #graph(ng-show='!loading')
+    .form-group(ng-show='main_form.$submitted && !loading')
+      .col-xs-2
+        button.btn.btn-default(type='button' ng-click='download_data()') Uložit data
 
