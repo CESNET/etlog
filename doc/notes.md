@@ -41,6 +41,14 @@ Automatic redirection from port 80 to port 443 is handled by apache.
 
 Documentation used for sbibboleth setup is located at [http://www.eduid.cz/cs/tech/sp/shibboleth](http://www.eduid.cz/cs/tech/sp/shibboleth).
 
+#### IdP attributes
+
+Institutions which use different identity for federated login and eduroam should release **eduroamUID** attribute at their IdP to etlog.
+Attribute is formed by a list of eduroam identities for specific user separated by semicolons.
+Attribute is internaly used when filtering records and displaying them to user.
+If the attribute is not released by instituion's IdP, user's federated login identity is used as his eduroam identity in etlog.
+If the username in searched records does not match user's eduroam identity, such records are not displayed to user.
+
 ### Apache setup
 
 Apache in conjuction with shibboleth is responsible for authentication of users into the application.
