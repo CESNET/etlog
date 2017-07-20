@@ -29,7 +29,6 @@ function get_revision()
 # =======================================================================================================
 function get_data()
 {
-  local hostname
   local min
   local max
 
@@ -53,12 +52,23 @@ function get_data()
 # =======================================================================================================
 function process_data()
 {
+  local found
+
   if [[ "$data" != "[][]" ]]
   then
     total_count=$(echo "$data" | cut -d '"' -f 3 )
     total_count=$(echo $total_count | sed 's/://g; s/,//g; s/ / + /g' | bc) # get total count
-  else
-    total_count=-1      # indicate unknown realm or no data
+  else  # no data available
+    # we need to distinct no data available for given realm - 0 users moving too fast and unknown realm
+    found=$(curl "https://$hostname:8443/api/realms" 2>/dev/null)
+
+    if [[ "$(echo "$found" | grep "$realm")" == "" ]]  # realm does not exist
+    then
+      echo "UNKNOWN: Unknown realm $realm"
+      exit 3
+    else
+      total_count=0     # no data available, but realm is known => 0 users
+    fi
   fi
 }
 # =======================================================================================================
@@ -72,10 +82,6 @@ function check_threshold()
   then
     echo "WARNING: $total_count users moving too fast for realm $realm | $total_count"
     exit 1
-  elif [[ $total_count -lt 0 ]]
-    then
-    echo "UNKNOWN: Unknown realm $realm or no data available for realm $realm"
-    exit 3
   else
     echo "OK: $total_count users moving too fast for realm $realm | $total_count"
     exit 0
