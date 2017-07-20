@@ -361,6 +361,7 @@ Crontab contains following jobs:
 | `/home/etlog/etlog/scripts/invalid_records_mail.sh`   | every monday at 6:00  | sending report about invalid records     |
 | `/home/etlog/etlog/scripts/archive.sh`                | every monday at 6:05  | archiving old log files                  |
 | `/home/etlog/etlog/scripts/detection_data/create_detection_data.sh &>/dev/null`| every monday at 6:10  | generating login count graphs  |
+| `/home/etlog/etlog/scripts/concurrent_users/update_data.sh`| every saturday at 4:30  | generating old concurrent users data  |
 
 Crontab contents:
 ```
@@ -371,6 +372,7 @@ Crontab contents:
 0   6  *   *   1     /home/etlog/etlog/scripts/invalid_records_mail.sh
 5   6  *   *   1     /home/etlog/etlog/scripts/archive.sh
 10  6  *   *   1     /home/etlog/etlog/scripts/detection_data/create_detection_data.sh &>/dev/null
+30  4  *   *   6     /home/etlog/etlog/scripts/concurrent_users/update_data.sh
 ```
 
 #### Node.js
@@ -761,6 +763,12 @@ Data are converted from source XML document which contains geographical data
 for all institutions. Conversion script used is in `scripts/concurrent_users/inst.pl`.
 Each run of cron job which computes new collection data works with input json data.
 
+
+Data are automatically updated by script `scripts/concurrent_users/update_data.sh`.
+The script is run every saturday at 04:30. It gets new version of institution.xml, compares it to one locally saved.
+If the files differ new version of input data are created by `scripts/concurrent_users/inst.pl`.
+These input data are used to compute new database data for concurrent\_users collection. Newly computed data are 14 days old.
+New revision of data is also saved.
 
 ##### concurrent\_rev
 
