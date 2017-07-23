@@ -453,6 +453,10 @@ ldap-utils
 ldapscripts
 pwgen
 sharutils
+libdate-manip-perl
+libxml-libxml-perl
+libgps-point-perl
+libjson-perl
 
 Other special packages along with installation are listed below.
   
