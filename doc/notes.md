@@ -43,7 +43,7 @@ Documentation used for sbibboleth setup is located at [http://www.eduid.cz/cs/te
 
 #### IdP attributes
 
-etlog assumes that user's eduroam identity is the same as his eduPersonPrincipalName. 
+etlog assumes that user's eduroam identity is the same as his eduPersonPrincipalName.
 If that is not true, user's home IdP can implement **eduroamUID** attribute.
 This attribute contains user's eduroam identity(or multiple identities).
 If the attribute is not implemented by user's home IdP, his eduPersonPrincipalName is used as his eduroam identity in etlog.
