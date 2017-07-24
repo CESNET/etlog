@@ -64,6 +64,23 @@ Implementation at the Shibboleth Idp 3 may look like:
 </AttributeDefinition>
 ```
 
+At the SAML level, the messages can look like:
+```
+<saml2:Attribute FriendlyName="eduroamUID"
+                Name="http://eduroam.cz/attributes/eduroamUID"
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+
+ <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:type="xsd:string">
+                       user@org.eu</saml2:AttributeValue>
+ <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:type="xsd:string">
+                       user@org.cz</saml2:AttributeValue>
+</saml2:Attribute>
+```
+
 
 ### Apache setup
 
