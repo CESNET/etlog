@@ -19,9 +19,9 @@ exp.check_filter = function(query, fields)
 // --------------------------------------------------------------------------------------
 // add other operators, if defined in query
 // --------------------------------------------------------------------------------------
-exp.add_ops = function(aggregate_query, query)
+exp.add_ops = function(aggregate_query, query, sort_last)
 {
-  if(query.sort) {
+  if(!sort_last && query.sort) {
     aggregate_query.push({ $sort : query.sort });   // sort
   }
 
@@ -35,6 +35,10 @@ exp.add_ops = function(aggregate_query, query)
 
   if(query.limit) {
     aggregate_query.push({ $limit : query.limit }); // limit
+  }
+
+  if(sort_last && query.sort) {
+    aggregate_query.push({ $sort : query.sort });   // apply sort as last stage
   }
 
   return aggregate_query;
