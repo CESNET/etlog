@@ -54,10 +54,7 @@ function search(req, res, next, query) {
 
   // ===================================================
   // add other operators, if defined in query
-
-  // the records should be implicitly sorted by time, sorting is added as last stage
-  // reduces the query speed something like 10-20x
-  agg.add_ops(aggregate_query, query, true);
+  agg.add_ops(aggregate_query, query);
 
   // ===================================================
   // search
