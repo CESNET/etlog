@@ -1370,7 +1370,7 @@ angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope
   $scope.timestamp = "1 měsíc";       // one month
   $scope.timestamp_opts = [ "1 měsíc", "3 měsíce", "12 měsíců" ]; // 1, 3 or 12 months
   init($scope, $http);
-  scope.form_data.inst_count = 25;
+  $scope.form_data.inst_count = 25;
   $scope.graph_title = "organizace nejvíce využívající roaming";
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_used_count, stacked_graph, "roaming_most_used", "used_count");
@@ -1479,7 +1479,7 @@ angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$s
   $scope.timestamp = "1 měsíc";       // one month
   $scope.timestamp_opts = [ "1 měsíc", "3 měsíce", "12 měsíců" ]; // 1, 3 or 12 months
   init($scope, $http);
-  scope.form_data.inst_count = 25;
+  $scope.form_data.inst_count = 25;
   $scope.graph_title = "organizace nejvíce poskytující konektivitu";
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
