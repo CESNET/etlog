@@ -24,7 +24,7 @@ router.get('/', function(req, res, next) {
 // --------------------------------------------------------------------------------------
 function search(req, res, next, query) {
   // exclude possible regex from
-  var regex = agg.check_regex(query.filter);
+  //var regex = agg.check_regex(query.filter);
 
   // ===================================================
   // construct base query
@@ -34,9 +34,9 @@ function search(req, res, next, query) {
     },
   ];
 
-  if(Object.keys(regex).length > 0) {
-    agg.add_stage(aggregate_query, { $match : regex });
-  }
+  //if(Object.keys(regex).length > 0) {
+  //  agg.add_stage(aggregate_query, { $match : regex });
+  //}
 
   agg.add_stage(aggregate_query, {
       $project :

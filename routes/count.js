@@ -165,7 +165,7 @@ router.get('/logs', function(req, res, next) {
   var query = get_qs_interval(req, [ 'timestamp', 'pn', 'csi', 'realm', 'visinst', 'result' ]); // array of valid filters
 
   // exclude possible regex from filter
-  var regex = agg.check_regex(query.filter);
+  //var regex = agg.check_regex(query.filter);
 
   // ===================================================
   // construct base query
@@ -183,9 +183,9 @@ router.get('/logs', function(req, res, next) {
   //
 
 
-  if(Object.keys(regex).length > 0) {
-    agg.add_stage(aggregate_query, { $match : regex });
-  }
+  //if(Object.keys(regex).length > 0) {
+  //  agg.add_stage(aggregate_query, { $match : regex });
+  //}
 
   filter_by_username(req, aggregate_query);
 
