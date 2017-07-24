@@ -1199,12 +1199,8 @@ function sum_provided_count(data)
 angular.module('etlog').controller('roaming_activity_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
   $scope.timestamp_opts = [ "1 měsíc", "3 měsíce", "12 měsíců" ]; // 1, 3 or 12 months
-  $scope.form_data = {
-    min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
-    max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
-  };
+  init($scope, $http);
   $scope.graph_title = "aktivita CZ eduroamu";
-  init_calendar($scope, $http);
   set_calendar_opts($scope);
   addiational_fields_roaming_activity($scope);   // set up additional form fields
   handle_submit($scope, $http, $q, get_roaming, graph, ["realm", "visinst"]);
@@ -1373,26 +1369,12 @@ function get_visinst($scope, query_string)
 angular.module('etlog').controller('orgs_roaming_most_used_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
   $scope.timestamp_opts = [ "1 měsíc", "3 měsíce", "12 měsíců" ]; // 1, 3 or 12 months
-  $scope.page_sizes = [ 10, 20, 50, 100 ];
-  $scope.form_data = {
-    min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
-    max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
-    inst_count : 25
-  };
+  init($scope, $http);
   $scope.graph_title = "organizace nejvíce využívající roaming";
-  init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_used_count, stacked_graph, "roaming_most_used", "used_count");
   handle_table_download($scope, ["inst_name", "used_count", "unique_count"]);
 }]);
-// --------------------------------------------------------------------------------------
-// initialize calendars
-// --------------------------------------------------------------------------------------
-function init_calendar($scope, $http)
-{
-  $scope.submitted = false; // form has not been submitted yet
-  setup_calendars_minmax($scope);
-}
 // --------------------------------------------------------------------------------------
 // create query string sorted by sort_key and limited by inst_count
 // --------------------------------------------------------------------------------------
@@ -1440,45 +1422,8 @@ function set_calendar_opts($scope)
       $scope.form_data.max_date = new Date().toISOString().replace(/T.*$/, '');
     }
 
-    setup_calendars_minmax($scope);   // setup selected dates
+    setup_calendars($scope);   // setup selected dates
   }
-}
-// --------------------------------------------------------------------------------------
-// manually assing calendar values in czech format
-// --------------------------------------------------------------------------------------
-function setup_calendars_minmax($scope)
-{
-  var tmp = $scope.form_data.min_date;
-
-  flatpickr("#min_date", {
-    locale: "cs",
-    defaultDate: $scope.form_data.min_date,
-    altInputClass : "form-control",
-    altInput: true,
-    altFormat: "d.m.Y",
-    maxDate: new Date(),                    // today
-  });
-
-  // strange issue here - flatpickr is tied to model, but unsets the value
-  // so we need to manually set it back after setting flatpickr
-  $scope.form_data.min_date = tmp;
-
-  // =========================================
-
-  tmp = $scope.form_data.max_date;
-
-  flatpickr("#max_date", {
-    locale: "cs",
-    defaultDate: $scope.form_data.max_date,
-    altInputClass : "form-control",
-    altInput: true,
-    altFormat: "d.m.Y",
-    maxDate: new Date(),                    // today
-  });
-
-  // strange issue here - flatpickr is tied to model, but unsets the value
-  // so we need to manually set it back after setting flatpickr
-  $scope.form_data.max_date = tmp;
 }
 // --------------------------------------------------------------------------------------
 // create graph data for organizations most using roaming
@@ -1532,13 +1477,8 @@ function get_roaming_most_used_count($scope, $http, qs, $q, callback)
 angular.module('etlog').controller('orgs_roaming_most_provided_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   $scope.timestamp = "1 měsíc";       // one month
   $scope.timestamp_opts = [ "1 měsíc", "3 měsíce", "12 měsíců" ]; // 1, 3 or 12 months
-  $scope.form_data = {
-    min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
-    max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
-    inst_count : 25
-  };
+  init($scope, $http);
   $scope.graph_title = "organizace nejvíce poskytující konektivitu";
-  init_calendar($scope, $http);
   set_calendar_opts($scope);
   handle_common_submit($scope, $http, $q, get_roaming_most_provided_count, stacked_graph, "roaming_most_provided", "provided_count");
   handle_table_download($scope, ["inst_name", "provided_count", "unique_count"]);
@@ -1979,11 +1919,7 @@ function graph($scope)
 // heat map controller
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('heat_map_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
-  $scope.form_data = {
-    min_date : new Date(new Date() - 30 * 86400000).toISOString().replace(/T.*$/, ''),      // 30 days ago - %Y-%m-%d
-    max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
-  };
-  init_calendar($scope, $http);
+  init($scope, $http);
   addiational_fields_heat_map($scope);
   handle_submit_heat_map($scope, $http, $q, get_heat_map, graph_heat_map);
   handle_download_heat_map($scope);
