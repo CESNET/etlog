@@ -43,11 +43,27 @@ Documentation used for sbibboleth setup is located at [http://www.eduid.cz/cs/te
 
 #### IdP attributes
 
-Institutions which use different identity for federated login and eduroam should release **eduroamUID** attribute at their IdP to etlog.
-Attribute is formed by a list of eduroam identities for specific user separated by semicolons.
-Attribute is internaly used when filtering records and displaying them to user.
-If the attribute is not released by instituion's IdP, user's federated login identity is used as his eduroam identity in etlog.
-If the username in searched records does not match user's eduroam identity, such records are not displayed to user.
+etlog assumes that user's eduroam identity is the same as his eduPersonPrincipalName. 
+If that is not true, user's home IdP can implement **eduroamUID** attribute.
+This attribute contains user's eduroam identity(or multiple identities).
+If the attribute is not implemented by user's home IdP, his eduPersonPrincipalName is used as his eduroam identity in etlog.
+User's home IdP must release the attribute at least for entityID https://etlog.cesnet.cz/shibboleth.
+Implementation at the Shibboleth Idp 3 may look like:
+```
+<AttributeDefinition id="eduroamUID" xsi:type="ScriptedAttribute">
+  <Dependency ref="uid" />
+  <AttributeEncoder xsi:type="SAML1String" name="http://eduroam.cz/attributes/eduroamUID" />
+  <AttributeEncoder xsi:type="SAML2String" name="http://eduroam.cz/attributes/eduroamUID" friendlyName="eduroamUID" />
+  <Script>
+    <![CDATA[
+      if (typeof uid != "undefined" && uid != null) {
+          eduroamUID.addValue (uid.getValues().get(0) + "@eduroam.%{idp.scope}");
+      }
+      ]]>
+    </Script>
+</AttributeDefinition>
+```
+
 
 ### Apache setup
 
