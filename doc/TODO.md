@@ -6,3 +6,10 @@
     - pomoci loggeru lze do souboru zapsat bez problemu : `logger -p local0.info test`
     - je treba resit rotovani logu? syslog sam zajisti novy soubor pro kazdy den.
 
+# TODO na pozdeji
+- databazi vyrobcu sitovek
+  - tooltip pri najeti na adresu
+  - udelat jako cronjob - jednou za mesic obnovit db
+-  statistiky aktivnich realmu / vyuzivani eduroamu institucemi historicke
+  - tabulka -> do radku realmy, do sloupce roky a do bunky pocet uspesnych autentizaci/unikatnich uzivatelu
+
