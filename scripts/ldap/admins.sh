@@ -399,6 +399,6 @@ etlog_log_root="/home/etlog/logs"
 # etlog root
 etlog_root="/home/etlog/etlog/"
 # notify default state
-notify_default=false
+notify_default=true
 main &>/dev/null
 # ==========================================================================================
