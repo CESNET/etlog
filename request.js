@@ -22,6 +22,10 @@ exp.get_failed_logins_monthly = function(database, realm, limit)
   }
 
   ret += failed_to_human_readable(fail, sum);
+
+  ret += "\n\n" ;
+  ret += "\t\t Odhlášení příjmu těchto emailů je možné na adrese https://etlog.cesnet.cz\n";
+
   return ret;
 }
 // --------------------------------------------------------------------------------------
