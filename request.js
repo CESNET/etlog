@@ -12,6 +12,7 @@ const url_base = 'https://etlog.cesnet.cz:8443/api';
 exp.get_failed_logins_monthly = function(database, realm, limit)
 {
   var ret = "";
+  var out;
 
   var fail = exp.get_all_failed_logins_monthly(database, realm, limit);
   var sum = exp.get_failed_login_count_monthly(database);
@@ -21,7 +22,11 @@ exp.get_failed_logins_monthly = function(database, realm, limit)
     ret += "==============================================================================\n\n";
   }
 
-  ret += failed_to_human_readable(fail, sum);
+  out = failed_to_human_readable(fail, sum);
+  if(!out)
+    return "";
+
+  ret += out;
 
   ret += "\n\n" ;
   ret += "\t\t Odhlášení příjmu těchto emailů je možné na adrese https://etlog.cesnet.cz\n";

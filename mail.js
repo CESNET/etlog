@@ -62,13 +62,18 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
   database.realm_admins.find({ notify_enabled : true }, { realm : 1, admin : 1, _id : 0 },
   function(err, items) {
     for(var dict in items) {
+      var data = data_func(database, items[dict].realm, limit);
+
+      if(data == "")    // do not send mail when no data for current realm are available
+        continue;
+
       if(items[dict].realm == "cz") {       // exception for "cz" realm
-        module.exports.send_mail(config.failed_logins_subj, items[dict].admin, data_func(database, items[dict].realm, limit));
+        module.exports.send_mail(config.failed_logins_subj, items[dict].admin, data);
       }
       else {
         // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
         module.exports.send_mail(config.failed_logins_subj + " | " + items[dict].realm,         // specify realm in subject
-                                 items[dict].admin, data_func(database, items[dict].realm, limit), bcc);
+                                 items[dict].admin, data, bcc);
       }
     }
 
