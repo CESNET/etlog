@@ -52,7 +52,10 @@ function search_visinst(req, res, next, query) {
       return;
     }
 
-    respond(items[0].count, res);
+    if(items.length > 0)
+      respond(items[0].count, res);
+    else
+      respond(0, res);  // no unique users
   });
 }
 // --------------------------------------------------------------------------------------
@@ -87,7 +90,10 @@ function search_realm(req, res, next, query) {
       return;
     }
 
-    respond(items[0].count, res);
+    if(items.length > 0)
+      respond(items[0].count, res);
+    else
+      respond(0, res);  // no unique users
   });
 }
 // --------------------------------------------------------------------------------------
