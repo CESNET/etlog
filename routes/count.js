@@ -338,7 +338,7 @@ function get_record_count(collection, req, res, next, aggregate_query, transform
 function filter_by_username(req, aggregate_query)
 {
   if(req.session.user.role == "user")
-    agg.add_stage(aggregate_query, { $match : { "pn" : req.session.user.username }});
+    agg.add_stage(aggregate_query, { $match : { "pn" : { $in : req.session.user.identities }}});
 
   else if(req.session.user.role == "realm_admin")
     agg.add_stage(aggregate_query, { $match : { "realm" : { $in : req.session.user.administered_realms }}});
