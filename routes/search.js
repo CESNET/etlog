@@ -38,6 +38,8 @@ function search(req, res, next, query) {
   //  agg.add_stage(aggregate_query, { $match : regex });
   //}
 
+  filter_by_username(req, aggregate_query);
+
   agg.add_stage(aggregate_query, {
       $project :
         {
@@ -77,7 +79,7 @@ function search(req, res, next, query) {
   });
 
   stream.on('end', function(items) {
-    respond(filter_data(req, convert(data)), res);
+    respond(convert(data), res);
   });
 }
 // --------------------------------------------------------------------------------------
@@ -85,28 +87,15 @@ function search(req, res, next, query) {
 // user: only his records
 // realm admin: only records for all administered realms
 // --------------------------------------------------------------------------------------
-function filter_data(req, data)
+function filter_by_username(req, aggregate_query)
 {
-  var ret = [];
+  if(req.session.user.role == "user")
+    agg.add_stage(aggregate_query, { $match : { "pn" : { $in : req.session.user.identities }}});
 
-  if(req.session.user.role == "user") {
-    for(var item in data)
-      for(var id in req.session.user.identities)
-        if(data[item].username == req.session.user.identities[id])  // match against identities not username !
-          ret.push(data[item]);
-  }
+  else if(req.session.user.role == "realm_admin")
+    agg.add_stage(aggregate_query, { $match : { "realm" : { $in : req.session.user.administered_realms }}});
 
-  else if(req.session.user.role == "realm_admin") {
-    for(var realm in req.session.user.administered_realms)
-      for(var item in data)
-        if(data[item].realm == req.session.user.administered_realms[realm])
-          ret.push(data[item]);
-  }
-
-  else if(req.session.user.role == "admin")  // no filtration
-    return data;
-
-  return ret;
+  // no filtration for administator
 }
 // --------------------------------------------------------------------------------------
 // convert timestamp in data
