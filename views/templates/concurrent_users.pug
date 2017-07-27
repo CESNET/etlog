@@ -115,7 +115,7 @@ div.container-fluid(ng-controller="concurrent_users_controller")
               i.fa.fa-chevron-down(ng-if='sort_dir', ng-show='sort_dir' ng-click='change_sort()')
               i.fa.fa-chevron-up(ng-if='!sort_dir', ng-show='!sort_dir' ng-click='change_sort()')
       tbody(ng-show='!paging.loading')
-        tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
+        tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page', total-items='paging.total_items', current-page='paging.current_page')
           td
             a(ui-sref='search({pn : row.username, csi : row.mac_address})' target='_blank')
               | {{row.username}}

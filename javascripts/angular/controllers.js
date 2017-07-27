@@ -276,6 +276,7 @@ function handle_search_submit($scope, $http, data_func, paging, coll_name)
     $scope.base_qs = build_qs_search($scope.form_data);  // create query string
     $scope.qs = $scope.base_qs;
     get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    $scope.paging.current_page = 1;
     $scope.get_page($http, $scope.paging.current_page, data_func);
     $scope.submitted = true;
   }
@@ -546,6 +547,7 @@ function handle_table_submit($scope, $http, data_func, custom_qs_func, paging, f
         $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
       $scope.qs = $scope.base_qs;
       get_total_items($scope, $http, coll_name);        // set number of total items for paging
+      $scope.paging.current_page = 1;
       $scope.get_page($http, $scope.paging.current_page, data_func);
       $scope.submitted = true;
     }

@@ -70,7 +70,7 @@ div.container-fluid(ng-controller="search_controller")
           th Realm:
           th Navštívená insituce:
       tbody(ng-show='!paging.loading')
-        tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page', total-items='paging.total_items')
+        tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page', total-items='paging.total_items', current-page='paging.current_page')
           td.bg-success(ng-if='row.result == "OK"') {{row.result}}
           td.bg-warning(ng-if='row.result == "TIMEOUT"') {{row.result}}
           td.bg-danger(ng-if='row.result == "FAIL"') {{row.result}}

@@ -71,7 +71,7 @@ div.container-fluid(ng-controller="shared_mac_controller")
           th(colspan='4')
             input.input-sm.form-control(ng-model='paging.filters.users', placeholder='uživatelské jméno', type='search', ng-change='filter_users()', ng-model-options='{ debounce: 250 }')
       tbody(ng-show='!paging.loading')
-        tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page ', total-items='paging.total_items')
+        tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page', total-items='paging.total_items', current-page='paging.current_page')
           td
             a(ui-sref='search({csi : row.mac_address})', target='_blank')
               | {{row.mac_address}}
