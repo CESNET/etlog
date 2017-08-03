@@ -424,6 +424,18 @@ function set_filter($scope, filter, var_name)
   $scope.qs = $scope.base_qs + $scope.filter;   // set final qs with filters
 }
 // --------------------------------------------------------------------------------------
+// unset loading and scroll browser to results
+// --------------------------------------------------------------------------------------
+function scroll_to_results($scope)
+{
+  $scope.paging.loading = false;      // unset loading
+
+  // scroll to table
+  $('html, body').animate({
+    scrollTop: ($("#out").offset().top - 55)     // compensate for navbar
+  });
+}
+// --------------------------------------------------------------------------------------
 // set pagination handlers
 // params:
 // $scope
@@ -437,19 +449,18 @@ function handle_pagination($scope, $http, $rootScope, data_func)
   };
 
   function get_page($http, page_number, data_func) {
+    $scope.got_data = false;
+
     // set loading
     $scope.paging.loading = true;
     $scope.paging.current_page = page_number;   // set current page
     var qs = $scope.add_paging($scope.qs, $scope.paging);    // save qs to $scope
 
     data_func($scope, $http, qs, function ($scope) { // get data from api
-      // unset loading
-      $scope.paging.loading = false;
+      if($scope.got_total_items == true)        // already have number of items, data function finished too
+        scroll_to_results($scope);
 
-      // scroll to table
-      $('html, body').animate({
-        scrollTop: ($("#out").offset().top - 55)     // compensate for navbar
-      });
+      $scope.got_data = true;
     });
   }
 
@@ -562,12 +573,19 @@ function handle_table_submit($scope, $http, data_func, custom_qs_func, paging, f
 // --------------------------------------------------------------------------------------
 function get_total_items($scope, $http, coll_name)
 {
+  $scope.got_total_items = false;
+
   $http({
     method  : 'GET',
     url     : '/api/count/' + coll_name + "/" + $scope.qs + "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date
   })
   .then(function(response) {
     $scope.paging.total_items = response.data;
+
+    if($scope.got_data == true) // got both data and total items
+      scroll_to_results($scope);
+
+    $scope.got_total_items = true;
   },
   function (response) {
     $scope.error = true;   // error occured
