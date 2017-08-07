@@ -7,6 +7,9 @@ var exp = {}
 // perform mac address counting
 // --------------------------------------------------------------------------------------
 exp.process_old_data = function (database, min, total_max, callback) {
+  // different file path when processing old data
+  const data_file = "./inst.json"
+
   // find the lowest date in database and go from that date to present
   var data = JSON.parse(fs.readFileSync(data_file, 'utf8'));
   var max = new Date(min);
