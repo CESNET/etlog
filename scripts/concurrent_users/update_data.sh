@@ -48,6 +48,7 @@ function get_data()
 # ==========================================================================================
 function update_data()
 {
+  cd $concurrent_users_dir
   wget $location -O $concurrent_users_dir/institution.xml # get new data, possible overwrite old
   $concurrent_users_dir/inst.pl             # update source data
   # update database - 14 days ago, hours, minutes and seconds set to 0
