@@ -75,8 +75,10 @@ div.container-fluid(ng-controller="search_controller")
           td.bg-warning(ng-if='row.result == "TIMEOUT"') {{row.result}}
           td.bg-danger(ng-if='row.result == "FAIL"') {{row.result}}
           td {{row.timestamp}}
-          td {{row.username}}
-          td {{row.mac_address}}
+          td
+            a(ui-sref='search({pn : row.username})', target='_blank') {{row.username}}
+          td
+            a(ui-sref='search({csi : row.mac_address})', target='_blank') {{row.mac_address}}
           td {{row.realm}}
           td {{row.visinst}}
       tbody(ng-show='paging.loading')
