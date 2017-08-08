@@ -2816,14 +2816,22 @@ function get_concurrent_inst($scope, $http, qs, $q, callback)
   $scope.table_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
-  return $http({
+  $http({
     method  : 'GET',
-    url     : '/api/concurrent_inst/' + qs + ts
+    url     : '/api/concurrent_rev/'
   })
   .then(function(response) {
-    $scope.table_data = response.data;
-    $scope.submitted = true;
-    callback($scope);
+    $scope.latest_revision = response.data;
+  
+    return $http({
+      method  : 'GET',
+      url     : '/api/concurrent_inst/' + qs + ts + "&revision=" + $scope.latest_revision
+    })
+    .then(function(response) {
+      $scope.table_data = response.data;
+      $scope.submitted = true;
+      callback($scope);
+    });
   });
 }
 // --------------------------------------------------------------------------------------
