@@ -2822,6 +2822,7 @@ function get_concurrent_inst($scope, $http, qs, $q, callback)
   })
   .then(function(response) {
     $scope.latest_revision = response.data;
+    $scope.latest_revision = $scope.latest_revision[$scope.latest_revision.length - 1]; //  get latest
   
     return $http({
       method  : 'GET',
