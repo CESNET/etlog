@@ -27,6 +27,7 @@ function search(req, res, next, query) {
   // -> the condition must be applied after aggregation !
 
   var cond = agg.check_filter(query.filter, [ "diff_needed_timediff" ]);
+  var mac_diff = agg.check_filter(query.filter, [ "mac_diff" ]);
 
   // ===================================================
   // construct base query
