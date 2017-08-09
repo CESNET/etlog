@@ -2826,7 +2826,7 @@ function get_concurrent_inst($scope, $http, qs, $q, callback)
   
     return $http({
       method  : 'GET',
-      url     : '/api/concurrent_inst/' + qs + ts + "&revision=" + $scope.latest_revision
+      url     : '/api/concurrent_inst/' + qs + ts + "&revision=" + $scope.latest_revision + "&mac_diff=false"   // same mac addresses
     })
     .then(function(response) {
       $scope.table_data = response.data;
