@@ -51,13 +51,12 @@ div.container-fluid(ng-controller="concurrent_users_controller")
                 select.form-control(ng-model='selected_rev', ng-options='revision for revision in revisions')
 
           .form-group
-            label.col-sm-2.control-label Rozdíl teoretického a dosaženého času:
+            label.col-sm-2.control-label Rozdíl teoretického a dosaženého času [sekundy]:
             .col-xs-2
               div(layout-gt-xs='row')
-                select.form-control(ng-model='diff_needed_timediff', ng-options='key as value for (value, key) in diff_dict')
-                .radio(ng-repeat='type in options.diff_needed_timediff.types track by $index')
-                  input(type='radio', name='diff_needed_timediff', ng-model='options.diff_needed_timediff.sel', ng-value='type')
-                  | {{options.diff_needed_timediff.type_names[$index]}}
+                input.form-control(type='text', list='times', ng-model='diff_needed_timediff')
+                datalist#times
+                  option(ng-repeat='(key, value) in diff_dict', value='{{value}}') {{key}}
 
           .form-group
             label.col-sm-2.control-label MAC adresy:
