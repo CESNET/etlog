@@ -36,6 +36,8 @@ function search(req, res, next, query) {
     { $project : {
       visinst_1 : 1,
       visinst_2 : 1,
+      mac_address_1 : 1,
+      mac_address_2 : 1,
       time_needed : 1,
       diff_needed_timediff : { $subtract : [ "$time_needed", { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] } ] },
     } }
