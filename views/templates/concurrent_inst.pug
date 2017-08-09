@@ -24,7 +24,7 @@ div.container-fluid(ng-controller="concurrent_inst_controller")
 
     div
       h4(ng-show='table_length == 0 && !paging.loading') Zadaným parametrům vyhledávání neodpovídají žádné záznamy.
-      h4(ng-show='table_length > 0 && !paging.loading') Zobrazená data byla vypočtena z nejnovější dostupné revize.
+      h4(ng-show='table_length > 0 && !paging.loading') Zobrazená data byla vypočtena z revize {{latest_revision}}.
       table.table.table-bordered.table-responsive(ng-show='paging.loading || table_length > 0')
         thead
           tr
