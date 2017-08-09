@@ -2805,9 +2805,30 @@ function get_concurrent_users($scope, $http, qs, callback)
 // --------------------------------------------------------------------------------------
 angular.module('etlog').controller('concurrent_inst_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
   init($scope, $http);
-  handle_submit($scope, $http, $q, get_concurrent_inst, filter_table_data, []);
+  additional_fields_concurrent_users($http, $scope);   // set up additional form fields
+  handle_submit_concurrent_inst($scope, $http, $q, get_concurrent_inst, filter_table_data, ["revision", "mac_diff", "diff_needed_timediff"]);
   handle_table_download($scope, [ "visinst_1", "visinst_2", "count" ]);
 }]);
+// --------------------------------------------------------------------------------------
+// custom function to handle submit
+// --------------------------------------------------------------------------------------
+function handle_submit_concurrent_inst($scope, $http, $q, data_func, trans_func, form_items)
+{
+  $scope.submit = function (form) {
+    if(form.$valid) {
+      // set loading animation
+      $scope.loading = true;
+
+      add_options($scope);        // add optional form fields
+      qs = build_qs_concurrent_users($scope, $scope.form_data, form_items);  // create query string
+      data_func($scope, $http, qs, $q, function ($scope) { // get data from api
+        trans_func($scope);    // transform data
+        // unset loading animation
+        $scope.loading = false;
+      });
+    }
+  }
+}
 // --------------------------------------------------------------------------------------
 // get concurrent inst data
 // --------------------------------------------------------------------------------------
@@ -2816,24 +2837,14 @@ function get_concurrent_inst($scope, $http, qs, $q, callback)
   $scope.table_data = [];
   var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
 
-  $http({
+  return $http({
     method  : 'GET',
-    url     : '/api/concurrent_rev/'
+    url     : '/api/concurrent_inst/' + qs + ts
   })
   .then(function(response) {
-    $scope.latest_revision = response.data;
-    $scope.latest_revision = $scope.latest_revision[$scope.latest_revision.length - 1]; //  get latest
-  
-    return $http({
-      method  : 'GET',
-      url     : '/api/concurrent_inst/' + qs + ts + "&revision=" +
-        $scope.latest_revision + "&mac_diff=false&diff_needed_timediff>=300"   // same mac addresses and limit for time
-    })
-    .then(function(response) {
-      $scope.table_data = response.data;
-      $scope.submitted = true;
-      callback($scope);
-    });
+    $scope.table_data = response.data;
+    $scope.submitted = true;
+    callback($scope);
   });
 }
 // --------------------------------------------------------------------------------------

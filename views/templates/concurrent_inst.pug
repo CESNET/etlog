@@ -15,6 +15,42 @@ div.container-fluid(ng-controller="concurrent_inst_controller")
             div(layout-gt-xs='row')
               input.form-control.flatpickr#max_date(type='text', ng-model='form_data.max_date')
  
+        div(ng-show='options_added')
+          .form-group
+            label.col-sm-2.control-label Revize dat:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                select.form-control(ng-model='selected_rev', ng-options='revision for revision in revisions')
+
+          .form-group
+            label.col-sm-2.control-label Rozdíl teoretického a dosaženého času [sekundy]:
+            .col-xs-2
+              div(layout-gt-xs='row')
+                input.form-control(type='text', list='times', ng-model='diff_needed_timediff')
+                datalist#times
+                  option(ng-repeat='(key, value) in diff_dict', value='{{value}}') {{key}}
+
+          .form-group
+            label.col-sm-2.control-label MAC adresy:
+            .col-xs-2
+              select.form-control(ng-model='form_data.mac_diff')
+                each key, val in {"libovolné" : "", "stejné" : "==", "různé" : "!="}
+                  option(value = key) #{val}
+
+        .form-group(ng-show='!options_added')
+          label.col-sm-2.control-label Další možnosti
+          .col-xs-2
+            div(layout-gt-xs='row')
+              button.btn.btn-default.addButton(type='button', ng-click='add_options()')
+                i.fa.fa-plus
+
+        .form-group(ng-show='options_added')
+          label.col-sm-2.control-label Skrýt možnosti
+          .col-xs-2
+            div(layout-gt-xs='row')
+              button.btn.btn-default.addButton(type='button', ng-click='delete_options()')
+                i.fa.fa-minus
+
         .form-group
           .col-sm-offset-2.col-sm-10
             button.btn.btn-default(type="submit") Hledej
@@ -24,7 +60,6 @@ div.container-fluid(ng-controller="concurrent_inst_controller")
 
     div
       h4(ng-show='table_length == 0 && !paging.loading') Zadaným parametrům vyhledávání neodpovídají žádné záznamy.
-      h4(ng-show='table_length > 0 && !paging.loading') Zobrazená data byla vypočtena z revize {{latest_revision}}.
       table.table.table-bordered.table-responsive(ng-show='paging.loading || table_length > 0')
         thead
           tr
