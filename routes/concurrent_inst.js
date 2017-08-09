@@ -8,7 +8,7 @@ const deasync = require('deasync');
 // --------------------------------------------------------------------------------------
 router.get('/', function(req, res, next) {
   var query = qp.parse_query_string(req.url,
-    [ 'timestamp', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff" ],
+    [ 'timestamp', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff", "mac_diff" ],
     qp.validate_days);
   search(req, res, next, query);     // perform search with constructed mongo query
 });
@@ -43,6 +43,15 @@ function search(req, res, next, query) {
   // ===================================================
   // add condition from original filter if defined
   agg.add_cond(aggregate_query, cond);
+
+  // ===================================================
+  // add redact stage if mac_diff is required
+  if(Object.keys(mac_diff).length > 0) {
+    if(mac_diff.mac_diff == true) // true - different mac addresses
+      agg.add_stage(aggregate_query, { "$redact" : { "$cond" : [ { "$ne" : [ "$mac_address_1", "$mac_address_2" ] }, "$$KEEP", "$$PRUNE" ] } });
+    else                          // false - same mac addresses
+      agg.add_stage(aggregate_query, { "$redact" : { "$cond" : [ { "$eq" : [ "$mac_address_1", "$mac_address_2" ] }, "$$KEEP", "$$PRUNE" ] } });
+  }
 
   // ===================================================
   // add stages from original aggregation
