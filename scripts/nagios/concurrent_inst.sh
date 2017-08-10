@@ -2,9 +2,9 @@
 # =======================================================================================================
 # script parameters:
 # 1) realm
-# 2) warning
-# 3) critical threshold
-# 4) time difference of achieved time and realistic time
+# 2) time difference of achieved time and realistic time
+# 3) warning
+# 4) critical threshold
 #
 # =======================================================================================================
 # =======================================================================================================
