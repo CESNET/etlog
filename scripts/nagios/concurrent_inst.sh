@@ -76,14 +76,14 @@ function check_threshold()
 {
   if [[ $total_count -ge $critical ]]
   then
-    echo "CRITICAL: $total_count users moving too fast for realm $realm | $total_count"
+    echo "CRITICAL: $total_count events occured too fast for realm $realm | $total_count"
     exit 2
   elif [[ $total_count -ge $warning ]]
   then
-    echo "WARNING: $total_count users moving too fast for realm $realm | $total_count"
+    echo "WARNING: $total_count events occured too fast for realm $realm | $total_count"
     exit 1
   else
-    echo "OK: $total_count users moving too fast for realm $realm | $total_count"
+    echo "OK: $total_count events occured too fast for realm $realm | $total_count"
     exit 0
   fi
 }
