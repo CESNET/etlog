@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const qp = require('./query_parser');
 const agg = require('./aggregation');
+const deasync = require('deasync');
 // --------------------------------------------------------------------------------------
 // get unique users for realm
 // --------------------------------------------------------------------------------------
