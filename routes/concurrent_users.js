@@ -115,6 +115,27 @@ function convert_time(date)
 function filter_data(req, data)
 {
   var ret = [];
+  var done = false;
+
+  if(!req.headers["remote_user"]) {     // remote user not set for machine processing
+    var ip = req.headers['x-forwarded-for'] ||
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      req.connection.socket.remoteAddress;
+
+    check_privileged_ips(req, ip, function(found) {
+      if(found)
+        ret = data;      // no filtering for machine processing
+
+      done = true;
+    });
+
+    deasync.loopWhile(function() {
+      return !done;
+    });
+
+    return ret;     // filter based on ip
+  }
 
   if(req.session.user.role == "user")
     return ret;
@@ -130,6 +151,27 @@ function filter_data(req, data)
     return data;
 
   return ret;
+}
+// --------------------------------------------------------------------------------------
+// check database for specific privileged ip
+// --------------------------------------------------------------------------------------
+function check_privileged_ips(req, ip, callback)
+{
+  // search for privileged ip
+  req.db.privileged_ips.find({ "ip" : ip }, { ip : 1, _id : 0 }, function(err1, items) {
+    if(err1) {
+      var err2 = new Error();      // just to detect where the original error happened
+      console.error(err2);
+      console.error(err1);
+      next([err2, err1]);
+      return;
+    }
+
+    if(items.length > 0)
+      callback(true);
+    else
+      callback(false);
+  });
 }
 // --------------------------------------------------------------------------------------
 // send data to user
