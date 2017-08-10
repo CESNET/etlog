@@ -4,6 +4,7 @@
 # 1) realm
 # 2) warning
 # 3) critical threshold
+# 4) time difference of achieved time and realistic time
 #
 # =======================================================================================================
 # =======================================================================================================
@@ -35,15 +36,14 @@ function get_data()
   hostname="etlog.cesnet.cz"
   min=$(date -d "30 days ago" "+%Y-%m-%d")
   max=$(date "+%Y-%m-%d")
-  time_diff=300		# minimal time difference in seconds
 
   get_revision
 
   # get data for visinst_1
-  data=$(curl "https://$hostname:8443/api/concurrent_inst/?revision=$revision&diff_needed_timediff>=$time_diff&timestamp>=$min&timestamp<=$max&visinst_1=$realm" 2>/dev/null)
+  data=$(curl "https://$hostname:8443/api/concurrent_inst/?revision=$revision&diff_needed_timediff>=$time_diff&timestamp>=$min&timestamp<=$max&mac_diff=false&visinst_1=$realm" 2>/dev/null)
 
   # get data for visinst_2
-  data=$data$(curl "https://$hostname:8443/api/concurrent_inst/?revision=$revision&diff_needed_timediff>=$time_diff&timestamp>=$min&timestamp<=$max&visinst_2=$realm" 2>/dev/null)
+  data=$data$(curl "https://$hostname:8443/api/concurrent_inst/?revision=$revision&diff_needed_timediff>=$time_diff&timestamp>=$min&timestamp<=$max&mac_diff=false&&visinst_2=$realm" 2>/dev/null)
 
   data=$(echo $data | sed -e 's/},{/\n/g; s/\[{//; s/}\]//g; s/\[{/\n/')   # convert to lines and remove brackets
 }
@@ -92,18 +92,19 @@ function check_threshold()
 # =======================================================================================================
 function usage()
 {
-  if [[ $# -lt 3 ]]
+  if [[ $# -lt 4 ]]
   then
-    echo "usage: $0 realm warning_threshold critical_threshold"
+    echo "usage: $0 realm time_diff warning_threshold critical_threshold"
     echo ""
-    echo "example: $0 cesnet.cz 50 100"
+    echo "example: $0 cesnet.cz 60 10 20"
     exit 1
   fi
 }
 # =======================================================================================================
 realm=$1
-warning=$2
-critical=$3
+time_diff=$2
+warning=$3
+critical=$4
 # =======================================================================================================
 main $@
 # =======================================================================================================
