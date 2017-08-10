@@ -208,7 +208,9 @@ mongoose.connection.once('open', function (callback) {
 exports.connect = function()
 {
   mongoose.connect('mongodb://localhost/etlog', {
+    db: { native_parser: true },
     server : {
+      poolSize: 20,
       socketOptions : {
         socketTimeoutMS: 0,
         connectTimeoutMS: 5000,
