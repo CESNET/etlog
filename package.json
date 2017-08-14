@@ -16,7 +16,7 @@
     "d3": "^4.4.0",
     "d3-node": "^0.2.0",
     "d3-v4": "git://github.com/bradoyler/d3.git",
-    "deasync": "^0.1.9",
+    "deasync": "^0.1.10",
     "debug": "~2.1.1",
     "express": "~4.12.2",
     "express-restify-mongoose": "^4.1.1",
