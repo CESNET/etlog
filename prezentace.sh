@@ -80,23 +80,23 @@ function nice_fticks()
 
   tail -f $1 | while read line
   do
-    #BG='\o033[0m\o033[34m'
+    BG='\o033[0m\o033[34m'
 
-    #if echo $line |grep FAIL$ 2>&1 >/dev/null
-    #then
-    #BG='\o033[0m\o033[31m'
-    #fi
+    if echo $line |grep FAIL$ 2>&1 >/dev/null
+    then
+    BG='\o033[0m\o033[31m'
+    fi
 
-    #echo $line | sed -e 's/mng5 fticks.[0-9]*.//' |\
-    #cut -b 1-$COLS |\
-    #sed -e 's/^/_BG_/' \
-    #-e 's/REALM=\([^#]*\)/REALM=\o033[1m\1_BG_/' \
-    #-e 's/VISCOUNTRY=\([^#]*\)/VISCOUNTRY=\o033[1m\1_BG_/' \
-    #-e 's/VISINST=\([^#]*\)/VISINST=\o033[1m\1_BG_/' \
-    #-e 's/CSI=\([^#]*\)/CSI=\o033[1m\1_BG_/' \
-    #-e 's/PN=\([^#]*\)/PN=\o033[1m\1_BG_/' \
-    #-e 's/RESULT=\(.*\)/RESULT=\o033[1m\1/' \
-    #-e "s/_BG_/$BG/g"
+    echo $line | sed -e 's/195.113.187.41 fticks.[0-9]*.//' |\
+    cut -b 1-$COLS |\
+    sed -e 's/^/_BG_/' \
+    -e 's/REALM=\([^#]*\)/REALM=\o033[1m\1_BG_/' \
+    -e 's/VISCOUNTRY=\([^#]*\)/VISCOUNTRY=\o033[1m\1_BG_/' \
+    -e 's/VISINST=\([^#]*\)/VISINST=\o033[1m\1_BG_/' \
+    -e 's/CSI=\([^#]*\)/CSI=\o033[1m\1_BG_/' \
+    -e 's/PN=\([^#]*\)/PN=\o033[1m\1_BG_/' \
+    -e 's/RESULT=\(.*\)/RESULT=\o033[1m\1/' \
+    -e "s/_BG_/$BG/g"
 
     # prepare graph data
     graph_data "$line" $2
