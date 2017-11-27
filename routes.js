@@ -21,4 +21,6 @@ module.exports = function(app, database) {
   app.use('/api/concurrent_rev', require('./routes/concurrent_rev'));                // api for concurrent revisions
   app.use('/api/user', require('./routes/user'));                                    // api for user managament
 // -----------------------------------------------------------
+// prezentace
+  app.use('/prezentace', require('./routes/prezentace'));
 }

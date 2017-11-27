@@ -2930,5 +2930,247 @@ function popover_manual()
   });
 }
 // --------------------------------------------------------------------------------------
+// controller for presentation page
+// --------------------------------------------------------------------------------------
+angular.module('etlog').controller('presenstation_controller', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+  var graph_title1 = "organizace nejvíce poskytující konektivitu";
+  var data_file1 = "data_most_provided";
+  var tag1 = "#most_provided";
+  var graph_title2 = "organizace nejvíce využívající roaming";
+  var data_file2 = "data_most_used";
+  var tag2 = "#most_used";
+  graph_pres(graph_title1, data_file1, tag1);
+  graph_pres(graph_title2, data_file2, tag2);
+}]);
+// --------------------------------------------------------------------------------------
+function graph_pres(title, data_file, tag)
+{
+  // Setup svg using Bostock's margin convention
+  var margin = {top: 80, right: 20, bottom: 180, left: 80};
+
+  var width = $(window).width() / 2 - 130;      // compensate for y axis labels
+  var height = 600 - margin.top - margin.bottom;
+
+  // --------------------------------------------------------------------
+  // set the ranges
+  var x = d3.scaleBand()
+            .range([0, width])
+            .padding(0.1);
+  var y = d3.scaleLinear()
+            .range([height, 0]);
+
+  // --------------------------------------------------------------------
+
+  var svg = d3.select(tag)
+  svg = svg.attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // ==================================================
+  // set graph title
+  svg.append("text")
+    .attr("x", (width / 2))
+    .attr("y", 0 - (margin.top / 2))
+    .attr("text-anchor", "middle")
+    .style("font-size", "36px")
+    .style("fill", "white")
+    .style("text-decoration", "underline")
+    .text(title);
+
+  // ==================================================
+  // add the x Axis
+  var x_axis = svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "x axis")
+      .style("fill", "white")
+      .style("font-size", "18px");
+
+  // ==================================================
+  // add the y Axis
+  var y_axis = svg.append("g")
+      .attr("class", "y axis")
+      .style("fill", "white")
+      .style("font-size", "18px");
+
+  // ==================================================
+  // get initial data
+
+  d3.csv(data_file, function(error, data) {
+    if (error) {
+      throw error;
+    }
+
+    // ==================================================
+    // format the data
+    data.forEach(function(d) {
+      d.ok = +d.ok;     // convert to number
+      d.fail = +d.fail; // convert to number
+    });
+    // ==================================================
+    // Scale the range of the data in the domains
+    x.domain(data.map(function(d) { return d.inst_name; }));
+    y.domain([0, d3.max(data, function(d) {
+      if(d.fail > d.ok)
+        return d.fail;
+      return d.ok;
+    })]);
+
+    // ==================================================
+    // add x axis
+    x_axis.call(d3.axisBottom(x))
+        .selectAll("g");
+
+    // add y axis
+    y_axis.call(d3.axisLeft(y)
+        .tickSize(-width, 0, 0)
+        .tickFormat(d3.format("d"))) // custom format - disable comma for thousands
+        .selectAll("g");
+
+    // ==================================================
+    // append the rectangles for the bar chart
+    var bars = svg.selectAll(".bar")
+        .data(data, function(d) { return d.inst_name; })
+        .enter()
+        .append('g')
+        .attr('class', 'bar');
+
+    bars.append("rect")
+        .attr("class", "blue box")
+        .attr("x", function(d) { return x(d.inst_name); })
+        .attr("y", function(d) { return y(d.ok); })
+        .attr("height", function(d) { return y(0) - y(d.ok); })
+        .attr("width", x.bandwidth());
+
+    bars.append("rect")
+        .attr("class", "red box")
+        .attr("x", function(d) { return x(d.inst_name); })
+        .attr("y", function(d) { return y(d.fail); })
+        .attr("height", function(d) { return y(0) - y(d.fail); })
+        .attr("width", x.bandwidth());
+  });
+
+  // ==================================================
+  // infinite loop - update the data
+
+  d3.interval(function() {
+    d3.csv(data_file, function(error, data) {
+      if (error) {
+        throw error;
+      }
+
+      // if no data is available wait for next iteration
+      if(data.length == 0) {
+        return;
+      }
+
+      var transition = svg.transition().duration(750);
+      var delay = function(d, i) { return i * 50; };
+      var t = d3.transition().duration(750);
+
+      // ==================================================
+      // format the data
+      data.forEach(function(d) {
+        d.ok = +d.ok;     // convert to number
+        d.fail = +d.fail; // convert to number
+      });
+      // ==================================================
+
+      var bars = svg.selectAll(".bar").data(data, function(d) { return d.inst_name; }); // JOIN new data with old elements
+
+      // update box data - https://stackoverflow.com/questions/18831949/d3js-make-new-parent-data-descend-into-child-nodes
+      //svg.selectAll(".bar").selectAll(".box")     // does not update .red data - why?
+      //    .data(function(d) { return [d]; });
+
+      svg.selectAll(".bar").selectAll(".blue")
+          .data(function(d) { return [d]; });
+
+      svg.selectAll(".bar").selectAll(".red")
+          .data(function(d) { return [d]; });
+
+      // exit old elements
+      bars.exit()
+          .selectAll('.box')
+          .attr("class", "remove")      // different class to not be selected by update
+          .transition(t)
+          .attr("y", y(0))
+          .attr("height", 0)
+          .remove();      // EXIT old elements not present in new data
+
+      bars.exit()
+          .transition(t)    // wait for removing .box
+          .remove()      // EXIT old elements not present in new data
+
+      // ==================================================
+      // Scale the range of the data in the domains
+      x.domain(data.map(function(d) { return d.inst_name; }));
+      y.domain([0, d3.max(data, function(d) {
+        if(d.fail > d.ok)
+          return d.fail;
+        return d.ok;
+      })]);
+
+      // ==================================================
+      // UPDATE old elements present in new data
+
+      transition.selectAll(".box")
+          .delay(delay)
+          .attr("width", x.bandwidth())                                     // also set bar width in case different number of bars was present
+          .attr("x", function(d) { return x(d.inst_name); });               // move on x
+
+      transition.selectAll(".blue")
+          .delay(delay)
+          .attr("y", function(d) { return y(d.ok); })
+          .attr("height", function(d) { return y(0) - y(d.ok); });          // update OK
+
+      transition.selectAll(".red")
+          .delay(delay)
+          .attr("y", function(d) { return y(d.fail); })
+          .attr("height", function(d) { return y(0) - y(d.fail); })         // update FAIL
+
+      // ==================================================
+      // add new data
+      bars = bars.enter()
+         .append('g')
+         .attr('class', 'bar');
+
+         // blue
+         bars.append("rect")
+         .attr("class", "blue box")
+         .attr("x", function(d) { return x(d.inst_name); })
+         .attr("width", x.bandwidth())
+         .attr("y", y(0))
+         .transition(t)
+         .attr("height", function(d) { return y(0) - y(d.ok); })
+         .attr("y", function(d) { return y(d.ok); })
+
+         bars.append("rect")
+         .attr("class", "red box")
+         .attr("x", function(d) { return x(d.inst_name); })
+         .attr("width", x.bandwidth())
+         .attr("y", y(0))
+         .transition(t)
+         .attr("height", function(d) { return y(0) - y(d.fail); })
+         .attr("y", function(d) { return y(d.fail); })
+
+      bars = bars.merge(bars);
+
+      // ==================================================
+      // dynamic axes transitions
+      transition.select(".x.axis")
+          .call(d3.axisBottom(x))
+          .selectAll("g")
+          .delay(delay);
+
+      transition.select(".y.axis")
+          .call(d3.axisLeft(y)
+          .tickSize(-width, 0, 0)
+          .tickFormat(d3.format("d"))) // custom format - disable comma for thousands
+          .selectAll("g")
+          .delay(delay);
+    });
+  }, 1500);
+}
+// --------------------------------------------------------------------------------------
 
 
