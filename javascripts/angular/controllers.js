@@ -3019,13 +3019,17 @@ function graph_pres(title, data_file, tag)
     // ==================================================
     // add x axis
     x_axis.call(d3.axisBottom(x))
-        .selectAll("g");
+        .selectAll("text")
+        .attr("dy", ".35em")
+        .attr("y", 20)
+        .attr("x", 0)
+        .attr("transform", "rotate(45)")
+        .style("text-anchor", "start");
 
     // add y axis
     y_axis.call(d3.axisLeft(y)
         .tickSize(-width, 0, 0)
         .tickFormat(d3.format("d"))) // custom format - disable comma for thousands
-        .selectAll("g");
 
     // ==================================================
     // append the rectangles for the bar chart
@@ -3159,14 +3163,18 @@ function graph_pres(title, data_file, tag)
       // dynamic axes transitions
       transition.select(".x.axis")
           .call(d3.axisBottom(x))
-          .selectAll("g")
+          .selectAll("text")
+          .attr("dy", ".35em")
+          .attr("y", 20)
+          .attr("x", 0)
+          .attr("transform", "rotate(45)")
+          .style("text-anchor", "start")
           .delay(delay);
 
       transition.select(".y.axis")
           .call(d3.axisLeft(y)
           .tickSize(-width, 0, 0)
           .tickFormat(d3.format("d"))) // custom format - disable comma for thousands
-          .selectAll("g")
           .delay(delay);
     });
   }, 1500);
