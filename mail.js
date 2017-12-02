@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const config = require('./config/config.js');
 const fs = require('fs');
+const async = require('async');
 // --------------------------------------------------------------------------------------
 function set_up_mailer()
 {
@@ -59,25 +60,36 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
 
   disable_admins_sync();    // disable synchronization when sending notifications
 
-  database.realm_admins.find({ notify_enabled : true }, { realm : 1, admin : 1, _id : 0 },
-  function(err, items) {
-    for(var dict in items) {
-      var data = data_func(database, items[dict].realm, limit);
+  database.realms.find({}, { _id : 0 },
+    function(err, realms) {
+      async.forEachOf(realms, function (record, key, callback) {
+        console.log(record);
 
-      if(data == "")    // do not send mail when no data for current realm are available
-        continue;
+        database.realm_admins.find({ notify_enabled : true, realm : record.realm }, { admin : 1, _id : 0 },    // get admins for specific realm
+          function(err, items) {
+          var to = "";
 
-      if(items[dict].realm == "cz") {       // exception for "cz" realm
-        module.exports.send_mail(config.failed_logins_subj, items[dict].admin, data);
-      }
-      else {
-        // items[dict].realm contains domain part of username - eg "fit.cvut.cz"
-        module.exports.send_mail(config.failed_logins_subj + " | " + items[dict].realm,         // specify realm in subject
-                                 items[dict].admin, data, bcc);
-      }
-    }
+            for(var item in items) {
+              to += items[item].admin + ",";        // one mail to all admins
+            }
 
-    enable_admins_sync();   // enable synchronization
+            var data = data_func(database, record.realm, limit);
+
+            if(data != "") {    // do not send mail when no data for current realm are available
+              if(record.realm == "cz") {       // exception for "cz" realm
+                module.exports.send_mail(config.failed_logins_subj, to, data);
+              }
+              else {
+                // realms[realm].realm contains domain part of username - eg "fit.cvut.cz"
+                module.exports.send_mail(config.failed_logins_subj + " | " + record.realm,         // specify realm in subject
+                                         to, data, bcc);
+              }
+            }
+            callback();     // realm processing finished
+          });
+      }, function(err) {
+        enable_admins_sync();   // enable synchronization after all realms are processed
+      });
   });
 }
 // --------------------------------------------------------------------------------------
