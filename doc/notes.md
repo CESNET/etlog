@@ -134,7 +134,7 @@ Set the configuration as below:
 <VirtualHost *:80>
 	ServerAdmin machv@cesnet.cz
 	ServerName etlog.cesnet.cz
-	Redirect permanent "/" "https://etlog.cesnet.cz"
+	Redirect permanent "/" "https://etlog.cesnet.cz/"
 </VirtualHost>
 
 <IfModule mod_ssl.c>
