@@ -21,7 +21,7 @@ It is listening for incoming http connections on port 8080. Apache webserver is 
 and is doing a proxy for it.
 
 The main purpose of putting apache in front of the application itself is authentication.
-Apache uses shibd module for authentication in czech identitity feredation [eduid.cz](eduid.cz).
+Apache uses shibd module for authentication in czech identitity feredation [eduid.cz](http://eduid.cz).
 
 ### User setup
 
