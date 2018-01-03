@@ -28,7 +28,7 @@ function set_up_mailer()
 // --------------------------------------------------------------------------------------
 // send mail with defined subject and data
 // --------------------------------------------------------------------------------------
-module.exports.send_mail = function (subject, recipients, data, bcc)
+module.exports.send_mail = function (subject, recipients, data, bcc, callback)
 {
   var mailer = set_up_mailer();     // set up
   mailer.mail_options.subject = subject;  // set mail subject
@@ -42,8 +42,12 @@ module.exports.send_mail = function (subject, recipients, data, bcc)
   mailer.transporter.sendMail(mailer.mail_options, function(error, info) {
     if(error) {
       return console.error(error);
+      callback();
     }
     console.log('Message sent: ' + info.response);
+
+    if(callback)
+      callback();
   });
 }
 // --------------------------------------------------------------------------------------
@@ -62,8 +66,7 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
 
   database.realms.find({}, { _id : 0 },
     function(err, realms) {
-      async.forEachOf(realms, function (record, key, callback) {
-        console.log(record);
+      async.forEachOfSeries(realms, function (record, key, callback) {
 
         database.realm_admins.find({ notify_enabled : true, realm : record.realm }, { admin : 1, _id : 0 },    // get admins for specific realm
           function(err, items) {
@@ -72,20 +75,18 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
             for(var item in items) {
               to += items[item].admin + ",";        // one mail to all admins
             }
-
             var data = data_func(database, record.realm, limit);
 
             if(data != "") {    // do not send mail when no data for current realm are available
               if(record.realm == "cz") {       // exception for "cz" realm
-                module.exports.send_mail(config.failed_logins_subj, to, data);
+                module.exports.send_mail(config.failed_logins_subj, to, data, null, callback);  // no bcc
               }
               else {
                 // realms[realm].realm contains domain part of username - eg "fit.cvut.cz"
                 module.exports.send_mail(config.failed_logins_subj + " | " + record.realm,         // specify realm in subject
-                                         to, data, bcc);
+                                         to, data, bcc, callback);
               }
             }
-            callback();     // realm processing finished
           });
       }, function(err) {
         enable_admins_sync();   // enable synchronization after all realms are processed
