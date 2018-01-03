@@ -2647,7 +2647,7 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
   handle_table_submit($scope, $http, get_concurrent_users, build_qs_concurrent_users, $scope.paging, [], "concurrent_users");
   handle_pagination($scope, $http, $rootScope, get_concurrent_users);
   //setup_filters($scope, $http, "concurrent_users");      // TODO?
-  handle_download($scope, $http, [ "username", "timestamp", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "mac_address", "time_difference", "time_needed", "dist", "diff_needed_timediff" ]);
+  handle_download($scope, $http, [ "username", "timestamp", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "mac_address_1", "mac_address_2", "time_difference", "time_needed", "dist", "diff_needed_timediff" ]);
   handle_sort($scope, $http, get_concurrent_users);
 }]);
 // --------------------------------------------------------------------------------------
