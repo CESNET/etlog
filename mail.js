@@ -87,6 +87,9 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
                                          to, data, bcc, callback);
               }
             }
+            else {
+              callback();       // callback when no data are available
+            }
           });
       }, function(err) {
         enable_admins_sync();   // enable synchronization after all realms are processed
