@@ -1,6 +1,7 @@
 const async = require( 'async' );
 const fs = require('fs');
 const data_file = "./scripts/concurrent_users/inst.json"
+const util = require('util')
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
@@ -8,10 +9,15 @@ var exp = {}
 // --------------------------------------------------------------------------------------
 exp.process_old_data = function (database, min, total_max, callback) {
   // different file path when processing old data
-  const data_file = "./inst.json"
+  //const data_file = "./inst.json"
 
   // find the lowest date in database and go from that date to present
   var data = JSON.parse(fs.readFileSync(data_file, 'utf8'));
+
+  var inst_list = get_inst_list(data);
+  var revision = Number(data.revision); // int not string
+  var data = transform_data(data.data);
+
   var max = new Date(min);
   max.setDate(max.getDate() + 1);   // next day
 
@@ -21,7 +27,7 @@ exp.process_old_data = function (database, min, total_max, callback) {
   function(next) {
     async.series([
       function(done) {
-        search(database, data.data, data.revision, min, max, done);     // calls done when finished
+        search(database, data, revision, min, max, inst_list, done);     // calls done when finished
       },
       function(done) {
         min.setDate(min.getDate() + 1);  // continue
@@ -39,13 +45,46 @@ exp.process_old_data = function (database, min, total_max, callback) {
     else
       console.log("cron task concurrent_users finished processing old data");
 
-    update_revision(database, data.revision, callback);
+    update_revision(database, revision, callback);
   });
 };
 // --------------------------------------------------------------------------------------
+// transform data
+// --------------------------------------------------------------------------------------
+function transform_data(data)
+{
+  var ret = {};
+
+  for(var item in data) {
+    ret[data[item].institution] = {};
+
+    for(var inst in data[item].institutions) {
+      ret[data[item].institution][data[item].institutions[inst].institution] = {};
+
+      ret[data[item].institution][data[item].institutions[inst].institution]["dist"] = data[item].institutions[inst].dist;
+      ret[data[item].institution][data[item].institutions[inst].institution]["time"] = data[item].institutions[inst].time;
+    }
+  }
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// get institution list
+// --------------------------------------------------------------------------------------
+function get_inst_list(data)
+{
+  var arr = [];
+
+  for(var item in data.data[0].institutions) {
+    arr.push(data.data[0].institutions[item].institution);
+  }
+
+  return arr;
+}
+// --------------------------------------------------------------------------------------
 // perform mac address counting
 // --------------------------------------------------------------------------------------
-exp.process_current_data = function (database) {
+exp.process_current_data = function (database, done) {
   var data = JSON.parse(fs.readFileSync(data_file, 'utf8'));
   var curr = new Date();        // current day
   curr.setHours(0);
@@ -56,8 +95,22 @@ exp.process_current_data = function (database) {
   prev_min.setDate(prev_min.getDate() -1); // previous day hh:mm:ss:ms set to 00:00:00:000
   var prev_max = new Date(curr);           // current day hh:mm:ss:ms set to 00:00:00:000
                                            // search uses lower than max condition !
-  search(database, data.data, data.revision, prev_min, prev_max);
-  update_revision(database, data.revision);
+
+  var inst_list = get_inst_list(data);
+  var revision = Number(data.revision); // int not string
+  var data = transform_data(data.data);
+
+  async.series([
+    function(callback) {
+      search(database, data, revision, prev_min, prev_max, inst_list, callback);
+    },
+    function(callback) {
+      update_revision(database, revision, callback);
+    }
+  ],
+  function(err, results) {
+      done(null);
+  });
 };
 // --------------------------------------------------------------------------------------
 // update revision in db
@@ -65,7 +118,7 @@ exp.process_current_data = function (database) {
 function update_revision(database, revision, callback)
 {
   // add new revision to array, sort all ascending
-  database.concurrent_rev.update({}, { $addToSet : { revisions : { $each : [ revision ], $sort : 1 } } }, { upsert : true },
+  database.collection('concurrent_rev').update({}, { $addToSet : { revisions : { $each : [ revision ], $sort : 1 } } }, { upsert : true },
   function(err, result) {
     if(err)
       console.error(err);
@@ -75,143 +128,137 @@ function update_revision(database, revision, callback)
   });
 }
 // --------------------------------------------------------------------------------------
-// search input data
+// search input data inteligently
 // --------------------------------------------------------------------------------------
-function search(database, data, revision, min, max, done)
+function search(database, data, revision, min, max, inst_list, done)
 {
-  async.forEachOf(data, function (value_visinst_1, key_visinst_1, callback_visinst_1) {
-    async.forEachOf(data[key_visinst_1].institutions, function (value_visinst_2, key_visinst_2, callback_visinst_2) {   // TODO - parallel here ?
-      // "continue" implementation
-      if(data[key_visinst_1].institutions[key_visinst_2].institution == data[key_visinst_1].institution)
-        callback_visinst_2(null);
+  // cursor().exec() is not usable here, not sure why
+  // native driver is used instead
 
-      else {
-        dict = { 
-          visinst_1 : data[key_visinst_1].institution, visinst_2 : data[key_visinst_1].institutions[key_visinst_2].institution,
-          dist : data[key_visinst_1].institutions[key_visinst_2].dist, time : data[key_visinst_1].institutions[key_visinst_2].time,
-          revision : revision
-        };
-
-        search_db(database, dict, min, max, callback_visinst_2);        // search db
+  var items = [];
+  var cursor = database.collection('logs').aggregate([
+    { $match :
+      { timestamp : { $gte : min, $lt : max },               // limit by timestamp
+        pn : { $nin : [ "", /^anonymous@.*$/, /^@.*$/ ] },   // no empty or anonymous users
+        result : "OK",                                       // successfully authenticated only
+        //visinst : { $in : [ inst_list ] }                  // TODO ?
+       }
+    },
+    { $group :
+      {
+        _id :   // group by : pn, timestamp, visinst, csi
+        {
+          pn : "$pn",
+          timestamp : "$timestamp",
+          visinst : "$visinst",
+          csi : "$csi"
+        }
       }
-    }, function (err) {
-      if (err)
-        console.error(err);
-      callback_visinst_1(null); // all insistituons for visinst_1 processed
-    });
-  }, function (err) {
-    if (err)
-      console.error(err);
-
-    if(done)
-      done(null);   // all done
-  });
-}
-// --------------------------------------------------------------------------------------
-// perform database search
-// --------------------------------------------------------------------------------------
-function search_db(database, data, min, max, done)
-{
-  database.logs.aggregate([ 
-    // initial limit by timestamp, non empty pn and result
-    { $match : { timestamp : { $gte : min, $lt : max }, pn : { $ne : "" }, result : "OK" } },
-    { $match : { pn : { $nin : [ /^anonymous@.*$/, /^@.*$/ ] } } },                         // no anonymous users
-    { $match : { visinst : { $in : [ data.visinst_1, data.visinst_2 ] } } },                // limit by visinst
-    { $group : { _id : { pn : "$pn" } , visinst : { $addToSet : "$visinst" } } },           // group by pn, add visinst to array
-    { $match : { visinst : { $all : [ data.visinst_1, data.visinst_2 ] } } },               // both visinst have to match
-    { $project : { pn : "$_id.pn", visited_count : { $size : "$visinst" }, _id : 0 } },     // project pn, get size of array
-    { $match : { visited_count : { $gt : 1 } } },                                           // more than one institution
-    { $project : { pn : 1 } }                                                               // project username
+    },
+    { $project : { pn : "$_id.pn", timestamp : "$_id.timestamp", visinst : "$_id.visinst", csi : "$_id.csi", "_id" : 0 }},
+    { $sort : { pn : 1, timestamp : 1 }}
   ],
-    function (err, items) {
-      if(err == null) {
-        if(items.length > 0)
-          search_users(database, min, max, data, items, done);
-        else
-          done(null);
-      }
-      else {
-        console.error(err);
-        done(null);
-      }
+  {
+    allowDiskUse: true,
+    cursor: { batchSize: 1000 }
+  }, null);
+
+  cursor.on('error', function(err) {
+    console.err(err);
+    done(null);
+  });
+
+  cursor.on('data', function(item) {
+    items.push(item);
+  });
+
+  cursor.on('end', function() {
+    analyze_src_dst(database, items, data, min, revision, inst_list, done);
   });
 }
 // --------------------------------------------------------------------------------------
-// search database for specific users
+// analyze data based on all known institutions as source and destination
 // --------------------------------------------------------------------------------------
-function search_users(database, min, max, data, users, done)
+function analyze_src_dst(database, items, data, min, revision, inst_list, done)
 {
-  async.forEachOf(users, function (value, key, callback) {
-    database.logs.aggregate([ 
-      { $match : { timestamp : { $gte : min, $lt : max }, pn : users[key].pn, result : "OK" } },
-      { $match : { visinst : { $in : [ data.visinst_1, data.visinst_2 ] } } },       // limit by visinst
-      { $sort : { timestamp : 1 } },        // sort by timestamp
-    ],
-      function (err, items) {
-        if(err == null) {
-          if(items.length > 0)
-            analyze_data(database, items, data, min, callback)
-          else
-            callback(null);
-        }
-        else {
-          console.error(err);
-          callback(null);
-        }
-    });
-  }, function (err) {
-    if (err)
-      console.error(err);
-    if(done)
-      done(null); // all users done
-  });
+  var structured_data = {};
+
+  // prepare data structure
+  for(var src in inst_list)
+    structured_data[inst_list[src]] = {};   // dict data, key is source inst name
+
+  // create data
+  for(var item in items) {
+    if(inst_list.indexOf(items[item].visinst) != -1) {       // check that the visinst exists
+      if(structured_data[items[item].visinst][items[item].pn] === undefined)
+        structured_data[items[item].visinst][items[item].pn] = [];
+
+      structured_data[items[item].visinst][items[item].pn].push(items[item]);   // add data
+    }
+  }
+  // strctured data:
+  // {
+  //   inst_name : {
+  //     user1 : [ {}, {}, {} ... ]
+  //     user2 : [ {}, {}, {} ... ]
+  //     ..
+  //   }
+  // }
+
+
+  for(var src in inst_list) {
+    for(var dst in inst_list) {
+      if(inst_list[src] == inst_list[dst])
+        continue;
+
+      analyze_data(database, structured_data, data, inst_list[src], inst_list[dst], min, revision, inst_list);
+    }
+  }
+
+  done(null);
 }
 // --------------------------------------------------------------------------------------
 // analyze all records for one user and two visited institutions
 // --------------------------------------------------------------------------------------
-function analyze_data(database, items, data, min, done)
+//function analyze_data(database, items, data, min, revision, inst_list, done)
+function analyze_data(database, items, data, src, dst, min, revision, inst_list, done)
 {
-  // items are implicly sorted by time
+  // items are implicly sorted by username and time
 
-  var idx = 0;
-  var visinst = items[0].visinst;
+  if(items[src] == {}) {    // no data available
+    return;
+  }
+
   var db_data = [];
   
-  while(idx < items.length - 1) {
-    while(items[idx].visinst == visinst && idx < items.length - 1) {
-      idx++;
-    }
-    
-    // visinst changed
-    if(visinst != items[idx].visinst) {
-      
-      // timestamp is in milliseconds
-      // timestamp difference is lower than the one defined
-      if((items[idx].timestamp - items[idx -1].timestamp) / 1000 < data.time) {
-        // only positive difference
-        // negative will be processed in reversed order
-        if(items[idx].timestamp - items[idx -1].timestamp >= 0) {
-          var item = {
-            timestamp     : min,
-            timestamp_1   : items[idx - 1].timestamp,
-            timestamp_2   : items[idx].timestamp,
-            visinst_1     : items[idx - 1].visinst,
-            visinst_2     : items[idx].visinst,
-            username      : items[idx].pn,
-            mac_address_1 : items[idx - 1].csi,
-            mac_address_2 : items[idx].csi,
-            time_needed   : Math.round(data.time),
-            dist          : Math.round(data.dist),
-            revision      : data.revision
-          };
+  //console.log("src: " + src);
+  //console.log("dst: " + dst);
+  for(var user in items[src]) {
+    if(items[dst][user]) {      // user exists in dest inst
 
-          db_data.push(item);
+      for(var src_rec in items[src][user]) {
+        for(var dst_rec in items[dst][user]) {
+          if((items[dst][user][dst_rec].timestamp - items[src][user][src_rec].timestamp) / 1000 < data[src][dst].time) {
+            if(items[dst][user][dst_rec].timestamp - items[src][user][src_rec].timestamp >= 0) {
+              var item = {
+                timestamp     : min,
+                timestamp_1   : items[src][user][src_rec].timestamp,
+                timestamp_2   : items[dst][user][dst_rec].timestamp,
+                visinst_1     : items[src][user][src_rec].visinst,
+                visinst_2     : items[dst][user][dst_rec].visinst,
+                username      : user,
+                mac_address_1 : items[src][user][src_rec].csi,
+                mac_address_2 : items[dst][user][dst_rec].csi,
+                time_needed   : Math.round(data[src][dst].time),
+                dist          : Math.round(data[src][dst].dist),
+                revision      : revision
+              };
+
+              db_data.push(item);
+            }
+          }
         }
       }
-   
-      // set new visinst
-      visinst = items[idx].visinst;
-      continue;
     }
   }
 
@@ -228,7 +275,7 @@ function analyze_data(database, items, data, min, done)
 // --------------------------------------------------------------------------------------
 function save_to_db(database, items) {
   for(var item in items) {  // any better way to do this ?
-    database.concurrent_users.update(items[item], items[item], { upsert : true },
+    database.collection('concurrent_users').update(items[item], items[item], { upsert : true },
     function(err, result) {
       if(err)
         console.error(err);
@@ -240,7 +287,7 @@ function save_to_db(database, items) {
 // --------------------------------------------------------------------------------------
 function save_to_db_callback(database, items, done) {
   async.forEachOf(items, function (value, key, callback) {
-    database.concurrent_users.update(items[key], items[key], { upsert : true },
+    database.collection('concurrent_users').update(items[key], items[key], { upsert : true },
     function(err, result) {
       if(err)
         console.error(err);

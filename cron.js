@@ -15,6 +15,7 @@ module.exports = function(database) {
   const retention = require('./cron/delete_logs.js')
   const unique_users = require('./cron/unique_users.js')
   const config = require('./config/config.js');
+  const assert = require('assert');
 // --------------------------------------------------------------------------------------
   new CronJob('0 59 05 1 * *', function() {     // run once a month
     mail.send_mail_to_realm_admins(database, request.get_failed_logins_monthly, config.failed_logins_lines);
@@ -61,7 +62,17 @@ module.exports = function(database) {
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 10 03 * * *', function() {     // run at 03:10:00
-    concurrent_users.process_current_data(database);
+    var mongo = database.mongoose.mongo;
+    const url = 'mongodb://localhost:27017';
+    const dbName = 'etlog';
+
+    mongo.MongoClient.connect(url, function(err, client) {
+      assert.equal(null, err);
+      const db = client.db(dbName);
+      concurrent_users.process_current_data(db, function() {
+        client.close();
+      });
+    });
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------
