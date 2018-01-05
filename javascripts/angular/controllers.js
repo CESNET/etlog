@@ -245,8 +245,7 @@ function get_logs($scope, $http, qs, callback)
     url     : '/api/search/' + qs + ts + $scope.sort
   })
   .then(function(response) {
-    if(!$scope.download_url)
-      $scope.download_url = '/api/search/' + qs + ts + $scope.sort;   // set download url
+    $scope.download_url = '/api/search/' + qs + ts + $scope.sort;   // set download url every time - params could have changed
     $scope.table_data = transform_timestamp(response.data);
     callback($scope);
   }, function (response) {
@@ -654,8 +653,7 @@ function get_mac_count($scope, $http, qs, callback)
     url     : '/api/mac_count/' + qs + ts + "&sort=-count"      // always sort by mac address count
   })
   .then(function(response) {
-    if(!$scope.download_url)
-      $scope.download_url = '/api/mac_count/' + qs + ts + "&sort=-count";   // set download url
+    $scope.download_url = '/api/mac_count/' + qs + ts + "&sort=-count";   // set download url every time - params could have changed
     $scope.table_data = response.data;
     callback($scope);
   });
@@ -1102,8 +1100,7 @@ function get_shared_mac($scope, $http, qs, callback)
     url     : '/api/shared_mac/' + qs + ts + "&sort=-count"      // always sort by mac address count
   })
   .then(function(response) {
-    if(!$scope.download_url)
-      $scope.download_url = '/api/shared_mac/' + qs + ts + "&sort=-count";   // set download url
+    $scope.download_url = '/api/shared_mac/' + qs + ts + "&sort=-count";   // set download url every time - params could have changed
     $scope.table_data = response.data;
     callback($scope);
   });
@@ -2836,8 +2833,7 @@ function get_concurrent_users($scope, $http, qs, callback)
     url     : '/api/concurrent_users/' + qs + ts + $scope.sort      // sort by diff_needed_timediff
   })
   .then(function(response) {
-    if(!$scope.download_url)
-      $scope.download_url = '/api/concurrent_users/' + qs + ts + $scope.sort;   // set download url
+    $scope.download_url = '/api/concurrent_users/' + qs + ts + $scope.sort;   // set download url every time - params could have changed
     $scope.table_data = transform_data(response.data);
     callback($scope);
   });
@@ -2855,8 +2851,7 @@ function get_aggregated_concurrent_users($scope, $http, qs, callback)
     url     : '/api/agg_concurrent_users/' + qs + ts + $scope.sort      // sort by diff_needed_timediff
   })
   .then(function(response) {
-    if(!$scope.download_url)
-      $scope.download_url = '/api/concurrent_users/' + qs + ts + $scope.sort;   // set download url
+    $scope.download_url = '/api/concurrent_users/' + qs + ts + $scope.sort;   // set download url every time - params could have changed
     $scope.table_data = transform_data(response.data);
     callback($scope);
   });
