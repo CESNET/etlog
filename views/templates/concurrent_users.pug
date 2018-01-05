@@ -2,7 +2,7 @@ div.container-fluid(ng-controller="concurrent_users_controller")
   div
     md-content(layout-padding='')
       h4 uživatelé v různých lokalitách současně
-      form.form-horizontal(ng-submit="main_form.$valid && submit(main_form)" name="main_form", ng-model='form', novalidate)
+      form.form-horizontal(ng-submit="main_form.$valid && submit_func(main_form)" name="main_form", ng-model='form', novalidate)
         .form-group
           label.col-sm-2.control-label(for = 'min_date') Počáteční datum:
           .col-xs-2
@@ -65,6 +65,13 @@ div.container-fluid(ng-controller="concurrent_users_controller")
                 each key, val in {"libovolné" : "", "stejné" : "==", "různé" : "!="}
                   option(value = key) #{val}
 
+          .form-group
+            label.col-sm-2.control-label Agregovat výsledky:
+            .col-xs-2
+              label
+                .checkbox
+                  input(type="checkbox", name='aggregate', ng-model='aggregate')
+
         .form-group(ng-show='!options_added')
           label.col-sm-2.control-label Další možnosti
           .col-xs-2
@@ -116,7 +123,7 @@ div.container-fluid(ng-controller="concurrent_users_controller")
       tbody(ng-show='!paging.loading')
         tr(dir-paginate='row in table_data | itemsPerPage: paging.items_by_page', total-items='paging.total_items', current-page='paging.current_page')
           td
-            a(ui-sref='search({pn : row.username, csi : row.mac_address})' target='_blank')
+            a(ui-sref='concurrent_users({username : row.username})' target='_blank')
               | {{row.username}}
           td {{row.timestamp}}
           td {{row.timestamp_1}}
