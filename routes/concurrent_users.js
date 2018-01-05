@@ -35,7 +35,7 @@ function search(req, res, next, query) {
     { $match : query.filter },      // filter by query
     { $project : { 
       _id : 0,
-      timestamp     : 1,
+      timestamp     : 1,        // is this really needed?
       timestamp_1   : 1,
       timestamp_2   : 1,
       visinst_1     : 1,
