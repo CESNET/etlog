@@ -2680,8 +2680,8 @@ function set_params_concurrent_users($scope, $http, $rootScope, $timeout, $state
     if($scope.form_data.username === undefined) // does not exist yet
       $scope.form_data.username = {};
 
-    $scope.form_data.username.val = $stateParams['username'];       // set username
-    $scope.form_data.username.sel = "eq";                           // set comparsion
+    $scope.options.username.val = $stateParams['username'];       // set username
+    $scope.options.username.sel = "eq";                           // set comparsion
 
     $scope.$watch('main_form', function(main_form) {
       if(main_form)
