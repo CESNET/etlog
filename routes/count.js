@@ -277,8 +277,72 @@ router.get('/concurrent_users', function(req, res, next) {
   get_record_count(req.db.concurrent_users, req, res, next, aggregate_query, transform, filter_by_username);       // perform search with constructed mongo query
 });
 // --------------------------------------------------------------------------------------
+// get count for concurrent users
+// --------------------------------------------------------------------------------------
+router.get('/agg_concurrent_users', function(req, res, next) {
+  var query = get_qs(req, [ 'timestamp', 'username', 'visinst_1', 'visinst_2', "revision", "diff_needed_timediff", "mac_diff" ]); // array of valid filters
 
+  var cond = agg.check_filter(query.filter, [ "diff_needed_timediff" ]);
+  var mac_diff = agg.check_filter(query.filter, [ "mac_diff" ]);
 
+  // ===================================================
+  // construct base query
+  var aggregate_query = [
+    { $match : query.filter },      // filter by query
+    { $project : {
+      _id : 0,
+      timestamp     : 1,
+      timestamp_1   : 1,
+      timestamp_2   : 1,
+      visinst_1     : 1,
+      visinst_2     : 1,
+      username      : 1,
+      mac_address_1 : 1,
+      mac_address_2 : 1,
+      time_needed   : 1,
+      dist          : 1,
+      time_difference : { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] }, // difference is in milliseconds
+      diff_needed_timediff : { $subtract : [ "$time_needed", { $divide : [ { $subtract : [ "$timestamp_2", "$timestamp_1" ] }, 1000 ] } ] }
+    } },
+  ];
+
+  // ===================================================
+  // add condition from original filter if defined
+  agg.add_cond(aggregate_query, cond);
+
+  // ===================================================
+  if(req.session.user.role == "user") {
+    respond(0, res);
+    return;
+  }
+
+  filter_mac_count(req, aggregate_query);
+
+  // ===================================================
+  // add redact stage if mac_diff is required
+  if(Object.keys(mac_diff).length > 0) {
+    if(mac_diff.mac_diff == true) // true - different mac addresses
+      agg.add_stage(aggregate_query, { "$redact" : { "$cond" : [ { "$ne" : [ "$mac_address_1", "$mac_address_2" ] }, "$$KEEP", "$$PRUNE" ] } });
+    else                          // false - same mac addresses
+      agg.add_stage(aggregate_query, { "$redact" : { "$cond" : [ { "$eq" : [ "$mac_address_1", "$mac_address_2" ] }, "$$KEEP", "$$PRUNE" ] } });
+  }
+
+  // ===================================================
+  // aggregate results:
+  // only one unique username per day
+  agg.add_stage(aggregate_query, { $group : { _id : { username : "$username", timestamp : "$timestamp" } } });  // group results
+
+  // ===================================================
+  // add other operators, if defined in query
+  agg.add_ops(aggregate_query, query);
+
+  // ===================================================
+
+  aggregate_query.push({ $group: { _id: null, count: { $sum: 1 } } });       // group just to count number of records
+  aggregate_query.push({ $project : { count : 1, _id : 0 } });
+
+  get_record_count(req.db.concurrent_users, req, res, next, aggregate_query, transform, filter_by_username);       // perform search with constructed mongo query
+});
 // --------------------------------------------------------------------------------------
 // transform array containing dict just to number itself
 // --------------------------------------------------------------------------------------
