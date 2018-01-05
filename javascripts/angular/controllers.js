@@ -68,7 +68,8 @@ function form_set_role($scope, $rootScope)
 // --------------------------------------------------------------------------------------
 // search controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', '$rootScope', function ($scope, $http, $stateParams, $rootScope) {
+angular.module('etlog').controller('search_controller', ['$scope', '$http', '$stateParams', '$rootScope', '$timeout',
+                       function ($scope, $http, $stateParams, $rootScope, $timeout) {
   init_search($scope, $http);
   watch_user($scope, $rootScope, $stateParams);
   $scope.paging = {
@@ -80,8 +81,8 @@ angular.module('etlog').controller('search_controller', ['$scope', '$http', '$st
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_search_submit($scope, $http, get_logs, $scope.paging, "logs");
-  handle_pagination($scope, $http, $rootScope, get_logs);
+  handle_search_submit($scope, $http, $timeout, get_logs, $scope.paging, "logs");
+  handle_pagination($scope, $http, $rootScope, get_logs, $timeout);
   setup_filters($scope, $http, "logs");
   handle_sort_search($scope, $http, get_logs);
   set_params($scope, $stateParams); // set params passed from other views
@@ -268,14 +269,14 @@ function transform_timestamp(data)
 // --------------------------------------------------------------------------------------
 // handle sumbit for form only with input fields
 // --------------------------------------------------------------------------------------
-function handle_search_submit($scope, $http, data_func, paging, coll_name)
+function handle_search_submit($scope, $http, $timeout, data_func, paging, coll_name)
 {
   $scope.submit = function (form) {
     $scope.paging.total_items = 0;      // no items yet
     $scope.error = false; // begin submitting - no error yet
     $scope.base_qs = build_qs_search($scope.form_data);  // create query string
     $scope.qs = $scope.base_qs;
-    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    get_total_items($scope, $http, coll_name, $timeout);        // set number of total items for paging
     $scope.paging.current_page = 1;
     $scope.get_page($http, $scope.paging.current_page, data_func);
     $scope.submitted = true;
@@ -313,7 +314,7 @@ function normalize_mac(data)
 // --------------------------------------------------------------------------------------
 // mac count table controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', '$rootScope', function ($scope, $http, $rootScope) {
+angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', '$rootScope', '$timeout', function ($scope, $http, $rootScope, $timeout) {
   init($scope, $http);
   addiational_fields_mac_count($scope);   // set up additional form fields
   $scope.paging = {
@@ -327,8 +328,8 @@ angular.module('etlog').controller('mac_count_controller', ['$scope', '$http', '
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_mac_count, null, $scope.paging, [ "username", "count" ], "mac_count");
-  handle_pagination($scope, $http, $rootScope, get_mac_count);
+  handle_table_submit($scope, $http, $timeout, get_mac_count, null, $scope.paging, [ "username", "count" ], "mac_count");
+  handle_pagination($scope, $http, $rootScope, get_mac_count, $timeout);
   setup_filters($scope, $http, "mac_count");
   handle_download($scope, $http, ["username", "count", "addrs" ]);
   handle_anon($scope);
@@ -369,28 +370,28 @@ function setup_filters($scope, $http, coll_name)
 {
   $scope.filter_username = function () {
     set_filter($scope, $scope.paging.filters.username, "username");
-    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    get_total_items($scope, $http, coll_name, $timeout);        // set number of total items for paging
     $scope.paging.current_page = 1;                   // set to first page
     $scope.get_page($http, $scope.paging.current_page, get_mac_count);
   }
 
   $scope.filter_addrs = function () {
     set_filter($scope, $scope.paging.filters.addrs, "addrs");
-    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    get_total_items($scope, $http, coll_name, $timeout);        // set number of total items for paging
     $scope.paging.current_page = 1;                   // set to first page
     $scope.get_page($http, $scope.paging.current_page, get_mac_count);
   }
 
   $scope.filter_mac_address = function() {
     set_filter($scope, $scope.paging.filters.mac_address, "mac_address");
-    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    get_total_items($scope, $http, coll_name, $timeout);        // set number of total items for paging
     $scope.paging.current_page = 1;                   // set to first page
     $scope.get_page($http, $scope.paging.current_page, get_shared_mac);
   }
 
   $scope.filter_users = function() {
     set_filter($scope, $scope.paging.filters.users, "users");
-    get_total_items($scope, $http, coll_name);        // set number of total items for paging
+    get_total_items($scope, $http, coll_name, $timeout);        // set number of total items for paging
     $scope.paging.current_page = 1;                   // set to first page
     $scope.get_page($http, $scope.paging.current_page, get_shared_mac);
   }
@@ -426,7 +427,7 @@ function set_filter($scope, filter, var_name)
 // --------------------------------------------------------------------------------------
 // unset loading and scroll browser to results
 // --------------------------------------------------------------------------------------
-function scroll_to_results($scope)
+function scroll_to_results($scope, $timeout)
 {
   $scope.paging.loading = false;      // unset loading
 
@@ -442,7 +443,7 @@ function scroll_to_results($scope)
 // $http
 // data_func - function which retrieves data by url
 // --------------------------------------------------------------------------------------
-function handle_pagination($scope, $http, $rootScope, data_func)
+function handle_pagination($scope, $http, $rootScope, data_func, $timeout)
 {
   $scope.page_changed = function(newPageNumber) {
     get_page($http, newPageNumber, data_func);
@@ -458,7 +459,7 @@ function handle_pagination($scope, $http, $rootScope, data_func)
 
     data_func($scope, $http, qs, function ($scope) { // get data from api
       if($scope.got_total_items == true)        // already have number of items, data function finished too
-        scroll_to_results($scope);
+        scroll_to_results($scope, $timeout);
 
       $scope.got_data = true;
     });
@@ -547,7 +548,7 @@ function init($scope, $http)
 // form_items - array of form fields
 // coll_name  - name of the collection in api
 // --------------------------------------------------------------------------------------
-function handle_table_submit($scope, $http, data_func, custom_qs_func, paging, form_items, coll_name)
+function handle_table_submit($scope, $http, $timeout, data_func, custom_qs_func, paging, form_items, coll_name)
 {
   $scope.submit = function (form) {
     if(form.$valid) {
@@ -557,7 +558,7 @@ function handle_table_submit($scope, $http, data_func, custom_qs_func, paging, f
       else
         $scope.base_qs = build_qs($scope.form_data, form_items);  // create query string
       $scope.qs = $scope.base_qs;
-      get_total_items($scope, $http, coll_name);        // set number of total items for paging
+      get_total_items($scope, $http, coll_name, $timeout);        // set number of total items for paging
       $scope.paging.current_page = 1;
       $scope.get_page($http, $scope.paging.current_page, data_func);
       $scope.submitted = true;
@@ -571,7 +572,7 @@ function handle_table_submit($scope, $http, data_func, custom_qs_func, paging, f
 // $http
 // coll_name - name of the collection for which the count should be returned
 // --------------------------------------------------------------------------------------
-function get_total_items($scope, $http, coll_name)
+function get_total_items($scope, $http, coll_name, $timeout)
 {
   $scope.got_total_items = false;
 
@@ -583,7 +584,7 @@ function get_total_items($scope, $http, coll_name)
     $scope.paging.total_items = response.data;
 
     if($scope.got_data == true) // got both data and total items
-      scroll_to_results($scope);
+      scroll_to_results($scope, $timeout);
 
     $scope.got_total_items = true;
   },
@@ -1035,7 +1036,7 @@ function sum_fail_count(data)
 // --------------------------------------------------------------------------------------
 // shared mac controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', '$rootScope', function ($scope, $http, $rootScope) {
+angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', '$rootScope', '$timeout', function ($scope, $http, $rootScope, $timeout) {
   init($scope, $http);
   addiational_fields_shared_mac($scope);   // set up additional form fields
   $scope.paging = {
@@ -1049,8 +1050,8 @@ angular.module('etlog').controller('shared_mac_controller', ['$scope', '$http', 
     total_items : 0
   };
   $scope.page_sizes = [ 10, 20, 50, 100 ];
-  handle_table_submit($scope, $http, get_shared_mac, null, $scope.paging, [ "mac_address", "count" ], "shared_mac");
-  handle_pagination($scope, $http, $rootScope, get_shared_mac);
+  handle_table_submit($scope, $http, $timeout, get_shared_mac, null, $scope.paging, [ "mac_address", "count" ], "shared_mac");
+  handle_pagination($scope, $http, $rootScope, get_shared_mac, $timeout);
   setup_filters($scope, $http, "shared_mac");
   handle_download($scope, $http, ["mac_address", "count", "users"]);
   popover();
@@ -2629,9 +2630,10 @@ function handle_sort($scope, $http, data_func)
 // --------------------------------------------------------------------------------------
 // concurrent users controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$http', '$q', '$rootScope', function ($scope, $http, $q, $rootScope) {
+angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$http', '$q', '$rootScope', '$timeout', '$stateParams',
+                       function ($scope, $http, $q, $rootScope, $timeout, $stateParams) {
   init($scope, $http);
-  additional_fields_concurrent_users($http, $scope);   // set up additional form fields
+  $scope.page_sizes = [ 10, 20, 50, 100 ];
   $scope.paging = {
     items_by_page : $scope.user.items_by_page || 10,
     current_page : 1,
@@ -2642,14 +2644,54 @@ angular.module('etlog').controller('concurrent_users_controller', ['$scope', '$h
     loading : false,
     total_items : 0
   };
-  $scope.page_sizes = [ 10, 20, 50, 100 ];
+  setup_submit($scope, $http, $rootScope, $timeout);
 
-  handle_table_submit($scope, $http, get_concurrent_users, build_qs_concurrent_users, $scope.paging, [], "concurrent_users");
-  handle_pagination($scope, $http, $rootScope, get_concurrent_users);
-  //setup_filters($scope, $http, "concurrent_users");      // TODO?
+  additional_fields_concurrent_users($http, $scope).then(function() {    // set up additional form fields
+    //setup_filters($scope, $http, "concurrent_users");      // TODO?
+
+    set_params_concurrent_users($scope, $http, $rootScope, $timeout, $stateParams);
+  });
   handle_download($scope, $http, [ "username", "timestamp", "timestamp_1", "visinst_1", "timestamp_2", "visinst_2", "mac_address_1", "mac_address_2", "time_difference", "time_needed", "dist", "diff_needed_timediff" ]);
-  handle_sort($scope, $http, get_concurrent_users);
 }]);
+// --------------------------------------------------------------------------------------
+// setup correct functions based on aggregation check
+// --------------------------------------------------------------------------------------
+function setup_submit($scope, $http, $rootScope, $timeout)
+{
+  $scope.submit_func = function (form) {
+    if($scope.aggregate == true) {      // aggregate results
+      //handle_table_submit($scope, $http, $timeout, get_aggregated_concurrent_users, build_qs_concurrent_users, $scope.paging, [], "concurrent_users");
+      handle_table_submit($scope, $http, $timeout, get_aggregated_concurrent_users, build_qs_concurrent_users, $scope.paging, [], "agg_concurrent_users");
+      handle_pagination($scope, $http, $rootScope, get_aggregated_concurrent_users, $timeout);
+      handle_sort($scope, $http, get_aggregated_concurrent_users);
+    }
+    else {
+      handle_table_submit($scope, $http, $timeout, get_concurrent_users, build_qs_concurrent_users, $scope.paging, [], "concurrent_users");
+      handle_pagination($scope, $http, $rootScope, get_concurrent_users, $timeout);
+      handle_sort($scope, $http, get_concurrent_users);
+    }
+    $scope.submit(form);   // call submit as if user clicked it
+  }
+}
+// --------------------------------------------------------------------------------------
+// set form field values from another view
+// --------------------------------------------------------------------------------------
+function set_params_concurrent_users($scope, $http, $rootScope, $timeout, $stateParams)
+{
+  // allowed params - username
+  if($stateParams['username']) {
+    if($scope.form_data.username === undefined) // does not exist yet
+      $scope.form_data.username = {};
+
+    $scope.form_data.username.val = $stateParams['username'];       // set username
+    $scope.form_data.username.sel = "eq";                           // set comparsion
+
+    $scope.$watch('main_form', function(main_form) {
+      if(main_form)
+        $scope.submit_func(main_form); // automatically click search button when form is ready
+    });
+  }
+}
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
 // --------------------------------------------------------------------------------------
@@ -2691,7 +2733,14 @@ function additional_fields_concurrent_users($http, $scope)
     $scope.options.visinst_2.val = tmp;
   };
 
-  $http({
+  $scope.diff_dict = { "0 minut"  : 0,
+                       "5 minut"  : 300,
+                       "15 minut" : 900,
+                       "30 minut" : 1800,
+                       "60 minut" : 3600 };
+  $scope.diff_needed_timediff = $scope.diff_dict["5 minut"];   // default value to filter out bad service coverage
+
+  return $http({
     method  : 'GET',
     url     : '/api/concurrent_rev/'
   })
@@ -2699,13 +2748,6 @@ function additional_fields_concurrent_users($http, $scope)
     $scope.revisions = response.data;
     $scope.selected_rev = $scope.revisions[$scope.revisions.length - 1];
   });
-
-  $scope.diff_dict = { "0 minut"  : 0,
-                       "5 minut"  : 300,
-                       "15 minut" : 900,
-                       "30 minut" : 1800,
-                       "60 minut" : 3600 };
-  $scope.diff_needed_timediff = $scope.diff_dict["5 minut"];   // default value to filter out bad service coverage
 }
 // --------------------------------------------------------------------------------------
 // transform time information to local time and correct format
@@ -2792,6 +2834,25 @@ function get_concurrent_users($scope, $http, qs, callback)
   return $http({
     method  : 'GET',
     url     : '/api/concurrent_users/' + qs + ts + $scope.sort      // sort by diff_needed_timediff
+  })
+  .then(function(response) {
+    if(!$scope.download_url)
+      $scope.download_url = '/api/concurrent_users/' + qs + ts + $scope.sort;   // set download url
+    $scope.table_data = transform_data(response.data);
+    callback($scope);
+  });
+}
+// --------------------------------------------------------------------------------------
+// get aggregated concurrent users data
+// --------------------------------------------------------------------------------------
+function get_aggregated_concurrent_users($scope, $http, qs, callback)
+{
+  $scope.table_data = [];
+  var ts = "timestamp>=" + $scope.form_data.min_date + "&timestamp<" + $scope.form_data.max_date;   // timestamp
+
+  return $http({
+    method  : 'GET',
+    url     : '/api/agg_concurrent_users/' + qs + ts + $scope.sort      // sort by diff_needed_timediff
   })
   .then(function(response) {
     if(!$scope.download_url)
@@ -3180,5 +3241,4 @@ function graph_pres(title, data_file, tag)
   }, 1500);
 }
 // --------------------------------------------------------------------------------------
-
 
