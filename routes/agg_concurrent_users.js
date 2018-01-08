@@ -66,6 +66,9 @@ function search(req, res, next, query) {
 
   // ===================================================
   // aggregate results:
+  // sort by diff_needed_timediff so the biggest times are matched by next stage
+  agg.add_stage(aggregate_query, { $sort : { diff_needed_timediff : -1 } });
+
   // only one unique username per day
   agg.add_stage(aggregate_query, { $group : { _id : { username : "$username", timestamp : "$timestamp" },
       timestamp_1          : { $first : "$timestamp_1" },
