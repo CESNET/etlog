@@ -428,6 +428,9 @@ function compromised_users_html(data, realm, revision)
   ret += "<p>";
   ret += "Seznam nalezených incidentů je přiložen ve formátu CSV.";
   ret += "</p>";
+  ret += "<p>";
+  ret += "Odhlášení příjmu těchto emailů je možné na adrese https://etlog.cesnet.cz";
+  ret += "</p>";
   ret += "</html>";
 
   return ret;
@@ -738,6 +741,8 @@ function compromised_users_plain(data, realm, revision)
 
   ret += "\n\n"
   ret += "Seznam nalezených incidentů je přiložen ve formátu CSV.";
+  ret += "\n\n" ;
+  ret += "\t\t Odhlášení příjmu těchto emailů je možné na adrese https://etlog.cesnet.cz\n";
   return ret;
 }
 // --------------------------------------------------------------------------------------
