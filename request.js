@@ -181,7 +181,7 @@ exp.get_succ_logins_monthly = function(realm)
   max.setMilliseconds(0);  // set to 00:00:00:000
 
   var min = new Date(max);
-  min.setDate(max.getDate() - 30);  // 30 days before
+  min.setTime(max.getTime() - 30 * 86400000);  // 30 days before
   var ret;
 
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
@@ -221,7 +221,7 @@ exp.get_all_failed_logins_monthly = function(database, realm, limit)
   max.setMilliseconds(0);  // set to 00:00:00:000
 
   var min = new Date(max);
-  min.setDate(max.getDate() - 30);  // 30 days before
+  min.setTime(max.getTime() - 30 * 86400000);  // 30 days before
 
   // ==========================================
 
@@ -273,7 +273,7 @@ exp.get_failed_login_count_monthly = function(database)
   max.setMilliseconds(0);  // set to 00:00:00:000
 
   var min = new Date(max);
-  min.setDate(max.getDate() - 30);  // 30 days before
+  min.setTime(max.getTime() - 30 * 86400000);  // 30 days before
 
   database.logs.count({ timestamp : { $gte : min, $lt : max }, result : "FAIL"},
   function(err, items) {
