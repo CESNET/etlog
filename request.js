@@ -304,7 +304,7 @@ function sum_fail_count(data)
   return cnt;
 }
 // --------------------------------------------------------------------------------------
-function get_latest_revision(database)
+exp.get_latest_revision = function(database)
 {
   var done = false;
   var ret;
@@ -329,7 +329,7 @@ function get_latest_revision(database)
   return ret[ret.length - 1];    // latest revision
 }
 // --------------------------------------------------------------------------------------
-function get_compromised_users_data(database, realm)
+function get_compromised_users_data(realm, revision)
 {
   var url = "/concurrent_users/";
   var done = false;
@@ -341,14 +341,13 @@ function get_compromised_users_data(database, realm)
 
   var min = new Date(max);
   min.setTime(max.getTime() - 30 * 86400000);  // 30 days before
-  var ret = {};
-  ret["revision"] = get_latest_revision(database);
+  var ret;
 
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
   query += "&username=/^.*@" + realm + "$/";   // limit by realm in username
   query += "&mac_diff=true";   // different addresses
   query += "&diff_needed_timediff>=300";
-  query += "&revision=" + ret["revision"];
+  query += "&revision=" + revision;
   query += "&sort=-diff_needed_timediff";   // sort
 
   request.get({
@@ -356,7 +355,7 @@ function get_compromised_users_data(database, realm)
   }, function (error, response, body) {
     if(error)
       console.error(error);
-    ret["data"] = JSON.parse(body);
+    ret = JSON.parse(body);
     done = true;
   });
 
@@ -369,11 +368,9 @@ function get_compromised_users_data(database, realm)
 // --------------------------------------------------------------------------------------
 // create mail about compromised users for specific realm
 // --------------------------------------------------------------------------------------
-exp.get_compromised_users_monthly = function(database, realm)
+exp.get_compromised_users_monthly = function(database, realm, revision)
 {
-  var data = get_compromised_users_data(database, realm);
-  var revision = data.revision;
-  data = data.data;
+  var data = get_compromised_users_data(realm, revision);
   var ret = {};
 
   if(data.length == 0) {        // no data ivailable
