@@ -69,7 +69,7 @@ module.exports.send_mail = function (subject, recipients, data, bcc, callback)
 // 3) function which returns data - mail contents
 // 4) optional limit for data function
 // --------------------------------------------------------------------------------------
-module.exports.send_mail_to_realm_admins = function (database, data_func, subj, limit)
+module.exports.send_mail_to_realm_admins = function (database, data_func, subj, func_params)
 {
   var bcc = config.radius_admin;
 
@@ -81,12 +81,12 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, subj, 
 
         database.realm_admins.find({ notify_enabled : true, realm : record.realm }, { admin : 1, _id : 0 },    // get admins for specific realm
           function(err, items) {
-          var to = "";
+            var to = "";
 
             for(var item in items) {
               to += items[item].admin + ",";        // one mail to all admins
             }
-            var data = data_func(database, record.realm, limit);
+            var data = data_func(database, record.realm, func_params);
 
             if(data != "" && data != undefined) {    // do not send mail when no data for current realm are available
               if(record.realm == "cz") {       // exception for "cz" realm
