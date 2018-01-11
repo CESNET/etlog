@@ -395,12 +395,9 @@ function compromised_users_html(data, realm, revision)
 {
   var ret = "<html>";
   ret += "<head>";
-  ret += "<style>";
-  ret += "thead th { border : 1px solid black } tbody td { border : 1px solid black }";
-  ret += "</style>";
   ret += "</head>";
   ret += "<h3> Seznam potenciálně kompromitovaných identit pro realm " + realm + "</h3>";
-  ret += '<table style="border:2px solid black; text-align: center" cellspacing="0" cellpadding="10">';
+  ret += '<table style="text-align: center" cellspacing="0" cellpadding="10">';
   ret += "<thead>";
   ret += "<tr>";
 
