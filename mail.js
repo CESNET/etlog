@@ -32,7 +32,18 @@ module.exports.send_mail = function (subject, recipients, data, bcc, callback)
 {
   var mailer = set_up_mailer();     // set up
   mailer.mail_options.subject = subject;  // set mail subject
-  mailer.mail_options.text = data;  // set mail text
+  if(typeof(data) === 'object') {      // data is probably a dict - both html and plain?
+    mailer.mail_options.text = data.plain; // set mail text
+    mailer.mail_options.html = data.html;  // set mail html
+    mailer.mail_options.attachments = [{   // set attachment
+      filename : 'data.csv',
+      content  : data.att,
+      contentType : 'text/csv; charset=utf-8'
+    }];
+  }
+  else {
+    mailer.mail_options.text = data;  // set mail text
+  }
   mailer.mail_options.to = recipients;   // set recipients
 
   if(bcc)       // set up bcc if provided
@@ -58,7 +69,7 @@ module.exports.send_mail = function (subject, recipients, data, bcc, callback)
 // 3) function which returns data - mail contents
 // 4) optional limit for data function
 // --------------------------------------------------------------------------------------
-module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
+module.exports.send_mail_to_realm_admins = function (database, data_func, subj, limit)
 {
   var bcc = config.radius_admin;
 
@@ -77,13 +88,13 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, limit)
             }
             var data = data_func(database, record.realm, limit);
 
-            if(data != "") {    // do not send mail when no data for current realm are available
+            if(data != "" && data != undefined) {    // do not send mail when no data for current realm are available
               if(record.realm == "cz") {       // exception for "cz" realm
-                module.exports.send_mail(config.failed_logins_subj, to, data, null, callback);  // no bcc
+                module.exports.send_mail(subj, to, data, null, callback);  // no bcc
               }
               else {
                 // realms[realm].realm contains domain part of username - eg "fit.cvut.cz"
-                module.exports.send_mail(config.failed_logins_subj + " | " + record.realm,         // specify realm in subject
+                module.exports.send_mail(subj + " | " + record.realm,         // specify realm in subject
                                          to, data, bcc, callback);
               }
             }
