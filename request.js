@@ -404,7 +404,7 @@ function compromised_users_html(data, realm, revision)
   ret += "<th>Uživatelské jméno</th>";
   ret += "<th>Počet incidentů</th>";
   ret += "<th>Počet různých MAC adres</th>";
-  ret += "<th>odkaz na incidenty</th>";
+  ret += "<th>Odkaz na incidenty</th>";
 
   ret += "</tr>";
   ret += "</thead>";
