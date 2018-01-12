@@ -782,4 +782,48 @@ function compromised_attachement(data)
   return ret;
 }
 // --------------------------------------------------------------------------------------
+// get user and incident count for input data
+// --------------------------------------------------------------------------------------
+function get_stats(data)
+{
+  var ret = {};
+  ret['users'] = get_unique_users(data).length;    // number of unique users
+  ret['incident_count'] = data.length;
+  return ret;
+}
+// --------------------------------------------------------------------------------------
+// get statistics about compromised users for all known realms
+// --------------------------------------------------------------------------------------
+exp.get_compromised_users_stats = function(realms, revision)
+{
+  var ret = "Statistiky kompromitovaných uživatelů\n";
+  ret += "==============================================================================\n\n";
+  var longest_realm = get_longest(realms, "realm");
+
+  for(var realm in realms) {
+    var data = get_compromised_users_data(realms[realm].realm, revision);
+    ret += "realm: " + realms[realm].realm + ", " ;
+
+    for(var i = realms[realm].realm.length; i < longest_realm; i++)
+      ret += " ";
+
+    if(data.length == 0) {  // no data
+      var tmp = {};
+      tmp.incident_count = 0;
+      tmp.users = 0;
+    }
+    else
+      var tmp = get_stats(data);
+
+    ret += "počet incidentů: " + tmp.incident_count + ", ";
+    for(var i = tmp.incident_count.toString().length; i < 4; i++)     // fixed to 4 digits
+      ret += " ";
+
+    ret += "počet uživatelů: " + tmp.users;
+    ret += "\n";
+  }
+
+  return ret;
+}
+// --------------------------------------------------------------------------------------
 module.exports = exp;

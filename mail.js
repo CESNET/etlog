@@ -157,3 +157,15 @@ module.exports.send_service_problem_notification = function(database, realm, dat
   });
 }
 // --------------------------------------------------------------------------------------
+// send statistics about compromised users for all known realms
+// --------------------------------------------------------------------------------------
+module.exports.send_realm_stats = function(database, data_func, to, func_param)
+{
+  database.realms.find({}, { _id : 0 },
+    function(err, realms) {
+      var data = data_func(realms, func_param);
+      module.exports.send_mail("kompromitované identity - statistiky",         // specify realm in subject
+                                 to, data);     // no bcc
+  });
+}
+// --------------------------------------------------------------------------------------
