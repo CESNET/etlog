@@ -68,7 +68,7 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
   })
 
   .state('concurrent_users', {
-    url: '/concurrent_users?username',
+    url: '/concurrent_users?username&revision',
     templateUrl: '/partials/concurrent_users.html',
     title : 'etlog: uživatelé v různých lokalitách současně',
     allowed : [ 'realm_admin', 'admin' ]

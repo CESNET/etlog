@@ -2688,6 +2688,18 @@ function set_params_concurrent_users($scope, $http, $rootScope, $timeout, $state
         $scope.submit_func(main_form); // automatically click search button when form is ready
     });
   }
+
+  if($stateParams['revision']) {
+    if($scope.form_data.revision === undefined) // does not exist yet
+      $scope.form_data.revision = {};
+
+    $scope.selected_rev = $stateParams['revision'];       // set revision
+
+    $scope.$watch('main_form', function(main_form) {
+      if(main_form)
+        $scope.submit_func(main_form); // automatically click search button when form is ready
+    });
+  }
 }
 // --------------------------------------------------------------------------------------
 // set up additional fields for form
