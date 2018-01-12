@@ -799,13 +799,11 @@ exp.get_compromised_users_stats = function(realms, revision)
   var ret = "Statistiky kompromitovaných uživatelů\n";
   ret += "==============================================================================\n\n";
   var longest_realm = get_longest(realms, "realm");
+  var incidents_len = 0;
+  var items = [];
 
   for(var realm in realms) {
     var data = get_compromised_users_data(realms[realm].realm, revision);
-    ret += "realm: " + realms[realm].realm + ", " ;
-
-    for(var i = realms[realm].realm.length; i < longest_realm; i++)
-      ret += " ";
 
     if(data.length == 0) {  // no data
       var tmp = {};
@@ -815,11 +813,28 @@ exp.get_compromised_users_stats = function(realms, revision)
     else
       var tmp = get_stats(data);
 
-    ret += "počet incidentů: " + tmp.incident_count + ", ";
-    for(var i = tmp.incident_count.toString().length; i < 4; i++)     // fixed to 4 digits
+    items.push({ "realm"          : realms[realm].realm,
+                 "incident_count" : tmp.incident_count,
+                 "users"          : tmp.users });
+
+    if(tmp.incident_count.toString().length > incidents_len)
+      incidents_len = tmp.incident_count.toString().length;
+  }
+
+  items.sort(sort_by_inicidents);
+
+  for(var item in items) {
+    ret += "realm: " + items[item].realm + ", " ;
+
+    for(var i = items[item].realm.length; i < longest_realm; i++)
       ret += " ";
 
-    ret += "počet uživatelů: " + tmp.users;
+
+    ret += "počet incidentů: " + items[item].incident_count + ", ";
+    for(var i = items[item].incident_count.toString().length; i < incidents_len; i++)
+      ret += " ";
+
+    ret += "počet uživatelů: " + items[item].users;
     ret += "\n";
   }
 
