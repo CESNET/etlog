@@ -7,6 +7,8 @@ module.exports = {
   failed_logins_lines : 100,
   // subject of failed logins report
   failed_logins_subj : "měsíční report - neúspěšná přihlášení",
+  // subject of compromised users
+  compromised_users_subj : "měsíční report - kompromitované identity",
   // email of national radius admin
   radius_admin : "jan.tomasek@cesnet.cz",
   // from email address set for outgoing mails
