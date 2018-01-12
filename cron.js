@@ -18,7 +18,9 @@ module.exports = function(database) {
   const assert = require('assert');
 // --------------------------------------------------------------------------------------
   new CronJob('0 59 05 1 * *', function() {     // run once a month
-    mail.send_mail_to_realm_admins(database, request.get_failed_logins_monthly, config.failed_logins_lines);
+    mail.send_realm_stats(database, request.get_compromised_users_stats, config.radius_admin, request.get_latest_revision(database));
+    mail.send_mail_to_realm_admins(database, request.get_compromised_users_monthly, config.compromised_users_subj, request.get_latest_revision(database));
+    mail.send_mail_to_realm_admins(database, request.get_failed_logins_monthly, config.failed_logins_subj, config.failed_logins_lines);
   }, null, true, 'Europe/Prague');
 // --------------------------------------------------------------------------------------
   // run once a day
