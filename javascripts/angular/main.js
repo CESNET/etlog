@@ -8,7 +8,6 @@ angular.module('etlog').run(['$rootScope', '$http', '$state', function($rootScop
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
     $rootScope.title = toState.title;   // set current state title
   });
-  get_user_info($rootScope, $http);
   check_state_permissions($rootScope, $state, $http);
 }]);
 // --------------------------------------------------------------------------------------
@@ -43,21 +42,6 @@ function get_permissions($http, callback)
     .then(function(response) {
       callback(response.data);
   });
-}
-// --------------------------------------------------------------------------------------
-// get basic user info
-// --------------------------------------------------------------------------------------
-function get_user_info($rootScope, $http)
-{
-  if(!$rootScope.user) {
-    $http({
-      method  : 'GET',
-      url     : '/api/user/info'
-    })
-    .then(function(response) {
-      $rootScope.user = response.data;
-    });
-  }
 }
 // --------------------------------------------------------------------------------------
 // http interceptor to solve expired shibboleth sessions
