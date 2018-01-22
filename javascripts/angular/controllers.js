@@ -3019,6 +3019,8 @@ function graph_pres(title, data_file, tag)
   var width = $(window).width() / 2 - 130;      // compensate for y axis labels
   var height = 600 - margin.top - margin.bottom;
 
+  var colors = [ "#225885", "#ea3933" ];
+
   // --------------------------------------------------------------------
   // set the ranges
   var x = d3.scaleBand()
@@ -3047,6 +3049,18 @@ function graph_pres(title, data_file, tag)
     .text(title);
 
   // ==================================================
+  // text label for the y axis
+  svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left + 20)
+    .attr("x",0 - (height / 2))
+    .attr("dy", "1em")
+    .style("font-size", "18px")
+    .style("fill", "white")
+    .style("text-anchor", "middle")
+    .text("počet autentizací");
+
+  // ==================================================
   // add the x Axis
   var x_axis = svg.append("g")
       .attr("transform", "translate(0," + height + ")")
@@ -3060,6 +3074,35 @@ function graph_pres(title, data_file, tag)
       .attr("class", "y axis")
       .style("fill", "white")
       .style("font-size", "18px");
+
+  //// ==================================================
+  //// Draw legend
+  //var legend = svg.selectAll(".legend")
+  //  .data(colors)
+  //  .enter().append("g")
+  //  .attr("class", "legend")
+  //  .attr("transform", function(d, i) { return "translate(30," + i * 31 + ")"; });
+  // 
+  //legend.append("rect")
+  //  .attr("x", 0)
+  //  .attr("y", height + 100)
+  //  .attr("width", 30)
+  //  .attr("height", 30)
+  //  .style("fill", function(d, i) { return colors.slice().reverse()[i]; });
+  // 
+  //legend.append("text")
+  //  .attr("x", 35)
+  //  .attr("y", height + 100 + 15)
+  //  .attr("dy", ".35em")
+  //  .style("text-anchor", "start")
+  //  .text(function(d, i) { 
+  //    switch (i) {
+  //      case 0: return "neúspěšné autentizace";
+  //      case 1: return "úspěšné autentizace";
+  //    }
+  //  })
+  //  .style("fill", "white")
+  //  .style("font-size", "18px");
 
   // ==================================================
   // get initial data
