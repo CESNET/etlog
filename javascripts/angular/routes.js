@@ -1,163 +1,5 @@
 // --------------------------------------------------------------------------------------
-angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
-  $stateProvider
-
-  .state('search', {
-    url: '/search?pn&csi',
-    templateUrl: '/partials/search.html',
-    title : 'etlog: obecné vyhledávání',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    }
-  })
-
-  .state('mac_count', {
-    url: '/mac_count',
-    templateUrl: '/partials/mac_count.html',
-    title : 'etlog: počet zařízení',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    },
-    allowed : [ 'realm_admin', 'admin' ]
-  })
-
-  .state('shared_mac', {
-    url: '/shared_mac',
-    templateUrl: '/partials/shared_mac.html',
-    title : 'etlog: sdílená zařízení',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    },
-    allowed : [ 'realm_admin', 'admin' ]
-  })
-
-  .state('failed_logins', {
-    url: '/failed_logins',
-    templateUrl: '/partials/failed_logins.html',
-    title : 'etlog: neúspěšná přihlášení',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    },
-    allowed : [ 'realm_admin', 'admin' ]
-  })
-
-  .state('heat_map', {
-    url: '/heat_map',
-    templateUrl: '/partials/heat_map.html',
-    title : 'etlog: mapa roamingu',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    }
-  })
-
-  .state('orgs_roaming_most_used', {
-    url: '/orgs_roaming_most_used',
-    templateUrl: '/partials/orgs_roaming_most_used.html',
-    title : 'etlog: organizace nejvíce využívající roaming',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    }
-  })
-
-  .state('orgs_roaming_most_provided', {
-    url: '/orgs_roaming_most_provided',
-    templateUrl: '/partials/orgs_roaming_most_provided.html',
-    title : 'etlog: organizace nejvíce poskytující konektivitu',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    }
-  })
-
-  .state('roaming_activity', {
-    url: '/roaming_activity',
-    templateUrl: '/partials/roaming_activity.html',
-    title : 'etlog: aktivita CZ eduroamu',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    }
-  })
-
-  .state('detection_data', {
-    url: '/detection_data',
-    templateUrl: '/partials/detection_data.html',
-    title : 'etlog: absolutní počet přihlášení',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    },
-    allowed : [ 'admin' ]
-  })
-
-  .state('detection_data_grouped', {
-    url: '/detection_data_grouped',
-    templateUrl: '/partials/detection_data_grouped.html',
-    title : 'etlog: normalizovaný počet přihlíšení',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    },
-    allowed : [ 'admin' ]
-  })
-
-  .state('concurrent_users', {
-    url: '/concurrent_users?username&revision',
-    templateUrl: '/partials/concurrent_users.html',
-    title : 'etlog: uživatelé v různých lokalitách současně',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    },
-    allowed : [ 'realm_admin', 'admin' ]
-  })
-
-  .state('concurrent_inst', {
-    url: '/concurrent_inst',
-    templateUrl: '/partials/concurrent_inst.html',
-    title : 'etlog: nejčastější souběžně vyskytující se instituce',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    },
-    allowed : [ 'realm_admin', 'admin' ]
-  })
-
-  .state('notifications', {
-    url: '/notifications',
-    templateUrl: '/partials/notifications.html',
-    title : 'etlog: správa notifikací',
-    resolve : {
-      user : function(user_info_service) {
-        return user_info_service.get_user_info();
-      }
-    },
-    allowed : [ 'realm_admin', 'admin' ]
-  })
-}]);
-// --------------------------------------------------------------------------------------
-angular.module('etlog').factory('user_info_service', user_info_service);
-// --------------------------------------------------------------------------------------
-function user_info_service($rootScope, $http)
-{
+angular.module('etlog').factory('user_info_service', [ '$rootScope', '$http', function ($rootScope, $http) {
   function get_user_info() {
     if(!$rootScope.user) {
       return $http({
@@ -174,5 +16,161 @@ function user_info_service($rootScope, $http)
   return {
     get_user_info : get_user_info
   }
-}
+}]);
 // --------------------------------------------------------------------------------------
+angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+  $stateProvider
+
+  .state('search', {
+    url: '/search?pn&csi',
+    templateUrl: '/partials/search.html',
+    title : 'etlog: obecné vyhledávání',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    }
+  })
+
+  .state('mac_count', {
+    url: '/mac_count',
+    templateUrl: '/partials/mac_count.html',
+    title : 'etlog: počet zařízení',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    },
+    allowed : [ 'realm_admin', 'admin' ]
+  })
+
+  .state('shared_mac', {
+    url: '/shared_mac',
+    templateUrl: '/partials/shared_mac.html',
+    title : 'etlog: sdílená zařízení',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    },
+    allowed : [ 'realm_admin', 'admin' ]
+  })
+
+  .state('failed_logins', {
+    url: '/failed_logins',
+    templateUrl: '/partials/failed_logins.html',
+    title : 'etlog: neúspěšná přihlášení',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    },
+    allowed : [ 'realm_admin', 'admin' ]
+  })
+
+  .state('heat_map', {
+    url: '/heat_map',
+    templateUrl: '/partials/heat_map.html',
+    title : 'etlog: mapa roamingu',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    }
+  })
+
+  .state('orgs_roaming_most_used', {
+    url: '/orgs_roaming_most_used',
+    templateUrl: '/partials/orgs_roaming_most_used.html',
+    title : 'etlog: organizace nejvíce využívající roaming',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    }
+  })
+
+  .state('orgs_roaming_most_provided', {
+    url: '/orgs_roaming_most_provided',
+    templateUrl: '/partials/orgs_roaming_most_provided.html',
+    title : 'etlog: organizace nejvíce poskytující konektivitu',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    }
+  })
+
+  .state('roaming_activity', {
+    url: '/roaming_activity',
+    templateUrl: '/partials/roaming_activity.html',
+    title : 'etlog: aktivita CZ eduroamu',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    }
+  })
+
+  .state('detection_data', {
+    url: '/detection_data',
+    templateUrl: '/partials/detection_data.html',
+    title : 'etlog: absolutní počet přihlášení',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    },
+    allowed : [ 'admin' ]
+  })
+
+  .state('detection_data_grouped', {
+    url: '/detection_data_grouped',
+    templateUrl: '/partials/detection_data_grouped.html',
+    title : 'etlog: normalizovaný počet přihlíšení',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    },
+    allowed : [ 'admin' ]
+  })
+
+  .state('concurrent_users', {
+    url: '/concurrent_users?username&revision',
+    templateUrl: '/partials/concurrent_users.html',
+    title : 'etlog: uživatelé v různých lokalitách současně',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    },
+    allowed : [ 'realm_admin', 'admin' ]
+  })
+
+  .state('concurrent_inst', {
+    url: '/concurrent_inst',
+    templateUrl: '/partials/concurrent_inst.html',
+    title : 'etlog: nejčastější souběžně vyskytující se instituce',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    },
+    allowed : [ 'realm_admin', 'admin' ]
+  })
+
+  .state('notifications', {
+    url: '/notifications',
+    templateUrl: '/partials/notifications.html',
+    title : 'etlog: správa notifikací',
+    resolve : {
+      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
+        return user_info_service.get_user_info();
+      }]
+    },
+    allowed : [ 'realm_admin', 'admin' ]
+  })
+}]);
+// --------------------------------------------------------------------------------------
+
