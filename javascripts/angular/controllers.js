@@ -136,15 +136,7 @@ function init_search($scope, $http)
   if($scope.user.role == "user")        // set identity for user
     $scope.form_data.pn = $scope.user.identities[0];  // set first identity
 
-  // get db_data
-  $http({
-    method  : 'GET',
-    url     : '/api/db_data'
-  })
-  .then(function(response) {
-    $scope.db_data = response.data;
-    setup_calendars_time($scope);
-  });
+  setup_calendars_time($scope);
 }
 // --------------------------------------------------------------------------------------
 // handle sorting in search controller
@@ -177,7 +169,6 @@ function setup_calendars_time($scope)
     altFormat: "H:i d.m.Y",
     dateFormat: "Y-m-dTH:i:S",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.logs.min,       // min from db
     enableTime: true,
     time_24hr : true,
     utc : true
@@ -191,7 +182,6 @@ function setup_calendars_time($scope)
     altFormat: "H:i d.m.Y",
     dateFormat: "Y-m-dTH:i:S",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.logs.min,       // min from db
     enableTime: true,
     time_24hr : true,
     utc : true
@@ -526,15 +516,7 @@ function init($scope, $http)
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
   };
   
-  // get db_data
-  $http({
-    method  : 'GET',
-    url     : '/api/db_data'
-  })
-  .then(function(response) {
-    $scope.db_data = response.data;
-    setup_calendars($scope);
-  });
+  setup_calendars($scope);
 }
 // --------------------------------------------------------------------------------------
 // logic on form submit
@@ -688,7 +670,6 @@ function setup_calendars($scope)
     altInput: true,
     altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.logs.min        // min from db
   });
 
   flatpickr("#max_date", {
@@ -698,7 +679,6 @@ function setup_calendars($scope)
     altInput: true,
     altFormat: "d.m.Y",
     maxDate: new Date(),                    // today
-    minDate: $scope.db_data.logs.min        // min from db
   });
 }
 // --------------------------------------------------------------------------------------
