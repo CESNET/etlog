@@ -2,14 +2,15 @@
  * Module dependencies.
  */
 
-var NodeJSDocument = require('./document'),
-    EventEmitter = require('events').EventEmitter,
-    MongooseError = require('./error'),
-    Schema = require('./schema'),
-    ObjectId = require('./types/objectid'),
-    utils = require('./utils'),
-    ValidationError = MongooseError.ValidationError,
-    InternalCache = require('./internal');
+var NodeJSDocument = require('./document');
+var EventEmitter = require('events').EventEmitter;
+var MongooseError = require('./error');
+var Schema = require('./schema');
+var ObjectId = require('./types/objectid');
+var ValidationError = MongooseError.ValidationError;
+var InternalCache = require('./internal');
+var applyHooks = require('./services/model/applyHooks');
+var utils = require('./utils');
 
 /**
  * Document constructor.
@@ -27,7 +28,6 @@ function Document(obj, schema, fields, skipId, skipInit) {
   if (!(this instanceof Document)) {
     return new Document(obj, schema, fields, skipId, skipInit);
   }
-
 
   if (utils.isObject(schema) && !schema.instanceOfSchema) {
     schema = new Schema(schema);
@@ -56,8 +56,6 @@ function Document(obj, schema, fields, skipId, skipInit) {
   this.isNew = true;
   this.errors = undefined;
 
-  // var schema = this.schema;
-
   if (typeof fields === 'boolean') {
     this.$__.strictMode = fields;
     fields = undefined;
@@ -78,7 +76,7 @@ function Document(obj, schema, fields, skipId, skipInit) {
     this.init(obj);
   }
 
-  this.$__registerHooksFromSchema();
+  applyHooks(this, schema, { decorateDoc: true });
 
   // apply methods
   for (var m in schema.methods) {
@@ -93,11 +91,28 @@ function Document(obj, schema, fields, skipId, skipInit) {
 /*!
  * Inherit from the NodeJS document
  */
+
 Document.prototype = Object.create(NodeJSDocument.prototype);
 Document.prototype.constructor = Document;
 
 /*!
+ * Browser doc exposes the event emitter API
+ */
+
+Document.$emitter = new EventEmitter();
+
+utils.each(
+  ['on', 'once', 'emit', 'listeners', 'removeListener', 'setMaxListeners',
+    'removeAllListeners', 'addListener'],
+  function(emitterFn) {
+    Document[emitterFn] = function() {
+      return Document.$emitter[emitterFn].apply(Document.$emitter, arguments);
+    };
+  });
+
+/*!
  * Module exports.
  */
+
 Document.ValidationError = ValidationError;
 module.exports = exports = Document;
