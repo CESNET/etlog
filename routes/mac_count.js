@@ -91,7 +91,7 @@ function search_days(req, res, next, query) {
   // ===================================================
   // search
 
- var stream = req.db.mac_count.aggregate(aggregate_query).cursor({ batchSize: 1000 }).exec().stream();
+ var stream = req.db.mac_count.aggregate(aggregate_query).cursor({ batchSize: 1000 }).exec();
  var data = [];
 
   stream.on('error', function (err1) {
