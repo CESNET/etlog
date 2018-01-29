@@ -64,17 +64,7 @@ module.exports = function(database) {
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 10 03 * * *', function() {     // run at 03:10:00
-    var mongo = database.mongoose.mongo;
-    const url = 'mongodb://localhost:27017';
-    const dbName = 'etlog';
-
-    mongo.MongoClient.connect(url, function(err, client) {
-      assert.equal(null, err);
-      const db = client.db(dbName);
-      concurrent_users.process_current_data(db, function() {
-        client.close();
-      });
-    });
+    concurrent_users.process_current_data(database);
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------

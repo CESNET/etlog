@@ -80,7 +80,7 @@ function get_inst_list(data)
 // --------------------------------------------------------------------------------------
 // perform mac address counting
 // --------------------------------------------------------------------------------------
-exp.process_current_data = function (database, done) {
+exp.process_current_data = function (database) {
   var data = JSON.parse(fs.readFileSync(data_file, 'utf8'));
   var curr = new Date();        // current day
   curr.setHours(0);
@@ -105,7 +105,6 @@ exp.process_current_data = function (database, done) {
     }
   ],
   function(err, results) {
-      done(null);
   });
 };
 // --------------------------------------------------------------------------------------
@@ -114,7 +113,7 @@ exp.process_current_data = function (database, done) {
 function update_revision(database, revision, callback)
 {
   // add new revision to array, sort all ascending
-  database.collection('concurrent_rev').update({}, { $addToSet : { revisions : { $each : [ revision ], $sort : 1 } } }, { upsert : true },
+  database.concurrent_rev.update({}, { $addToSet : { revisions : revision } }, { upsert : true },
   function(err, result) {
     if(err)
       console.error(err);
@@ -128,11 +127,8 @@ function update_revision(database, revision, callback)
 // --------------------------------------------------------------------------------------
 function search(database, data, revision, min, max, inst_list, done)
 {
-  // cursor().exec() is not usable here, not sure why
-  // native driver is used instead
-
   var items = [];
-  var cursor = database.collection('logs').aggregate([
+  var cursor = database.logs.aggregate([
     { $match :
       { timestamp : { $gte : min, $lt : max },               // limit by timestamp
         pn : { $nin : [ "", /^anonymous@.*$/, /^@.*$/ ] },   // no empty or anonymous users
@@ -153,11 +149,7 @@ function search(database, data, revision, min, max, inst_list, done)
     },
     { $project : { pn : "$_id.pn", timestamp : "$_id.timestamp", visinst : "$_id.visinst", csi : "$_id.csi", "_id" : 0 }},
     { $sort : { pn : 1, timestamp : 1 }}
-  ],
-  {
-    allowDiskUse: true,
-    cursor: { batchSize: 1000 }
-  }, null);
+  ]).allowDiskUse(true).cursor({ batchSize: 1000 }).exec();
 
   cursor.on('error', function(err) {
     console.err(err);
@@ -227,8 +219,6 @@ function analyze_data(database, items, data, src, dst, min, revision, inst_list,
 
   var db_data = [];
   
-  //console.log("src: " + src);
-  //console.log("dst: " + dst);
   for(var user in items[src]) {
     if(items[dst][user]) {      // user exists in dest inst
 
@@ -271,7 +261,7 @@ function analyze_data(database, items, data, src, dst, min, revision, inst_list,
 // --------------------------------------------------------------------------------------
 function save_to_db(database, items) {
   for(var item in items) {  // any better way to do this ?
-    database.collection('concurrent_users').update(items[item], items[item], { upsert : true },
+    database.concurrent_users.update(items[item], items[item], { upsert : true },
     function(err, result) {
       if(err)
         console.error(err);
@@ -283,7 +273,7 @@ function save_to_db(database, items) {
 // --------------------------------------------------------------------------------------
 function save_to_db_callback(database, items, done) {
   async.forEachOf(items, function (value, key, callback) {
-    database.collection('concurrent_users').update(items[key], items[key], { upsert : true },
+    database.concurrent_users.update(items[key], items[key], { upsert : true },
     function(err, result) {
       if(err)
         console.error(err);
