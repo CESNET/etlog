@@ -1,16 +1,12 @@
 const async = require( 'async' );
 const fs = require('fs');
-const data_file = "./scripts/concurrent_users/inst.json"
-const util = require('util')
+const data_file = "/home/etlog/etlog/scripts/concurrent_users/inst.json"
 // --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
-// perform mac address counting
+// process old data
 // --------------------------------------------------------------------------------------
 exp.process_old_data = function (database, min, total_max, callback) {
-  // different file path when processing old data
-  //const data_file = "./inst.json"
-
   // find the lowest date in database and go from that date to present
   var data = JSON.parse(fs.readFileSync(data_file, 'utf8'));
 
