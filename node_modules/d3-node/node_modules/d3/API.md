@@ -212,7 +212,7 @@ Color manipulation and color space conversion.
 * [*color*.brighter](https://github.com/d3/d3-color/blob/master/README.md#color_brighter) - create a brighter copy of this color.
 * [*color*.darker](https://github.com/d3/d3-color/blob/master/README.md#color_darker) - create a darker copy of this color.
 * [*color*.displayable](https://github.com/d3/d3-color/blob/master/README.md#color_displayable) - returns true if the color is displayable on standard hardware.
-* [*color*.toString](https://github.com/d3/d3-color/blob/master/README.md#color_toString) - format the color as an RGB hexadecimal string.
+* [*color*.toString](https://github.com/d3/d3-color/blob/master/README.md#color_toString) - returns the RGB string representation of this color.
 * [d3.rgb](https://github.com/d3/d3-color/blob/master/README.md#rgb) - create a new RGB color.
 * [d3.hsl](https://github.com/d3/d3-color/blob/master/README.md#hsl) - create a new HSL color.
 * [d3.lab](https://github.com/d3/d3-color/blob/master/README.md#lab) - create a new Lab color.
@@ -848,10 +848,12 @@ Transform the DOM by selecting elements and joining to data.
 * [*selection*.append](https://github.com/d3/d3-selection/blob/master/README.md#selection_append) - create, append and select new elements.
 * [*selection*.insert](https://github.com/d3/d3-selection/blob/master/README.md#selection_insert) - create, insert and select new elements.
 * [*selection*.remove](https://github.com/d3/d3-selection/blob/master/README.md#selection_remove) - remove elements from the document.
+* [*selection*.clone](https://github.com/d3/d3-selection/blob/master/README.md#selection_clone) - insert clones of selected elements.
 * [*selection*.sort](https://github.com/d3/d3-selection/blob/master/README.md#selection_sort) - sort elements in the document based on data.
 * [*selection*.order](https://github.com/d3/d3-selection/blob/master/README.md#selection_order) - reorders elements in the document to match the selection.
 * [*selection*.raise](https://github.com/d3/d3-selection/blob/master/README.md#selection_raise) - reorders each element as the last child of its parent.
 * [*selection*.lower](https://github.com/d3/d3-selection/blob/master/README.md#selection_lower) - reorders each element as the first child of its parent.
+* [d3.create](https://github.com/d3/d3-selection/blob/master/README.md#create) - create and select a detached element.
 * [d3.creator](https://github.com/d3/d3-selection/blob/master/README.md#creator) - create an element by name.
 
 ### [Joining Data](https://github.com/d3/d3-selection/blob/master/README.md#joining-data)
