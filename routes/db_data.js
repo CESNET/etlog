@@ -20,11 +20,11 @@ router.get('/', function(req, res, next) {
 
   async.series([
     function(done) {
-      req.db.logs.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
-      { $project : { timestamp : 1, _id : 0 } } ],
-      function(err, doc) {
-        ret.logs.min = convert(doc[0].timestamp).toISOString();
-      });
+      //req.db.logs.aggregate([ { $sort : { timestamp : 1 } }, { $limit : 1 },
+      //{ $project : { timestamp : 1, _id : 0 } } ],
+      //function(err, doc) {
+      //  ret.logs.min = convert(doc[0].timestamp).toISOString();
+      //});
       
       req.db.logs.aggregate([ { $sort : { timestamp : -1 } }, { $limit : 1 },
       { $project : { timestamp : 1, _id : 0 } } ],
