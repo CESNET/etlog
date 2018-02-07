@@ -3,7 +3,7 @@
 // $ node scripts/detection_data.js >> public/partials/detection_data.html
 // --------------------------------------------------------------------------------------
 //const d3 = require('d3');
-const d3 = require('d3-v4');
+const d3 = require('d3v4');
 const D3Node = require('d3-node')
 const async = require('async');
 const request = require('request');
