@@ -172,7 +172,7 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     allowed : [ 'realm_admin', 'admin' ]
   })
 
-  .state('index', {     // state loaded only on on index.html
+  .state('index', {     // state loaded only on index.html
     url: '',
     templateUrl: '',
     title : 'etlog - analýza provozu eduroamu',
