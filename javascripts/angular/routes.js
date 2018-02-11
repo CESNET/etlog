@@ -25,22 +25,12 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     url: '/search?pn&csi',
     templateUrl: '/partials/search.html',
     title : 'etlog: obecné vyhledávání',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    }
   })
 
   .state('mac_count', {
     url: '/mac_count',
     templateUrl: '/partials/mac_count.html',
     title : 'etlog: počet zařízení',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    },
     allowed : [ 'realm_admin', 'admin' ]
   })
 
@@ -48,11 +38,6 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     url: '/shared_mac',
     templateUrl: '/partials/shared_mac.html',
     title : 'etlog: sdílená zařízení',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    },
     allowed : [ 'realm_admin', 'admin' ]
   })
 
@@ -60,11 +45,6 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     url: '/failed_logins',
     templateUrl: '/partials/failed_logins.html',
     title : 'etlog: neúspěšná přihlášení',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    },
     allowed : [ 'realm_admin', 'admin' ]
   })
 
@@ -72,55 +52,30 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     url: '/heat_map',
     templateUrl: '/partials/heat_map.html',
     title : 'etlog: mapa roamingu',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    }
   })
 
   .state('orgs_roaming_most_used', {
     url: '/orgs_roaming_most_used',
     templateUrl: '/partials/orgs_roaming_most_used.html',
     title : 'etlog: organizace nejvíce využívající roaming',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    }
   })
 
   .state('orgs_roaming_most_provided', {
     url: '/orgs_roaming_most_provided',
     templateUrl: '/partials/orgs_roaming_most_provided.html',
     title : 'etlog: organizace nejvíce poskytující konektivitu',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    }
   })
 
   .state('roaming_activity', {
     url: '/roaming_activity',
     templateUrl: '/partials/roaming_activity.html',
     title : 'etlog: aktivita CZ eduroamu',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    }
   })
 
   .state('detection_data', {
     url: '/detection_data',
     templateUrl: '/partials/detection_data.html',
     title : 'etlog: absolutní počet přihlášení',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    },
     allowed : [ 'admin' ]
   })
 
@@ -128,11 +83,6 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     url: '/detection_data_grouped',
     templateUrl: '/partials/detection_data_grouped.html',
     title : 'etlog: normalizovaný počet přihlíšení',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    },
     allowed : [ 'admin' ]
   })
 
@@ -140,11 +90,6 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     url: '/concurrent_users?username&revision',
     templateUrl: '/partials/concurrent_users.html',
     title : 'etlog: uživatelé v různých lokalitách současně',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    },
     allowed : [ 'realm_admin', 'admin' ]
   })
 
@@ -152,11 +97,6 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     url: '/concurrent_inst',
     templateUrl: '/partials/concurrent_inst.html',
     title : 'etlog: nejčastější souběžně vyskytující se instituce',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    },
     allowed : [ 'realm_admin', 'admin' ]
   })
 
@@ -164,23 +104,7 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     url: '/notifications',
     templateUrl: '/partials/notifications.html',
     title : 'etlog: správa notifikací',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    },
     allowed : [ 'realm_admin', 'admin' ]
-  })
-
-  .state('index', {     // state loaded only on index.html
-    url: '',
-    templateUrl: '',
-    title : 'etlog - analýza provozu eduroamu',
-    resolve : {
-      user : [ '$rootScope', '$http', 'user_info_service', function($rootScope, $http, user_info_service) {
-        return user_info_service.get_user_info();
-      }]
-    },
   })
 }]);
 // --------------------------------------------------------------------------------------

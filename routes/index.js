@@ -6,7 +6,7 @@ router.get('/', function(req, res, next) {
   if(!req.session.user)
     req.session.user = user.get_user(req);
 
-  res.render('index', { title: 'etlog' });
+  res.render('index', { title: 'etlog', user : req.session.user });
 });
 // --------------------------------------------------------------------------------------
 module.exports = router;

@@ -17,9 +17,9 @@ function check_state_permissions($rootScope, $state, $http)
 {
   $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
     get_permissions($http, function(data) {
-      var highest = data[data.length - 1];  // highest available privilege
+      var perm = data[data.indexOf($rootScope.user.role)];  // set permission based on current selected role
 
-      if(toState.allowed && toState.allowed.indexOf(highest) == -1) {
+      if(toState.allowed && toState.allowed.indexOf(perm) == -1) {
         event.preventDefault();
 
         if(!fromState.name)     // no previous state

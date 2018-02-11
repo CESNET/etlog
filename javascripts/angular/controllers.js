@@ -1,7 +1,10 @@
 // --------------------------------------------------------------------------------------
 // header controller
 // --------------------------------------------------------------------------------------
-angular.module('etlog').controller('header_controller', ['$scope', '$http', '$location', '$rootScope', function ($scope, $http, $location, $rootScope) {
+angular.module('etlog').controller('header_controller', ['$scope', '$http', '$location', '$rootScope', '$timeout', function ($scope, $http, $location, $rootScope, $timeout) {
+  $scope.user = user;   // set scope value from global variable
+  $rootScope.user = user;
+
   $scope.is_active = function(navbar_path) {
     for(var item in navbar_path) {      // iterate array of acceptable values
       if(navbar_path[item] === $location.path())
@@ -26,6 +29,7 @@ function setup_user_roles($rootScope, $scope, $http)
     })
     .then(function(response) {
       $rootScope.user = response.data;
+      $scope.user = $rootScope.user;   // set value for local scope too
     });
   }
 }
