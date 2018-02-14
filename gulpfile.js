@@ -44,5 +44,5 @@ gulp.task('views', function buildHTML() {
 });
 // -----------------------------------------------------------
 // Default Task
-gulp.task('default', ['views', 'js', 'css']);
+gulp.task('default', gulp.series(['views', 'js', 'css']));
 // -----------------------------------------------------------
