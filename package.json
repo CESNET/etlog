@@ -29,6 +29,7 @@
     "gulp-jshint": "^2.1.0",
     "gulp-pug": "^3.3.0",
     "gulp-uglify": "^3.0.0",
+    "helmet": "^3.11.0",
     "https": "^1.0.0",
     "jshint": "^2.9.5",
     "jshint-stylish": "^2.2.1",

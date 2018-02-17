@@ -14,6 +14,9 @@ const secrets = require('./config/secrets')
 // call express
 var app = express();
 
+// disable express header
+app.disable('x-powered-by')
+
 // connect to the database
 database.connect();
 
