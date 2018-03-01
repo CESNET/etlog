@@ -22,10 +22,12 @@ function check_state_permissions($rootScope, $state, $http)
       if(toState.allowed && toState.allowed.indexOf(perm) == -1) {
         event.preventDefault();
 
-        if(!fromState.name)     // no previous state
-          $state.go('search');  // "default" state
-        else
-          $state.go(fromState.name);    // go to previous state
+        //if(!fromState.name)     // no previous state
+        //  $state.go('search');  // "default" state
+        //else
+        //  $state.go(fromState.name);    // go to previous state
+
+        $state.go('not_allowed');  // insufficient permission explanation state
       }
     });
   });

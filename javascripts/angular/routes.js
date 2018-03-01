@@ -106,6 +106,12 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
     title : 'etlog: správa notifikací',
     allowed : [ 'realm_admin', 'admin' ]
   })
+
+  .state('not_allowed', {
+    url: '/not_allowed',
+    templateUrl: '/partials/not_allowed.html',
+    title : 'etlog',
+  })
 }]);
 // --------------------------------------------------------------------------------------
 
