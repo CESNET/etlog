@@ -46,7 +46,7 @@
     exit 1
   fi
 
-  /usr/sbin/logtail -o $1.offset -f $1 | gawk -v year=$year -v filename=$1 -v last_filename=$last_line_log '
+  /usr/sbin/logtail -o $1.offset -f $1 | LC_ALL=C gawk -v year=$year -v filename=$1 -v last_filename=$last_line_log '
     BEGIN {
       # monitoring mac address which does not have to be stored in database
       # only 4 bytes are defined, the rest is generated
