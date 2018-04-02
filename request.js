@@ -184,6 +184,8 @@ exp.get_succ_logins_monthly = function(realm)
   min.setTime(max.getTime() - 30 * 86400000);  // 30 days before
   var ret;
 
+  min.setHours(0);      // min and max hours could be different when overcoming DST time changes !!!
+
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
   query += "&username=/^.*@" + realm + "$/";   // limit by realm in username
 
@@ -222,6 +224,8 @@ exp.get_all_failed_logins_monthly = function(database, realm, limit)
 
   var min = new Date(max);
   min.setTime(max.getTime() - 30 * 86400000);  // 30 days before
+
+  min.setHours(0);      // min and max hours could be different when overcoming DST time changes !!!
 
   // ==========================================
 
@@ -274,6 +278,8 @@ exp.get_failed_login_count_monthly = function(database)
 
   var min = new Date(max);
   min.setTime(max.getTime() - 30 * 86400000);  // 30 days before
+
+  min.setHours(0);      // min and max hours could be different when overcoming DST time changes !!!
 
   database.logs.count({ timestamp : { $gte : min, $lt : max }, result : "FAIL"},
   function(err, items) {
@@ -342,6 +348,8 @@ function get_compromised_users_data(realm, revision)
   var min = new Date(max);
   min.setTime(max.getTime() - 30 * 86400000);  // 30 days before
   var ret;
+
+  min.setHours(0);      // min and max hours could be different when overcoming DST time changes !!!
 
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
   query += "&username=/^.*@" + realm + "$/";   // limit by realm in username
@@ -468,6 +476,8 @@ function get_user_data(user, revision)
   min.setTime(max.getTime() - 30 * 86400000);  // 30 days before
   var data;
   var ret = {};
+
+  min.setHours(0);      // min and max hours could be different when overcoming DST time changes !!!
 
   var query = '?timestamp>=' + min.toISOString() + "&timestamp<" + max.toISOString();  // use ISO-8601 format
   query += "&username=" + user;
