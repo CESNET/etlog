@@ -16,11 +16,40 @@ module.exports = function(database) {
   const unique_users = require('./cron/unique_users.js')
   const config = require('./config/config.js');
   const assert = require('assert');
+  const fs = require('fs');
+  const async = require('async');
 // --------------------------------------------------------------------------------------
+
   new CronJob('0 59 05 1 * *', function() {     // run once a month
-    mail.send_realm_stats(database, request.get_compromised_users_stats, config.radius_admin, request.get_latest_revision(database));
-    mail.send_mail_to_realm_admins(database, request.get_compromised_users_monthly, config.compromised_users_subj, request.get_latest_revision(database));
-    mail.send_mail_to_realm_admins(database, request.get_failed_logins_monthly, config.failed_logins_subj, config.failed_logins_lines);
+    async.series([
+      // disable realm admins synchronization
+      function(callback) {
+        fs.writeFile(config.etlog_log_root + "/ldap/sync_disabled", "", function(err) {
+          if(err) {
+            console.error(err);
+          }
+          callback(null);
+        });
+      },
+      function(callback) {
+        mail.send_realm_stats(database, request.get_compromised_users_stats, config.radius_admin, request.get_latest_revision(database), callback);
+      },
+      function(callback) {
+        mail.send_mail_to_realm_admins(database, request.get_compromised_users_monthly, config.compromised_users_subj, request.get_latest_revision(database), callback);
+      },
+      function(callback) {
+        mail.send_mail_to_realm_admins(database, request.get_failed_logins_monthly, config.failed_logins_subj, config.failed_logins_lines, callback);
+      },
+      // enable realm admins synchronization
+      function(callback) {
+        fs.unlink(config.etlog_log_root + "/ldap/sync_disabled", function(err) {
+          if(err) {
+            console.error(err);
+          }
+          callback(null);
+        });
+      }
+    ]);
   }, null, true, 'Europe/Prague');
 // --------------------------------------------------------------------------------------
   // run once a day

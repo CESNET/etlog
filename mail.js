@@ -65,15 +65,14 @@ module.exports.send_mail = function (subject, recipients, data, bcc, callback)
 // send mail to all defined realm admins
 // params:
 // 1) database
-// 2) mail subject
-// 3) function which returns data - mail contents
-// 4) optional limit for data function
+// 2) data function
+// 3) mail subject
+// 4) params to data function
+// 5) callback
 // --------------------------------------------------------------------------------------
-module.exports.send_mail_to_realm_admins = function (database, data_func, subj, func_params)
+module.exports.send_mail_to_realm_admins = function (database, data_func, subj, func_params, done)
 {
   var bcc = config.radius_admin;
-
-  disable_admins_sync();    // disable synchronization when sending notifications
 
   database.realms.find({}, { _id : 0 },
     function(err, realms) {
@@ -103,30 +102,8 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, subj, 
             }
           });
       }, function(err) {
-        enable_admins_sync();   // enable synchronization after all realms are processed
+        done(null);
       });
-  });
-}
-// --------------------------------------------------------------------------------------
-// enable realm admins synchronization
-// --------------------------------------------------------------------------------------
-function enable_admins_sync()
-{
-  fs.unlink(config.etlog_log_root + "/ldap/sync_disabled", function(err) {
-    if(err) {
-      console.eror(err);
-    }
-  });
-}
-// --------------------------------------------------------------------------------------
-// disable realm admins synchronization
-// --------------------------------------------------------------------------------------
-function disable_admins_sync()
-{
-  fs.writeFile(config.etlog_log_root + "/ldap/sync_disabled", "", function(err) {
-    if(err) {
-      console.eror(err);
-    }
   });
 }
 // --------------------------------------------------------------------------------------
@@ -159,13 +136,13 @@ module.exports.send_service_problem_notification = function(database, realm, dat
 // --------------------------------------------------------------------------------------
 // send statistics about compromised users for all known realms
 // --------------------------------------------------------------------------------------
-module.exports.send_realm_stats = function(database, data_func, to, func_param)
+module.exports.send_realm_stats = function(database, data_func, to, func_param, done)
 {
   database.realms.find({}, { _id : 0 },
     function(err, realms) {
       var data = data_func(realms, func_param);
       module.exports.send_mail("kompromitované identity - statistiky",         // specify realm in subject
-                                 to, data);     // no bcc
+                                 to, data, null, done);     // no bcc
   });
 }
 // --------------------------------------------------------------------------------------
