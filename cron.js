@@ -12,7 +12,7 @@ module.exports = function(database) {
   const realm_logins = require('./cron/realm_logins.js');
   const visinst_logins = require('./cron/visinst_logins.js');
   const request = require('./request');
-  const retention = require('./cron/delete_logs.js')
+  const retention = require('./cron/delete_data.js')
   const unique_users = require('./cron/unique_users.js')
   const config = require('./config/config.js');
   const assert = require('assert');
@@ -58,42 +58,51 @@ module.exports = function(database) {
 // --------------------------------------------------------------------------------------
   new CronJob('0 05 02 * * *', function() {     // run at 02:05:00
     failed_logins.process_current_data(database);
+    retention.delete_old_data(database, "failed_logins", 365);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 15 02 * * *', function() {     // run at 02:15:00
     mac_count.process_current_data(database);
+    retention.delete_old_data(database, "mac_count", 365);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 20 02 * * *', function() {     // run at 02:20:00
     roaming.process_current_data(database);
+    // nothing serious to delete here
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 25 02 * * *', function() {     // run at 02:25:00
     shared_mac.process_current_data(database);
+    retention.delete_old_data(database, "shared_mac", 365);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 35 02 * * *', function() {     // run at 02:35:00
     realm_logins.process_current_data(database);
+    // nothing serious to delete here
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 40 02 * * *', function() {     // run at 02:40:00
     visinst_logins.process_current_data(database);
+    // nothing serious to delete here
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 45 02 * * *', function() {     // run at 02:45:00
     heat_map.process_current_data(database);
+    // nothing serious to delete here
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 55 02 * * *', function() {     // run at 02:55:00
     unique_users.process_current_data(database);
+    retention.delete_old_data(database, "unique_users", 365);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 00 03 * * *', function() {     // run at 03:00:00
-    retention.process_current_data(database);
+    retention.delete_old_data(database, "logs", 365);
   }, null, true, 'Europe/Prague');
 
   new CronJob('0 10 03 * * *', function() {     // run at 03:10:00
     concurrent_users.process_current_data(database);
+    retention.delete_old_data(database, "concurrent_users", 365);
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------
