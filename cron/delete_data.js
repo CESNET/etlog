@@ -1,24 +1,19 @@
 // --------------------------------------------------------------------------------------
-const request = require('../request');
-const async = require('async');
-const deasync = require('deasync');
-const mail = require('../mail.js');
-// --------------------------------------------------------------------------------------
 var exp = {}
 // --------------------------------------------------------------------------------------
 // process current data
-// delete logs which are older than 1 year
+// delete data from specified colletions which are older than specified number od days
 // --------------------------------------------------------------------------------------
-exp.process_current_data = function (database) {
+exp.delete_old_data = function (database, colletion, days) {
   var curr = new Date();
   curr.setHours(0);
   curr.setMinutes(0);
   curr.setSeconds(0);
   curr.setMilliseconds(0);
   var min = new Date(curr);
-  min.setTime(min.getTime() - 365 * 86400000);     // 1 year ago
+  min.setTime(min.getTime() - days * 86400000);     // convert days to milliseconds
   
-  database.logs.remove({ timestamp : { $lt : min }});
+  database.collection(collection).remove({ timestamp : { $lt : min }});     // delete
 };
 // --------------------------------------------------------------------------------------
 module.exports = exp;
