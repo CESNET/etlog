@@ -13,7 +13,7 @@ exp.delete_old_data = function (database, collection, days) {
   var min = new Date(curr);
   min.setTime(min.getTime() - days * 86400000);     // convert days to milliseconds
   
-  database.collection(collection).remove({ timestamp : { $lt : min }});     // delete
+  database[collection].remove({ timestamp : { $lt : min }});     // delete
 };
 // --------------------------------------------------------------------------------------
 module.exports = exp;
