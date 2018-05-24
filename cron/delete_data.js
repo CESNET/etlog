@@ -4,7 +4,7 @@ var exp = {}
 // process current data
 // delete data from specified colletions which are older than specified number od days
 // --------------------------------------------------------------------------------------
-exp.delete_old_data = function (database, colletion, days) {
+exp.delete_old_data = function (database, collection, days) {
   var curr = new Date();
   curr.setHours(0);
   curr.setMinutes(0);
