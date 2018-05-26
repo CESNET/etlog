@@ -103,6 +103,7 @@ module.exports = function(database) {
   new CronJob('0 10 03 * * *', function() {     // run at 03:10:00
     concurrent_users.process_current_data(database);
     retention.delete_old_data(database, "concurrent_users", 365);
+    concurrent_users.delete_old_rev(database, 365);     // delete old revisions
   }, null, true, 'Europe/Prague');
 
 // --------------------------------------------------------------------------------------

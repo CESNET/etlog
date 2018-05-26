@@ -286,5 +286,34 @@ function save_to_db_callback(database, items, done) {
   });
 }
 // --------------------------------------------------------------------------------------
+exp.delete_old_rev = function (database, days) {
+  var curr = new Date();
+  curr.setHours(0);
+  curr.setMinutes(0);
+  curr.setSeconds(0);
+  curr.setMilliseconds(0);
+  var min = new Date(curr);
+  min.setTime(min.getTime() - days * 86400000);     // convert days to milliseconds
+  var min_str = "";
+
+  if(min.getMonth() < 10)
+    min_str = min.getFullYear() + String("0" + Number(min.getMonth() + 1)) + min.getDate() + "000000";
+  else
+    min_str = min.getFullYear() + String(Number(min.getMonth() + 1)) + min.getDate() + "000000";
+
+  var saved = [];
+
+  database.concurrent_rev.find({}, function(err, result) {
+    for(var i in result[0].revisions)
+      if(result[0].revisions[i] >= Number(min_str))
+        saved.push(result[0].revisions[i]);
+
+    database.concurrent_rev.update({}, { revisions : saved }, function(err, result) {
+      if(err)
+        console.log(err)
+    })
+  });
+};
+// --------------------------------------------------------------------------------------
 module.exports = exp;
 
