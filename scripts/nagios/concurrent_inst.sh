@@ -23,7 +23,7 @@ function main()
 function get_revision()
 {
   revision=$(curl "https://$hostname:8443/api/concurrent_rev/" 2>/dev/null) # get revisions array
-  revision=$(echo $revision | sed 's/^.*,"//; s/"\].*$//')
+  revision=$(echo $revision | sed 's/^.*,//; s/\].*$//')
 }
 # =======================================================================================================
 # get /api/concurrent_inst data
