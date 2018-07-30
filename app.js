@@ -70,7 +70,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/.well_known', express.static('public/.well_known'));
+app.use('/.well-known', express.static('public/.well-known'));
 
 // --------------------------------------------------------------------------------------
 // Make our db accessible to our router
