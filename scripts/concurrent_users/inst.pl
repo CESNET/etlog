@@ -58,6 +58,8 @@ sub get_locations {
 	$sum_cnt++;
     };
 
+    return unless ($sum_cnt);
+
     my $point = GPS::Point->new(lat => $sum_lat/$sum_cnt,
 				lon => $sum_long/$sum_cnt); 
     
@@ -129,7 +131,8 @@ my %institutions;
 foreach my $institution ($doc->getElementsByTagName('institution')) {
     my $inst_realm = $institution->getElementsByTagName('inst_realm')->[0]->textContent;
 
-    $institutions{$inst_realm} = get_locations($institution);
+    my $locations = get_locations($institution);
+    $institutions{$inst_realm} = $locations if ($locations);
 #    calc_distances($institutions{$inst_realm});
 };
 
