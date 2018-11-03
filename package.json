@@ -10,7 +10,7 @@
     "async": "^2.6.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "body-parser": "^1.18.3",
-    "connect-mongo": "^2.0.1",
+    "connect-mongo": "https://github.com/lager1/connect-mongo/tarball/master",
     "cookie-parser": "~1.4.3",
     "cron": "^1.5.0",
     "d3-node": "^1.1.3",
