@@ -22,7 +22,7 @@ angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function
   $stateProvider
 
   .state('search', {
-    url: '/search?pn&csi',
+    url: '/search?pn&csi&visinst&realm',
     templateUrl: '/partials/search.html',
     title : 'etlog: obecné vyhledávání',
   })
