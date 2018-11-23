@@ -55,7 +55,7 @@ function update_db()
   else                  # update old data
     while read line
     do
-      mongo etlog -quiet -eval "db.realm_admin_logins.update($(echo "$line" | sed 's/\],.*}$/]}/'), $line)"
+      mongo etlog -quiet -eval "db.realm_admin_logins.update($(echo "$line" | sed 's/\],.*}$/]}/'), $line, { upsert : true })"
     done <<< "$realm_admin_logins"
   fi
 
