@@ -50,8 +50,8 @@
     BEGIN {
       # monitoring mac address which does not have to be stored in database
       # only 4 bytes are defined, the rest is generated
-      monit_addr=706f6c69
-      monit_regex="^"monit_addr".*$"
+      monit_addr="706f6c6[9-f]"
+      monit_regex="^"monit_addr"[0-9a-f]{4}$"
 
       # ============================================================================
       # define month numbers
