@@ -405,7 +405,7 @@ function filter_by_username(req, aggregate_query)
     agg.add_stage(aggregate_query, { $match : { "pn" : { $in : req.session.user.identities }}});
 
   else if(req.session.user.role == "realm_admin")
-    agg.add_stage(aggregate_query, { $match : { "realm" : { $in : req.session.user.administered_realms }}});
+    agg.add_stage(aggregate_query, { $match : { $or : [ { realm : { $in : req.session.user.administered_realms }}, { visinst : { $in : req.session.user.administered_realms }} ] }});
 
   // no filtration for administator
 }
