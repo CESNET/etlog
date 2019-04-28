@@ -14,7 +14,7 @@ function main()
   fi
 }
 # ==========================================================================================
-# get institution.xml and compare it to localy saved
+# get institution.json and compare it to localy saved
 # return value:
 # 0 - files do not differ
 # 1 - files differ
@@ -23,16 +23,16 @@ function get_data()
 {
   local out
   local tmp
-  location='https://ermon.cesnet.cz/general/institution.xml'
+  location='https://ermon.cesnet.cz/general/institution.json'
   
-  if [[ ! -e  $concurrent_users_dir/institution.xml ]]    # institution xml does not exist
+  if [[ ! -e  $concurrent_users_dir/institution.json ]]    # institution json does not exist
   then
-    wget $location -O $concurrent_users_dir/institution.xml
+    wget $location -O $concurrent_users_dir/institution.json
     return 1
   else
     tmp=$(mktemp)
     wget $location -O $tmp
-    out=$(diff -q $concurrent_users_dir/institution.xml $tmp)
+    out=$(diff -q $concurrent_users_dir/institution.json $tmp)
     rm $tmp
 
     if [[ "$out" == "" ]]
@@ -49,7 +49,7 @@ function get_data()
 function update_data()
 {
   cd $concurrent_users_dir
-  wget $location -O $concurrent_users_dir/institution.xml # get new data, possible overwrite old
+  wget $location -O $concurrent_users_dir/institution.json # get new data, possible overwrite old
   $concurrent_users_dir/inst.pl             # update source data
   # update database - 14 days ago, hours, minutes and seconds set to 0
   $concurrent_users_dir/update_database.js "$(date -d "14 days ago" "+%Y-%m-%d") 00:00:00" "$(date "+%Y-%m-%d") 00:00:00"
