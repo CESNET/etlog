@@ -6,6 +6,7 @@ use Date::Manip;
 use XML::LibXML;
 use GPS::Point;
 use JSON;
+use POSIX;
 use utf8;
 
 #               100km/h
@@ -13,24 +14,6 @@ my $max_speed = 100*1000/(60*60); # m/s
 
 binmode STDOUT, ":utf8";
 binmode STDERR, ":utf8";
-
-sub coord2float {
-    my $coord = shift;
-
-    #14°25'26.25"
-    #49°11'58.67N
-    #49°56'19.77"N
-    #if ($coord =~ /^(\d+)\°(\d+)\'([0-9\.]+)/) {
-    if ($coord =~ /^\s*(\d+)(\°|�|Â°)\s*(\d+)('|´|’)\s*([0-9\.]+)/) {
-	my $dec = $1;
-	my $min = $3;
-	my $sec = $5;
-
-	return ($dec + ($min+$sec/60)/60);
-    } else {
-	die "Failed to parse '$coord'\n";
-    };
-};
 
 sub get_locations {
     my $inst = shift;
@@ -40,16 +23,13 @@ sub get_locations {
     my $sum_long = 0;
     my $sum_cnt = 0;
 
-    foreach my $loc ($inst->getElementsByTagName('location')) {
-	my $lat = $loc->getElementsByTagName('latitude')->[0]->textContent;
-	my $long = $loc->getElementsByTagName('longitude')->[0]->textContent;
-
-	my $lat_f = coord2float($lat);
-	my $long_f = coord2float($long);
+    foreach my $loc (@{$inst->{'location'}}) {
+	my $raw = $loc->{coordinates};
+	my ($long_f, $lat_f) = split(',', $raw);
 
 	my $point = GPS::Point->new(lat => $lat_f, lon => $long_f);
 
-	push @loc, {raw => "$lat $long",
+	push @loc, {raw => $raw,
 		    float => [$lat_f, $long_f],
 		    point => $point };
 
@@ -109,39 +89,32 @@ sub calc_min_dist {
     return $dist;
 };
 
-my $parser = XML::LibXML->new;
-open(F, '<institution.xml') or 
-    die(sprintf('Failed to open file %s: %s',
-		'institution.xml', $!));
-binmode F, ":utf8";
+my $inst_file = 'institution.json';
+open(F, "<$inst_file") or
+    die(sprintf('Failed to open file %s: %s', $inst_file, $!));
 my $str = join('', <F>);
 close(F);
-
-my $doc;
-eval {
-  $doc = $parser->parse_string($str);
-};
-if ($@) {
-  die($@);
-};
+my $json = from_json($str, {'utf8' => 1});
 
 my %institutions;
+my $ts = '2000-01-01T01:00:00Z';
 
 # spocitani vzdalenosti mezi body insituce
-foreach my $institution ($doc->getElementsByTagName('institution')) {
-    my $inst_realm = $institution->getElementsByTagName('inst_realm')->[0]->textContent;
+foreach my $institution (@{$json->{institutions}->{institution}}) {
+    my $inst_realm = @{$institution->{'inst_realm'}}[0];
 
     my $locations = get_locations($institution);
     $institutions{$inst_realm} = $locations if ($locations);
-#    calc_distances($institutions{$inst_realm});
-};
 
-#die Dumper(\%institutions);
+    if ($ts lt $institution->{'ts'}) {
+	$ts = $institution->{'ts'};
+    };
+};
 
 my %dist;
 my @dist;
 for my $ir1 (sort keys %institutions) {
-    warn "Working on $ir1";
+    #warn "Working on $ir1";
     my @institutions;
     for my $ir2 (sort keys %institutions) {
 	my $dist = calc_min_dist($institutions{$ir1}->{locations},
@@ -149,8 +122,8 @@ for my $ir1 (sort keys %institutions) {
 	my $time = $dist/$max_speed;
 
 	push @institutions, { 'institution' => $ir2,
-			      'dist' => $dist,
-			      'time' => $time };
+			      'dist' => POSIX::floor($dist),
+			      'time' => POSIX::floor($time)};
     };
 
     push @dist, { 'institution' => $ir1,
@@ -159,13 +132,13 @@ for my $ir1 (sort keys %institutions) {
     #last if (scalar(@dist) > 1);
 };
 
-my %export = ( revision => UnixDate(ParseDate('now'), '%Y%m%d%H%M%S'),
+my %export = ( revision => UnixDate(ParseDate($ts), '%Y%m%d%H%M%S'),
 	       data => \@dist );
 
-my $json = encode_json \%export;
+my $json_out = encode_json \%export;
 
 open(JSON, ">inst.json");
-print JSON $json;
+print JSON $json_out;
 close(JSON);
 
 # tidy json: python -mjson.tool
