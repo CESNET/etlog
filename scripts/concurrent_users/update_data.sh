@@ -25,7 +25,7 @@ function get_data()
   local tmp
   location='https://ermon.cesnet.cz/general/institution.json'
   
-  if [[ ! -e  $concurrent_users_dir/institution.json ]]    # institution json does not exist
+  if [[ ! -e $concurrent_users_dir/institution.json ]]    # institution.json does not exist
   then
     wget $location -O $concurrent_users_dir/institution.json
     return 1
