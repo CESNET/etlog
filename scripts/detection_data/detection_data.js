@@ -25,7 +25,7 @@ function get_data(database, grouped, callback)
     { $match : { timestamp : { $gte : min, $lt : max }, realm : /\.cz/ } },  // limit by timestamp, cz realms
     { $group : { _id : { realm : "$realm" }, fail_count : { $sum : "$fail_count" } } },
     { $sort : { fail_count : -1 } },   // sort by count
-    { $limit : 100 },              // limit to 100 instituons
+    //{ $limit : 100 },              // limit to 100 instituons
     { $project : { realm : "$_id.realm", _id : 0 } }      // final projection
   ],
   function(err, items) {
