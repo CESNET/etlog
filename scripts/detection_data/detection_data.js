@@ -17,8 +17,8 @@ const config = require('../../config/config');
 // --------------------------------------------------------------------------------------
 function get_data(database, grouped, callback)
 {
-  var min = new Date(2017,1,1);   // 60 days ago
-  var max = new Date(2017,2,2);     // today
+  var min = new Date(new Date() - 60 * 86400000);   // 60 days ago
+  var max = new Date();     // today
   
   // get realm list sorted by failed auth count for previous 60 days
   database.visinst_logins.aggregate([ 
