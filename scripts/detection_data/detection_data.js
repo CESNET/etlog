@@ -508,16 +508,16 @@ function get_realm_succ_logins_grouped(date, realm)
 function main()
 {
   async.series([
-    function(callback) {
-      database.connect();
-      callback(null, null);
-    },
-    function(callback) {
-      if(process.argv.length > 2)
-        get_data(database, true, callback);  // generate grouped data
-      else
-        get_data(database, false, callback); // generate non grouped date
-    },
+      function(callback) {
+        database.connect();
+        callback(null, null);
+      },
+      function(callback) {
+        if(process.argv.length > 2)
+          get_data(database, true, callback);  // generate grouped data
+        else
+          get_data(database, false, callback); // generate non grouped data
+      },
     ],
     function(err, results) {
       database.disconnect();
