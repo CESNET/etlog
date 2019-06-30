@@ -17,10 +17,10 @@ const config = require('../../config/config');
 // --------------------------------------------------------------------------------------
 function get_data(database, grouped, callback)
 {
-  var min = new Date(new Date() - 60 * 86400000);   // 60 days ago
+  var min = new Date(new Date() - 90 * 86400000);   // 90 days ago
   var max = new Date();     // today
   
-  // get realm list sorted by failed auth count for previous 60 days
+  // get realm list sorted by failed auth count for previous 90 days
   database.visinst_logins.aggregate([ 
     { $match : { timestamp : { $gte : min, $lt : max }, realm : /\.cz/ } },  // limit by timestamp, cz realms
     { $group : { _id : { realm : "$realm" }, fail_count : { $sum : "$fail_count" } } },
@@ -63,7 +63,7 @@ function get_api_data(realm, graph_func, html_text, inst_type, fail_func, ok_fun
   $scope = {};      // "scope"
 
   $scope.form_data = {
-    min_date : new Date(new Date() - 60 * 86400000).toISOString().replace(/T.*$/, ''),      // 60 days ago - %Y-%m-%d
+    min_date : new Date(new Date() - 90 * 86400000).toISOString().replace(/T.*$/, ''),      // 90 days ago - %Y-%m-%d
     max_date : new Date().toISOString().replace(/T.*$/, ''),                                // today - %Y-%m-%d
   };
   
