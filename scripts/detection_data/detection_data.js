@@ -21,24 +21,31 @@ function get_data(database, grouped, callback)
   var max = new Date();     // today
   
   // get realm list sorted by failed auth count for previous 90 days
-  database.visinst_logins.aggregate([ 
-    { $match : { timestamp : { $gte : min, $lt : max }, realm : /\.cz/ } },  // limit by timestamp, cz realms
-    { $group : { _id : { realm : "$realm" }, fail_count : { $sum : "$fail_count" } } },
-    { $sort : { fail_count : -1 } },   // sort by count
-    //{ $limit : 100 },              // limit to 100 instituons
-    { $project : { realm : "$_id.realm", _id : 0 } }      // final projection
-  ],
-  function(err, items) {
-    var html_text = [];
+  database.realms.find({}, { _id : 0, realm : 1}, function(err, realms) {
+    realm_list = [];
 
-    for(var item in items) {
-      get_visinst_data(items[item].realm, graph, html_text, grouped);
-      get_realm_data(items[item].realm, graph, html_text, grouped);
-    }
-    
-    create_output(html_text);
-    callback(null);
-  });
+    for(var i in realms)
+      realm_list.push(realms[i].realm);
+
+    database.visinst_logins.aggregate([
+      { $match : { timestamp : { $gte : min, $lt : max }, realm : { $in : realm_list } } },  // limit by timestamp, realms from another collection
+      { $group : { _id : { realm : "$realm" }, fail_count : { $sum : "$fail_count" } } },
+      { $sort : { fail_count : -1 } },   // sort by count
+      //{ $limit : 100 },              // limit to 100 instituons
+      { $project : { realm : "$_id.realm", _id : 0 } }      // final projection
+    ],
+    function(err, items) {
+      var html_text = [];
+
+      for(var item in items) {
+        get_visinst_data(items[item].realm, graph, html_text, grouped);
+        get_realm_data(items[item].realm, graph, html_text, grouped);
+      }
+
+      create_output(html_text);
+      callback(null);
+    });
+  })
 }
 // --------------------------------------------------------------------------------------
 // create html output
