@@ -2,7 +2,6 @@ module.exports = function(app, database) {
 // -----------------------------------------------------------
   // set up routes
 // -----------------------------------------------------------
-  app.use('/', require('./routes/index'));                                           // title page
   app.use('/api/search', require('./routes/search'));                                // generic search api
   app.use('/api/mac_count', require('./routes/mac_count'));                          // generic api for mac address count
   app.use('/api/roaming/most_provided', require('./routes/roaming_most_provided'));  // generic api for institutions most providing roaming
@@ -21,7 +20,8 @@ module.exports = function(app, database) {
   app.use('/api/concurrent_inst', require('./routes/concurrent_inst'));              // api for concurrent institutions
   app.use('/api/concurrent_rev', require('./routes/concurrent_rev'));                // api for concurrent revisions
   app.use('/api/user', require('./routes/user'));                                    // api for user managament
+  app.use('/', require('./routes/index'));                                           // title page
 // -----------------------------------------------------------
 // prezentace
-  app.use('/prezentace', require('./routes/prezentace'));
+  //app.use('/prezentace', require('./routes/prezentace'));
 }

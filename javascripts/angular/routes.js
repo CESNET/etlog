@@ -18,7 +18,12 @@ angular.module('etlog').factory('user_info_service', [ '$rootScope', '$http', fu
   }
 }]);
 // --------------------------------------------------------------------------------------
-angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+angular.module('etlog').config(['$stateProvider', '$urlRouterProvider', '$locationProvider', function($stateProvider, $urlRouterProvider, $locationProvider) {
+  $locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false
+  });
+
   $stateProvider
 
   .state('search', {
