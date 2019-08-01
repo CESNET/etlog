@@ -421,7 +421,7 @@ function compromised_users_html(data, realm, revision)
     ret += "<td>" + data[item].username + "</td>";
     ret += "<td>" + data[item].incident_count + "</td>";
     ret += "<td>" + data[item].mac_count + "</td>";
-    ret += "<td><a href='https://etlog.cesnet.cz/#/concurrent_users?username=" + data[item].username + "&revision=" + revision + "'>" + data[item].username + "</a></td>";
+    ret += "<td><a href='https://etlog.cesnet.cz/concurrent_users?username=" + data[item].username + "&revision=" + revision + "'>" + data[item].username + "</a></td>";
     ret += "</tr>";
   }
 
@@ -739,7 +739,7 @@ function compromised_users_plain(data, realm, revision)
     for(var i = data[item].mac_count.toString().length; i < mac_len - 2; i++)                   // mac count spacing
       ret += " ";
 
-    ret += "https://etlog.cesnet.cz/#/concurrent_users?username=" + data[item].username + "&revision=" + revision
+    ret += "https://etlog.cesnet.cz/concurrent_users?username=" + data[item].username + "&revision=" + revision
     ret += "\n"
   }
 
