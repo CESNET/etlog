@@ -110,7 +110,7 @@ module.exports.send_mail_to_realm_admins = function (database, data_func, subj, 
 module.exports.send_error_report = function (data)
 {
   var subj = "hlášení o chybě";
-  recipients = [ 'machv@cesnet.cz' ];
+  recipients = [ 'etlog@localhost' ];
   var mail_data = "";
 
   for(var item in data) {
