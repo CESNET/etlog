@@ -132,132 +132,132 @@ Set the configuration as below:
 
 ```
 <VirtualHost *:80>
-	ServerAdmin machv@cesnet.cz
-	ServerName etlog.cesnet.cz
-	Redirect permanent "/" "https://etlog.cesnet.cz/"
+    ServerAdmin info@eduroam.cz
+    ServerName etlog.cesnet.cz
+    Redirect permanent "/" "https://etlog.cesnet.cz/"
 </VirtualHost>
 
 <IfModule mod_ssl.c>
 
-	# aplikacni virtualhost
-	<VirtualHost _default_:443>
-		ServerAdmin machv@cesnet.cz
-		ServerName etlog.cesnet.cz
-		DocumentRoot /var/www/html
+    # aplikacni virtualhost
+    <VirtualHost _default_:443>
+        ServerAdmin info@eduroam.cz
+        ServerName etlog.cesnet.cz
+        DocumentRoot /var/www/html
 
-		ErrorLog ${APACHE_LOG_DIR}/error.log
-		CustomLog ${APACHE_LOG_DIR}/access.log combined
-		SSLEngine on
+        ErrorLog ${APACHE_LOG_DIR}/etlog_error.log
+        CustomLog ${APACHE_LOG_DIR}/etlog_access.log combined
+        SSLEngine on
 
-		SSLProtocol All -SSLv2 -SSLv3
-		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
-		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
-		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
+        SSLCertificateFile  /etc/ssl/certs/...
+        SSLCertificateKeyFile /etc/ssl/private/...
 
-		BrowserMatch "MSIE [2-6]" \
-				nokeepalive ssl-unclean-shutdown \
-				downgrade-1.0 force-response-1.0
-		# MSIE 7 and newer should be able to use keepalive
-		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+        BrowserMatch "MSIE [2-6]" \
+                nokeepalive ssl-unclean-shutdown \
+                downgrade-1.0 force-response-1.0
+        # MSIE 7 and newer should be able to use keepalive
+        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
-		# HSTS
-		Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+        # HSTS
+        Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
 
-		<Location />
-			# konfigurace shibbolethu pro /
-			AuthType shibboleth
-			Require shibboleth
-			ShibRequestSetting requireSession 1
 
-			# predani SSL prommene prostredi REMOTE_USER
-			RequestHeader set REMOTE_USER %{REMOTE_USER}s
+        <Location />
+            # konfigurace shibbolethu pro /
+            AuthType shibboleth
+            Require shibboleth
+            ShibRequestSetting requireSession 1
 
-			# pro nastaveni dalsich hlavicek je treba dodat direktivu pro kokretni promenne prostredi
-			RequestHeader set PerunUniqueGroupName %{PerunUniqueGroupName}e
-			RequestHeader set eduroamUID %{eduroamUID}e
+            # predani SSL prommene prostredi REMOTE_USER
+            RequestHeader set REMOTE_USER %{REMOTE_USER}s
 
-			# proxy
-			ProxyPass http://127.0.0.1:8080/
-			ProxyPassReverse http://127.0.0.1:8080/
-		</Location>
+            # pro nastaveni dalsich hlavicek je treba dodat direktivu pro kokretni promenne prostredi
+            RequestHeader set entitlement %{entitlement}e
+            RequestHeader set eduroamUID %{eduroamUID}e
 
-		ProxyRequests Off
-		RemoteIPHeader X-Forwarded-For
-		RequestHeader set X-Forwarded-Proto "https"
-	</VirtualHost>
+            # proxy
+            ProxyPass http://127.0.0.1:8080/
+            ProxyPassReverse http://127.0.0.1:8080/
+        </Location>
+
+        # vyjimka z autentizace pro .well-known
+        <Location "/.well-known/security.txt">
+            AuthType shibboleth
+            Require shibboleth
+            ShibRequestSetting requireSession 0
+        </Location>
+
+        ProxyRequests Off
+        RemoteIPHeader X-Forwarded-For
+        RequestHeader set X-Forwarded-Proto "https"
+    </VirtualHost>
 
     # virtualhost pro nrpe
     <VirtualHost 127.0.0.1:443>
-		ServerAdmin machv@cesnet.cz
-		ServerName etlog.cesnet.cz
-		DocumentRoot /var/www/html
+        ServerAdmin info@eduroam.cz
+        ServerName etlog.cesnet.cz
+        DocumentRoot /var/www/html
 
-		ErrorLog ${APACHE_LOG_DIR}/error.log
-		CustomLog ${APACHE_LOG_DIR}/access.log combined
-		SSLEngine on
+        ErrorLog ${APACHE_LOG_DIR}/etlog_error.log
+        CustomLog ${APACHE_LOG_DIR}/etlog_access.log combined
+        SSLEngine on
 
-		SSLProtocol All -SSLv2 -SSLv3
-		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
-		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
-		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
+        SSLCertificateFile  /etc/ssl/certs/...
+        SSLCertificateKeyFile /etc/ssl/private/...
 
-		BrowserMatch "MSIE [2-6]" \
-				nokeepalive ssl-unclean-shutdown \
-				downgrade-1.0 force-response-1.0
-		# MSIE 7 and newer should be able to use keepalive
-		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+        BrowserMatch "MSIE [2-6]" \
+                nokeepalive ssl-unclean-shutdown \
+                downgrade-1.0 force-response-1.0
+        # MSIE 7 and newer should be able to use keepalive
+        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
-		# HSTS
-		Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+        # HSTS
+        Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
 
-		<Location />
-			# proxy
-			ProxyPass http://127.0.0.1:8080/
-			ProxyPassReverse http://127.0.0.1:8080/
-		</Location>
+        <Location />
+            # proxy
+            ProxyPass http://127.0.0.1:8080/
+            ProxyPassReverse http://127.0.0.1:8080/
+        </Location>
 
-		ProxyRequests Off
-		RemoteIPHeader X-Forwarded-For
-		RequestHeader set X-Forwarded-Proto "https"
-	</VirtualHost>
+        ProxyRequests Off
+        RemoteIPHeader X-Forwarded-For
+        RequestHeader set X-Forwarded-Proto "https"
+    </VirtualHost>
 
-    # virtualhost pro ermon.cesnet.cz
+    # virtualhost pro dotazy na api a pro ermona
     <VirtualHost etlog.cesnet.cz:8443>
-		ServerAdmin machv@cesnet.cz
-		ServerName etlog.cesnet.cz
-		DocumentRoot /var/www/html
+        ServerAdmin info@eduroam.cz
+        ServerName etlog.cesnet.cz
+        DocumentRoot /var/www/html
 
-		ErrorLog ${APACHE_LOG_DIR}/error.log
-		CustomLog ${APACHE_LOG_DIR}/access.log combined
-		SSLEngine on
+        ErrorLog ${APACHE_LOG_DIR}/etlog_error.log
+        CustomLog ${APACHE_LOG_DIR}/etlog_access.log combined
+        SSLEngine on
 
-		SSLProtocol All -SSLv2 -SSLv3
-		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
-		SSLCertificateFile	/etc/ssl/certs/etlog.cesnet.cz.crt.pem
-		SSLCertificateKeyFile /etc/ssl/private/etlog.cesnet.cz.key.pem
+        SSLCertificateFile  /etc/ssl/certs/...
+        SSLCertificateKeyFile /etc/ssl/private/...
 
-		BrowserMatch "MSIE [2-6]" \
-				nokeepalive ssl-unclean-shutdown \
-				downgrade-1.0 force-response-1.0
-		# MSIE 7 and newer should be able to use keepalive
-		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+        BrowserMatch "MSIE [2-6]" \
+                nokeepalive ssl-unclean-shutdown \
+                downgrade-1.0 force-response-1.0
+        # MSIE 7 and newer should be able to use keepalive
+        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
-		# HSTS
-		Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+        # HSTS
+        Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
 
-		<Location />
-			# proxy
-			ProxyPass http://127.0.0.1:8080/
-			ProxyPassReverse http://127.0.0.1:8080/
-		</Location>
+        <Location />
+            # proxy
+            ProxyPass http://127.0.0.1:8080/
+            ProxyPassReverse http://127.0.0.1:8080/
+        </Location>
 
-		ProxyRequests Off
-		RemoteIPHeader X-Forwarded-For
-		RequestHeader set X-Forwarded-Proto "https"
-	</VirtualHost>
+        ProxyRequests Off
+        RemoteIPHeader X-Forwarded-For
+        RequestHeader set X-Forwarded-Proto "https"
+    </VirtualHost>
 </IfModule>
-
-# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 ```
 
 Set listening ports in `/etc/apache2/ports.conf`:
