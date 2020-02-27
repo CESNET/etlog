@@ -26,8 +26,8 @@ module.exports = {
 // ==========================================================================================
   // mapping of groups to privilege levels
   // defines where to look for additional privilege information
-  role_groups : [ "perununiquegroupname" ],
+  role_groups : [ "entitlement" ],
   // defines mapping to admin privilege level
-  admin_groups : [ "einfra:eduroamManagers" ],
+  admin_groups : [ "urn:geant:cesnet.cz:group:einfra:eduroamManagers#perun.cesnet.cz" ],
 }
 // ==========================================================================================
