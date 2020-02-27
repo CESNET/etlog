@@ -190,7 +190,7 @@ function realms_to_admins()
         mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b uid=$tmp,ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz -s base mail | grep "mail: " | head -1 | cut -d " " -f 2)
       else
         # take $admin's first mail
-        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
+        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
       fi
 
       # set mail to global array
@@ -218,7 +218,7 @@ function realms_to_admins()
 }
 # ==========================================================================================
 # merge by common admin_login_id values
-# new way using eduPersonPrincipalNames and old way may have
+# new way using eduPersonUniqueId and old way may have
 # common intersection when both used on one realm
 # ==========================================================================================
 function merge_common()
@@ -230,8 +230,8 @@ function merge_common()
   do
     for id in $admin
     do
-      # $id matches @cesnet.cz && $admin contains more identities && $id exists in admins array
-      if [[ $id =~ ^.*@cesnet.cz && $(echo $admin | wc -w) -gt 1 && -n ${admins[$id]} ]]
+      # $id matches @einfra.cesnet.cz && $admin contains more identities && $id exists in admins array
+      if [[ $id =~ ^.*@einfra.cesnet.cz && $(echo $admin | wc -w) -gt 1 && -n ${admins[$id]} ]]
       then
         realms=${admins[$admin]}    # original realms
 
@@ -261,7 +261,7 @@ function merge_common()
 
         admins[$admin]="$realms"    # update realm list
 
-        # unset original @cesnet.cz key
+        # unset original @einfra.cesnet.cz key
         unset admins[$id]
       fi
 
@@ -358,12 +358,12 @@ function get_realms()
         uid=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//') # get uid
 
         # use whole line as search base
-        identities=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b $sb -s base eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | cut -d " " -f 2 | tr "\n" " ")
+        identities=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b $sb -s base eduPersonUniqueId | grep "eduPersonUniqueId: " | cut -d " " -f 2 | tr "\n" " ")
         uids[$uid]=$identities     # save mapping of uid to user identities
         identities=""              # clear for next admin
         manager=$uid               # save uid as reference in array instead of values
       else                                           # old state
-        manager=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@cesnet\.cz/')
+        manager=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@einfra\.cesnet\.cz/')
       fi
 
       for realm in $realm_list            # iterate all realms from current object
