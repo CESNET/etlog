@@ -112,10 +112,10 @@ function check_state()
   then
     if [[ "$last_max" == "" ]]  # last max empty
     then
-      last_max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+      last_max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz -o ldif-wrap=no modifyTimeStamp | grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
 
     else    # last res empty
-      last_res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
+      last_res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz -o ldif-wrap=no modifyTimeStamp | tail -1 | cut -d " " -f 3)
     fi
 
     echo $last_max > $etlog_log_root/ldap/last_timestamp
@@ -123,8 +123,8 @@ function check_state()
     return 1
   else      # last timestamp and last res not empty
 
-    max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
-    res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz modifyTimeStamp | tail -1 | cut -d " " -f 3)
+    max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz -o ldif-wrap=no modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
+    res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz -o ldif-wrap=no modifyTimeStamp | tail -1 | cut -d " " -f 3)
     if [[ $last_max -le $max ]]
     then
       retval=1  # not necessary to update
@@ -178,19 +178,17 @@ function realms_to_admins()
 
         for id in ${uids[$tmp]}  # iterate all identities available for uid
         do
-          if [[ ${#admin} -eq 0 ]]  # empty
+          if [[ $id =~ ^.*"@einfra.cesnet.cz"$ ]]
           then
             admin="$id"
-          else                      # not empty
-            admin="$admin $id"
           fi
         done
 
         # take $admin's first mail
-        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b uid=$tmp,ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz -s base mail | grep "mail: " | head -1 | cut -d " " -f 2)
+        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz -s base -o ldif-wrap=no eduPersonPrincipalNames=$tmp mail | grep "mail: " | head -1 | cut -d " " -f 2)
       else
         # take $admin's first mail
-        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz uid=${admin%%@*} mail | grep "mail: " | head -1 | cut -d " " -f 2)
+        mail=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=People,o=eduroam,o=apps,dc=cesnet,dc=cz -o ldif-wrap=no eduPersonPrincipalNames=${admin} mail | grep "mail: " | head -1 | cut -d " " -f 2)
       fi
 
       # set mail to global array
@@ -214,7 +212,7 @@ function realms_to_admins()
     done
   done
 
-  merge_common
+  #merge_common
 }
 # ==========================================================================================
 # merge by common admin_login_id values
@@ -322,7 +320,7 @@ function print_json()
 function get_realms()
 {
   # all information regarding realm admins retrivied from ldap
-  all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz cn manager)
+  all_info=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz -o ldif-wrap=no cn manager)
   local in_object=false
   local realm_list
   local uid
@@ -351,29 +349,22 @@ function get_realms()
 
     elif [[ $line =~ ^"manager: ".*$ && in_object ]]   # realm administrator
     then
-      if [[ $line =~ ^"manager: uid="[[:digit:]]+",".*$ ]]      # uid contains only digits, new state - use eduPersonPrincipalName
-      then
-
         sb=$(echo $line | sed 's/manager: //') # get search base
         uid=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$//') # get uid
 
         # use whole line as search base
-        identities=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b $sb -s base eduPersonUniqueId | grep "eduPersonUniqueId: " | cut -d " " -f 2 | tr "\n" " ")
-        uids[$uid]=$identities     # save mapping of uid to user identities
         identities=""              # clear for next admin
+        identities=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b $sb -s base -o ldif-wrap=no eduPersonPrincipalNames | grep "eduPersonPrincipalNames: " | grep "einfra.cesnet.cz" | cut -d " " -f 2 | tr "\n" " ")
+        uids[$uid]=$identities     # save mapping of uid to user identities
         manager=$uid               # save uid as reference in array instead of values
-      else                                           # old state
-        manager=$(echo $line | sed 's/manager: //; s/uid=//; s/,.*$/@einfra\.cesnet\.cz/')
-      fi
 
       for realm in $realm_list            # iterate all realms from current object
       do
-
         if [[ ${#realms[$realm]} -gt 0 ]] # not first administrator
         then
-          realms[$realm]="${realms[$realm]} $manager"
+          realms[$realm]="${realms[$realm]} $identities"
         else  # first administator
-          realms[$realm]="$manager"
+          realms[$realm]="$identities"
         fi
 
       done
