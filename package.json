@@ -22,7 +22,7 @@
     "express-restify-mongoose": "^4.3.0",
     "express-session": "^1.15.6",
     "file-stream-rotator": "0.2.1",
-    "gulp": "^4.0.0",
+    "gulp": "^4.0.2",
     "gulp-clean-css": "^3.10.0",
     "gulp-concat": "^2.6.1",
     "gulp-pug": "^4.0.1",
