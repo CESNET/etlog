@@ -120,7 +120,7 @@ function check_state()
 
     echo $last_max > $etlog_log_root/ldap/last_timestamp
     echo $last_res > $etlog_log_root/ldap/last_results
-    return 1
+    return $retval
   else      # last timestamp and last res not empty
 
     max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz -o ldif-wrap=no modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
@@ -391,5 +391,5 @@ etlog_log_root="/home/etlog/logs"
 etlog_root="/home/etlog/etlog/"
 # notify default state
 notify_default=true
-main &>/dev/null
+main
 # ==========================================================================================
