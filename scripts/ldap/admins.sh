@@ -125,14 +125,14 @@ function check_state()
 
     max=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz -o ldif-wrap=no modifyTimeStamp |  grep modifyTimeStamp: | cut -d " " -f2 | sort | tail -1 | sed 's/Z//')
     res=$(ldapsearch -H ldaps://ldap.cesnet.cz -x -y $etlog_root/config/ldap_secret -D 'uid=etlog,ou=special users,dc=cesnet,dc=cz' -b ou=Realms,o=eduroam,o=apps,dc=cesnet,dc=cz -o ldif-wrap=no modifyTimeStamp | tail -1 | cut -d " " -f 3)
-    if [[ $last_max -le $max ]]
+    if [[ $last_max -ge $max ]]
     then
-      retval=1  # not necessary to update
-    elif [[  $res -ne $last_res ]]      # result count not equal last result count
-    then
-      retval=1  # not necessary to update
-    else    # greater
-      retval=0  # request update
+      retval=1;  # $last_max >= $max >> not necessary to update
+
+      if [[ $res -ne $last_res ]]      # but only when $last_res and $res equal
+      then
+        retval=0  # necessary to update
+      fi
     fi
   fi
 
