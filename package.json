@@ -36,7 +36,7 @@
     "morgan": "^1.9.1",
     "nodemailer": "^4.6.8",
     "phantomjs-prebuilt": "^2.1.16",
-    "pug": "^2.0.3",
+    "pug": "^3.0.1",
     "request": "^2.88.0",
     "serve-favicon": "~2.5.0",
     "streamqueue": "^1.1.2",
