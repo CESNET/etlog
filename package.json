@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "api-query-params": "https://github.com/lager1/api-query-params/tarball/master",
-    "async": "^2.6.1",
+    "async": "^3.2.2",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "body-parser": "^1.18.3",
     "connect-mongo": "^3.1.0",
