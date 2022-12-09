@@ -17,7 +17,7 @@
     "d3v4": "^4.2.2",
     "deasync": "^0.1.13",
     "debug": "~3.1.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "express-request-proxy": "^2.2.2",
     "express-restify-mongoose": "^4.3.0",
     "express-session": "^1.15.6",
