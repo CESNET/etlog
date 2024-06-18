@@ -1,3 +1,5 @@
+# This application is obsolete and archived!
+
 # etlog - eduroam traffic log analysis
 
 ## Basic info
